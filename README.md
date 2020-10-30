@@ -15,7 +15,7 @@ Once Helm is set up properly, add the repo as follows:
 helm repo add densify https://densify-dev.github.io/helm-charts
 ```
 
-You can then run `helm search repo densify` to see the chart.
+You can then run `helm search repo container-optimization-data-forwarder` to see the chart.
 
 ## License
 
