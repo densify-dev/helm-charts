@@ -23,17 +23,10 @@ This chart deploys the Densify Container Optimization Data Forwarder, which is s
 ## Installing
 
 To deploy Data Forwarder with Helm, follow these steps below:
-1. Clone or update the repo.
-2. Specify the relevant parameters for connectivity in values.yaml. (See the [Configuration](#Configuration) parameters table below.)
-3. Navigate to the helm directory:
+```console
+helm repo add densify https://densify-dev.github.io/helm-charts
 ```
-cd helm
-```
-4. Execute the command: 
-```
-helm install . -f values.yaml
-```
-
+You can then run `helm search repo container-optimization-data-forwarder` to see the chart.
 
 ## Configuration
  
