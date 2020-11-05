@@ -45,20 +45,9 @@
 Create the name of the service account to use
 */}}
 {{- define "common.serviceAccountName" -}}
-{{- if .Values.authorization.serviceAccount.create -}}
-    {{ default (include "common.fullname" .) .Values.authorization.serviceAccount.name }}
+{{- if .Values.serviceAccount.create -}}
+    {{ default (include "common.fullname" .) .Values.serviceAccount.name }}
 {{- else -}}
-    {{ default "default" .Values.authorization.serviceAccount.name }}
-{{- end -}}
-{{- end -}}
-
-{{/*
-Create the name of the cluster role to use
-*/}}
-{{- define "common.clusterRoleName" -}}
-{{- if .Values.authorization.clusterRole.create -}}
-    {{ default (include "common.fullname" .) .Values.authorization.clusterRole.name }}
-{{- else -}}
-    {{ default "default" .Values.authorization.clusterRole.name }}
+    {{ default "default" .Values.serviceAccount.name }}
 {{- end -}}
 {{- end -}}

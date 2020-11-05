@@ -26,7 +26,7 @@ spec:
       tolerations:
 {{ toYaml .Values.tolerations | indent 8 }}
       {{- end }}
-      {{- if .Values.authorization.serviceAccount.create }}
+      {{- if .Values.serviceAccount.create }}
       serviceAccountName: {{ template "common.serviceAccountName" . }}
       {{- end }}
       containers:

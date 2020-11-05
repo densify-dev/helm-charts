@@ -66,13 +66,13 @@ config:
   debug: false
 
 # If you are running Prometheus setup with Authentication such as OpenShift then need to set to true.
-authorization:
-  serviceAccount:
-    create: true
-    name:
-  clusterRole:
-    create: true
-    name:
+rbac:
+  create: true
+  
+serviceAccount:
+  create: true
+  name:
+
 
 nodeSelector: {}
 
