@@ -65,10 +65,7 @@ config:
     
   debug: false
 
-# If you are running Prometheus setup with Authentication such as OpenShift then need to set to true.   
-authenticated:
-  create: false 
-
+# If you are running Prometheus setup with Authentication such as OpenShift then need to set to true.
 authorization:
   serviceAccount:
     create: true
