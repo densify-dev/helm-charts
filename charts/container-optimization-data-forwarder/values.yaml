@@ -76,9 +76,6 @@ authorization:
   clusterRole:
     create: true
     name:
-  clusterRoleBinding:
-    create: true
-    name:
 
 nodeSelector: {}
 

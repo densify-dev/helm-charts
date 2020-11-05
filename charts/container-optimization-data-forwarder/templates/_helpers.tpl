@@ -53,17 +53,6 @@ Create the name of the service account to use
 {{- end -}}
 
 {{/*
-Create the name of the cluster role binding to use
-*/}}
-{{- define "common.clusterRoleBindingName" -}}
-{{- if .Values.authorization.clusterRoleBinding.create -}}
-    {{ default (include "common.fullname" .) .Values.authorization.clusterRoleBinding.name }}
-{{- else -}}
-    {{ default "default" .Values.authorization.clusterRoleBinding.name }}
-{{- end -}}
-{{- end -}}
-
-{{/*
 Create the name of the cluster role to use
 */}}
 {{- define "common.clusterRoleName" -}}

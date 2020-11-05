@@ -1,9 +1,9 @@
-{{- if .Values.authorization.clusterRoleBinding.create}}
+{{- if .Values.authorization.clusterRole.create}}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: {{ template "common.clusterRoleBindingName" . }}
+  name: {{ template "common.clusterRoleName" . }}
   labels:
     app: {{ template "common.name" . }}
     chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
