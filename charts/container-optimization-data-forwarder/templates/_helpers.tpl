@@ -40,3 +40,36 @@
   {{- $name := default .Chart.Name .Values.nameOverride -}}
   {{- default $name .Values.service.name | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
+
+{{/*
+Create the name of the service account to use
+*/}}
+{{- define "common.serviceAccountName" -}}
+{{- if .Values.authorization.serviceAccount.create -}}
+    {{ default (include "common.fullname" .) .Values.authorization.serviceAccount.name }}
+{{- else -}}
+    {{ default "default" .Values.authorization.serviceAccount.name }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create the name of the cluster role binding to use
+*/}}
+{{- define "common.clusterRoleBindingName" -}}
+{{- if .Values.authorization.clusterRoleBinding.create -}}
+    {{ default (include "common.fullname" .) .Values.authorization.clusterRoleBinding.name }}
+{{- else -}}
+    {{ default "default" .Values.authorization.clusterRoleBinding.name }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create the name of the cluster role to use
+*/}}
+{{- define "common.clusterRoleName" -}}
+{{- if .Values.authorization.clusterRole.create -}}
+    {{ default (include "common.fullname" .) .Values.authorization.clusterRole.name }}
+{{- else -}}
+    {{ default "default" .Values.authorization.clusterRole.name }}
+{{- end -}}
+{{- end -}}

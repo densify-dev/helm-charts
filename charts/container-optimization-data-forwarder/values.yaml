@@ -17,8 +17,8 @@ config:
     protocol: <http/https>
     port: 443
     user: <username>
-#    password: <password>
-    epassword: <epassword>
+    password: <password>
+    # epassword: <epassword>
     # Set only the above username and (e)password settings or this Secret not both.
     # Secret must contain 2 fields username and epassword that will be used to connect to Densify.
 #    UserSecretName: <name of secret to use>
@@ -68,6 +68,17 @@ config:
 # If you are running Prometheus setup with Authentication such as OpenShift then need to set to true.   
 authenticated:
   create: false 
+
+authorization:
+  serviceAccount:
+    create: true
+    name:
+  clusterRole:
+    create: true
+    name:
+  clusterRoleBinding:
+    create: true
+    name:
 
 nodeSelector: {}
 
