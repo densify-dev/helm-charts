@@ -13,18 +13,18 @@ config:
 # densify server settings
 #===============================
   densify:
-    # Host name of running Densify instance without protocol/port/path for Container data forwarder to send data to
+    # Hostname of Densify instance 
     hostname: <instance>.densify.com
-    # Web protocol to be used to access Densify instance
+    # Protocol of Densify instance
     protocol: <http/https>
-    # Densify instance service port
+    # Port of Densify instance
     port: 443
     # User name to authenticate with Densify instance
     user: <username>
-    # Password to authenticate with Densify instance 
-    password: <password>
-    # Encrypted password to authenticate with Densify instance
-    # epassword: <epassword>
+    # Password to authenticate with Densify instance. Only specify a password or an encrypted password (not both).
+#    password: <password>
+    # Encrypted password to authenticate with Densify instance. Only specify a password or an encrypted password (not both).
+     epassword: <epassword>
     # Set only the above username and (e)password settings or this Secret not both.
     # Secret must contain 2 fields username and epassword that will be used to connect to Densify.
 #    UserSecretName: <name of secret to use>
@@ -32,27 +32,27 @@ config:
 # prometheus server settings    
 #===============================
   prometheus:
-    # Host name of Prometheus instance without protocol/port/path for Container data forwarder to collect metrics from
+    # Hostname of Prometheus instance
     hostname: <prometheus host name>
-    # Web protocol to be used to access Prometheus instance
+    # Protocol of Prometheus instance
     protocol: <http/https>
-    # Prometheus service port
+    # Port of Prometheus instance
     port: <prometheus port>
-#    # Cluster name that will appear in Densify after data collection
-#    clustername: <cluster name>
-#    # Specify whether want to collect data in hourly or dayly intervals
+    # Cluster name that will appear in Densify UI. If this parameter is disabled, then the specified Prometheus hostname is used to identify the cluster in the Densify UI
+    clustername: <cluster name>
+    # Interval to collect data
 #    interval: <hours/days>
-#    # Specify how many intervals to collect
+    # The size of the interval to collect data from Prometheus
 #    intervalSize: 1
-#    Specify number of intervalSize block of data to collect for historical purposes.
+    # The number of intervalSize block of data to collect for historical purposes
 #    history: 1
-#    # Specify data sampling rate in minutes
+    # Sample rate for data points to be collected in minutes
 #    sampleRate: 5
-#    # Specify metric collection targets
+    # The list of included data types to collect.
 #    includeList: container,node,nodegroup,cluster
-    # Specify path to a ServiceAccount security token
+    # Specify the path to the OAuth token used to authenticate with a secured Prometheus server
     oauth_token: /var/run/secrets/kubernetes.io/serviceaccount/token
-    # Specify path to cluster CA certificates
+    # Specify the CA certificate used to commuicate with a secured Prometheus server.
     ca_certificate: /var/run/secrets/kubernetes.io/serviceaccount/service-ca.crt
 
 #===================
@@ -74,24 +74,25 @@ config:
 # controls whether contents are zipped before transmission
 #=========================================================
   zipEnabled: true    
-# Name of the zip file that archives the content
+# zip name that will be used to send data to Densify.
   zipname: data/<zip file name>
 
   cronJob:
-    # Specifies schedule your CronJob will be running on
+    # The cronjob schedule. By default, data collection is triggered at the top of every hour.
+    # This is in line with the default interval settings of collecting the last hour of data.
     schedule: 0 * * * *  
   
-  # Debug feature flag. Setting to true will enable additional logging
+  # This flag indicates debug logging.
   debug: false
 
 # If you are running Prometheus setup with Authentication such as OpenShift,
 # need to set up rbac with service account to allow API access to Prometheus
 rbac:
-  # Specifices whether ClusterRole and ClusterRoleBinding resources should be created
+  # Create and use RBAC resourses.
   create: true
 
 serviceAccount:
-  # Specifies whether a Service Account should be created
+  # Create service account.
   create: true
   # The name of the Service acocunt to use
   # If not set, will be generated using fullname. Can be used to specify existing service account.

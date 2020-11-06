@@ -68,10 +68,9 @@ The following table lists configuratin parameters in values.yaml and their defau
 | `config.zipname` | Specify the name of the zipfile to send to Densify. | `data/nil` |
 | `config.cronJob.schedule` | The cronjob schedule. By default, data collection is triggered at the top of every hour. This is in line with the default interval settings of collecting the last hour of data. | `0 * * * *` |
 | `config.debug` | This flag indicates debug logging. | `false` |
-| `authenticated.create` | This flag controls the deployment of service account, cluster role, and cluster role binding in a secured Prometheus server environment. If OpenShift is used, then this flag should be set to true. | `false` |
-| `rbac.create` | Create ClusterRole and ClusterRoleBinding to specified service account. Required to allow API access to Prometheus in a secured cluster. | `true` |
-| `serviceAccount.create` | Create ServiceAccount that will be used by Container data forwarder pods | `true` |
-| `serviceAccount.name` | Name of a ServiceAccount to be attached to Container data forwarder pods. If unset, will be generated automatically | `nil` |
+| `rbac.create` | Create and use RBAC resourses. Required to allow API access to Prometheus in a secured cluster. | `true` |
+| `serviceAccount.create` | Create ServiceAccount. | `true` |
+| `serviceAccount.name` | Name of a ServiceAccount to use. If unset, will be generated automatically based on Chart name. | `nil` |
 | `nodeSelector` | The node labels for pod assignments. | `{}` |
 | `resources` | The CPU/Memory resource requests/limits. | `{}` |
 | `tolerations` | The toleration labels for pod assignments. | `{}` |
