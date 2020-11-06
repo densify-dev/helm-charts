@@ -13,11 +13,17 @@ config:
 # densify server settings
 #===============================
   densify:
+    # Host name of running Densify instance without protocol/port/path for Container data forwarder to send data to
     hostname: <instance>.densify.com
+    # Web protocol to be used to access Densify instance
     protocol: <http/https>
+    # Densify instance service port
     port: 443
+    # User name to authenticate with Densify instance
     user: <username>
+    # Password to authenticate with Densify instance 
     password: <password>
+    # Encrypted password to authenticate with Densify instance
     # epassword: <epassword>
     # Set only the above username and (e)password settings or this Secret not both.
     # Secret must contain 2 fields username and epassword that will be used to connect to Densify.
@@ -26,16 +32,27 @@ config:
 # prometheus server settings    
 #===============================
   prometheus:
+    # Host name of Prometheus instance without protocol/port/path for Container data forwarder to collect metrics from
     hostname: <prometheus host name>
+    # Web protocol to be used to access Prometheus instance
     protocol: <http/https>
+    # Prometheus service port
     port: <prometheus port>
+#    # Cluster name that will appear in Densify after data collection
 #    clustername: <cluster name>
+#    # Specify whether want to collect data in hourly or dayly intervals
 #    interval: <hours/days>
+#    # Specify how many intervals to collect
 #    intervalSize: 1
+#    Specify number of intervalSize block of data to collect for historical purposes.
 #    history: 1
+#    # Specify data sampling rate in minutes
 #    sampleRate: 5
+#    # Specify metric collection targets
 #    includeList: container,node,nodegroup,cluster
+    # Specify path to a ServiceAccount security token
     oauth_token: /var/run/secrets/kubernetes.io/serviceaccount/token
+    # Specify path to cluster CA certificates
     ca_certificate: /var/run/secrets/kubernetes.io/serviceaccount/service-ca.crt
 
 #===================
@@ -61,16 +78,23 @@ config:
   zipname: data/<zip file name>
 
   cronJob:
+    # Specifies schedule your CronJob will be running on
     schedule: 0 * * * *  
-    
+  
+  # Debug feature flag. Setting to true will enable additional logging
   debug: false
 
-# If you are running Prometheus setup with Authentication such as OpenShift then need to set to true.
+# If you are running Prometheus setup with Authentication such as OpenShift,
+# need to set up rbac with service account to allow API access to Prometheus
 rbac:
+  # Specifices whether ClusterRole and ClusterRoleBinding resources should be created
   create: true
-  
+
 serviceAccount:
+  # Specifies whether a Service Account should be created
   create: true
+  # The name of the Service acocunt to use
+  # If not set, will be generated using fullname. Can be used to specify existing service account.
   name:
 
 
