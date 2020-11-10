@@ -4,7 +4,7 @@
 
 ## Introduction
 
-This chart deploys the Densify Container Optimization Data Forwarder, which is scheduled to collect data from a Prometheus server and sends it to a Densify instance for analysis. 
+This chart deploys the Densify Container Optimization Data Forwarder, which collects data from a Prometheus server and forwards it to a Densify instance for analysis. 
 
 ## Details
 
@@ -34,7 +34,7 @@ The following table lists configuratin parameters in values.yaml and their defau
 
 | Parameter        | Description           | Default |
 | ------------- |-------------|--------|
-| `nameOverride` | Specify the helm chart name override. | `densify-forwarder` |
+| `nameOverride` | Specify the Helm chart name override. | `densify-forwarder` |
 | `image` | Specify the image to use for the Densify Container Optimization Data Forwarder. | `densify/container-optimization-data-forwarder:latest` |
 | `pullPolicy` | Specify the image pull policy for the Densify Container Optimization Data Forwarder. | `Always` |
 | `config.densify.hostname` | Specify the Densify instance hostname. You may need to specify a fully qualified domain name. | `<instance>.densify.com` |
@@ -64,13 +64,13 @@ The following table lists configuratin parameters in values.yaml and their defau
 | `config.proxy.epassword` | Specify the encrypted password for the proxy server user. If the proxy epassword is specified, you need to disable the config.proxy.password parameter. | `nil` |
 | `config.proxy.domainuser` | Specify the domain user for proxy NTLM authentication. | `nil` |
 | `config.proxy.domain` | Specify the domain for proxy NTLM authentication. | `nil` |
-| `config.zipEnabled` | This flag indicates whether data files are zipped before sending to Densify. | `true` |
+| `config.zipEnabled` | This flag indicates if data files are zipped before they are sent to Densify. | `true` |
 | `config.zipname` | Specify the name of the zipfile to send to Densify. | `data/nil` |
 | `config.cronJob.schedule` | The cronjob schedule. By default, data collection is triggered at the top of every hour. This is in line with the default interval settings of collecting the last hour of data. | `0 * * * *` |
-| `config.debug` | This flag indicates debug logging. | `false` |
-| `rbac.create` | Create and use RBAC resourses. Required to allow API access to Prometheus in a secured cluster. | `true` |
-| `serviceAccount.create` | Create ServiceAccount. | `true` |
-| `serviceAccount.name` | Name of a ServiceAccount to use. If unset, will be generated automatically based on Chart name. | `nil` |
+| `config.debug` | This flag indicates if debug logging is enabled. | `false` |
+| `rbac.create` | This flag indicates if RBAC resources are created and used. This flag must be "true" for API access to Prometheus in a secured cluster. | `true` |
+| `serviceAccount.create` | Specify "true" to create a Service Account with the name specified by the serviceAccount.name parameter (see below). | `true` |
+| `serviceAccount.name` | Specify the name of the Service Account. If this parameter is disabled, then the Helm chart name is used as the Service Account name. You can specify an existing Service Account name to use, if serviceAccount.create == "false". | `nil` |
 | `nodeSelector` | The node labels for pod assignments. | `{}` |
 | `resources` | The CPU/Memory resource requests/limits. | `{}` |
 | `tolerations` | The toleration labels for pod assignments. | `{}` |
