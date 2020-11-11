@@ -26,7 +26,7 @@ data:
    protocol {{ .Values.config.densify.protocol }}
    port {{ .Values.config.densify.port }}
    endpoint /CIRBA/api/v2/
-{{- if .Values.config.densify.user }}  
+{{- if .Values.config.densify.user }}
    user {{ .Values.config.densify.user }}
 {{- end }}
 {{- if .Values.config.densify.password }}

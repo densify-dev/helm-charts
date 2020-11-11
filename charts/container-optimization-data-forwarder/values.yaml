@@ -13,12 +13,18 @@ config:
 # densify server settings
 #===============================
   densify:
+    # Hostname of Densify instance 
     hostname: <instance>.densify.com
+    # Protocol of Densify instance
     protocol: <http/https>
+    # Port of Densify instance
     port: 443
+    # User name to authenticate with Densify instance
     user: <username>
+    # Password to authenticate with Densify instance. Only specify a password or an encrypted password (not both).
 #    password: <password>
-    epassword: <epassword>
+    #Encrypted password to authenticate with Densify instance. Only specify a password or an encrypted password (not both).
+#    epassword: <epassword>
     # Set only the above username and (e)password settings or this Secret not both.
     # Secret must contain 2 fields username and epassword that will be used to connect to Densify.
 #    UserSecretName: <name of secret to use>
@@ -26,16 +32,27 @@ config:
 # prometheus server settings    
 #===============================
   prometheus:
+    # Hostname of Prometheus instance
     hostname: <prometheus host name>
+    # Protocol of Prometheus instance
     protocol: <http/https>
+    # Port of Prometheus instance
     port: <prometheus port>
-#    clustername: <cluster name>
+    # Cluster name that will appear in Densify UI. If this parameter is disabled, then the specified Prometheus hostname is used to identify the cluster in the Densify UI
+    clustername: <cluster name>
+    # Interval to collect data
 #    interval: <hours/days>
+    # The size of the interval to collect data from Prometheus
 #    intervalSize: 1
+    # The number of intervalSize block of data to collect for historical purposes
 #    history: 1
+    # Sample rate for data points to be collected in minutes
 #    sampleRate: 5
+    # The list of included data types to collect.
 #    includeList: container,node,nodegroup,cluster
+    # Specify the path to the OAuth token used to authenticate with a secured Prometheus server
     oauth_token: /var/run/secrets/kubernetes.io/serviceaccount/token
+    # Specify the CA certificate used to commuicate with a secured Prometheus server.
     ca_certificate: /var/run/secrets/kubernetes.io/serviceaccount/service-ca.crt
 
 #===================
@@ -57,17 +74,30 @@ config:
 # controls whether contents are zipped before transmission
 #=========================================================
   zipEnabled: true    
-# Name of the zip file that archives the content
+# zip name that will be used to send data to Densify.
   zipname: data/<zip file name>
 
   cronJob:
+    # The cronjob schedule. By default, data collection is triggered at the top of every hour.
+    # This is in line with the default interval settings of collecting the last hour of data.
     schedule: 0 * * * *  
-    
+  
+  # This flag indicates debug logging.
   debug: false
 
-# If you are running Prometheus setup with Authentication such as OpenShift then need to set to true.   
-authenticated:
-  create: false 
+# If you are running Prometheus setup with Authentication such as OpenShift,
+# need to set up rbac with service account to allow API access to Prometheus
+rbac:
+  # Create and use RBAC resourses.
+  create: true
+
+serviceAccount:
+  # Create service account.
+  create: true
+  # The name of the Service acocunt to use
+  # If not set, will be generated using fullname. Can be used to specify existing service account.
+  name:
+
 
 nodeSelector: {}
 
