@@ -2,9 +2,9 @@ apiVersion: v1
 entries:
   container-optimization-data-forwarder:
   - apiVersion: v2
-    created: "2020-11-11T15:30:36.995831458-05:00"
+    created: "2020-11-11T16:31:16.764663487-05:00"
     description: Densify Container Optimization Data Forwarder Utility
-    digest: 2e52acb1749bd799b29c18f6b0e0dd9d3cc82d25228b4419b6053a6e552246b7
+    digest: 87d231bd23c1545ace907fe5435ecc9fe843503f5bf00da49dfaae2f546535d5
     keywords:
     - densify
     - container
@@ -18,7 +18,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/container-optimization-data-forwarder-2.0.0.tgz
     version: 2.0.0
   - apiVersion: v1
-    created: "2020-11-11T15:30:36.994818562-05:00"
+    created: "2020-11-11T16:31:16.763031121-05:00"
     description: Densify Container Optimization Data Forwarder Utility
     digest: 4974032b868c23cd6bd02fa39d5dfeff0b9c78956f4122fa09f4d6b902572c2b
     keywords:
@@ -32,4 +32,4 @@ entries:
     urls:
     - https://densify-dev.github.io/helm-charts/container-optimization-data-forwarder-1.0.2.tgz
     version: 1.0.2
-generated: "2020-11-11T15:30:36.993559483-05:00"
+generated: "2020-11-11T16:31:16.761882821-05:00"
