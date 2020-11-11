@@ -20,7 +20,7 @@ config:
     # Port of Densify instance
     port: 443
     # User name to authenticate with Densify instance
-    user: <username>
+#    user: <username>
     # Password to authenticate with Densify instance. Only specify a password or an encrypted password (not both).
 #    password: <password>
     #Encrypted password to authenticate with Densify instance. Only specify a password or an encrypted password (not both).
@@ -39,7 +39,7 @@ config:
     # Port of Prometheus instance
     port: <prometheus port>
     # Cluster name that will appear in Densify UI. If this parameter is disabled, then the specified Prometheus hostname is used to identify the cluster in the Densify UI
-    clustername: <cluster name>
+#    clustername: <cluster name>
     # Interval to collect data
 #    interval: <hours/days>
     # The size of the interval to collect data from Prometheus
