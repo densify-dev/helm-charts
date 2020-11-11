@@ -23,8 +23,8 @@ config:
     user: <username>
     # Password to authenticate with Densify instance. Only specify a password or an encrypted password (not both).
 #    password: <password>
-    # Encrypted password to authenticate with Densify instance. Only specify a password or an encrypted password (not both).
-     epassword: <epassword>
+#    Encrypted password to authenticate with Densify instance. Only specify a password or an encrypted password (not both).
+    epassword: <epassword>
     # Set only the above username and (e)password settings or this Secret not both.
     # Secret must contain 2 fields username and epassword that will be used to connect to Densify.
 #    UserSecretName: <name of secret to use>
