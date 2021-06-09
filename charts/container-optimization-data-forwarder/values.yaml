@@ -50,6 +50,7 @@ config:
 #    sampleRate: 5
     # The list of included data types to collect.
 #    includeList: container,node,nodegroup,cluster
+#    nodeGroupList: label_cloud_google_com_gke_nodepool,label_eks_amazonaws_com_nodegroup,label_agentpool,label_pool_name,label_alpha_eksctl_io_nodegroup_name,label_kops_k8s_io_instancegroup
     # Specify the path to the OAuth token used to authenticate with a secured Prometheus server
     oauth_token: /var/run/secrets/kubernetes.io/serviceaccount/token
     # Specify the CA certificate used to commuicate with a secured Prometheus server.
