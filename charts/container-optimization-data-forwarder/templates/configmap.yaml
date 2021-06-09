@@ -59,6 +59,9 @@ data:
 {{- if .Values.config.prometheus.includeList }}
    include_list {{ .Values.config.prometheus.includeList }}
 {{- end }}
+{{- if .Values.config.prometheus.nodeGroupList }}
+   node_group_list {{ .Values.config.prometheus.nodeGroupList }}
+{{- end }}
 {{- if .Values.config.prometheus.sampleRate }}
    sample_rate {{ .Values.config.prometheus.sampleRate }}
 {{- end }}
