@@ -2,7 +2,23 @@ apiVersion: v1
 entries:
   container-optimization-data-forwarder:
   - apiVersion: v2
-    created: "2021-06-09T16:20:03.714246737-04:00"
+    created: "2022-01-05T14:47:19.365620403-05:00"
+    description: Densify Container Optimization Data Forwarder Utility
+    digest: db133e38eb73964aa683289a843af1ce4b5169f77fe7d406bc77746135b6cf84
+    keywords:
+    - densify
+    - container
+    - optimization
+    maintainers:
+    - email: support@densify.com
+      name: support
+    name: container-optimization-data-forwarder
+    type: application
+    urls:
+    - https://densify-dev.github.io/helm-charts/container-optimization-data-forwarder-2.2.0.tgz
+    version: 2.2.0
+  - apiVersion: v2
+    created: "2022-01-05T14:47:19.364603664-05:00"
     description: Densify Container Optimization Data Forwarder Utility
     digest: 06d31298dddd2827ea5d8f93bcf50b0e195df2fb433357afa60d32e686f4624a
     keywords:
@@ -18,7 +34,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/container-optimization-data-forwarder-2.1.0.tgz
     version: 2.1.0
   - apiVersion: v2
-    created: "2021-06-09T16:20:03.713312393-04:00"
+    created: "2022-01-05T14:47:19.353108057-05:00"
     description: Densify Container Optimization Data Forwarder Utility
     digest: 87d231bd23c1545ace907fe5435ecc9fe843503f5bf00da49dfaae2f546535d5
     keywords:
@@ -34,7 +50,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/container-optimization-data-forwarder-2.0.0.tgz
     version: 2.0.0
   - apiVersion: v1
-    created: "2021-06-09T16:20:03.712369959-04:00"
+    created: "2022-01-05T14:47:19.342992459-05:00"
     description: Densify Container Optimization Data Forwarder Utility
     digest: 4974032b868c23cd6bd02fa39d5dfeff0b9c78956f4122fa09f4d6b902572c2b
     keywords:
@@ -48,4 +64,4 @@ entries:
     urls:
     - https://densify-dev.github.io/helm-charts/container-optimization-data-forwarder-1.0.2.tgz
     version: 1.0.2
-generated: "2021-06-09T16:20:03.711250999-04:00"
+generated: "2022-01-05T14:47:19.319996078-05:00"
