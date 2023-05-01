@@ -4,7 +4,7 @@
 nameOverride: densify-forwarder
 
 # application image
-image:  densify/container-optimization-data-forwarder:latest
+image:  densify/container-optimization-data-forwarder:3
 pullPolicy: Always
 
 # application configuration
