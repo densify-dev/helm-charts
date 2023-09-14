@@ -52,7 +52,6 @@ The following table lists configuratin parameters in values.yaml and their defau
 | `config.prometheus.intervalSize` | The size of the interval to collect data from Prometheus. For example, if interval=hours and intervalSize=3, then 3 hours block of data would be collected each time. By default, 1 hour of data is collected. | `1` |
 | `config.prometheus.history` | The number of intervalSize block of data to collect for historical purposes. For example, if interval=hours, intervalSize=2, and history=12, then 24 hours of historical data is collected. By default, the last hour of data is collected for history. | `1` |
 | `config.prometheus.sampleRate` | The sample rate for data points to be collected. By default, samples are recorded every 5 minutes within the intervalSize block of data collected.  | `5` |
-| `config.prometheus.includeList` | The list of included data types to collect. | `container,node,nodegroup,cluster` |
 | `config.prometheus.nodeGroupList` | The list of attributes to check nodes for and group by if they exist. | `label_cloud_google_com_gke_nodepool,label_eks_amazonaws_com_nodegroup,label_agentpool,label_pool_name,label_alpha_eksctl_io_nodegroup_name,label_kops_k8s_io_instancegroup` |
 | `config.prometheus.oauth_token` | Specify the path to the OAuth token used to authenticate with a secured Prometheus server. | `/var/run/secrets/kubernetes.io/serviceaccount/token` |
 | `config.prometheus.ca_certificate` | Specify the CA certificate used to commuicate with a secured Prometheus server. | `/var/run/secrets/kubernetes.io/serviceaccount/service-ca.crt` |
@@ -65,7 +64,6 @@ The following table lists configuratin parameters in values.yaml and their defau
 | `config.proxy.epassword` | Specify the encrypted password for the proxy server user. If the proxy epassword is specified, you need to disable the config.proxy.password parameter. | `nil` |
 | `config.proxy.domainuser` | Specify the domain user for proxy NTLM authentication. | `nil` |
 | `config.proxy.domain` | Specify the domain for proxy NTLM authentication. | `nil` |
-| `config.zipEnabled` | This flag indicates if data files are zipped before they are sent to Densify. | `true` |
 | `config.zipname` | Specify the name of the zipfile to send to Densify. | `data/nil` |
 | `config.cronJob.schedule` | The cronjob schedule. By default, data collection is triggered at the top of every hour. This is in line with the default interval settings of collecting the last hour of data. | `0 * * * *` |
 | `config.debug` | This flag indicates if debug logging is enabled. | `false` |
