@@ -99,6 +99,9 @@ serviceAccount:
   # If not set, will be generated using fullname. Can be used to specify existing service account.
   name:
 
+  # Annotations to add to the service account
+  annotations:
+    serviceaccounts.openshift.io/oauth-want-challenges: "true"
 
 nodeSelector: {}
 
