@@ -9,7 +9,7 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-  schedule: "{{ .Values.config.cronJob.schedule }}"
+  schedule: "{{ .Values.cronJob.schedule }}"
   jobTemplate:
     spec:
       template:
@@ -28,38 +28,111 @@ spec:
           tolerations:
 {{ toYaml .Values.tolerations | indent 12 }}
           {{- end }}
-          {{- if or (.Values.serviceAccount.create)  (.Values.serviceAccount.name) }}
+          {{- if or (.Values.serviceAccount.create) (.Values.serviceAccount.name) (and (.Values.config.prometheus.sigv4) (not (or .Values.config.prometheus.sigv4.AwsSecretName .Values.config.prometheus.sigv4.access_key))) }}
           serviceAccountName: {{ template "common.serviceAccountName" . }}
+          {{- end }}
+          {{- if .Values.config.prometheus.AzureMonitorSecretName }}
+          initContainers:
+          - name: azure-token
+            image: "{{ .Values.imageAzureToken }}"
+            imagePullPolicy: {{ .Values.pullPolicy }}
+            env:
+            - name: ENTRA_SERVICE_PRINCIPAL
+              value: "/home/densify/.azmon/app.json"
+            - name: AZURE_RESOURCE
+              value: "https://prometheus.monitor.azure.com"
+            - name: BEARER_TOKEN_FILE
+              value: "/home/densify/.tokens/token"
+            volumeMounts:
+            - mountPath: /home/densify/.azmon
+              name: azmon
+              readOnly: true
+            - mountPath: /home/densify/.tokens
+              name: tokens
           {{- end }}
           containers:
           - name: {{ template "common.name" . }}
             image: "{{ .Values.image }}"
             imagePullPolicy: {{ .Values.pullPolicy }}
-            {{- if .Values.config.densify.UserSecretName }}
             env:
+              - name: CONFIG_TYPE
+                value: "yaml"
+              {{- if .Values.config.forwarder.densify.url.UserSecretName }}
               - name: DENSIFY_USER
                 valueFrom:
                   secretKeyRef:
-                    name: {{ .Values.config.densify.UserSecretName }}
+                    name: {{ .Values.config.forwarder.densify.url.UserSecretName }}
                     key: username
               - name: DENSIFY_EPASSWORD
                 valueFrom:
                   secretKeyRef:
-                    name: {{ .Values.config.densify.UserSecretName }}
+                    name: {{ .Values.config.forwarder.densify.url.UserSecretName }}
                     key: epassword
-            {{- end }}
+              {{- end }}
+              {{- if and (.Values.config.forwarder.proxy) (.Values.config.forwarder.proxy.url) (.Values.config.forwarder.proxy.url.ProxySecretName) }}
+              - name: DENSIFY_PROXYUSER
+                valueFrom:
+                  secretKeyRef:
+                    name: {{ .Values.config.forwarder.proxy.url.ProxySecretName }}
+                    key: username
+              - name: DENSIFY_PROXYPASSWORD
+                valueFrom:
+                  secretKeyRef:
+                    name: {{ .Values.config.forwarder.proxy.url.ProxySecretName }}
+                    key: password
+              {{- end }}
+              {{- if .Values.config.prometheus.url.PrometheusSecretName }}
+              - name: PROMETHEUS_USER
+                value: "/home/densify/.prometheus/username"
+              - name: PROMETHEUS_PASSWORD
+                value: "/home/densify/.prometheus/password"
+              {{- end }}              
+              {{- if .Values.config.prometheus.AzureMonitorSecretName }}
+              - name: PROMETHEUS_OAUTH_TOKEN
+                value: "/home/densify/.tokens/token"
+              {{- end }}
             volumeMounts:
             - name: config
-              mountPath: /config  
-            {{ if .Values.resources }}
-            resources:
-{{ toYaml .Values.resources | indent 14 }}
-            {{ end }}
+              mountPath: /config
+            {{- if .Values.config.prometheus.url.PrometheusSecretName }}
+            - name: prometheus
+              mountPath: /home/densify/.prometheus
+              readOnly: true
+            {{- end }}
+            {{- if and (.Values.config.prometheus.sigv4) (.Values.config.prometheus.sigv4.AwsSecretName) }}
+            - name: aws
+              mountPath: /home/densify/.aws
+              readOnly: true
+            {{- end }}
+            {{- if .Values.config.prometheus.AzureMonitorSecretName }}
+            - name: tokens
+              mountPath: /home/densify/.tokens
+            {{- end }}
+            {{- if .Values.resources }}
+            resources: {{- toYaml .Values.resources | nindent 14 }}
+            {{- end }}
           volumes:
             - name: config
               configMap:
                 name: {{ template "common.fullname" . }}
                 items:
-                - key: config.properties
-                  path: config.properties              
-          restartPolicy: Never                  
+                - key: config.yaml
+                  path: config.yaml
+            {{- if .Values.config.prometheus.url.PrometheusSecretName }}
+            - name: prometheus
+              secret:
+                secretName: {{ .Values.config.prometheus.url.PrometheusSecretName }}
+            {{- end }}
+            {{- if and (.Values.config.prometheus.sigv4) (.Values.config.prometheus.sigv4.AwsSecretName) }}
+            - name: aws
+              secret:
+                secretName: {{ .Values.config.prometheus.sigv4.AwsSecretName }}
+            {{- end }}
+            {{- if .Values.config.prometheus.AzureMonitorSecretName }}
+            - name: tokens
+              emptyDir: {}
+            - name: azmon
+              secret:
+                secretName: {{ .Values.config.prometheus.AzureMonitorSecretName }}
+            {{- end }}
+          restartPolicy: Never

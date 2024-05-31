@@ -4,98 +4,117 @@
 nameOverride: densify-forwarder
 
 # application image
-image:  densify/container-optimization-data-forwarder:3
+image: densify/container-optimization-data-forwarder:4
+imageAzureToken: densify/azure-rest-api-token:latest
 pullPolicy: Always
 
 # application configuration
 config:
-#===============================
-# densify server settings
-#===============================
-  densify:
-    # Hostname of Densify instance 
-    hostname: <instance>.densify.com
-    # Protocol of Densify instance
-    protocol: <http/https>
-    # Port of Densify instance
-    port: 443
-    # User name to authenticate with Densify instance
-#    user: <username>
-    # Password to authenticate with Densify instance. Only specify a password or an encrypted password (not both).
-#    password: <password>
-    #Encrypted password to authenticate with Densify instance. Only specify a password or an encrypted password (not both).
-#    epassword: <epassword>
-    # Set only the above username and (e)password settings or this Secret not both.
-    # Secret must contain 2 fields username and epassword that will be used to connect to Densify.
-#    UserSecretName: <name of secret to use>
-#===============================    
-# prometheus server settings    
-#===============================
+  forwarder:
+    densify:
+      url:
+#        scheme: https
+        host: <instance>.densify.com
+#        port: 443
+#        username: <Densify user>
+#        password: <plaintext Densify password, or:>
+#        encrypted_password: <encrypted Densify password>
+#        # Set only the above username and (encrypted_)password settings, or this Secret - but not both.
+#        # Secret must contain 2 fields username and epassword that will be used to connect to Densify.
+#        UserSecretName: <name of secret to use>
+#      endpoint: /api/v2/
+#      retry:
+#        wait_min: 1 # in seconds
+#        wait_max: 30 # in seconds
+#        max_attempts: 4
+#        policy: default # valid values: default (same as exponential), exponential, jitter
+#    proxy:
+#      url:
+#        scheme: https <mandatory>
+#        host: proxy.company.com <mandatory>
+#        port: 443
+#        username: <proxy user>
+#        password: <plaintext proxy password, or:>
+#        encrypted_password: <encrypted proxy password>
+#        # Set only the above username and (encrypted_)password settings, or this Secret - but not both.
+#        # Secret must contain 2 fields username and password that will be used to connect to the proxy.
+#        ProxySecretName: <name of secret to use>
+#      auth: <Basic (default)|NTLM>
+#      server: <proxy server, required for NTLM>
+#      domain: <proxy domain, required for NTLM>
+#    prefix: <zip file prefix>
   prometheus:
-    # Hostname of Prometheus instance
-    hostname: <prometheus host name>
-    # Protocol of Prometheus instance
-    protocol: <http/https>
-    # Port of Prometheus instance
-    port: <prometheus port>
-    # Cluster name that will appear in Densify UI. If this parameter is disabled, then the specified Prometheus hostname is used to identify the cluster in the Densify UI
-#    clustername: <cluster name>
-    # Interval to collect data
-#    interval: <hours/days>
-    # The size of the interval to collect data from Prometheus
-#    intervalSize: 1
-    # The number of intervalSize block of data to collect for historical purposes
+    url:
+#      scheme: <http (default)|https>
+      host: <Prometheus hostname>
+#      port: <Prometheus port|9090 (default)>
+#      username: <Prometheus basic auth username / name of file containing this info>
+#      password: <Prometheus basic auth password / name of file containing this info>
+#      # For Prometheus with HTTP basic auth, set only the above username and password settings, or this Secret - but not both.
+#      # Secret must contain 2 fields - username and password that will be used to connect to Prometheus.
+#      PrometheusSecretName: <name of secret to use>
+#    bearer_token: /var/run/secrets/kubernetes.io/serviceaccount/token # required by some observability platforms; the value can be the token or name of file containing it
+#    # For Azure Monitor Managed Prometheus, DO NOT set bearer_token; instead, set this Secret;
+#    # it should have one entry with the name app.json - a JSON file with the entries appId, displayName, password & tenant
+#    AzureMonitorSecretName: <name of secret to use>
+#    ca_cert: /var/run/secrets/kubernetes.io/serviceaccount/service-ca.crt
+#    sigv4: # required for Amazon Managed Prometheus (see https://docs.aws.amazon.com/prometheus/latest/userguide/AMP-onboard-query-APIs.html)
+#      region: <AWS region, mandatory>
+#      # if running on AWS / EKS under a service account with the appropriate IAM roles, all other sigv4 attributes can be left empty
+#      # (see https://docs.aws.amazon.com/prometheus/latest/userguide/AMP-onboard-ingest-metrics.html#AMP-quick-new-Prometheus-IRSA);
+#      # if not running on AWS / EKS, you can specify either AwsSecretName (secret should include standard AWS config and credentials entries),
+#      # or the 4 values (access_key, secret_key, profile, role_arn)
+#      AwsSecretName: <name of secret to use>
+#      access_key: <AWS access key>
+#      secret_key: <AWS secret key>
+#      profile: <AWS profile>
+#      role_arn: <AWS role ARN>
+#    retry:
+#      wait_min: 1 # in seconds
+#      wait_max: 30 # in seconds
+#      max_attempts: 4
+#      policy: default # valid values: default (same as exponential), exponential, jitter
+#  collection:
+#    # the include section is optional, if omitted or empty then all entity types are included
+#    include:
+#      cluster: true
+#      container: true
+#      node: true
+#      nodegroup: true
+#      quota: true
+#    interval: <days|hours (default)|minutes>
+#    interval_size: 1
 #    history: 1
-    # Sample rate for data points to be collected in minutes
-#    sampleRate: 5
-    # The list of included data types to collect.
-#    includeList: container,node,nodegroup,cluster
-#    nodeGroupList: label_cloud_google_com_gke_nodepool,label_eks_amazonaws_com_nodegroup,label_agentpool,label_pool_name,label_alpha_eksctl_io_nodegroup_name,label_kops_k8s_io_instancegroup
-    # Specify the path to the OAuth token used to authenticate with a secured Prometheus server
-    oauth_token: /var/run/secrets/kubernetes.io/serviceaccount/token
-    # Specify the CA certificate used to commuicate with a secured Prometheus server.
-    ca_certificate: /var/run/secrets/kubernetes.io/serviceaccount/service-ca.crt
+#    offset: 0
+#    sample_rate: 5
+#    node_group_list: label_cloud_google_com_gke_nodepool,label_eks_amazonaws_com_nodegroup,label_agentpool,label_pool_name,label_alpha_eksctl_io_nodegroup_name,label_kops_k8s_io_instancegroup
+  clusters:
+    - name: <cluster-1 name>
+      identifiers: # identifiers is a map of Prometheus labels (name and value) to uniquely identify the cluster; if omitted, only one cluster can be present in the list
+        <label name>: <label value>
+        #  ... (more labels)
+    - name: <cluster-2 name>
+      identifiers: # identifiers is a map of Prometheus labels (name and value) to uniquely identify the cluster; if omitted, only one cluster can be present in the list
+        <label name>: <label value>
+        #  ... (more labels)
+    #   ... (more clusters)
+#  debug: <true|false (default)>
 
-#===================
-# proxy settings
-#===================
-#  proxy:
-#    host: <proxy host>
-#    port: <proxy port>
-#    protocol: <protocol>
-#    # <Basic|NTLM>
-#    auth: <auth type>
-#    user: <proxy server username>
-#    password: <proxy server password>
-#    epassword: <proxy server epassword>
-#    # NTLM authentication
-#    domainuser: <domain username>
-#    domain: <domain name>
-#=========================================================
-# controls whether contents are zipped before transmission
-#=========================================================
-  zipEnabled: true    
-# zip name that will be used to send data to Densify.
-  zipname: data/<zip file name>
-
-  cronJob:
-    # The cronjob schedule. By default, data collection is triggered at the top of every hour.
-    # This is in line with the default interval settings of collecting the last hour of data.
-    schedule: 0 * * * *  
-  
-  # This flag indicates debug logging.
-  debug: false
+cronJob:
+# The cronjob schedule. By default, data collection is triggered a few minutes after every hour.
+# This is in line with the default interval settings of collecting the last hour of data.
+  schedule: 5 * * * *  
 
 # If you are running Prometheus setup with Authentication such as OpenShift,
 # need to set up rbac with service account to allow API access to Prometheus
 rbac:
-  # Create and use RBAC resourses.
+  # Create and use RBAC resources.
   create: true
 
 serviceAccount:
   # Create service account.
   create: true
-  # The name of the Service acocunt to use
+  # The name of the Service account to use
   # If not set, will be generated using fullname. Can be used to specify existing service account.
   name:
 

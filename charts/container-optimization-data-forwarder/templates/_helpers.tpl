@@ -42,12 +42,16 @@
 {{- end -}}
 
 {{/*
-Create the name of the service account to use
+  Create the name of the service account to use; special case for AMP on EKS
 */}}
 {{- define "common.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create -}}
     {{ default (include "common.fullname" .) .Values.serviceAccount.name }}
 {{- else -}}
-    {{ default "default" .Values.serviceAccount.name }}
+    {{- if and (.Values.config.prometheus.sigv4) (not (or .Values.config.prometheus.sigv4.AwsSecretName .Values.config.prometheus.sigv4.access_key)) -}}
+        {{ default "amp-iamproxy-query-service-account" .Values.serviceAccount.name }}
+    {{- else -}}
+        {{ default "default" .Values.serviceAccount.name }}
+    {{- end -}}
 {{- end -}}
 {{- end -}}
