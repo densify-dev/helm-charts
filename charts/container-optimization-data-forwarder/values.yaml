@@ -57,7 +57,7 @@ config:
 #    # For Azure Monitor Managed Prometheus, DO NOT set bearer_token; instead, set this Secret;
 #    # it should have one entry with the name app.json - a JSON file with the entries appId, displayName, password & tenant
 #    AzureMonitorSecretName: <name of secret to use>
-#    ca_cert: /var/run/secrets/kubernetes.io/serviceaccount/service-ca.crt
+#    ca_cert: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
 #    sigv4: # required for Amazon Managed Prometheus (see https://docs.aws.amazon.com/prometheus/latest/userguide/AMP-onboard-query-APIs.html)
 #      region: <AWS region, mandatory>
 #      # if running on AWS / EKS under a service account with the appropriate IAM roles, all other sigv4 attributes can be left empty
@@ -109,11 +109,11 @@ cronJob:
 # need to set up rbac with service account to allow API access to Prometheus
 rbac:
   # Create and use RBAC resources.
-  create: true
+  create: false
 
 serviceAccount:
   # Create service account.
-  create: true
+  create: false
   # The name of the Service account to use
   # If not set, will be generated using fullname. Can be used to specify existing service account.
   name:

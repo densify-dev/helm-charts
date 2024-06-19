@@ -54,11 +54,11 @@ data:
 {{- $promUrl := .Values.config.prometheus.url | required ".Values.config.prometheus.url is required." }}
 {{- $promHost := $promUrl.host | required ".Values.config.prometheus.url.host is required." }}
       url: {{- omit $promUrl "PrometheusSecretName" | toYaml | trim | nindent 8 }}
-{{- if .Values.config.prometheus.bearer_token }}
-      bearer_token: {{ .Values.config.prometheus.bearer_token }}
+{{- if or (.Values.serviceAccount.create) (.Values.serviceAccount.name) (.Values.config.prometheus.bearer_token) }}
+      bearer_token: {{ template "common.serviceAccountToken" . }}
 {{- end }}
-{{- if .Values.config.prometheus.ca_cert }}
-      ca_cert: {{ .Values.config.prometheus.ca_cert }}
+{{- if or (.Values.serviceAccount.create) (.Values.serviceAccount.name) (.Values.config.prometheus.ca_cert) }}
+      ca_cert: {{ template "common.serviceAccountCaCert" . }}
 {{- end }}
 {{- if .Values.config.prometheus.sigv4 }}
 {{- $sigv4Region := .Values.config.prometheus.sigv4.region | required ".Values.config.prometheus.sigv4.region is required." }}

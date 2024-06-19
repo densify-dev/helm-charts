@@ -46,12 +46,22 @@
 */}}
 {{- define "common.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create -}}
-    {{ default (include "common.fullname" .) .Values.serviceAccount.name }}
+    {{- default (include "common.fullname" .) .Values.serviceAccount.name -}}
 {{- else -}}
     {{- if and (.Values.config.prometheus.sigv4) (not (or .Values.config.prometheus.sigv4.AwsSecretName .Values.config.prometheus.sigv4.access_key)) -}}
-        {{ default "amp-iamproxy-query-service-account" .Values.serviceAccount.name }}
+        {{- default "amp-iamproxy-query-service-account" .Values.serviceAccount.name -}}
     {{- else -}}
-        {{ default "default" .Values.serviceAccount.name }}
+        {{- default "default" .Values.serviceAccount.name -}}
     {{- end -}}
+{{- end -}}
+{{- end -}}
+{{- define "common.serviceAccountToken" -}}
+{{- if or (.Values.serviceAccount.create) (.Values.serviceAccount.name) (.Values.config.prometheus.bearer_token) -}}
+    {{- default "/var/run/secrets/kubernetes.io/serviceaccount/token" .Values.config.prometheus.bearer_token -}}
+{{- end -}}
+{{- end -}}
+{{- define "common.serviceAccountCaCert" -}}
+{{- if or (.Values.serviceAccount.create) (.Values.serviceAccount.name) (.Values.config.prometheus.ca_cert) -}}
+    {{- default "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt" .Values.config.prometheus.ca_cert -}}
 {{- end -}}
 {{- end -}}
