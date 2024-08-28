@@ -91,6 +91,10 @@ spec:
               - name: PROMETHEUS_OAUTH_TOKEN
                 value: "/home/densify/.tokens/token"
               {{- end }}
+              {{- if .Values.config.prometheus.CaCertSecretName }}
+              - name: CA_CERTIFICATE
+                value: "/home/densify/.certs/ca.crt"
+              {{- end }}
             volumeMounts:
             - name: config
               mountPath: /config
@@ -107,6 +111,11 @@ spec:
             {{- if .Values.config.prometheus.AzureMonitorSecretName }}
             - name: tokens
               mountPath: /home/densify/.tokens
+            {{- end }}
+            {{- if .Values.config.prometheus.CaCertSecretName }}
+            - name: certs
+              mountPath: /home/densify/.certs
+              readOnly: true
             {{- end }}
             {{- if .Values.resources }}
             resources: {{- toYaml .Values.resources | nindent 14 }}
@@ -134,5 +143,10 @@ spec:
             - name: azmon
               secret:
                 secretName: {{ .Values.config.prometheus.AzureMonitorSecretName }}
+            {{- end }}
+            {{- if .Values.config.prometheus.CaCertSecretName }}
+            - name: certs
+              secret:
+                secretName: {{ .Values.config.prometheus.CaCertSecretName }}
             {{- end }}
           restartPolicy: Never
