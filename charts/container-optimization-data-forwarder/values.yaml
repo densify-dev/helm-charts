@@ -14,7 +14,7 @@ config:
     densify:
       url:
 #        scheme: https
-        host: <instance>.densify.com
+        host: # <instance>.densify.com
 #        port: 443
 #        username: <Densify user>
 #        password: <plaintext Densify password, or:>
@@ -46,7 +46,7 @@ config:
   prometheus:
     url:
 #      scheme: <http (default)|https>
-      host: <Prometheus hostname>
+      host: # <Prometheus hostname>
 #      port: <Prometheus port|9090 (default)>
 #      username: <Prometheus basic auth username / name of file containing this info>
 #      password: <Prometheus basic auth password / name of file containing this info>
