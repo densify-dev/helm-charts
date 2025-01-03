@@ -65,3 +65,7 @@
     {{- default "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt" .Values.config.prometheus.ca_cert -}}
 {{- end -}}
 {{- end -}}
+{{- define "common.prometheusPort" -}}
+  {{- default "9090" .Values.config.prometheus.url.port | quote -}}
+{{- end -}}
+

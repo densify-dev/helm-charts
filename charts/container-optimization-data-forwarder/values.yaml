@@ -103,6 +103,9 @@ config:
     #   ... (more clusters)
 #  debug: <true|false (default)>
 
+job:
+  checkPrometheusReady: false
+
 cronJob:
 # The cronjob schedule. By default, data collection is triggered a few minutes after every hour.
 # This is in line with the default interval settings of collecting the last hour of data.

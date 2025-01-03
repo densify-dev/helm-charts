@@ -29,8 +29,25 @@ spec:
       {{- if or (.Values.serviceAccount.create) (.Values.serviceAccount.name) (and (.Values.config.prometheus.sigv4) (not (or .Values.config.prometheus.sigv4.AwsSecretName .Values.config.prometheus.sigv4.access_key))) }}
       serviceAccountName: {{ template "common.serviceAccountName" . }}
       {{- end }}
-      {{- if .Values.config.prometheus.AzureMonitorSecretName }}
       initContainers:
+      {{- if .Values.job.checkPrometheusReady }}
+      - name: check-prometheus-ready
+        image: busybox:latest
+        imagePullPolicy: {{ .Values.pullPolicy }}
+        env:
+        - name: TARGET_HOST
+          value: "{{ .Values.config.prometheus.url.host }}"
+        - name: TARGET_PORT
+          value: {{ template "common.prometheusPort" . }}
+        command: ["/bin/sh", "-c"]
+        args:
+        - |
+          until nc -vz -w 3 ${TARGET_HOST} ${TARGET_PORT}; do
+            echo "Waiting for Prometheus server ${TARGET_HOST} port ${TARGET_PORT}"
+            sleep 2
+          done
+      {{- end }}
+      {{- if .Values.config.prometheus.AzureMonitorSecretName }}
       - name: azure-token
         image: "{{ .Values.imageAzureToken }}"
         imagePullPolicy: {{ .Values.pullPolicy }}
