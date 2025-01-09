@@ -1,9 +1,9 @@
 apiVersion: v2
 description: Kubex Automation Stack
 name: kubex-automation-stack
-version: 1.0.0-beta
+version: 0.9.0
 type: application
-icon: https://kubex.ai/wp-content/uploads/kubex-logo.png
+icon: https://www.densify.com/wp-content/uploads/kubex-by-densify-logo.png
 dependencies:
   - name: container-optimization-data-forwarder
     version: "4.0.*"
