@@ -1,0 +1,24 @@
+stack:
+  densify:
+    username: '<changeme-username>' # mandatory
+    encrypted_password: '<changeme-encrypted-password>' # mandatory
+
+container-optimization-data-forwarder:
+  config:
+    forwarder:
+      densify:
+        url:
+          host: '<changeme-densify-host>' # mandatory: <instance>.densify.com
+    clusters:
+      - name: '<changeme-cluster-name>' # mandatory
+
+# To avoid scraping other instances of kube-state-metrics / node exporter (potentially old and/or configured 
+# differently), the Prometheus server is configured with releaseNamespace set to true.
+# However, we may have additional exporters required such as NVIDIA's DCGM exporter, typically deployed using the
+# GPU Operator (https://github.com/NVIDIA/gpu-operator).
+# If that is the case, uncomment the following section and add the relevant namespaces where these exporters are running:
+
+# prometheus: # optional
+  # server: 
+    # namespaces:
+    #   - <changeme-namespace>

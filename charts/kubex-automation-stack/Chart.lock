@@ -1,0 +1,9 @@
+dependencies:
+- name: container-optimization-data-forwarder
+  repository: https://densify-dev.github.io/helm-charts
+  version: 4.0.3
+- name: prometheus
+  repository: https://prometheus-community.github.io/helm-charts
+  version: 26.0.1
+digest: sha256:391b018f9b358830a452739f74e5f8aaf454b5d77d60b8d94c88aadfa6018e9a
+generated: "2025-01-03T17:05:45.145751618-05:00"

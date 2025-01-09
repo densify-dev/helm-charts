@@ -1,0 +1,69 @@
+#################################################################
+# densify/container-optimization-data-forwarder parameters
+#################################################################
+
+container-optimization-data-forwarder:
+  nameOverride: kubex-stack
+  job:
+    checkPrometheusReady: true
+  config:
+    forwarder:
+      densify:
+        url:
+          UserSecretName: densify-api-secret
+    prometheus:
+      url:
+        host: kubex-prometheus-server
+        port: 80
+
+#################################################################
+# prometheus-community/prometheus parameters
+#################################################################
+
+prometheus:
+  alertmanager:
+    enabled: false 
+  prometheus-pushgateway:
+    enabled: false 
+  kube-state-metrics:
+    metricAnnotationsAllowList:
+      - 'namespaces=[*]'
+    metricLabelsAllowlist:
+      - 'nodes=[*]'
+      - 'namespaces=[*]'
+      - 'pods=[*]'
+      - 'deployments=[*]'
+      - 'replicasets=[*]'
+      - 'daemonsets=[*]'
+      - 'statefulsets=[*]'
+      - 'jobs=[*]'
+      - 'cronjobs=[*]'
+      - 'horizontalpodautoscalers=[*]'
+    collectors:
+      - cronjobs
+      - daemonsets
+      - deployments
+      - horizontalpodautoscalers
+      - jobs
+      - namespaces
+      - nodes
+      - poddisruptionbudgets
+      - pods
+      - replicasets
+      - replicationcontrollers
+      - resourcequotas
+      - statefulsets
+  prometheus-node-exporter:
+    service:
+      port: 9191
+      targetPort: 9191
+  server:
+    fullnameOverride: kubex-prometheus-server
+    global:
+      scrape_interval: 20s
+      scrape_timeout: 10s
+    releaseNamespace: true
+    persistentVolume:
+      size: 50Gi
+    retention: "2d"
+    retentionSize: "40GiB"

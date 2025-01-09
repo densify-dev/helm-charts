@@ -1,1 +1,6 @@
+Gemfile*
+_site
+/charts/*/charts
 .idea
+.vscode
+.DS_Store
