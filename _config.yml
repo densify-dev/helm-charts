@@ -1,3 +1,5 @@
+name: ""
+title: null
 remote_theme: jekyll/minima
 plugins:
   - jekyll-remote-theme
@@ -6,5 +8,6 @@ titles_from_headings:
   enabled:     true
   strip_title: true
   collections: true
+header_pages: ['']
 minima:
   skin: auto
