@@ -12,13 +12,15 @@ container-optimization-data-forwarder:
     clusters:
       - name: '<changeme-cluster-name>' # mandatory
 
-# To avoid scraping other instances of kube-state-metrics / node exporter (potentially old and/or configured 
-# differently), the Prometheus server is configured with releaseNamespace set to true.
-# However, we may have additional exporters required such as NVIDIA's DCGM exporter, typically deployed using the
-# GPU Operator (https://github.com/NVIDIA/gpu-operator).
-# If that is the case, uncomment the following section and add the relevant namespaces where these exporters are running:
+# The following section is optional, and is required only in two use-cases:
+# 1. The persistent volume for Prometheus has to use an explicit storage class (not the default)
+# 2. For future use: we may have additional exporters required such as NVIDIA's DCGM exporter, 
+#    typically deployed using the GPU Operator (https://github.com/NVIDIA/gpu-operator) in its own namespace.
+# In these two cases, uncomment the following section and the relevant sub-section/s:
 
 # prometheus: # optional
-  # server: 
+  # server:
+    # persistentVolume:
+    #   storageClass: <changeme-storage-class>
     # namespaces:
-    #   - <changeme-namespace>
+    #   - <changeme-exporter-namespace>

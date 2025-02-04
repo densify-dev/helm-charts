@@ -102,8 +102,7 @@ The following table lists configuration parameters in values.yaml and their defa
 
 ## Limitations
 
-* Supported Architecture: AMD64
-* Supported OS: Linux
+* Supported Architecture: amd64 / x64
 
 ## Documentation
 
