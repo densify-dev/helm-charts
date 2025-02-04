@@ -1,15 +1,15 @@
 apiVersion: v2
 description: Kubex Automation Stack
 name: kubex-automation-stack
-version: 0.9.0
+version: 0.9.1
 type: application
 icon: https://www.densify.com/wp-content/uploads/kubex-by-densify-logo.png
 dependencies:
   - name: container-optimization-data-forwarder
-    version: "4.0.*"
+    version: "4.*.*"
     repository: https://densify-dev.github.io/helm-charts
   - name: prometheus
-    version: "26.0.*"
+    version: "27.*.*"
     repository: https://prometheus-community.github.io/helm-charts
 keywords:
 - kubex
