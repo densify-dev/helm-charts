@@ -1,7 +1,7 @@
 stack:
   densify:
-    username: '<changeme-username>' # mandatory
-    encrypted_password: '<changeme-encrypted-password>' # mandatory
+    username: '<changeme-username>' # mandatory (unless createSecret = false)
+    encrypted_password: '<changeme-encrypted-password>' # mandatory (unless createSecret = false)
 
 container-optimization-data-forwarder:
   config:

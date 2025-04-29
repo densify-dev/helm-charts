@@ -1,6 +1,7 @@
+{{- define "common.namespace" -}}
+  {{- default .Release.Namespace .Values.nsPrefix -}}
+{{- end -}}
 {{- define "common.checkValues" -}}
-{{- $username := required ".Values.stack.densify.username is required" .Values.stack.densify.username -}}
-{{- $encryptedPassword := required ".Values.stack.densify.encrypted_password is required" .Values.stack.densify.encrypted_password -}}
 {{- $hostValueName := ".Values.container-optimization-data-forwarder.config.forwarder.densify.url.host" -}}
 {{- $hostValueErr := printf "%s is required" $hostValueName -}}
 {{- $host1 := index .Values "container-optimization-data-forwarder" "config" "forwarder" "densify" "url" "host" -}}

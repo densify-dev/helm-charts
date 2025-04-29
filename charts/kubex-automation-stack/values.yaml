@@ -2,6 +2,10 @@
 # densify/container-optimization-data-forwarder parameters
 #################################################################
 
+stack:
+  densify:
+    createSecret: true
+
 container-optimization-data-forwarder:
   nameOverride: kubex-stack
   job:
@@ -155,7 +159,7 @@ prometheus:
               target_label: namespace
             - source_labels: [__meta_kubernetes_service_name]
               action: keep
-              regex: kubex.*
+              regex: 'kubex.*|nvidia.*'
             - source_labels: [__meta_kubernetes_service_name]
               action: replace
               target_label: service
@@ -195,7 +199,7 @@ prometheus:
               target_label: namespace
             - source_labels: [__meta_kubernetes_service_name]
               action: keep
-              regex: kubex.*
+              regex: 'kubex.*|nvidia.*'
             - source_labels: [__meta_kubernetes_service_name]
               action: replace
               target_label: service
