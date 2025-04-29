@@ -157,9 +157,9 @@ prometheus:
             - source_labels: [__meta_kubernetes_namespace]
               action: replace
               target_label: namespace
-            - source_labels: [__meta_kubernetes_service_name]
+            - source_labels: [__meta_kubernetes_endpoints_name]
               action: keep
-              regex: 'kubex.*|nvidia.*'
+              regex: 'densify.*|nvidia.*|dcgm.*'
             - source_labels: [__meta_kubernetes_service_name]
               action: replace
               target_label: service
@@ -197,9 +197,9 @@ prometheus:
             - source_labels: [__meta_kubernetes_namespace]
               action: replace
               target_label: namespace
-            - source_labels: [__meta_kubernetes_service_name]
+            - source_labels: [__meta_kubernetes_endpoints_name]
               action: keep
-              regex: 'kubex.*|nvidia.*'
+              regex: 'densify.*|nvidia.*|dcgm.*'
             - source_labels: [__meta_kubernetes_service_name]
               action: replace
               target_label: service
