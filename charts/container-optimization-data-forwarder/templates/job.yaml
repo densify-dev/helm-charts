@@ -1,3 +1,4 @@
+{{- if .Values.job.enable }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -32,7 +33,7 @@ spec:
       initContainers:
       {{- if .Values.job.checkPrometheusReady }}
       - name: check-prometheus-ready
-        image: busybox:latest
+        image: {{ .Values.imageCheckPrometheusReady }}
         imagePullPolicy: {{ .Values.pullPolicy }}
         env:
         - name: TARGET_HOST
@@ -165,4 +166,4 @@ spec:
             secretName: {{ .Values.config.prometheus.CaCertSecretName }}
         {{- end }}
       restartPolicy: Never
-      
+{{- end }}
