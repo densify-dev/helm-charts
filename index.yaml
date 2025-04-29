@@ -2,7 +2,7 @@ apiVersion: v1
 entries:
   container-optimization-data-forwarder:
   - apiVersion: v2
-    created: "2025-04-29T11:56:46.823717701-04:00"
+    created: "2025-04-29T13:54:11.71870725-04:00"
     description: Densify Container Optimization Data Forwarder Utility
     digest: 811c572ae05b53d3c0f42c0347d4bb1a84a4468fc79adfe0f0e723d48e6b721e
     icon: https://www.densify.com/wp-content/uploads/densify.png
@@ -19,7 +19,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/container-optimization-data-forwarder-4.0.4.tgz
     version: 4.0.4
   - apiVersion: v2
-    created: "2025-04-29T11:56:46.852782766-04:00"
+    created: "2025-04-29T13:54:11.739637108-04:00"
     description: Densify Container Optimization Data Forwarder Utility
     digest: 19d0237c270937733c5dc307fd85cbe330a6ab60285448b450e5033849ed8ec3
     icon: https://www.densify.com/wp-content/uploads/densify.png
@@ -36,7 +36,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/_site/container-optimization-data-forwarder-4.0.3.tgz
     version: 4.0.3
   - apiVersion: v2
-    created: "2025-04-29T11:56:46.82317898-04:00"
+    created: "2025-04-29T13:54:11.718318445-04:00"
     description: Densify Container Optimization Data Forwarder Utility
     digest: 19d0237c270937733c5dc307fd85cbe330a6ab60285448b450e5033849ed8ec3
     icon: https://www.densify.com/wp-content/uploads/densify.png
@@ -53,7 +53,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/container-optimization-data-forwarder-4.0.3.tgz
     version: 4.0.3
   - apiVersion: v2
-    created: "2025-04-29T11:56:46.852357538-04:00"
+    created: "2025-04-29T13:54:11.739277668-04:00"
     description: Densify Container Optimization Data Forwarder Utility
     digest: 1ae296171d008945a44f56aea737ca8983e3ce627dca2d4f1b1e3eb987a81841
     icon: https://www.densify.com/wp-content/uploads/densify.png
@@ -70,7 +70,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/_site/container-optimization-data-forwarder-4.0.2.tgz
     version: 4.0.2
   - apiVersion: v2
-    created: "2025-04-29T11:56:46.822537816-04:00"
+    created: "2025-04-29T13:54:11.717950704-04:00"
     description: Densify Container Optimization Data Forwarder Utility
     digest: 1ae296171d008945a44f56aea737ca8983e3ce627dca2d4f1b1e3eb987a81841
     icon: https://www.densify.com/wp-content/uploads/densify.png
@@ -87,7 +87,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/container-optimization-data-forwarder-4.0.2.tgz
     version: 4.0.2
   - apiVersion: v2
-    created: "2025-04-29T11:56:46.851898221-04:00"
+    created: "2025-04-29T13:54:11.738922583-04:00"
     description: Densify Container Optimization Data Forwarder Utility
     digest: 2efce95190733063a99ec185a873511c931f6d0d86d220089cc4a3dc86e7d60a
     icon: https://www.densify.com/wp-content/uploads/densify.png
@@ -104,7 +104,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/_site/container-optimization-data-forwarder-4.0.1.tgz
     version: 4.0.1
   - apiVersion: v2
-    created: "2025-04-29T11:56:46.821949036-04:00"
+    created: "2025-04-29T13:54:11.717578386-04:00"
     description: Densify Container Optimization Data Forwarder Utility
     digest: 2efce95190733063a99ec185a873511c931f6d0d86d220089cc4a3dc86e7d60a
     icon: https://www.densify.com/wp-content/uploads/densify.png
@@ -121,7 +121,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/container-optimization-data-forwarder-4.0.1.tgz
     version: 4.0.1
   - apiVersion: v2
-    created: "2025-04-29T11:56:46.85086391-04:00"
+    created: "2025-04-29T13:54:11.738560438-04:00"
     description: Densify Container Optimization Data Forwarder Utility
     digest: 9b0612352ed3cacea9bf410f077ddfa24fa4849fcf5e37ed8ebb20b8d02e8a94
     icon: https://www.densify.com/wp-content/uploads/densify.png
@@ -138,7 +138,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/_site/container-optimization-data-forwarder-4.0.0.tgz
     version: 4.0.0
   - apiVersion: v2
-    created: "2025-04-29T11:56:46.821092287-04:00"
+    created: "2025-04-29T13:54:11.71720321-04:00"
     description: Densify Container Optimization Data Forwarder Utility
     digest: 9b0612352ed3cacea9bf410f077ddfa24fa4849fcf5e37ed8ebb20b8d02e8a94
     icon: https://www.densify.com/wp-content/uploads/densify.png
@@ -155,7 +155,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/container-optimization-data-forwarder-4.0.0.tgz
     version: 4.0.0
   - apiVersion: v2
-    created: "2025-04-29T11:56:46.820574425-04:00"
+    created: "2025-04-29T13:54:11.716834548-04:00"
     description: Densify Container Optimization Data Forwarder Utility
     digest: 6be70c54324e506fc54f01d34b38dadc3cfe1b4e453a86196607e6ec6f7d7d92
     keywords:
@@ -171,7 +171,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/container-optimization-data-forwarder-3.0.0.tgz
     version: 3.0.0
   - apiVersion: v2
-    created: "2025-04-29T11:56:46.850404639-04:00"
+    created: "2025-04-29T13:54:11.738204228-04:00"
     description: Densify Container Optimization Data Forwarder Utility
     digest: 6be70c54324e506fc54f01d34b38dadc3cfe1b4e453a86196607e6ec6f7d7d92
     keywords:
@@ -187,7 +187,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/_site/container-optimization-data-forwarder-3.0.0.tgz
     version: 3.0.0
   - apiVersion: v2
-    created: "2025-04-29T11:56:46.850037852-04:00"
+    created: "2025-04-29T13:54:11.73791901-04:00"
     description: Densify Container Optimization Data Forwarder Utility
     digest: db133e38eb73964aa683289a843af1ce4b5169f77fe7d406bc77746135b6cf84
     keywords:
@@ -203,7 +203,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/_site/container-optimization-data-forwarder-2.2.0.tgz
     version: 2.2.0
   - apiVersion: v2
-    created: "2025-04-29T11:56:46.820222776-04:00"
+    created: "2025-04-29T13:54:11.716529931-04:00"
     description: Densify Container Optimization Data Forwarder Utility
     digest: db133e38eb73964aa683289a843af1ce4b5169f77fe7d406bc77746135b6cf84
     keywords:
@@ -219,7 +219,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/container-optimization-data-forwarder-2.2.0.tgz
     version: 2.2.0
   - apiVersion: v2
-    created: "2025-04-29T11:56:46.849578996-04:00"
+    created: "2025-04-29T13:54:11.737633856-04:00"
     description: Densify Container Optimization Data Forwarder Utility
     digest: 06d31298dddd2827ea5d8f93bcf50b0e195df2fb433357afa60d32e686f4624a
     keywords:
@@ -235,7 +235,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/_site/container-optimization-data-forwarder-2.1.0.tgz
     version: 2.1.0
   - apiVersion: v2
-    created: "2025-04-29T11:56:46.819807523-04:00"
+    created: "2025-04-29T13:54:11.716215618-04:00"
     description: Densify Container Optimization Data Forwarder Utility
     digest: 06d31298dddd2827ea5d8f93bcf50b0e195df2fb433357afa60d32e686f4624a
     keywords:
@@ -251,7 +251,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/container-optimization-data-forwarder-2.1.0.tgz
     version: 2.1.0
   - apiVersion: v2
-    created: "2025-04-29T11:56:46.849100801-04:00"
+    created: "2025-04-29T13:54:11.737335438-04:00"
     description: Densify Container Optimization Data Forwarder Utility
     digest: 87d231bd23c1545ace907fe5435ecc9fe843503f5bf00da49dfaae2f546535d5
     keywords:
@@ -267,7 +267,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/_site/container-optimization-data-forwarder-2.0.0.tgz
     version: 2.0.0
   - apiVersion: v2
-    created: "2025-04-29T11:56:46.819420755-04:00"
+    created: "2025-04-29T13:54:11.715879185-04:00"
     description: Densify Container Optimization Data Forwarder Utility
     digest: 87d231bd23c1545ace907fe5435ecc9fe843503f5bf00da49dfaae2f546535d5
     keywords:
@@ -283,7 +283,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/container-optimization-data-forwarder-2.0.0.tgz
     version: 2.0.0
   - apiVersion: v1
-    created: "2025-04-29T11:56:46.848576514-04:00"
+    created: "2025-04-29T13:54:11.737039248-04:00"
     description: Densify Container Optimization Data Forwarder Utility
     digest: 4974032b868c23cd6bd02fa39d5dfeff0b9c78956f4122fa09f4d6b902572c2b
     keywords:
@@ -298,7 +298,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/_site/container-optimization-data-forwarder-1.0.2.tgz
     version: 1.0.2
   - apiVersion: v1
-    created: "2025-04-29T11:56:46.819015399-04:00"
+    created: "2025-04-29T13:54:11.715505115-04:00"
     description: Densify Container Optimization Data Forwarder Utility
     digest: 4974032b868c23cd6bd02fa39d5dfeff0b9c78956f4122fa09f4d6b902572c2b
     keywords:
@@ -314,7 +314,33 @@ entries:
     version: 1.0.2
   kubex-automation-stack:
   - apiVersion: v2
-    created: "2025-04-29T11:56:46.848003094-04:00"
+    created: "2025-04-29T13:54:11.736749491-04:00"
+    dependencies:
+    - name: container-optimization-data-forwarder
+      repository: https://densify-dev.github.io/helm-charts
+      version: 4.*.*
+    - name: prometheus
+      repository: https://prometheus-community.github.io/helm-charts
+      version: 27.*.*
+    description: Kubex Automation Stack
+    digest: f893029a41b8a336255c01a96f4572f13d78c237927373eef16d7b7044ef2bfd
+    icon: https://www.densify.com/wp-content/uploads/kubex-by-densify-logo.png
+    keywords:
+    - kubex
+    - densify
+    - automation
+    - container
+    - optimization
+    maintainers:
+    - email: support@densify.com
+      name: support
+    name: kubex-automation-stack
+    type: application
+    urls:
+    - https://densify-dev.github.io/helm-charts/kubex-automation-stack-0.9.2.tgz
+    version: 0.9.2
+  - apiVersion: v2
+    created: "2025-04-29T13:54:11.730968055-04:00"
     dependencies:
     - name: container-optimization-data-forwarder
       repository: https://densify-dev.github.io/helm-charts
@@ -340,7 +366,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-stack-0.9.1.tgz
     version: 0.9.1
   - apiVersion: v2
-    created: "2025-04-29T11:56:46.834057441-04:00"
+    created: "2025-04-29T13:54:11.724139446-04:00"
     dependencies:
     - name: container-optimization-data-forwarder
       repository: https://densify-dev.github.io/helm-charts
@@ -366,7 +392,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-stack-0.9.0.tgz
     version: 0.9.0
   - apiVersion: v2
-    created: "2025-04-29T11:56:46.86215942-04:00"
+    created: "2025-04-29T13:54:11.745244812-04:00"
     dependencies:
     - name: container-optimization-data-forwarder
       repository: https://densify-dev.github.io/helm-charts
@@ -391,4 +417,4 @@ entries:
     urls:
     - https://densify-dev.github.io/helm-charts/_site/kubex-automation-stack-0.9.0.tgz
     version: 0.9.0
-generated: "2025-04-29T11:56:46.818513072-04:00"
+generated: "2025-04-29T13:54:11.714626725-04:00"
