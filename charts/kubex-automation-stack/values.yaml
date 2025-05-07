@@ -30,6 +30,7 @@ prometheus:
   prometheus-pushgateway:
     enabled: false 
   kube-state-metrics:
+    prometheusScrape: false
     metricAnnotationsAllowList:
       - 'namespaces=[*]'
     metricLabelsAllowlist:
@@ -61,6 +62,8 @@ prometheus:
     service:
       port: 9191
       targetPort: 9191
+      annotations:
+        prometheus.io/scrape: "false"
   server:
     fullnameOverride: kubex-prometheus-server
     global:
