@@ -156,7 +156,7 @@ prometheus:
               target_label: namespace
             - source_labels: [__meta_kubernetes_endpoints_name]
               action: keep
-              regex: 'densify.*|.*dcgm.*'
+              regex: '(kubex|densify)-(kube-state-metrics|prometheus-node-exporter)|.*dcgm.*'
             - source_labels: [__meta_kubernetes_service_name]
               action: replace
               target_label: service
