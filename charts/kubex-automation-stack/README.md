@@ -31,7 +31,7 @@ helm install --create-namespace -n densify -f values-edit.yaml kubex densify/kub
 
 ## Configuration
 
-The following table lists configuration parameters in values.yaml and their default values.
+The following table lists configuration parameters in `values-edit.yaml`.
 
 | Parameter                                                                        | Mandatory          | Description                                            |
 | -------------------------------------------------------------------------------- | ------------------ | ------------------------------------------------------ |
