@@ -40,7 +40,6 @@ The following table lists configuration parameters in values.yaml and their defa
 | `container-optimization-data-forwarder.`<br/>`config.forwarder.densify.url.host` | :white_check_mark: | Densify instance hostname (`< instance >.densify.com`) |
 | `container-optimization-data-forwarder.`<br/>`config.clusters[0].name`           | :white_check_mark: | Cluster name **(must be unique, customer-wide; if not, specify an alternate name)** |
 | `prometheus.server.persistentVolume.`<br/>`storageClass`                         |                    | Storage class for Prometheus persistent volume |
-| `prometheus.server.namespaces`                                                   |                    | Namespaces of optional exporters (e.g. NVIDIA DCGM) |
 
 ## Limitations
 

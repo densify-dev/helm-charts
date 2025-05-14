@@ -12,15 +12,10 @@ container-optimization-data-forwarder:
     clusters:
       - name: '<changeme-cluster-name>' # mandatory
 
-# The following section is optional, and is required only in two use-cases:
+# The following section is optional, and is required only in the following use-case:
 # 1. The persistent volume for Prometheus has to use an explicit storage class (not the default)
-# 2. For future use: we may have additional exporters required such as NVIDIA's DCGM exporter, 
-#    typically deployed using the GPU Operator (https://github.com/NVIDIA/gpu-operator) in its own namespace.
-# In these two cases, uncomment the following section and the relevant sub-section/s:
 
 # prometheus: # optional
   # server:
     # persistentVolume:
     #   storageClass: <changeme-storage-class>
-    # namespaces:
-    #   - <changeme-exporter-namespace>
