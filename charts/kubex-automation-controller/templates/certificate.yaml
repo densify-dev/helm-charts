@@ -1,0 +1,18 @@
+{{- if .Values.certmanager.enabled }}
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: densify-automation-cert
+  namespace: {{ template "common.namespace" . }}
+spec:
+  secretName: densify-automation-tls
+  duration: 720h # Validity (e.g., 1 year)
+  renewBefore: 240h # Renew 10 days before expiry
+  commonName: webhook-service.{{ template "common.namespace" . }}.svc
+  dnsNames:
+    - densify-webhook-service.{{ template "common.namespace" . }}.svc
+    - densify-webhook-service.{{ template "common.namespace" . }}.local
+  issuerRef:
+    name: selfsigned-cluster-issuer
+    kind: ClusterIssuer
+{{- end }}

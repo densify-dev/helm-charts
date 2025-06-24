@@ -1,0 +1,120 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: densify-webhook-server
+  namespace: {{ template "common.namespace" . }}
+spec:
+  replicas: {{ .Values.deployment.replicas | default 1 }}
+  selector:
+    matchLabels:
+      app: densify-webhook
+  template:
+    metadata:
+      labels:
+        app: densify-webhook
+    spec:
+      securityContext:
+        fsGroup: 3000
+        runAsGroup: 3000
+        runAsNonRoot: true
+        runAsUser: 3000
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: densify-webhook
+          image: {{ .Values.deployment.webhookImage | quote }}
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8443
+          securityContext:
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            seccompProfile:
+              type: RuntimeDefault
+          resources:
+            {{- toYaml .Values.deployment.webhookResources | nindent 12 }}
+          env:
+            {{ include "kubex-automation-controller.env_vars" . | nindent 12 }}
+            - name: RECOMMENDATION_AGE
+              valueFrom:
+                configMapKeyRef:
+                  name: densify-config
+                  key: RECOMMENDATION_AGE
+            - name: ALLOW_LIST
+              valueFrom:
+                configMapKeyRef:
+                  name: densify-config
+                  key: ALLOW_LIST
+            - name: API_URL
+              value: "http://localhost:8181"
+            - name: CONFIG_FILE_PATH
+              value: "/densify/config/densify-automation-policy/densify-automation-policy"
+            - name: RECOMMENDATIONS_FILE_PATH
+              value: "/densify/data/recommendations.json"
+            - name: DEBUG
+              value: {{ .Values.deployment.debug | quote}}
+          volumeMounts:
+            - name: webhook-certs
+              mountPath: "/etc/webhook/certs"
+              readOnly: true
+            - name: recommendations-volume
+              mountPath: "/densify/data"
+            - name: config-volume
+              mountPath: "/densify/config/densify-automation-policy"
+              readOnly: true
+      initContainers:
+        - name: densify-webhook-gw
+          image: {{ .Values.deployment.gatewayImage | quote }}
+          imagePullPolicy: Always
+          restartPolicy: Always
+          ports:
+            - containerPort: 8181
+          securityContext:
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            seccompProfile:
+              type: RuntimeDefault
+          resources:
+            {{- toYaml .Values.deployment.gatewayResources | nindent 12 }}
+          env:
+            {{ include "kubex-automation-controller.env_vars" . | nindent 12 }}
+            - name: DEBUG
+              value: {{ .Values.deployment.debug | quote }}
+            - name: SPOOL
+              value: "/densify/data/spool"
+            - name: CONFIG_FILE_PATH
+              value: "/densify/config/densify-automation-policy/densify-automation-policy"
+            - name: RECOMMENDATIONS_FILE_PATH
+              value: "/densify/data/recommendations.json"
+          volumeMounts:
+            - name: webhook-certs
+              mountPath: "/etc/webhook/certs"
+              readOnly: true
+            - name: recommendations-volume
+              mountPath: /densify/data
+            - name: config-volume
+              mountPath: /densify/config/densify-automation-policy
+              readOnly: true
+      volumes:
+        - name: webhook-certs
+          secret:
+            secretName: densify-automation-tls
+            items:
+              - key: tls.crt
+                path: server.pem
+              - key: tls.key
+                path: server-key.pem
+        - name: recommendations-volume
+          persistentVolumeClaim:
+            claimName: densify-recommendations-pvc
+        - name: config-volume
+          projected:
+            sources:
+              - configMap:
+                  name: densify-automation-policy

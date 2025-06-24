@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: densify-config
+  namespace: {{ template "common.namespace" . }}
+data:
+  CLUSTER_NAME: {{ .Values.config.CLUSTER_NAME | required ".Values.config.CLUSTER_NAME is required." | quote }}
+  DENSIFY_BASE_URL: {{ .Values.config.DENSIFY_BASE_URL | required ".Values.config.DENSIFY_BASE_URL is required." | quote }}
+  RECOMMENDATION_AGE: {{ .Values.config.RECOMMENDATION_AGE | quote }}
+  ALLOW_LIST: {{ .Values.config.ALLOW_LIST | quote }}
+

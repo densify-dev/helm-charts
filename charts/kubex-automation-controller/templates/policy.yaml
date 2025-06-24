@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: densify-automation-policy
+  namespace: {{ template "common.namespace" . }}
+data:
+  densify-automation-policy: |-
+    automationenabled: {{ .Values.policy.automationenabled }}
+    defaultpolicy: {{ .Values.policy.defaultpolicy }}
+    remoteenablement: {{ .Values.policy.remoteenablement }}
+    policiesbyname:
+{{- include "kubex-automation-controller.defaultPolicies" . | nindent 6 }}
+{{- if .Values.policy.policiesbyname }}
+{{- toYaml .Values.policy.policiesbyname | nindent 6 }}
+{{- end }}

@@ -1,0 +1,32 @@
+certmanager:
+  duration: 720h # Certificate validity duration (e.g., 30 days = 720h).
+  renewBefore: 240h # Time before expiration to trigger renewal (e.g., 10 days = 240h).
+
+config:
+  RECOMMENDATION_AGE: "5" # Age threshold (in days) for recommendations to compare.
+  ALLOW_LIST: "Deployment,StatefulSet,DaemonSet,CronJob,Rollout,Job,ReplicaSet" # Comma-separated list of Kubernetes resources to allow for automation (e.g., Job, Deployment).
+
+policy:
+  policiesbyname: {} # Additional policies can be defined here, remove {} when adding new policies
+
+pv:
+  storage: 10Gi # Amount of storage to allocate for the Persistent Volume.
+  hostPath: /mnt/data/densify-recommendations # Host path to mount the volume on the node.
+
+webhook:
+  metadataName: densify-resource-optimization-webhook # Name of the webhook configuration.
+
+deployment:
+  webhookImage: densify/container-automation:1.2 # Container image for the Densify automation webhook server.
+  gatewayImage: densify/automation-gateway:1.0 # Container image for the Densify automation gateway.
+  replicas: 1 # Number of pod replicas to run ([set >1 for high availability).
+  debug: false # Enable debug mode (true/false).
+  webhookResources: # CPU and memory resource requests and limits for the pod.
+    requests:
+      memory: "128Mi" # Minimum guaranteed memory allocated to the pod.
+      cpu: "250m" # Minimum guaranteed CPU.
+    limits:
+      memory: "512Mi" # Maximum memory the pod can use before being throttled or killed.
+  gatewayResources: # CPU and memory resource requests and limits for the pod.
+    {}
+

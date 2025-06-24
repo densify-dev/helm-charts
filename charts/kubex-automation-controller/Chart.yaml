@@ -1,0 +1,10 @@
+apiVersion: v2
+name: kubex-automation-controller
+description: A Helm chart for deploying Kubex Automation Controller
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+icon: https://www.densify.com/wp-content/uploads/densify.png
+maintainers:
+  - email: support@densify.com
+    name: support

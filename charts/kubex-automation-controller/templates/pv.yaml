@@ -1,0 +1,32 @@
+{{- if .Values.pv.provisionPV }}
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: densify-recommendations-pv
+  namespace: {{ template "common.namespace" . }}
+spec:
+  capacity:
+    storage: {{ .Values.pv.storage }}
+  accessModes:
+    - {{ .Values.pv.accessMode }}
+  hostPath:
+    path: {{ .Values.pv.hostPath }}
+  #nfs:
+  #  path: {{ .Values.pv.nfsPath }}
+  #  server: {{ .Values.pv.nfsServer }}
+{{- end }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: densify-recommendations-pvc
+  namespace: {{ template "common.namespace" . }}
+spec:
+  accessModes:
+    - {{ .Values.pv.accessMode }}
+  resources:
+    requests:
+      storage: {{ .Values.pv.storage }}
+  {{- if .Values.pv.storageClassName  }}
+  storageClassName: {{ .Values.pv.storageClassName }}
+  {{- end }}
