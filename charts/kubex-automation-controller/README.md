@@ -18,6 +18,7 @@ This Helm chart enables the installation of Kubex Automation Controller on a Kub
 - [Uninstalling](#uninstalling)
   - [Quick Uninstall](#quick-uninstall)
   - [Manual Uninstallation Steps (Advanced Users)](#manual-uninstallation-steps-advanced-users)
+  - [License](#license)
 
 
 # Installation
@@ -187,3 +188,8 @@ Uninstall cert-manager Helm Chart:
   kubectl delete namespace cert-manager 
   
 ```
+
+
+## License
+
+Apache 2 Licensed. See [LICENSE](LICENSE) for full details.
