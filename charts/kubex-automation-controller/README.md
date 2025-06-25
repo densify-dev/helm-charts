@@ -9,8 +9,9 @@ This Helm chart enables the installation of Kubex Automation Controller on a Kub
 - [Installation](#installation)
   - [Prerequisite: Configure Your Deployment](#prerequisite-configure-your-deployment)
   - [Quick Installation](#quick-installation)
-    - [Option 1:](#option-1)
-    - [Option 2:](#option-2)
+    - [Option 1: Use cert-manager for self-signed cert management](#option-1-use-cert-manager-for-self-signed-cert-management)
+    - [Option 2: Use your own certificate](#option-2-use-your-own-certificate)
+    - [Examples](#examples)
   - [Manual Installation Steps (Advanced Users)](#manual-installation-steps-advanced-users)
 - [Argo CD Integration](#argo-cd-integration)
   - [Add Resource Customizations to argocd-cm](#add-resource-customizations-to-argocd-cm)
@@ -48,26 +49,37 @@ Before installing, download and edit the configuration file:
 
 3. If you do not want to use cert-manager for managing and automating your TLS certificate used by the Densify Admission Controller, you may use one of the alternative options:
  
-    - [Generate Certificates Manually](/documentation/Certificates-Manual.md) 
+    - [Generate Certificates Manually](./documentation/Certificates-Manual.md) 
 
-    - [Bring Your Own Certificates (BYOC)](/documentation/Certificates-BYOC.md)
+    - [Bring Your Own Certificates (BYOC)](./documentation/Certificates-BYOC.md)
 
 ## Quick Installation
 
-### Option 1: 
-If you want to use cert-manager for managing your self-signed certicate, use the following script which ensures cert-manager helm chart is installed prior to deploying the Densify automation chart: 
+### Option 1: Use cert-manager for self-signed cert management
+To use cert-manager for managing your self-signed certificate, run the following script. It checks whether cert-manager is already installed and installs it only if it isn't, before proceeding to deploy the Densify automation chart:
     
    ```bash
-   ./deploy-container-automation.sh --certmanager --namespace densify
+   ./deploy-kubex-automation-controller.sh --certmanager
    ```
    
-### Option 2: 
+### Option 2: Use your own certificate
 If you want to use your own certificate, run the following script:
 
    ```bash
-   ./deploy-container-automation.sh --namespace densify
+   ./deploy-kubex-automation-controller.sh
    ```
 
+### Examples
+  ```bash
+  # Deploy with cert-manager in the default namespace
+  ./deploy-kubex-automation-controller.sh --certmanager
+
+  # Deploy in a custom namespace without cert-manager
+  ./deploy-kubex-automation-controller.sh --namespace custom-namespace
+
+  # Uninstall both the controller and cert-manager
+  ./deploy-kubex-automation-controller.sh --delete --certmanager
+  ```
 
 ## Manual Installation Steps (Advanced Users)
 
@@ -93,7 +105,7 @@ Add Densify Automation Helm Repo and Install:
 ```bash
 helm repo add densify https://densify-dev.github.io/helm-charts
 helm repo update
-helm install --create-namespace -n densify -f values-edit.yaml container-automation densify/container-automation-deployment
+helm install --create-namespace -n densify -f values-edit.yaml kubex-automation-controller densify/kubex-automation-controller
 ```
 
 
