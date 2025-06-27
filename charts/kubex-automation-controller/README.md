@@ -60,6 +60,8 @@ Before installing, download and edit the configuration file:
 To use cert-manager for managing your self-signed certificate, run the following script. It checks whether cert-manager is already installed and installs it only if it isn't, before proceeding to deploy the Densify automation chart:
     
    ```bash
+   wget https://github.com/densify-dev/helm-charts/raw/master/charts/kubex-automation-controller/deploy-kubex-automation-controller.sh
+   chmod +x deploy-kubex-automation-controller.sh
    ./deploy-kubex-automation-controller.sh --certmanager
    ```
    
