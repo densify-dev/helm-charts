@@ -17,6 +17,13 @@ spec:
         app: {{ template "common.name" . }}
         release: {{ .Release.Name }}
     spec:
+      securityContext:
+        fsGroup: 3000
+        runAsGroup: 3000
+        runAsNonRoot: true
+        runAsUser: 3000
+        seccompProfile:
+          type: RuntimeDefault
       nodeSelector:
         kubernetes.io/os: linux
         kubernetes.io/arch: amd64
@@ -35,6 +42,14 @@ spec:
       - name: check-prometheus-ready
         image: {{ .Values.imageCheckPrometheusReady }}
         imagePullPolicy: {{ .Values.pullPolicy }}
+        securityContext:
+          readOnlyRootFilesystem: true
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+          seccompProfile:
+            type: RuntimeDefault
         env:
         - name: TARGET_HOST
           value: "{{ .Values.config.prometheus.url.host }}"
@@ -52,6 +67,14 @@ spec:
       - name: azure-token
         image: "{{ .Values.imageAzureToken }}"
         imagePullPolicy: {{ .Values.pullPolicy }}
+        securityContext:
+          readOnlyRootFilesystem: true
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+          seccompProfile:
+            type: RuntimeDefault
         env:
         - name: ENTRA_SERVICE_PRINCIPAL
           value: "/home/densify/.azmon/app.json"
@@ -70,6 +93,14 @@ spec:
         - name: {{ template "common.name" . }}
           image: "{{ .Values.image }}"
           imagePullPolicy: {{ .Values.pullPolicy }}
+          securityContext:
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            seccompProfile:
+              type: RuntimeDefault
           env:
             - name: CONFIG_TYPE
               value: "yaml"
@@ -112,6 +143,8 @@ spec:
               value: "/home/densify/.certs/ca.crt"
             {{- end }}
           volumeMounts:
+          - name: data
+            mountPath: /home/densify/data
           - name: config
             mountPath: /config
           {{- if .Values.config.prometheus.url.PrometheusSecretName }}
@@ -127,6 +160,7 @@ spec:
           {{- if .Values.config.prometheus.AzureMonitorSecretName }}
           - name: tokens
             mountPath: /home/densify/.tokens
+            readOnly: true
           {{- end }}
           {{- if .Values.config.prometheus.CaCertSecretName }}
           - name: certs
@@ -137,6 +171,8 @@ spec:
           resources: {{- toYaml .Values.resources | nindent 12 }}
           {{- end }}
       volumes:
+        - name: data
+          emptyDir: {}
         - name: config
           configMap:
             name: {{ template "common.fullname" . }}

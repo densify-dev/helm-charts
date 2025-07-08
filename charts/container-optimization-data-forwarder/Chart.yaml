@@ -1,8 +1,5 @@
 apiVersion: v2
 description: Densify Container Optimization Data Forwarder Utility
-name: container-optimization-data-forwarder
-version: 4.0.4
-type: application
 icon: https://www.densify.com/wp-content/uploads/densify.png
 keywords:
 - densify
@@ -11,5 +8,6 @@ keywords:
 maintainers:
 - email: support@densify.com
   name: support
-details:
-  This Helm chart provides a Densify Container Optimization Data Forwarder tool
+name: container-optimization-data-forwarder
+type: application
+version: 4.0.5

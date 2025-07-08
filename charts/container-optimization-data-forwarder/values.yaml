@@ -111,7 +111,7 @@ job:
 cronJob:
 # The cronjob schedule. By default, data collection is triggered a few minutes after every hour.
 # This is in line with the default interval settings of collecting the last hour of data.
-  schedule: 5 * * * *  
+  schedule: 5 * * * *
 
 # If you are running Prometheus setup with Authentication such as OpenShift,
 # need to set up rbac with service account to allow API access to Prometheus
