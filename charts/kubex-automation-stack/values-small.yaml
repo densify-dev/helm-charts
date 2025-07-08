@@ -1,0 +1,9 @@
+# Use this file for a small k8s cluster (0-5000 containers):
+prometheus:
+  server:
+    resources:
+      requests:
+        memory: "8Gi"
+        cpu: "1000m"
+      limits:
+        memory: "16Gi"

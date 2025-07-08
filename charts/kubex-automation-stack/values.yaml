@@ -64,6 +64,14 @@ prometheus:
       targetPort: 9191
       annotations:
         prometheus.io/scrape: "false"
+    containerSecurityContext:
+      readOnlyRootFilesystem: true
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+      seccompProfile:
+        type: RuntimeDefault
   server:
     fullnameOverride: kubex-prometheus-server
     global:
@@ -73,6 +81,14 @@ prometheus:
       size: 50Gi
     retention: "2d"
     retentionSize: "40GiB"
+    containerSecurityContext:
+      readOnlyRootFilesystem: true
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+      seccompProfile:
+        type: RuntimeDefault
   serverFiles:
     prometheus.yml:
       rule_files:
@@ -85,17 +101,25 @@ prometheus:
           static_configs:
             - targets:
               - localhost:9090
+          metric_relabel_configs:
+            - source_labels: [__name__]
+              regex: '^prometheus_(build_info|tsdb.*)$'
+              action: keep
         - job_name: 'kubernetes-apiservers'
           kubernetes_sd_configs:
-            - role: endpoints
+            - role: endpointslice
           scheme: https
           tls_config:
             ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
           bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
           relabel_configs:
-            - source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]
+            - source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_service_name, __meta_kubernetes_endpointslice_port_name]
               action: keep
               regex: default;kubernetes;https
+          metric_relabel_configs:
+            - source_labels: [__name__]
+              regex: '^kubernetes_build_info$'
+              action: keep
         - job_name: 'kubernetes-nodes'
           scheme: https
           tls_config:
@@ -112,6 +136,10 @@ prometheus:
               regex: (.+)
               target_label: __metrics_path__
               replacement: /api/v1/nodes/$1/proxy/metrics
+          metric_relabel_configs:
+            - source_labels: [__name__]
+              regex: '^kubernetes_build_info$'
+              action: keep
         - job_name: 'kubernetes-nodes-cadvisor'
           scheme: https
           tls_config:
@@ -128,10 +156,14 @@ prometheus:
               regex: (.+)
               target_label: __metrics_path__
               replacement: /api/v1/nodes/$1/proxy/metrics/cadvisor
-        - job_name: 'kubernetes-service-endpoints'
+          metric_relabel_configs:
+            - source_labels: [__name__]
+              regex: '^container_(cpu_(cfs_(periods_total|throttled_(periods_total|seconds_total))|usage_seconds_total)|fs_usage_bytes|memory_(rss|usage_bytes|working_set_bytes)|oom_events_total|spec_memory_limit_bytes)$'
+              action: keep
+        - job_name: 'kubernetes-service-endpointslice'
           honor_labels: true
           kubernetes_sd_configs:
-            - role: endpoints
+            - role: endpointslice
           relabel_configs:
             - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_scheme]
               action: replace
@@ -154,12 +186,16 @@ prometheus:
             - source_labels: [__meta_kubernetes_namespace]
               action: replace
               target_label: namespace
-            - source_labels: [__meta_kubernetes_endpoints_name]
+            - source_labels: [__meta_kubernetes_endpointslice_name]
               action: keep
-              regex: '(kubex|densify)-(kube-state-metrics|prometheus-node-exporter)|.*dcgm.*'
+              regex: '((kubex|densify)-(kube-state-metrics|prometheus-node-exporter)|.*dcgm).*'
             - source_labels: [__meta_kubernetes_service_name]
               action: replace
               target_label: service
             - source_labels: [__meta_kubernetes_pod_node_name]
               action: replace
               target_label: node
+          metric_relabel_configs:
+            - source_labels: [__name__]
+              regex: '^(DCGM_FI_(DEV_(FB_(FREE|USED)|GPU_UTIL|POWER_USAGE)|PROF_(DRAM_ACTIVE|GR_ENGINE_ACTIVE|PIPE_TENSOR_ACTIVE))|kube_(cronjob_(created|info|labels|next_schedule_time|status_(active|last_schedule_time))|daemonset_(created|labels|status_number_available)|deployment_(created|labels|metadata_generation|spec_strategy_rollingupdate_max_(surge|unavailable))|horizontalpodautoscaler_(info|labels|spec_(max_replicas|min_replicas|target_metric)|status_(condition|current_replicas|target_metric))|job_(created|info|labels|owner|spec_(completions|parallelism)|status_(active|completion_time|start_time))|namespace_(annotations|labels)|node_(info|labels|role|spec_taint|status_(allocatable|capacity))|pod_(container_(info|resource_(limits|requests)|status_(last_terminated_(exitcode|timestamp)|restarts_total|terminated(?:_reason)?))|created|info|labels|owner|status_(phase|qos_class))|replicaset_(created|labels|owner|spec_replicas)|replicationcontroller_(created|spec_replicas)|resourcequota(?:_created)?|statefulset_(created|labels|replicas))|node_(cpu_(core_throttles_total|seconds_total)|disk_(read_bytes_total|reads_completed_total|writes_completed_total|written_bytes_total)|memory_(Buffers_bytes|Cached_bytes|MemFree_bytes|MemTotal_bytes|SReclaimable_bytes)|network_(receive_(bytes_total|packets_total)|speed_bytes|transmit_(bytes_total|packets_total))|vmstat_oom_kill)|openshift_clusterresourcequota_(created|labels|namespace_usage|selector|usage))$'
+              action: keep

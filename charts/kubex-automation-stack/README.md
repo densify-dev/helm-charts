@@ -16,18 +16,31 @@ This chart requires very minimal configuration in order to install the entire st
 
 To deploy the Kubex stack, follow these steps below:
 
-1. Download [values-edit.yaml](https://github.com/densify-dev/helm-charts/blob/master/charts/kubex-automation-stack/values-edit.yaml).
+1. Determine your sizing file as described in [Sizing](#sizing) and download it.
 
-2. Edit `values-edit.yaml` with the relevant mandatory parameters as described in [Configuration](#configuration).
+2. Download [values-edit.yaml](https://github.com/densify-dev/helm-charts/blob/master/charts/kubex-automation-stack/values-edit.yaml).
 
-3. Run:
+3. Edit `values-edit.yaml` with the relevant mandatory parameters as described in [Configuration](#configuration).
+
+4. Run:
 
 ```shell
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 helm repo add densify https://densify-dev.github.io/helm-charts
 helm repo update
-helm install --create-namespace -n densify -f values-edit.yaml kubex densify/kubex-automation-stack
+helm install --create-namespace -n densify -f values-edit.yaml -f <sizing file> kubex densify/kubex-automation-stack
 ```
+
+## Sizing
+
+The following table indicates which sizing file to use, depending on the cluster size:
+
+| Cluster Size    | No. of Containers | Sizing File to Use |
+| --------------- | ----------------- | ------------------ |
+| Small           | 0-5000            | [values-small.yaml](https://github.com/densify-dev/helm-charts/blob/master/charts/kubex-automation-stack/values-small.yaml) |
+| Medium          | 5001-10000        | [values-medium.yaml](https://github.com/densify-dev/helm-charts/blob/master/charts/kubex-automation-stack/values-medium.yaml) |
+| Large           | 10001+            | [values-large.yaml](https://github.com/densify-dev/helm-charts/blob/master/charts/kubex-automation-stack/values-large.yaml) |
+
 
 ## Configuration
 
