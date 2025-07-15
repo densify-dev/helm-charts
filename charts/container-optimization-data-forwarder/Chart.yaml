@@ -10,4 +10,4 @@ maintainers:
   name: support
 name: container-optimization-data-forwarder
 type: application
-version: 4.0.5
+version: 4.0.6
