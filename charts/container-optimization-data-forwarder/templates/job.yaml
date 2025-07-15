@@ -9,6 +9,9 @@ metadata:
     chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/resource-policy": keep
 spec:
   backoffLimit: 4
   template:
