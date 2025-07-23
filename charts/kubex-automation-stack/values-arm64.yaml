@@ -1,0 +1,26 @@
+# Use this file for an arm64 k8s cluster
+prometheus:
+  prometheus-node-exporter:
+    tolerations:
+      - key: 'kubernetes.io/arch'
+        value: 'arm64'
+        operator: 'Equal'
+        effect: 'NoSchedule'
+  kube-state-metrics:
+    tolerations:
+      - key: 'kubernetes.io/arch'
+        value: 'arm64'
+        operator: 'Equal'
+        effect: 'NoSchedule'
+  server:
+    tolerations:
+      - key: 'kubernetes.io/arch'
+        value: 'arm64'
+        operator: 'Equal'
+        effect: 'NoSchedule'
+container-optimization-data-forwarder:
+  tolerations:
+    - key: 'kubernetes.io/arch'
+      value: 'arm64'
+      operator: 'Equal'
+      effect: 'NoSchedule'

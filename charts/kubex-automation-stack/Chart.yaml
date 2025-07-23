@@ -1,7 +1,7 @@
 apiVersion: v2
 description: Kubex Automation Stack
 name: kubex-automation-stack
-version: 0.9.10
+version: 0.9.11
 type: application
 icon: https://www.densify.com/wp-content/uploads/kubex-by-densify-logo.png
 dependencies:

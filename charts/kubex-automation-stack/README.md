@@ -24,11 +24,24 @@ To deploy the Kubex stack, follow these steps below:
 
 4. Run:
 
+   Add the helm repos:
+
 ```shell
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 helm repo add densify https://densify-dev.github.io/helm-charts
 helm repo update
+```
+
+   For clusters with amd64 architecture, run this command:
+
+```shell
 helm install --create-namespace -n densify -f values-edit.yaml -f <sizing file> kubex densify/kubex-automation-stack
+```
+
+   For clusters with arm64 architecture, run this command:
+
+```shell
+helm install --create-namespace -n densify -f values-edit.yaml -f <sizing file> -f values-arm64.yaml kubex densify/kubex-automation-stack
 ```
 
 ## Sizing
@@ -56,7 +69,7 @@ The following table lists configuration parameters in `values-edit.yaml`.
 
 ## Limitations
 
-* Supported Architecture: amd64 / x64
+* Supported architectures: amd64 (x64), arm64
 
 ## Further Details
 
