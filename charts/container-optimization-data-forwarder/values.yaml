@@ -134,4 +134,4 @@ nodeSelector: {}
 
 resources: {}
 
-tolerations: {}
+tolerations: []
