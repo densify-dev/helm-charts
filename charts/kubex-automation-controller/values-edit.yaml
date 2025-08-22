@@ -15,8 +15,6 @@ policy:
   remoteenablement:
     false # false: Enable automation within webhook definition only
     # true:  Enable automation within webhook definition and Densify UI
-webhook:
-  caBundle: null # Placeholder for CA bundle, will be filled by cert-manager if enabled.
 
 webhooks:
   - name: densify-resource.optimization.webhook # Name of the Kubernetes MutatingWebhookConfiguration.
