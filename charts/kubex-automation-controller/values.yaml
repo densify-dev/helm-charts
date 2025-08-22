@@ -28,5 +28,9 @@ deployment:
     limits:
       memory: "512Mi" # Maximum memory the pod can use before being throttled or killed.
   gatewayResources: # CPU and memory resource requests and limits for the pod.
-    {}
+    requests:
+      memory: "128Mi" # Minimum guaranteed memory allocated to the pod.
+      cpu: "250m" # Minimum guaranteed CPU.
+    limits:
+      memory: "512Mi" # Maximum memory the pod can use before being throttled or killed.
 

@@ -43,7 +43,6 @@ Before installing, download and edit the configuration file:
 | `policy.automationenabled` | `true`                                | Global Switch to enable/disable automation for the cluster |
 | `policy.defaultpolicy`     | `cpu-reclaim`                         | Default policy to be used if one has not be explicitly selected                      |
 | `policy.remoteenablement`  | `false`                               | Enable to add a second layer of dynamic control over automation scope from Kubex UI                |
-| `webhook.caBundle`         | `null`         | Leave this as null if using cert-manager, otherwise replace with your base64-encoded CA certificate                     |
 | `webhooks`                 | `List of webhook definitions`         | Configuration for mutating webhook(s)                      |
 | `pv.accessMode`                 | `ReadWriteOnce`         | ReadWriteOnce or ReadWriteMany                      |
 | `pv.storageClassName`                 | `default`         | Based on your storage classes                      |

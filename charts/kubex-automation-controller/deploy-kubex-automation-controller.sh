@@ -4,12 +4,9 @@ set -e
 
 print_usage() {
   echo "Usage:"
-  echo "  ./deploy-kubex-automation-controller.sh [--namespace|-n <namespace>] [--certmanager] [--delete]"
+  echo "  ./deploy-kubex-automation-controller.sh [--certmanager] [--delete]"
   echo
   echo "Options:"
-  echo "  --namespace, -n     Specify the namespace for the kubex-automation-controller Helm deployment."
-  echo "                      (Default: \"densify\")"
-  echo
   echo "  --certmanager       Include this flag if you intend to use cert-manager."
   echo "                      If cert-manager is not already installed, it will be installed."
   echo "                      If used with --delete, cert-manager and its resources will be deleted."
@@ -28,15 +25,6 @@ DELETE_MODE=false
 # Parse arguments
 while [[ "$#" -gt 0 ]]; do
   case $1 in
-    --namespace|-n)
-      if [[ -z "$2" || "$2" =~ ^- ]]; then
-        echo "Error: --namespace requires a non-empty argument."
-        print_usage
-        exit 1
-      fi
-      NAMESPACE="$2"
-      shift
-      ;;
     --certmanager)
       CERT_MANAGER_ACTION=true
       ;;
@@ -91,7 +79,6 @@ fi
 
 # INSTALLATION MODE
 echo "===== Installation Mode Activated ====="
-echo "Using namespace: ${NAMESPACE}"
 echo "Install Cert-Manager: ${CERT_MANAGER_ACTION}"
 
 
@@ -114,7 +101,7 @@ if [ "${CERT_MANAGER_ACTION}" = true ]; then
     helm upgrade --install cert-manager jetstack/cert-manager \
       --namespace cert-manager \
       --create-namespace \
-      --version v1.18.0 \
+      --version v1.18.2 \
       --set crds.enabled=true
 
     for deploy in cert-manager cert-manager-webhook cert-manager-cainjector; do

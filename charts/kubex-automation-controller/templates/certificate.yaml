@@ -6,8 +6,8 @@ metadata:
   namespace: {{ template "common.namespace" . }}
 spec:
   secretName: densify-automation-tls
-  duration: 720h # Validity (e.g., 1 year)
-  renewBefore: 240h # Renew 10 days before expiry
+  duration: {{ .Values.certmanager.duration | default "720h" }} # Certificate validity duration
+  renewBefore: {{ .Values.certmanager.renewBefore | default "240h" }} # Time before expiration to trigger renewal
   commonName: webhook-service.{{ template "common.namespace" . }}.svc
   dnsNames:
     - densify-webhook-service.{{ template "common.namespace" . }}.svc

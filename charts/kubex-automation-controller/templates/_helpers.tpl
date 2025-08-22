@@ -144,16 +144,6 @@ full-optimization:
 {{- end -}}
 
 {{- define "kubex-automation-controller.env_vars" -}}
-- name: DENSIFY_USERNAME
-  valueFrom:
-    secretKeyRef:
-      name: densify-api-secret-container-automation
-      key: DENSIFY_USERNAME
-- name: DENSIFY_EPASSWORD
-  valueFrom:
-    secretKeyRef:
-      name: densify-api-secret-container-automation
-      key: DENSIFY_EPASSWORD
 - name: DENSIFY_BASE_URL
   valueFrom:
     configMapKeyRef:
@@ -164,5 +154,7 @@ full-optimization:
     configMapKeyRef:
       name: densify-config
       key: CLUSTER_NAME
+- name: DEBUG
+  value: {{ .Values.deployment.debug | quote }}
 {{- end }}
 

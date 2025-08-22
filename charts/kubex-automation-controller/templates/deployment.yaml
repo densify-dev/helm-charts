@@ -54,8 +54,6 @@ spec:
               value: "/densify/config/densify-automation-policy/densify-automation-policy"
             - name: RECOMMENDATIONS_FILE_PATH
               value: "/densify/data/recommendations.json"
-            - name: DEBUG
-              value: {{ .Values.deployment.debug | quote}}
           volumeMounts:
             - name: webhook-certs
               mountPath: "/etc/webhook/certs"
@@ -84,17 +82,17 @@ spec:
             {{- toYaml .Values.deployment.gatewayResources | nindent 12 }}
           env:
             {{ include "kubex-automation-controller.env_vars" . | nindent 12 }}
-            - name: DEBUG
-              value: {{ .Values.deployment.debug | quote }}
             - name: SPOOL
               value: "/densify/data/spool"
             - name: CONFIG_FILE_PATH
               value: "/densify/config/densify-automation-policy/densify-automation-policy"
             - name: RECOMMENDATIONS_FILE_PATH
               value: "/densify/data/recommendations.json"
+            - name: SECRETS_VOLUME
+              value: "/densify/config/api-secrets"
           volumeMounts:
-            - name: webhook-certs
-              mountPath: "/etc/webhook/certs"
+            - name: secrets-volume
+              mountPath: "/densify/config/api-secrets"
               readOnly: true
             - name: recommendations-volume
               mountPath: /densify/data
@@ -102,6 +100,9 @@ spec:
               mountPath: /densify/config/densify-automation-policy
               readOnly: true
       volumes:
+        - name: secrets-volume
+          secret:
+            secretName: densify-api-secret-container-automation
         - name: webhook-certs
           secret:
             secretName: densify-automation-tls
