@@ -3,7 +3,14 @@ prometheus:
   server:
     resources:
       requests:
-        memory: "16Gi"
-        cpu: "2000m"
+        memory: "10Gi"
+        cpu: "1000m"
       limits:
-        memory: "32Gi"
+        memory: "20Gi"
+  prometheus-node-exporter:
+    resources:
+      requests:
+        memory: "30Mi"
+        cpu: "20m"
+      limits:
+        memory: "80Mi"

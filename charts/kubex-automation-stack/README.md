@@ -46,7 +46,7 @@ helm install --create-namespace -n densify -f values-edit.yaml -f <sizing file> 
 
 ## Sizing
 
-The following table indicates which sizing file to use, depending on the cluster size:
+The following table indicates - depending on the cluster size - which sizing file to use initially. Please note that these are initial sizing settings, once Kubex is running long enough and producing rightsizing recommendations for the stack components, these recommendations should be implemented for optimization.
 
 | Cluster Size    | No. of Containers | Sizing File to Use |
 | --------------- | ----------------- | ------------------ |
