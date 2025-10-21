@@ -47,8 +47,8 @@ Before you begin, ensure you have:
 Download the configuration template and installation script:
 
 ```bash
-curl -O https://github.com/densify-dev/helm-charts/raw/master/charts/kubex-automation-controller/kubex-automation-values.yaml
-curl -O https://github.com/densify-dev/helm-charts/raw/master/charts/kubex-automation-controller/deploy-kubex-automation-controller.sh
+curl -LO https://github.com/densify-dev/helm-charts/raw/master/charts/kubex-automation-controller/kubex-automation-values.yaml
+curl -LO https://github.com/densify-dev/helm-charts/raw/master/charts/kubex-automation-controller/deploy-kubex-automation-controller.sh
 chmod a+x ./deploy-kubex-automation-controller.sh
 ```
 
