@@ -2,17 +2,19 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: densify-automation-cert
-  namespace: {{ template "common.namespace" . }}
+  name: kubex-automation-cert
+  namespace: {{ .Release.Namespace }}
 spec:
-  secretName: densify-automation-tls
+  secretName: kubex-automation-tls
   duration: {{ .Values.certmanager.duration | default "720h" }} # Certificate validity duration
   renewBefore: {{ .Values.certmanager.renewBefore | default "240h" }} # Time before expiration to trigger renewal
-  commonName: webhook-service.{{ template "common.namespace" . }}.svc
+  privateKey:
+    rotationPolicy: {{ .Values.certmanager.rotationPolicy | default "Always" }}
+  commonName: kubex-webhook-service.{{ .Release.Namespace }}.svc
   dnsNames:
-    - densify-webhook-service.{{ template "common.namespace" . }}.svc
-    - densify-webhook-service.{{ template "common.namespace" . }}.local
+    - kubex-webhook-service.{{ .Release.Namespace }}.svc
+    - kubex-webhook-service.{{ .Release.Namespace }}.svc.cluster.local
   issuerRef:
-    name: selfsigned-cluster-issuer
+    name: kubex-selfsigned-cluster-issuer
     kind: ClusterIssuer
 {{- end }}

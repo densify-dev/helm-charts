@@ -1,0 +1,67 @@
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingWebhookConfiguration
+metadata:
+  name: {{ .Values.webhook.metadataName }}
+  {{- if .Values.certmanager.enabled }}
+  annotations:
+    cert-manager.io/inject-ca-from: kubex/kubex-automation-cert
+  {{- end }}
+webhooks:
+  {{- range .Values.scope }}
+  - name: "{{ .name }}.{{ $.Release.Namespace }}.svc"
+    clientConfig:
+      service:
+        name: kubex-webhook-service
+        namespace: {{ $.Release.Namespace }}
+        path: "/mutate/{{ .policy | default $.Values.policy.defaultPolicy }}"
+      {{- if not $.Values.certmanager.enabled }}
+      {{- $secret := (lookup "v1" "Secret" $.Release.Namespace "kubex-automation-tls") }}
+      {{- if $secret }}
+      caBundle: {{ index $secret.data "tls.crt" }}
+      {{- end }}
+      {{- else }}
+      # cert-manager will inject this
+      {{- end }}
+    failurePolicy: Ignore
+    reinvocationPolicy: IfNeeded
+    rules:
+      - operations:
+        {{- if .operations }}
+          {{- range .operations }}
+          - {{ . }}
+          {{- end }}
+        {{- else }}
+          - CREATE
+          - UPDATE
+        {{- end }}
+        apiGroups:
+          - ""
+        apiVersions:
+          - v1
+        resources:
+          - pods
+        scope: Namespaced
+    {{- if .namespaces }}
+    namespaceSelector:
+      matchExpressions:
+        - key: kubernetes.io/metadata.name
+          operator: {{ .namespaces.operator | quote }}
+          values:
+            {{- toYaml .namespaces.values | nindent 12 }}
+    {{- end }}
+    {{- if and .podLabels (gt (len .podLabels) 0) }}
+    objectSelector:
+      matchExpressions:
+        {{- range .podLabels }}
+        - key: {{ .key | quote }}
+          operator: {{ .operator | quote }}
+          values:
+            {{- range .values }}
+            - {{ . | quote }}
+            {{- end }}
+        {{- end }}
+    {{- end }}
+    admissionReviewVersions: ["v1"]
+    sideEffects: "None"
+    timeoutSeconds: 10
+  {{- end }}

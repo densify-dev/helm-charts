@@ -1,17 +1,26 @@
+# KUBEX AUTOMATION CONTROLLER DEPLOYMENT
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: densify-webhook-server
-  namespace: {{ template "common.namespace" . }}
+  name: kubex-automation-controller
+  namespace: {{ .Release.Namespace }}
 spec:
-  replicas: {{ .Values.deployment.replicas | default 1 }}
+  replicas: {{ .Values.deployment.replicas.controller | default 1 }}
+  strategy:
+    type: Recreate
+  revisionHistoryLimit: 1
   selector:
     matchLabels:
-      app: densify-webhook
+      app: kubex-controller
   template:
     metadata:
       labels:
-        app: densify-webhook
+        app: kubex-controller
+      annotations:
+        checksum/configmap: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+        checksum/valkey-client-secret: {{ include (print $.Template.BasePath "/valkey-client-secret.yaml") . | sha256sum }}
+        checksum/valkey-config-secret: {{ include (print $.Template.BasePath "/valkey-config-secret.yaml") . | sha256sum }}
     spec:
       securityContext:
         fsGroup: 3000
@@ -20,9 +29,10 @@ spec:
         runAsUser: 3000
         seccompProfile:
           type: RuntimeDefault
+      serviceAccountName: kubex-automation-controller-sa
       containers:
-        - name: densify-webhook
-          image: {{ .Values.deployment.webhookImage | quote }}
+        - name: kubex-automation-controller
+          image: {{ .Values.deployment.controllerImage | quote }}
           imagePullPolicy: Always
           ports:
             - containerPort: 8443
@@ -35,36 +45,80 @@ spec:
             seccompProfile:
               type: RuntimeDefault
           resources:
-            {{- toYaml .Values.deployment.webhookResources | nindent 12 }}
+            {{- toYaml .Values.deployment.controllerResources | nindent 12 }}
           env:
             {{ include "kubex-automation-controller.env_vars" . | nindent 12 }}
-            - name: RECOMMENDATION_AGE
-              valueFrom:
-                configMapKeyRef:
-                  name: densify-config
-                  key: RECOMMENDATION_AGE
-            - name: ALLOW_LIST
-              valueFrom:
-                configMapKeyRef:
-                  name: densify-config
-                  key: ALLOW_LIST
-            - name: API_URL
+            - name: REDIS_CFG_VOLUME
+              value: "/densify/config/redis-cfg"
+            - name: REDIS_HOST
+              value: {{ .Release.Name }}-valkey
+            - name: GATEWAY_URL
               value: "http://localhost:8181"
-            - name: CONFIG_FILE_PATH
-              value: "/densify/config/densify-automation-policy/densify-automation-policy"
-            - name: RECOMMENDATIONS_FILE_PATH
+            - name: POLICY_FILE
+              value: "/densify/config/kubex-automation-policy/kubex-automation-policy"
+            - name: SCOPE_FILE
+              value: "/densify/config/kubex-automation-scope/kubex-automation-scope"
+            - name: RECOMMENDATIONS_PATH
               value: "/densify/data/recommendations.json"
+            - name: UPDATER_INTERVAL
+              value: {{ .Values.deployment.controllerEnv.podScanInterval }}
+            - name: UPDATER_TIMEOUT
+              value: {{ .Values.deployment.controllerEnv.podScanTimeout }}
+            - name: RECOMMENDATIONS_UPDATE_INTERVAL
+              value: {{ .Values.deployment.controllerEnv.recommendationsFetchInterval }}
+            - name: RECOMMENDATIONS_INITIAL_INTERVAL
+              value: {{ .Values.deployment.controllerEnv.recommendationsFetchInitialDelay }}
+            - name: RECOMMENDATIONS_RESYNC_TIMEOUT
+              value: {{ .Values.deployment.controllerEnv.recommendationsResyncTimeout }}
+            - name: SUPPRESS_IN_PLACE_RESIZING
+              value: {{ .Values.deployment.controllerEnv.suppressInPlaceResizing | quote }}
+            - name: EVICTION_COOLDOWN
+              value: {{ .Values.deployment.controllerEnv.podEvictionCooldownPeriod }}
+            - name: REDIS_USER
+              valueFrom:
+                secretKeyRef:
+                  name: kubex-valkey-client-auth
+                  key: REDIS_USER
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: kubex-valkey-client-auth
+                  key: REDIS_PASSWORD
+            - name: RECOMMENDATION_ENCODING
+              value: {{ .Values.deployment.controllerEnv.recommendationDataFormat | quote }}
+            - name: NODE_CPU_HEADROOM
+              value: {{ .Values.deployment.controllerEnv.nodeCpuHeadroom | quote }}
+            - name: NODE_MEMORY_HEADROOM
+              value: {{ .Values.deployment.controllerEnv.nodeMemoryHeadroom | quote }}
+            - name: SHUFFLE_PODS
+              value: {{ .Values.deployment.controllerEnv.shufflePods | quote }} 
+            - name: RATE_LIMIT_WINDOW
+              value: {{ .Values.deployment.controllerEnv.evictionThrottlingWindow | quote }} 
+            - name: RATE_LIMIT_MAX
+              value: {{ .Values.deployment.controllerEnv.evictionThrottlingMax | quote }} 
           volumeMounts:
-            - name: webhook-certs
-              mountPath: "/etc/webhook/certs"
+            - name: config-volume
+              mountPath: "/densify/config/kubex-automation-policy"
+              readOnly: true
+            - name: scope-config-volume
+              mountPath: "/densify/config/kubex-automation-scope"
+              readOnly: true
+            - name: kubex-automation-controller-clusterrole-volume
+              mountPath: "/densify/config/kubex-automation-controller-clusterrole"
+              readOnly: true
+            - name: valkey-cfg-volume
+              mountPath: "/densify/config/redis-cfg"
               readOnly: true
             - name: recommendations-volume
               mountPath: "/densify/data"
-            - name: config-volume
-              mountPath: "/densify/config/densify-automation-policy"
+            - name: automation-certs
+              mountPath: "/densify/tls"
               readOnly: true
       initContainers:
-        - name: densify-webhook-gw
+        - name: wait-for-valkey
+          image: busybox:1.28
+          command: ['sh', '-c', "until nc -vz {{ .Release.Name }}-valkey 6379; do echo 'Waiting for Valkey'; sleep 2; done"]
+        - name: kubex-automation-gw
           image: {{ .Values.deployment.gatewayImage | quote }}
           imagePullPolicy: Always
           restartPolicy: Always
@@ -82,40 +136,209 @@ spec:
             {{- toYaml .Values.deployment.gatewayResources | nindent 12 }}
           env:
             {{ include "kubex-automation-controller.env_vars" . | nindent 12 }}
+            - name: CFG_VOLUME
+              value: "/densify/config/api"
             - name: SPOOL
               value: "/densify/data/spool"
-            - name: CONFIG_FILE_PATH
-              value: "/densify/config/densify-automation-policy/densify-automation-policy"
-            - name: RECOMMENDATIONS_FILE_PATH
-              value: "/densify/data/recommendations.json"
-            - name: SECRETS_VOLUME
-              value: "/densify/config/api-secrets"
+            - name: DENSIFY_BASE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: kubex-config
+                  key: KUBEX_BASE_URL
           volumeMounts:
-            - name: secrets-volume
-              mountPath: "/densify/config/api-secrets"
+            - name: cfg-volume
+              mountPath: "/densify/config/api"
               readOnly: true
             - name: recommendations-volume
-              mountPath: /densify/data
-            - name: config-volume
-              mountPath: /densify/config/densify-automation-policy
-              readOnly: true
+              mountPath: "/densify/data"
       volumes:
-        - name: secrets-volume
+        - name: automation-certs
           secret:
-            secretName: densify-api-secret-container-automation
+            secretName: kubex-automation-tls
+            items:
+              - key: ca.crt
+                path: ca.crt
+        - name: config-volume
+          projected:
+            sources:
+              - configMap:
+                  name: kubex-automation-policy
+        - name: scope-config-volume
+          projected:
+            sources:
+              - configMap:
+                  name: kubex-automation-scope
+        - name: cfg-volume
+          secret:
+            secretName: kubex-api-secret-container-automation
+        - name: valkey-cfg-volume
+          secret:
+            secretName: kubex-valkey-client-auth
+        - name: kubex-automation-controller-clusterrole-volume
+          configMap:
+            name: kubex-automation-controller-clusterrole
+        - name: recommendations-volume
+          emptyDir: {}
+      {{- with .Values.deployment.controller.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.deployment.controller.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.deployment.controller.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.deployment.controller.topologySpreadConstraints }}
+      topologySpreadConstraints:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+---
+# KUBEX MUTATING WEBHOOK DEPLOYMENT
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubex-webhook-server
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: {{ .Values.deployment.replicas.webhookServer | default 1 }}
+  strategy:
+    type: Recreate
+  revisionHistoryLimit: 1
+  selector:
+    matchLabels:
+      app: kubex-webhook
+  template:
+    metadata:
+      labels:
+        app: kubex-webhook
+      annotations:
+        checksum/configmap: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+        checksum/kubex-valkey-client-secret: {{ include (print $.Template.BasePath "/valkey-client-secret.yaml") . | sha256sum }}
+        checksum/kubex-valkey-config-secret: {{ include (print $.Template.BasePath "/valkey-config-secret.yaml") . | sha256sum }}
+    spec:
+      securityContext:
+        fsGroup: 3000
+        runAsGroup: 3000
+        runAsNonRoot: true
+        runAsUser: 3000
+        seccompProfile:
+          type: RuntimeDefault
+      serviceAccountName: kubex-webhook-sa
+      containers:
+        - name: kubex-webhook
+          image: {{ .Values.deployment.webhookImage | quote }}
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8443
+          securityContext:
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            seccompProfile:
+              type: RuntimeDefault
+          resources:
+            {{- toYaml .Values.deployment.webhookResources | nindent 12 }}
+          env:
+            {{ include "kubex-automation-controller.env_vars" . | nindent 12 }}
+            - name: REDIS_CFG_VOLUME
+              value: "/densify/config/redis-cfg"
+            - name: REDIS_HOST
+              value: {{ .Release.Name }}-valkey
+            - name: API_URL
+              value: "http://localhost:8181"
+            - name: CONFIG_FILE_PATH
+              value: "/densify/config/kubex-automation-policy/kubex-automation-policy"
+            - name: RECOMMENDATION_ENCODING
+              value: {{ .Values.deployment.controllerEnv.recommendationDataFormat | quote }}
+          volumeMounts:
+            - name: webhook-certs
+              mountPath: "/etc/webhook/certs"
+              readOnly: true
+            - name: recommendations-volume
+              mountPath: "/densify/data"
+            - name: config-volume
+              mountPath: "/densify/config/kubex-automation-policy"
+              readOnly: true
+            - name: valkey-cfg-volume
+              mountPath: "/densify/config/redis-cfg"
+              readOnly: true
+      initContainers:
+        - name: wait-for-valkey
+          image: busybox:1.28
+          command: ['sh', '-c', "until nc -vz {{ .Release.Name }}-valkey 6379; do echo 'Waiting for Valkey'; sleep 2; done"]
+        - name: kubex-webhook-gw
+          image: {{ .Values.deployment.gatewayImage | quote }}
+          imagePullPolicy: Always
+          restartPolicy: Always
+          ports:
+            - containerPort: 8181
+          securityContext:
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            seccompProfile:
+              type: RuntimeDefault
+          resources:
+            {{- toYaml .Values.deployment.gatewayResources | nindent 12 }}
+          env:
+            {{ include "kubex-automation-controller.env_vars" . | nindent 12 }}
+            - name: CFG_VOLUME
+              value: "/densify/config/api"
+            - name: SPOOL
+              value: "/densify/data/spool"
+            - name: DENSIFY_BASE_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: kubex-config
+                  key: KUBEX_BASE_URL
+          volumeMounts:
+            - name: cfg-volume
+              mountPath: "/densify/config/api"
+              readOnly: true
+            - name: recommendations-volume
+              mountPath: "/densify/data"
+      volumes:
         - name: webhook-certs
           secret:
-            secretName: densify-automation-tls
+            secretName: kubex-automation-tls
             items:
               - key: tls.crt
                 path: server.pem
               - key: tls.key
                 path: server-key.pem
         - name: recommendations-volume
-          persistentVolumeClaim:
-            claimName: densify-recommendations-pvc
+          emptyDir: {}
         - name: config-volume
-          projected:
-            sources:
-              - configMap:
-                  name: densify-automation-policy
+          configMap:
+            name: kubex-automation-policy
+        - name: cfg-volume
+          secret:
+            secretName: kubex-api-secret-container-automation
+        - name: valkey-cfg-volume
+          secret:
+            secretName: kubex-valkey-client-auth
+      {{- with .Values.deployment.webhook.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.deployment.webhook.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.deployment.webhook.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.deployment.webhook.topologySpreadConstraints }}
+      topologySpreadConstraints:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

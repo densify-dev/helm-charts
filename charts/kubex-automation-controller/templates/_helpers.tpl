@@ -61,100 +61,49 @@ Create the name of the service account to use
 {{- end }}
 {{- end }}
 
-{{- define "kubex-automation-controller.defaultPolicies" -}}
-cpu-reclaim:
-  enablement:
-    cpu:
-      request:
-        downsize: true
-cpu-mem-reclaim:
-  enablement:
-    cpu:
-      request:
-        downsize: true
-    memory:
-      request:
-        downsize: true
-full-request-management:
-  enablement:
-    cpu:
-      request:
-        upsize: true
-        downsize: true
-        set-uninitialized-values: true
-      limit:
-        upsize: true
-    memory:
-      request:
-        upsize: true
-        downsize: true
-        set-uninitialized-values: true
-      limit:
-        upsize: true
-limit-oom-prevention:
-  enablement:
-    memory:
-      limit:
-        upsize: true
-limit-oom-throttling-prevention:
-        enablement:
-          cpu:
-            limit:
-              upsize: true
-          memory:
-            limit:
-              upsize: true
-full-limit-management:
-        enablement:
-          cpu:
-            limit:
-              upsize: true
-              set-uninitialized-values: true
-          memory:
-            limit:
-              upsize: true
-              set-uninitialized-values: true
-full-optimization:
-        enablement:
-          cpu:
-            request:
-              upsize: true
-              downsize: true
-              set-uninitialized-values: true
-            limit:
-              upsize: true
-              downsize: true
-              set-uninitialized-values: true
-          memory:
-            request:
-              upsize: true
-              downsize: true
-              set-uninitialized-values: true
-            limit:
-              upsize: true
-              downsize: true
-              set-uninitialized-values: true
-{{- end }}
-
-{{/*
-- .Values.nsPrefix  : override namespace prefix
-*/}}
-{{- define "common.namespace" -}}
-  {{- default .Release.Namespace .Values.nsPrefix -}}
-{{- end -}}
-
-{{- define "kubex-automation-controller.env_vars" -}}
-- name: DENSIFY_BASE_URL
-  valueFrom:
-    configMapKeyRef:
-      name: densify-config
-      key: DENSIFY_BASE_URL
+{{- define "kubex-automation-controller.env_vars" }}
 - name: CLUSTER_NAME
   valueFrom:
     configMapKeyRef:
-      name: densify-config
+      name: kubex-config
       key: CLUSTER_NAME
 - name: DEBUG
-  value: {{ .Values.deployment.debug | quote }}
+  value: {{ .Values.deployment.controllerEnv.debug | quote }}
+{{- end }}
+
+{{- define "kubex-automation-controller.kubex-automation-controller-clusterrole-rules" }}
+  - apiGroups: [""]
+    resources: ["namespaces", "nodes", "limitranges", "resourcequotas", "services"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["apps"]
+    resources: ["replicasets", "deployments"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["batch"]
+    resources: ["jobs"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  - apiGroups: [""]
+    resources: ["pods/eviction"]
+    verbs: ["create"]
+  - nonResourceURLs:
+    - "/metrics"
+    verbs:
+    - "get"
+{{- end }}
+
+{{/*
+Generate Valkey password that persists across upgrades
+*/}}
+{{- define "kubex-automation-controller.valkeyPassword" -}}
+{{- .Values.valkey.credentials.password | required "A password must be provided in kubex-automation-values.yaml under valkey.credentials.password" -}}
+{{- end }}
+
+{{/*
+Generate Valkey username - defaults to kubexAutomation but can be overridden
+*/}}
+{{- define "kubex-automation-controller.valkeyUsername" -}}
+{{- .Values.valkey.credentials.user | default "kubexAutomation" -}}
 {{- end }}
 

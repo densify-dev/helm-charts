@@ -2,9 +2,12 @@ apiVersion: v2
 name: kubex-automation-controller
 description: A Helm chart for deploying Kubex Automation Controller
 type: application
-version: 1.0.1
-appVersion: "1.2.1"
+version: 1.0.2
 icon: https://www.densify.com/wp-content/uploads/densify.png
+dependencies:
+  - name: valkey
+    version: "2.*.*"
+    repository: https://groundhog2k.github.io/helm-charts
 maintainers:
-  - email: support@densify.com
-    name: support
+- email: support@densify.com
+  name: support

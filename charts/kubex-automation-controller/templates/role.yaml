@@ -1,0 +1,7 @@
+# Automation Controller ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: kubex-automation-controller-cluster-role
+rules:
+{{ include "kubex-automation-controller.kubex-automation-controller-clusterrole-rules" . }}

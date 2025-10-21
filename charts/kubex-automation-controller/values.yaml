@@ -1,36 +1,141 @@
 certmanager:
-  duration: 720h # Certificate validity duration (e.g., 30 days = 720h).
+  duration: 720h # Certificate validity duration (e.g., 30 days = 720h)
   renewBefore: 240h # Time before expiration to trigger renewal (e.g., 10 days = 240h).
-
-config:
-  RECOMMENDATION_AGE: "5" # Age threshold (in days) for recommendations to compare.
-  ALLOW_LIST: "Deployment,StatefulSet,DaemonSet,CronJob,Rollout,Job,ReplicaSet" # Comma-separated list of Kubernetes resources to allow for automation (e.g., Job, Deployment).
+  rotationPolicy: Always
 
 policy:
-  policiesbyname: {} # Additional policies can be defined here, remove {} when adding new policies
-
-pv:
-  storage: 10Gi # Amount of storage to allocate for the Persistent Volume.
-  hostPath: /mnt/data/densify-recommendations # Host path to mount the volume on the node.
+  policies: {} # Additional policies can be defined here, remove {} when adding new policies
 
 webhook:
-  metadataName: densify-resource-optimization-webhook # Name of the webhook configuration.
+  metadataName: kubex-resource-optimization-webhook # Name of the webhook configuration.
 
 deployment:
-  webhookImage: densify/container-automation:1.2 # Container image for the Densify automation webhook server.
+  webhookImage: densify/container-automation:1.3 # Container image for the Densify automation webhook server.
   gatewayImage: densify/automation-gateway:1.0 # Container image for the Densify automation gateway.
-  replicas: 1 # Number of pod replicas to run ([set >1 for high availability).
-  debug: false # Enable debug mode (true/false).
-  webhookResources: # CPU and memory resource requests and limits for the pod.
-    requests:
-      memory: "128Mi" # Minimum guaranteed memory allocated to the pod.
-      cpu: "250m" # Minimum guaranteed CPU.
-    limits:
-      memory: "512Mi" # Maximum memory the pod can use before being throttled or killed.
-  gatewayResources: # CPU and memory resource requests and limits for the pod.
-    requests:
-      memory: "128Mi" # Minimum guaranteed memory allocated to the pod.
-      cpu: "250m" # Minimum guaranteed CPU.
-    limits:
-      memory: "512Mi" # Maximum memory the pod can use before being throttled or killed.
+  controllerImage: densify/automation-director:1.0 # Container image for the Densify automation controller.
 
+  replicas: # Number of pod replicas to run ([set >1 for high availability).
+    webhookServer: 1
+    controller: 1
+  webhookResources: # Resource Specs for the webhook server pod
+    requests:
+      memory: "64Mi" # Reduced from 128Mi for better scheduling
+      cpu: "100m"
+    limits:
+      memory: "512Mi" # Maximum memory the pod can use before being throttled or killed
+  gatewayResources: # CPU and memory resource requests and limits for the pod
+    requests:
+      memory: "64Mi" # Minimum guaranteed memory allocated to the pod
+      cpu: "100m" # Minimum guaranteed CPU
+    limits:
+      memory: "512Mi" # Maximum memory the pod can use before being throttled or killed
+  controllerResources: # Resource Specs for the controller pod
+    requests:
+      memory: "128Mi" # Minimum guaranteed memory allocated to the pod
+      cpu: "250m" # Minimum guaranteed CPU
+    limits:
+      memory: "512Mi" # Maximum memory the pod can use before being throttled or killed
+  controllerEnv: # Environment variables for the controller pod
+    podScanInterval: "6h45m"  # Default for 1000 pods initial deployment with 1m cooldown
+    podScanTimeout: "6h30m"   # Default for 1000 pods initial deployment with 1m cooldown
+    podEvictionCooldownPeriod: "1m"  # Default cooldown allowing for resource quotas and termination grace periods
+
+    recommendationsFetchInitialDelay: "1m"
+    recommendationsFetchInterval: "1h"  
+    recommendationsResyncTimeout: "45m"
+    recommendationDataFormat: "protobuf"
+    
+    debug: false # Enable debug mode (true/false).
+    suppressInPlaceResizing: "true"
+    shufflePods: "false"
+    
+    # Node resource headroom configuration
+    nodeCpuHeadroom: "10%"        # CPU headroom to reserve on each node
+    nodeMemoryHeadroom: "10%"    # Memory headroom to reserve on each node
+
+    evictionThrottlingWindow: "6h"
+    evictionThrottlingMax: "1000"
+    
+  # Node scheduling configuration for controller deployment
+  controller:
+    nodeSelector: {} # Node labels for pod assignment (e.g., node-pool: system)
+    affinity: {} # Affinity rules for advanced node selection
+    tolerations: [] # Tolerations for node taints
+    topologySpreadConstraints: [] # Topology spread constraints for pod distribution
+  
+  # Node scheduling configuration for webhook deployment  
+  webhook:
+    nodeSelector: {} # Node labels for pod assignment (e.g., node-pool: system)
+    affinity: {} # Affinity rules for advanced node selection
+    tolerations: [] # Tolerations for node taints
+    topologySpreadConstraints: [] # Topology spread constraints for pod distribution
+
+valkey:
+  # Valkey credentials
+  credentials:
+    # Username for Valkey authentication (defaults to "kubexAutomation" if not set)
+    user: "kubexAutomation"
+    # Password for Valkey authentication.
+    # This is a mandatory field and must be set in kubex-automation-values.yaml.
+    # password: ""
+
+  image:
+    registry: docker.io
+    repository: valkey/valkey
+    tag: "9.0"
+    pullPolicy: Always
+
+  # No TLS requested
+
+  # Add password to valkey.conf via a Secret file
+  extraSecretValkeyConfigs: kubex-valkey-secret
+
+  # Storage for single-instance (non-HA)
+  storage:
+    requestedSize: "10Gi"
+    className: ""  # Use cluster default storage class (users override in kubex-automation-values.yaml)
+    keepPvc: false
+
+  service:
+    type: ClusterIP
+    serverPort: 6379
+
+  # Resource sizing (tune for your cluster/workload)
+  resources:
+    requests:
+      cpu: "250m"
+      memory: "256Mi"
+    limits:
+      memory: "512Mi"
+
+  # Use a Deployment in non-HA mode (default)
+  useDeploymentWhenNonHA: true
+
+    # Metrics exporter enabled; no Prometheus Operator
+  metrics:
+    enabled: true
+    exporter:
+      image:
+        registry: docker.io
+        repository: oliver006/redis_exporter
+        tag: v1.76.0
+        pullPolicy: Always
+      extraExporterEnvSecrets:
+        - kubex-valkey-client-auth
+      resources:
+        requests:
+          cpu: "50m"
+          memory: "64Mi"
+        limits:
+          memory: "128Mi"
+    service:
+      enabled: true
+      type: ClusterIP
+      servicePort: 9121
+      containerPort: 9121
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9121"
+        prometheus.io/path: "/metrics"
+    serviceMonitor:
+      enabled: false

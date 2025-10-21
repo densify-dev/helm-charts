@@ -37,9 +37,9 @@ prompt = no
 C = US
 ST = State
 L = City
-O = Densify
+O = Kubex
 OU = Webhook
-CN = densify-webhook-service.densify.svc
+CN = kubex-webhook-service.kubex.svc
 
 [v3_req]
 keyUsage = keyEncipherment, dataEncipherment
@@ -47,10 +47,10 @@ extendedKeyUsage = serverAuth
 subjectAltName = @alt_names
 
 [alt_names]
-DNS.1 = densify-webhook-service.densify.svc
-DNS.2 = densify-webhook-service.densify.svc.cluster.local
-DNS.3 = densify-webhook-service
-DNS.4 = densify-webhook-service.densify
+DNS.1 = kubex-webhook-service.kubex.svc
+DNS.2 = kubex-webhook-service.kubex.svc.cluster.local
+DNS.3 = kubex-webhook-service
+DNS.4 = kubex-webhook-service.kubex
 EOF
 ```
 
@@ -60,11 +60,21 @@ openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -node
 ```
 
 ### Create a Kubernetes Secret:
+
+**Important**: The secret must include the CA certificate. Since you generated a self-signed certificate, the certificate itself acts as the CA:
+
 ```bash
-kubectl create secret tls densify-automation-tls --cert=cert.pem --key=key.pem -n densify
+# Create secret with certificate, key, and CA certificate
+kubectl create secret generic kubex-automation-tls \
+  --from-file=tls.crt=cert.pem \
+  --from-file=tls.key=key.pem \
+  --from-file=ca.crt=cert.pem \
+  -n kubex
 ```
 
-### Set cert-manager to disabled in your values-edit.yaml file:
+**Note**: For self-signed certificates, `ca.crt` and `tls.crt` are the same file since the certificate acts as its own CA.
+
+### Set cert-manager to disabled in your kubex-automation-values.yaml file:
 ```yaml
 certmanager:
   enabled: false
@@ -72,7 +82,7 @@ certmanager:
 
 ### Important Notes:
 - The certificate **must** include the Kubernetes service DNS names in the Subject Alternative Names (SAN)
-- Replace `densify` in the DNS names with your actual namespace if different
+- Replace `kubex` in the DNS names with your actual namespace if different
 - The Common Name (CN) should match the primary service DNS name
 - Without proper DNS names, you'll get "TLS handshake error: bad certificate" errors
 - **Works on all Kubernetes clusters**: This method works identically on local clusters (kind, minikube) and cloud platforms (EKS, GKE, AKS, etc.)
@@ -81,7 +91,7 @@ certmanager:
 ### Cleanup (if needed):
 ```bash
 # Remove the Kubernetes secret
-kubectl delete secret densify-automation-tls -n densify
+kubectl delete secret kubex-automation-tls -n kubex
 
 # Remove local certificate and configuration files
 rm -f cert.pem key.pem webhook-cert.conf

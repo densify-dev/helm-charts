@@ -18,7 +18,7 @@ print_usage() {
 
 
 # Default values
-NAMESPACE="densify"
+NAMESPACE="kubex"
 CERT_MANAGER_ACTION=false
 DELETE_MODE=false
 
@@ -48,7 +48,7 @@ done
 RELEASE_NAME="kubex-automation-controller"
 
 if [ "${DELETE_MODE}" = true ]; then
-  echo "===== Deleting Densify kubex-automation-controller helm package ====="
+  echo "===== Deleting kubex-automation-controller helm package ====="
   echo "Deleting kubex-automation-controller Helm release..."
   helm uninstall "${RELEASE_NAME}" -n "${NAMESPACE}" || echo "kubex-automation-controller release not found."
 
@@ -82,9 +82,9 @@ echo "===== Installation Mode Activated ====="
 echo "Install Cert-Manager: ${CERT_MANAGER_ACTION}"
 
 
-# Validate values-edit.yaml exists
-if [ ! -f "values-edit.yaml" ]; then
-  echo "Error: values-edit.yaml not found in the current directory: `pwd`"
+# Validate kubex-automation-values.yaml exists
+if [ ! -f "kubex-automation-values.yaml" ]; then
+  echo "Error: kubex-automation-values.yaml not found in the current directory: `pwd`"
   exit 1
 fi
 
@@ -117,14 +117,15 @@ else
 fi
 
 echo "Installing ${RELEASE_NAME}"
-kubectl get namespace "${NAMESPACE}" || kubectl create namespace "${NAMESPACE}"
 
 helm repo add densify https://densify-dev.github.io/helm-charts
+helm repo add groundhog2k https://groundhog2k.github.io/helm-charts
 helm repo update
 
 helm upgrade --install "${RELEASE_NAME}" "densify/${RELEASE_NAME}" \
   --namespace "${NAMESPACE}" \
-  -f "./values-edit.yaml" \
+  --create-namespace \
+  -f "./kubex-automation-values.yaml" \
   --set certmanager.enabled="${CERT_MANAGER_ACTION}"
 
 echo "Installation complete in namespace: ${NAMESPACE}"

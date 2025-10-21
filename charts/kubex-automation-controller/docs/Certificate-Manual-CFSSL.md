@@ -63,7 +63,7 @@ First, create the required configuration files:
 ```bash
 cat > ca-csr.json << 'EOF'
 {
-  "CN": "Densify Webhook CA",
+  "CN": "Kubex Webhook CA",
   "key": {
     "algo": "rsa",
     "size": 2048
@@ -72,7 +72,7 @@ cat > ca-csr.json << 'EOF'
     {
       "C": "US",
       "L": "City",
-      "O": "Densify",
+      "O": "Kubex",
       "OU": "Webhook",
       "ST": "State"
     }
@@ -104,7 +104,7 @@ EOF
 ```bash
 cat > server-csr.json << 'EOF'
 {
-  "CN": "densify-webhook-service.densify.svc",
+  "CN": "kubex-webhook-service.kubex.svc",
   "key": {
     "algo": "rsa",
     "size": 2048
@@ -113,16 +113,16 @@ cat > server-csr.json << 'EOF'
     {
       "C": "US",
       "L": "City",
-      "O": "Densify",
+      "O": "Kubex",
       "OU": "Webhook",
       "ST": "State"
     }
   ],
   "hosts": [
-    "densify-webhook-service",
-    "densify-webhook-service.densify",
-    "densify-webhook-service.densify.svc",
-    "densify-webhook-service.densify.svc.cluster.local"
+    "kubex-webhook-service",
+    "kubex-webhook-service.kubex",
+    "kubex-webhook-service.kubex.svc",
+    "kubex-webhook-service.kubex.svc.cluster.local"
   ]
 }
 EOF
@@ -141,11 +141,21 @@ cfssl gencert -ca=ca.pem -ca-key=ca-key.pem -config=ca-config.json -profile=defa
 ```
 
 ### Create a Kubernetes Secret
+
+**Important**: The secret must include the CA certificate that was used to sign the server certificate:
+
 ```bash
-kubectl create secret tls densify-automation-tls --cert=server.pem --key=server-key.pem -n densify
+# Create secret with server certificate, key, and CA certificate
+kubectl create secret generic kubex-automation-tls \
+  --from-file=tls.crt=server.pem \
+  --from-file=tls.key=server-key.pem \
+  --from-file=ca.crt=ca.pem \
+  -n kubex
 ```
 
-### Set cert-manager to disabled in your values-edit.yaml file:
+**Note**: When using CFSSL, you have separate CA and server certificates, so `ca.crt` should be the `ca.pem` file generated earlier.
+
+### Set cert-manager to disabled in your kubex-automation-values.yaml file:
 ```yaml
 certmanager:
   enabled: false
@@ -155,14 +165,14 @@ certmanager:
 - The server certificate **must** include the Kubernetes service DNS names in the "hosts" field
 - The Common Name (CN) should match the primary service DNS name
 - Without proper DNS names, you'll get "TLS handshake error: bad certificate" errors
-- The CA certificate will be automatically extracted and used by the Helm chart when `certmanager.enabled: false`
+- The CA certificate **must** be included in the secret as `ca.crt` - it's required for webhook validation
 - **Works on all Kubernetes clusters**: This method works identically on local clusters (kind, minikube) and cloud platforms (EKS, GKE, AKS, etc.)
 - **Cloud platform compatibility**: Kubernetes internal DNS and service discovery work the same way across all platforms
 
 ### Cleanup (if needed):
 ```bash
 # Remove the Kubernetes secret
-kubectl delete secret densify-automation-tls -n densify
+kubectl delete secret kubex-automation-tls -n kubex
 
 # Remove local certificate and configuration files
 rm -f ca.pem ca-key.pem ca.csr server.pem server-key.pem server.csr ca-csr.json ca-config.json server-csr.json
