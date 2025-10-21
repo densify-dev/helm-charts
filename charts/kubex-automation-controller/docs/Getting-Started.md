@@ -7,7 +7,7 @@ This guide walks you through deploying Kubex Automation Controller in your Kuber
 - [Getting Started with Kubex Automation Controller](#getting-started-with-kubex-automation-controller)
 - [Quick Links](#quick-links)
   - [Prerequisites](#prerequisites)
-  - [Step 1: Download Configuration Template](#step-1-download-configuration-template)
+  - [Step 1: Download Configuration Template](#step-1-download-configuration-template-and-installation-script)
   - [Step 2: Configure Connection Parameters](#step-2-configure-connection-parameters)
   - [Step 3: Configure Your Cluster](#step-3-configure-your-cluster)
   - [Step 4: Define Automation Scope](#step-4-define-automation-scope)
