@@ -149,11 +149,12 @@ See [BYOC Guide](./Certificates-BYOC.md) if you have existing certificates.
 ```bash
 # Add Helm repositories
 helm repo add densify https://densify-dev.github.io/helm-charts
+helm repo add groundhog2k https://groundhog2k.github.io/helm-charts
 helm repo update
 
 # Install cert-manager (if using)
 ## Install
-helm repo add jetstack https://charts.jetstack.io
+helm repo add jetstack https://charts.jetstack.io --force-update
 helm upgrade --install cert-manager jetstack/cert-manager \
   --namespace cert-manager \
   --create-namespace \
