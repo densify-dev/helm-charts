@@ -114,6 +114,26 @@ A scope references a policy by name, allowing you to apply different automation 
 
 See [RBAC Guide](./RBAC-Guide.md) for complete details.
 
+### Q: Can the controller damage my cluster, its control plane or system components?
+
+**A:** Multiple safety mechanisms prevent damage:
+
+- **System namespaces exclusion**: by default, the well-known system namespaces (`kube-system`, `kube-public`, `kube-node-lease`) are excluded from automation. Even if the [Scope Definition](./Configuration-Reference.md#scope-definition-manual-input) includes these namespaces (as in the following example), they will be excluded:
+
+```yaml
+scope:
+  - name: everything
+    policy: some-optimization
+    namespaces:
+      operator: NotIn
+      values:
+        - some-namespace
+    podLabels:
+    ...
+```
+
+- **Policies' allowed pod owners** - in each policy, the [Allowed Pod Owners](./Policy-Configuration.md#allowed-pod-owners) parameter specifies to which kinds of pod owners the policy applies. A common practice is to exclude `DaemonSet` from this comma-separated list, unless you have a very explicit reason to include it.
+
 ### Q: Can the controller damage my applications?
 **A:** Multiple safety mechanisms prevent damage:
 - **HPA awareness**: Won't resize if HPA is actively scaling on CPU and/or memory
