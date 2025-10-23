@@ -63,7 +63,7 @@ kubectl edit configmap kubex-automation-policy -n kubex
 
 # Option 2: Helm upgrade (consistent with other changes)
 vim kubex-automation-values.yaml
-helm upgrade <release-name> . -f kubex-automation-values.yaml
+helm upgrade <release-name> densify/kubex-automation-controller -f kubex-automation-values.yaml
 ```
 
 ### For Scope Changes or New Policies
@@ -72,7 +72,7 @@ helm upgrade <release-name> . -f kubex-automation-values.yaml
 vim kubex-automation-values.yaml
 
 # 2. Apply changes via Helm upgrade
-helm upgrade <release-name> . -f kubex-automation-values.yaml
+helm upgrade <release-name> densify/kubex-automation-controller -f kubex-automation-values.yaml
 
 # 3. Verify both components are updated
 kubectl get mutatingwebhookconfiguration kubex-resource-optimization-webhook -o yaml

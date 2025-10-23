@@ -214,7 +214,7 @@ valkey:
     limits:
       memory: "1Gi"    # Adjust based on Kubex recommendations
 ```
-3. **Apply changes**: Run `helm upgrade kubex-automation-controller . -f kubex-automation-values.yaml`
+3. **Apply changes**: Run `helm upgrade kubex-automation-controller densify/kubex-automation-controller -f kubex-automation-values.yaml`
 
 ### Q: How do I prevent too many pod evictions during large-scale optimization?
 **A:** Use eviction throttling to control the rate of pod evictions across your cluster:
