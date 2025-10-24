@@ -297,8 +297,7 @@ policy:
 Apply the updated configuration:
 
 ```bash
-helm upgrade kubex-automation-controller densify/kubex-automation-controller \
-  -n kubex -f kubex-automation-values.yaml
+helm upgrade kubex-automation-controller densify/kubex-automation-controller -n kubex -f kubex-automation-values.yaml
 ```
 
 ---

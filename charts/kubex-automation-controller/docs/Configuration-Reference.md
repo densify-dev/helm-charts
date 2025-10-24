@@ -85,7 +85,7 @@ kubectl edit configmap kubex-automation-policy -n kubex
 
 # Option 2: Helm upgrade (consistent with other changes)
 vim kubex-automation-values.yaml
-helm upgrade <release-name> densify/kubex-automation-controller -f kubex-automation-values.yaml
+helm upgrade <release-name> densify/kubex-automation-controller -n kubex -f kubex-automation-values.yaml
 ```
 
 #### For Scope Changes or New Policies:
@@ -94,7 +94,7 @@ helm upgrade <release-name> densify/kubex-automation-controller -f kubex-automat
 vim kubex-automation-values.yaml
 
 # 2. Apply changes via Helm upgrade
-helm upgrade <release-name> densify/kubex-automation-controller -f kubex-automation-values.yaml
+helm upgrade <release-name> densify/kubex-automation-controller -n kubex -f kubex-automation-values.yaml
 
 # 3. Verify both components are updated
 kubectl get mutatingwebhookconfiguration kubex-resource-optimization-webhook -o yaml
@@ -325,7 +325,7 @@ Additional controller behavior configuration:
 
 1. **Monitor in Densify**: Check recommendations for `kubex-automation-controller`, `kubex-webhook`, and `kubex-valkey` pods
 2. **Override resources** in your `kubex-automation-values.yaml` based on Densify recommendations
-3. **Apply changes**: Run `helm upgrade kubex-automation-controller densify/kubex-automation-controller -f kubex-automation-values.yaml`
+3. **Apply changes**: Run `helm upgrade kubex-automation-controller densify/kubex-automation-controller -n kubex -f kubex-automation-values.yaml`
 
 ### Deployment Resource Overrides
 

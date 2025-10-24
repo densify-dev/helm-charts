@@ -271,10 +271,10 @@ kubectl logs kubex-automation-controller-valkey-* -n kubex
 ### Validate YAML Syntax
 ```bash
 # Test configuration changes
-helm template densify/kubex-automation-controller -f kubex-automation-values.yaml --debug
+helm template densify/kubex-automation-controller -n kubex -f kubex-automation-values.yaml --debug
 
 # Dry-run deployment
-helm upgrade kubex-automation-controller densify/kubex-automation-controller -f kubex-automation-values.yaml --dry-run
+helm upgrade kubex-automation-controller densify/kubex-automation-controller -n kubex -f kubex-automation-values.yaml --dry-run
 ```
 
 ### Check Resource References
@@ -293,19 +293,19 @@ kubectl auth can-i --list --as=system:serviceaccount:kubex:kubex-automation-cont
 
 **Enable debug mode:**
 1. Uncomment `debug: true` in the deployment section of `kubex-automation-values.yaml`
-2. Run `helm upgrade kubex-automation-controller densify/kubex-automation-controller -f kubex-automation-values.yaml`
+2. Run `helm upgrade kubex-automation-controller densify/kubex-automation-controller -n kubex -f kubex-automation-values.yaml`
 3. View debug logs: `kubectl logs -l app=kubex-controller -n kubex -f`
 
 **Validate configuration changes:**
 ```bash
 # Check YAML syntax and template rendering
-helm template densify/kubex-automation-controller -f kubex-automation-values.yaml --debug
+helm template densify/kubex-automation-controller -n kubex -f kubex-automation-values.yaml --debug
 
 # Review all generated ConfigMaps
 kubectl get configmap -n kubex -o yaml
 
 # Test configuration without applying
-helm upgrade kubex-automation-controller densify/kubex-automation-controller -f kubex-automation-values.yaml --dry-run --debug
+helm upgrade kubex-automation-controller densify/kubex-automation-controller -n kubex -f kubex-automation-values.yaml --dry-run --debug
 ```
 
 ## Emergency Procedures
