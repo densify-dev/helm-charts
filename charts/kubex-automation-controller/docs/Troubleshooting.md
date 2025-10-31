@@ -336,7 +336,9 @@ kubectl delete mutatingwebhookconfigurations kubex-resource-optimization-webhook
 kubectl rollout restart deployment -n kubex
 
 # Clear Valkey cache
-kubectl exec kubex-automation-controller-valkey-* -n kubex -- valkey-cli FLUSHALL
+# - replace kubex-automation-controller-valkey-* with the valkey pod name
+# - replace <valkey-password> with the valkey password, enclose in single quotes if contains special characters
+kubectl exec kubex-automation-controller-valkey-* -n kubex -- valkey-cli --user kubexAutomation --pass '<valkey-password>' FLUSHALL
 ```
 
 ## Getting Help

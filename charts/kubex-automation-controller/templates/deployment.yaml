@@ -96,6 +96,10 @@ spec:
               value: {{ .Values.deployment.controllerEnv.evictionThrottlingWindow | quote }} 
             - name: RATE_LIMIT_MAX
               value: {{ .Values.deployment.controllerEnv.evictionThrottlingMax | quote }} 
+            - name: MAC_NS
+              value: {{ .Release.Namespace | quote }}
+            - name: MAC_SERVICE_DOMAIN
+              value: "{{ .Release.Namespace }}.svc.cluster.local"
           volumeMounts:
             - name: config-volume
               mountPath: "/densify/config/kubex-automation-policy"
