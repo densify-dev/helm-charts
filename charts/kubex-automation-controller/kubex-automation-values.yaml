@@ -25,6 +25,10 @@ valkey:
     password: '<password>' # quote if includes special characters, cannot include SPACES
   # storage:
   #   className: <storageClassName> # Optional. Define if your environment requires it. 
+  # nodeSelector: {} # Optional. Define if your environment requires it.
+  # affinity: {} # Optional. Define if your environment requires it.
+  # tolerations: [] # Optional. Define if your environment requires it.
+  # topologySpreadConstraints: [] # Optional. Define if your environment requires it.
 
   # Override Valkey resources based on Densify recommendations
 #  resources: # Resource sizing (tune for your cluster/workload)

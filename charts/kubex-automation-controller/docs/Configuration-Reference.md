@@ -407,6 +407,10 @@ This section configures the credentials and storage for the embedded Valkey cach
 | `valkey.storage.className`      | **Optional.** The storage class to use for Valkey persistent storage (e.g., `gp2` for EKS, `azurefile` for AKS, `standard` for GKE). Define if your environment requires it. |
 | `valkey.storage.requestedSize`  | Storage capacity for Valkey persistent volume. Default: `10Gi`.                                        |
 | `valkey.resources`             | Resource specifications for Valkey pod. Can be overridden based on Densify recommendations.             |
+| `valkey.nodeSelector`           | **Optional.** Node labels for valkey scheduling. Define if your environment requires it. |
+| `valkey.affinity`               | **Optional.** Valkey pod affinity. Define if your environment requires it. |
+| `valkey.tolerations`           | **Optional.** Node tolerations for valkey scheduling to nodes with taints. Define if your environment requires it. |
+| `valkey.topologySpreadConstraints` | **Optional.** Valkey pod topology spread constraints. Define if your environment requires it. |
 
 ### Generating a Valkey Password
 

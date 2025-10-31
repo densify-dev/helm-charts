@@ -85,6 +85,7 @@ Set your valkey parameters as follows:
 - The password is **mandatory**, must be quoted if it includes special characters and **cannot** include spaces
 - Optional: generate the password using the instructions [in the configuration reference](./Configuration-Reference.md#generating-a-valkey-password)
 - Set the storage class name if your cluster requires explicit storage class
+- Set the node selector, affinity, tolerations and/or topology spread constraints if these are required
 
 ```yaml
 valkey:
@@ -92,6 +93,10 @@ valkey:
     password: '<password>' # quote if includes special characters, cannot include SPACES
   # storage:
   #   className: <storageClassName> # Optional. Define if your environment requires it. 
+  # nodeSelector: {} # Optional. Define if your environment requires it.
+  # affinity: {} # Optional. Define if your environment requires it.
+  # tolerations: [] # Optional. Define if your environment requires it.
+  # topologySpreadConstraints: [] # Optional. Define if your environment requires it.
 ```
 
 ---
