@@ -4,7 +4,7 @@ metadata:
   name: {{ .Values.webhook.metadataName }}
   {{- if .Values.certmanager.enabled }}
   annotations:
-    cert-manager.io/inject-ca-from: kubex/kubex-automation-cert
+    cert-manager.io/inject-ca-from: "{{ $.Release.Namespace }}/kubex-automation-cert"
   {{- end }}
 webhooks:
   {{- range .Values.scope }}

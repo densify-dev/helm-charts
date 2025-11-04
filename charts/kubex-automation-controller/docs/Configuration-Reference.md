@@ -18,11 +18,15 @@ This document provides a detailed reference for every field in your `kubex-autom
     - [Summary Guidelines](#summary-guidelines)
   - [Resources Created by This Chart](#resources-created-by-this-chart)
     - [Core Application Components](#core-application-components)
-    - [Configuration \& Secrets](#configuration--secrets)
+    - [ConfigMaps](#configmaps)
+    - [Secrets](#secrets)
     - [RBAC \& Security](#rbac--security)
     - [Certificate Management (if cert-manager enabled)](#certificate-management-if-cert-manager-enabled)
     - [Storage \& Cache](#storage--cache)
-  - [Connection Parameters (from Kubex UI)](#connection-parameters-from-kubex-ui)
+  - [Secret Creation](#secret-creation)
+  - [Connection Parameters with Secret Creation](#connection-parameters-with-secret-creation)
+  - [Connection Parameters with External Secret](#connection-parameters-with-external-secret)
+    - [API Secret Format](#api-secret-format)
   - [Cluster Configuration (Manual Input)](#cluster-configuration-manual-input)
     - [Certificate Management](#certificate-management)
   - [Scope Definition (Manual Input)](#scope-definition-manual-input)
@@ -37,8 +41,12 @@ This document provides a detailed reference for every field in your `kubex-autom
     - [Deployment Resource Overrides](#deployment-resource-overrides)
     - [Valkey Resource Overrides](#valkey-resource-overrides)
   - [Policy Settings](#policy-settings)
-  - [Valkey Configuration (Manual Input)](#valkey-configuration-manual-input)
-    - [Generating a Valkey Password](#generating-a-valkey-password)
+  - [Generating a Valkey Password](#generating-a-valkey-password)
+  - [Valkey Configuration](#valkey-configuration)
+  - [Valkey Configuration with Secret Creation](#valkey-configuration-with-secret-creation)
+  - [Valkey Configuration with External Secrets](#valkey-configuration-with-external-secrets)
+    - [Valkey Server Secret Format](#valkey-server-secret-format)
+    - [Valkey Client Secret Format](#valkey-client-secret-format)
   - [Local Storage Configuration](#local-storage-configuration)
 
 ## ⚠️ Important: Configuration Update Requirements
@@ -124,24 +132,34 @@ kubectl get configmap kubex-automation-scope -n kubex -o yaml
 When you deploy the Kubex Automation Controller, the following Kubernetes resources are created:
 
 ### Core Application Components
+
 | Resource Type | Name | Purpose |
 | --- | --- | --- |
 | **Deployment** | `kubex-automation-controller` | Main controller that processes recommendations and applies optimizations |
 | **Deployment** | `kubex-webhook-server` | Mutating admission webhook for real-time pod optimization |
 | **Service** | `kubex-webhook-service` | Service exposing the webhook server |
 
-### Configuration & Secrets
-| Resource Type | Name | Purpose |
-| --- | --- | --- |
-| **ConfigMap** | `kubex-config` | Stores cluster name and Densify API base URL |
-| **ConfigMap** | `kubex-automation-policy` | Contains automation policies and rules |
-| **ConfigMap** | `kubex-automation-scope` | Defines which namespaces/workloads are in scope |
-| **ConfigMap** | `kubex-automation-controller-clusterrole` | RBAC rules for the controller |
-| **Secret** | `kubex-api-secret-container-automation` | Densify API credentials |
-| **Secret** | `kubex-valkey-client-auth` | Credentials for connecting to Valkey cache |
-| **Secret** | `kubex-valkey-secret` | Valkey server configuration with auth settings |
+### ConfigMaps
+
+| Name | Purpose |
+| --- | --- |
+| `kubex-config` | Stores cluster name and Densify API base URL |
+| `kubex-automation-policy` | Contains automation policies and rules |
+| `kubex-automation-scope` | Defines which namespaces/workloads are in scope |
+| `kubex-automation-controller-clusterrole` | RBAC rules for the controller |
+
+### Secrets
+
+If the value `createSecrets` is `false`, the helm chart does not create any secrets by itself but rather uses the secret names provided in the "override" values.
+
+| Default Name | Purpose | Value to override name |
+| --- | --- | ---- |
+| `kubex-api-secret-container-automation` | Densify API credentials | `densifyCredentials.userSecretName` |
+| `kubex-valkey-client-auth` | Credentials for connecting to Valkey cache |  `valkey.metrics.exporter.extraExporterEnvSecrets[0]` |
+| `kubex-valkey-secret` | Valkey server configuration with auth settings | `valkey.extraSecretValkeyConfigs` |
 
 ### RBAC & Security
+
 | Resource Type | Name | Purpose |
 | --- | --- | --- |
 | **ServiceAccount** | `kubex-automation-controller-sa` | Service account for the controller |
@@ -151,12 +169,14 @@ When you deploy the Kubex Automation Controller, the following Kubernetes resour
 | **MutatingWebhookConfiguration** | `kubex-resource-optimization-webhook` | Registers the webhook with Kubernetes API |
 
 ### Certificate Management (if cert-manager enabled)
+
 | Resource Type | Name | Purpose |
 | --- | --- | --- |
 | **ClusterIssuer** | `kubex-selfsigned-cluster-issuer` | Creates self-signed certificates |
 | **Certificate** | `kubex-automation-cert` | TLS certificate for webhook communication |
 
 ### Storage & Cache
+
 | Resource Type | Name | Purpose |
 | --- | --- | --- |
 | **EmptyDir Volume** | `recommendations-volume` | Local storage for recommendations (ephemeral) |
@@ -165,16 +185,53 @@ When you deploy the Kubex Automation Controller, the following Kubernetes resour
 
 ---
 
-## Connection Parameters (from Kubex UI)
+## Secret Creation
 
-These parameters must be **copied directly** from the Kubex UI:
+One global value determines whether the helm chart itself creates the three secrets it requires (based on credential information supplied as values), or it relies on secrets created by an external secret management tool. In the latter case, each secret needs to be created according to a specific format.
 
-| Key                             | Description                                                 |
-| ------------------------------- | ----------------------------------------------------------- |
-| `densify.url.host`              | Your Densify instance URL. Format: `<instance>.densify.com` |
+The parameter is `createSecrets`, and it can have a value of `true` or `false`.
+
+- If `createSecrets` is `true`, follow these steps:
+  - [Connection Parameters with Secret Creation](#connection-parameters-with-secret-creation)
+  - [Valkey Configuration with Secret Creation](#valkey-configuration-with-secret-creation)
+- If `createSecrets` is `false`, follow these steps:
+  - [Connection Parameters with External Secret](#connection-parameters-with-external-secret)
+  - [Valkey Configuration with External Secrets](#valkey-configuration-with-external-secrets)
+
+## Connection Parameters with Secret Creation
+
+If `createSecrets` is `true`, these parameters must be **copied directly** from the Kubex UI:
+
+| Key                            | Description                                                 |
+| ------------------------------ | ----------------------------------------------------------- |
+| `densify.url.host`             | Your Densify instance URL. Format: `<instance>.densify.com` |
 | `densifyCredentials.username`  | The username used for accessing the Densify API             |
 | `densifyCredentials.epassword` | The encrypted password for the API user                     |
 
+## Connection Parameters with External Secret
+
+If `createSecrets` is `false`, these two parameters are required:
+
+| Key                                 | Description                                                 |
+| ----------------------------------- | ----------------------------------------------------------- |
+| `densify.url.host`                  | Your Densify instance URL. Format: `<instance>.densify.com` |
+| `densifyCredentials.userSecretName` | Densify API secret name                                     |
+
+### API Secret Format
+
+The API secret must be in the same namespace the helm chart is deployed, and must have this format:
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: <Densify API secret name>
+  namespace: <helm chart namespace>
+type: Opaque
+stringData:
+  DENSIFY_USERNAME: "<username>"
+  DENSIFY_EPASSWORD: "<encrypted password>"
+```
 
 ## Cluster Configuration (Manual Input)
 
@@ -372,19 +429,19 @@ valkey:
       memory: "1Gi"
 ```
 
-
-
 ## Policy Settings
 
 The `policy` section of your `kubex-automation-values.yaml` file configures automation behavior, global flags, and connects scopes to named policies.
 
 **📖 For complete policy configuration details**, see the [Policy Configuration Guide](Policy-Configuration.md), which covers:
+
 - Policy naming requirements (RFC 1123 rules)
 - Field reference for all policy settings  
 - Adding multiple policies
 - Common policy examples (`base-optimization`, `full-optimization`)
 
 The policy section structure:
+
 ```yaml
 policy:
   automationEnabled: true          # Global automation switch
@@ -394,25 +451,7 @@ policy:
     base-optimization: { ... }     # Policy settings
 ```
 
-
-
-## Valkey Configuration (Manual Input)
-
-This section configures the credentials and storage for the embedded Valkey cache, which is used for storing recommendations and state.
-
-| Key                          | Description                                                                                             |
-| ------------------------------ | ------------------------------------------------------------------------------------------------------- |
-| `valkey.credentials.user`       | The username for accessing the Valkey instance. Defaults to `"kubexAutomation"` if not set.             |
-| `valkey.credentials.password`   | **Required.** The password for the Valkey instance. Must be quoted if it includes special characters, cannot include SPACES. |
-| `valkey.storage.className`      | **Optional.** The storage class to use for Valkey persistent storage (e.g., `gp2` for EKS, `azurefile` for AKS, `standard` for GKE). Define if your environment requires it. |
-| `valkey.storage.requestedSize`  | Storage capacity for Valkey persistent volume. Default: `10Gi`.                                        |
-| `valkey.resources`             | Resource specifications for Valkey pod. Can be overridden based on Densify recommendations.             |
-| `valkey.nodeSelector`           | **Optional.** Node labels for valkey scheduling. Define if your environment requires it. |
-| `valkey.affinity`               | **Optional.** Valkey pod affinity. Define if your environment requires it. |
-| `valkey.tolerations`           | **Optional.** Node tolerations for valkey scheduling to nodes with taints. Define if your environment requires it. |
-| `valkey.topologySpreadConstraints` | **Optional.** Valkey pod topology spread constraints. Define if your environment requires it. |
-
-### Generating a Valkey Password
+## Generating a Valkey Password
 
 Generate a strong random password for the Valkey cache using one of these methods:
 
@@ -427,16 +466,103 @@ openssl rand -base64 18 | tr -d "=+/" | cut -c1-24
 pwgen -s 32 1
 ```
 
-Copy the generated password and use it in your `kubex-automation-values.yaml` under `valkey.credentials.password`.
+Copy the generated password and use it in your `kubex-automation-values.yaml` under `valkey.credentials.password` (if `createSecrets` is `true`) or use it in the two secrets (if `createSecrets` is `false`).
 
-**Example `kubex-automation-values.yaml`:**
+## Valkey Configuration
+
+The following sections configure the credentials, storage and other optional parameters for the embedded Valkey cache, which is used for storing recommendations and state.
+
+## Valkey Configuration with Secret Creation
+
+If `createSecrets` is `true`:
+
+| Key                          | Description                                                                                             |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------- |
+| `valkey.credentials.user`       | The username for accessing the Valkey instance. Defaults to `"kubexAutomation"` if not set.             |
+| `valkey.credentials.password`   | **Required.** The password for the Valkey instance. Must be quoted if it includes special characters, cannot include SPACES. |
+| `valkey.storage.className`      | **Optional.** The storage class to use for Valkey persistent storage (e.g., `gp2` for EKS, `azurefile` for AKS, `standard` for GKE). Define if your environment requires it. |
+| `valkey.storage.requestedSize`  | Storage capacity for Valkey persistent volume. Default: `10Gi`.                                        |
+| `valkey.resources`             | Resource specifications for Valkey pod. Can be overridden based on Densify recommendations.             |
+| `valkey.nodeSelector`           | **Optional.** Node labels for valkey scheduling. Define if your environment requires it. |
+| `valkey.affinity`               | **Optional.** Valkey pod affinity. Define if your environment requires it. |
+| `valkey.tolerations`           | **Optional.** Node tolerations for valkey scheduling to nodes with taints. Define if your environment requires it. |
+| `valkey.topologySpreadConstraints` | **Optional.** Valkey pod topology spread constraints. Define if your environment requires it. |
+
+In this case, `kubex-automation-values.yaml` will look like this:
+
 ```yaml
+createSecrets: true
+# ...
 valkey:
   credentials:
     user: "kubexAutomation"
-    password: "<your-secret-password>"
-  storage:
-    className: "gp3-csi"  # For Valkey persistent storage
+    password: "{your-secret-password}"
+  # ...
+```
+
+## Valkey Configuration with External Secrets
+
+If `createSecrets` is `false`:
+
+| Key                          | Description                                                                                             |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------- |
+| `valkey.extraSecretValkeyConfigs`   | **Required.** This is the secret name which includes the valkey server `auth.conf`. |
+| `valkey.metrics.exporter.extraExporterEnvSecrets`   | **Required.** This is a list of secret names. It should include **only** one value, which is the secret name to be used by all valkey clients. |
+| `valkey.storage.className`      | **Optional.** The storage class to use for Valkey persistent storage (e.g., `gp2` for EKS, `azurefile` for AKS, `standard` for GKE). Define if your environment requires it. |
+| `valkey.storage.requestedSize`  | Storage capacity for Valkey persistent volume. Default: `10Gi`.                                        |
+| `valkey.resources`             | Resource specifications for Valkey pod. Can be overridden based on Densify recommendations.             |
+| `valkey.nodeSelector`           | **Optional.** Node labels for valkey scheduling. Define if your environment requires it. |
+| `valkey.affinity`               | **Optional.** Valkey pod affinity. Define if your environment requires it. |
+| `valkey.tolerations`           | **Optional.** Node tolerations for valkey scheduling to nodes with taints. Define if your environment requires it. |
+| `valkey.topologySpreadConstraints` | **Optional.** Valkey pod topology spread constraints. Define if your environment requires it. |
+
+In this case, `kubex-automation-values.yaml` will look like this:
+
+```yaml
+createSecrets: false
+# ...
+valkey:
+  extraSecretValkeyConfigs: "{valkey-server-secret-name}"
+  metrics:
+    exporter:
+      extraExporterEnvSecrets:
+        - "{valkey-client-secret-name}"
+  # ...
+```
+
+Replace `{valkey-username}` and `{valkey-password}` with the same values in both secrets:
+
+### Valkey Server Secret Format
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {valkey-server-secret-name}
+  namespace: {helm chart namespace}
+type: Opaque
+stringData:
+  # These lines are appended to valkey.conf
+  # Disable the default user and enable a named user with a password.
+  # Quote password if they contain special characters. Password may not contain spaces.
+  auth.conf: |
+    user default off
+    user {valkey-username} on >'{valkey-password}' +@all ~*
+```
+
+### Valkey Client Secret Format
+
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {valkey-client-secret-name}
+  namespace: {helm chart namespace}
+type: Opaque
+stringData:
+  # Used by the redis exporter, automation controller and webhook to connect to Valkey
+  REDIS_USER: "{valkey-username}"
+  REDIS_PASSWORD: "{valkey-password}"
 ```
 
 ## Local Storage Configuration

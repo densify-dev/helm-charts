@@ -77,12 +77,12 @@ spec:
             - name: REDIS_USER
               valueFrom:
                 secretKeyRef:
-                  name: kubex-valkey-client-auth
+                  name: {{ index .Values.valkey.metrics.exporter.extraExporterEnvSecrets 0 }}
                   key: REDIS_USER
             - name: REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: kubex-valkey-client-auth
+                  name: {{ index .Values.valkey.metrics.exporter.extraExporterEnvSecrets 0 }}
                   key: REDIS_PASSWORD
             - name: RECOMMENDATION_ENCODING
               value: {{ .Values.deployment.controllerEnv.recommendationDataFormat | quote }}
@@ -174,10 +174,10 @@ spec:
                   name: kubex-automation-scope
         - name: cfg-volume
           secret:
-            secretName: kubex-api-secret-container-automation
+            secretName: {{ include "kubex-automation-controller.densifyUserSecretName" . }}
         - name: valkey-cfg-volume
           secret:
-            secretName: kubex-valkey-client-auth
+            secretName: {{ index .Values.valkey.metrics.exporter.extraExporterEnvSecrets 0 }}
         - name: kubex-automation-controller-clusterrole-volume
           configMap:
             name: kubex-automation-controller-clusterrole
@@ -326,10 +326,10 @@ spec:
             name: kubex-automation-policy
         - name: cfg-volume
           secret:
-            secretName: kubex-api-secret-container-automation
+            secretName: {{ include "kubex-automation-controller.densifyUserSecretName" . }}
         - name: valkey-cfg-volume
           secret:
-            secretName: kubex-valkey-client-auth
+            secretName: {{ index .Values.valkey.metrics.exporter.extraExporterEnvSecrets 0 }}
       {{- with .Values.deployment.webhook.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

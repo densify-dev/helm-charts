@@ -5,13 +5,16 @@
 # → Copy "Secure Connection Parameters" and paste below
 # ================================================================
 
+createSecrets: true # Set to false if you provide your own secrets, created outside of this helm chart
+
 densify:
   url:
     host: <customerName>.densify.com # mandatory: <instance>.densify.com
 
 densifyCredentials:
-  username: '<username>' # This is the username to access Densify
-  epassword: '<epassword>' # This is the encrypted password to access Densify
+  # username: '<username>' # Username to access Densify, mandatory if createSecrets is true
+  # epassword: '<epassword>' # Encrypted password to access Densify, mandatory if createSecrets is true
+  # userSecretName: # Densify API secret name, mandatory if createSecrets is false
 
 # ================================================================
 # SECTION: VALKEY CONFIGURATION
@@ -21,8 +24,14 @@ densifyCredentials:
 # ================================================================
 
 valkey:
-  credentials:
-    password: '<password>' # quote if includes special characters, cannot include SPACES
+  # credentials:
+    # password: # valkey password, mandatory if createSecrets is true,
+                # quote if includes special characters, cannot include SPACES
+  # extraSecretValkeyConfigs: # valkey server secret, mandatory if createSecrets is false
+  # metrics:
+  #   exporter:
+  #     extraExporterEnvSecrets:
+  #       - # valkey client secret, mandatory if createSecrets is false
   # storage:
   #   className: <storageClassName> # Optional. Define if your environment requires it. 
   # nodeSelector: {} # Optional. Define if your environment requires it.
