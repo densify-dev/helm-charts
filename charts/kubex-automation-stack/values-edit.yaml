@@ -11,6 +11,12 @@ container-optimization-data-forwarder:
           host: '<changeme-densify-host>' # mandatory: <instance>.densify.com
     clusters:
       - name: '<changeme-cluster-name>' # mandatory
+# The following values are optional, if job cleanup is required;
+# each one of these should be a non-negative integer (0 is allowed)
+  # cronJob:
+    # successfulJobsHistoryLimit: <value>
+    # failedJobsHistoryLimit: <value>
+    # ttlSecondsAfterFinished: <value> # applies for both the cronjob and the job
 
 # The following section is optional, and is required only in the following use-case:
 # 1. The persistent volume for Prometheus has to use an explicit storage class (not the default)
