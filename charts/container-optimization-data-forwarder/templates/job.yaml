@@ -14,6 +14,9 @@ metadata:
     "helm.sh/resource-policy": keep
 spec:
   backoffLimit: 4
+  {{- if and (hasKey .Values.cronJob "ttlSecondsAfterFinished") (not (empty (toString .Values.cronJob.ttlSecondsAfterFinished))) (ge (int64 .Values.cronJob.ttlSecondsAfterFinished) 0) }}
+  ttlSecondsAfterFinished: {{ .Values.cronJob.ttlSecondsAfterFinished }}
+  {{- end }}
   template:
     metadata:
       labels:

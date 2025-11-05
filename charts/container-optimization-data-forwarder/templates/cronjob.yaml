@@ -10,8 +10,17 @@ metadata:
     heritage: {{ .Release.Service }}
 spec:
   schedule: "{{ .Values.cronJob.schedule }}"
+  {{- if and (hasKey .Values.cronJob "successfulJobsHistoryLimit") (not (empty (toString .Values.cronJob.successfulJobsHistoryLimit))) (ge (int64 .Values.cronJob.successfulJobsHistoryLimit) 0) }}
+  successfulJobsHistoryLimit: {{ .Values.cronJob.successfulJobsHistoryLimit }}
+  {{- end }}
+  {{- if and (hasKey .Values.cronJob "failedJobsHistoryLimit") (not (empty (toString .Values.cronJob.failedJobsHistoryLimit))) (ge (int64 .Values.cronJob.failedJobsHistoryLimit) 0) }}
+  failedJobsHistoryLimit: {{ .Values.cronJob.failedJobsHistoryLimit }}
+  {{- end }}
   jobTemplate:
     spec:
+      {{- if and (hasKey .Values.cronJob "ttlSecondsAfterFinished") (not (empty (toString .Values.cronJob.ttlSecondsAfterFinished))) (ge (int64 .Values.cronJob.ttlSecondsAfterFinished) 0) }}
+      ttlSecondsAfterFinished: {{ .Values.cronJob.ttlSecondsAfterFinished }}
+      {{- end }}
       template:
         metadata:
           labels:
