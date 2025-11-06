@@ -194,9 +194,9 @@ This section configures how **all secrets** are managed in your deployment. This
 - `kubex-valkey-client-auth` (Valkey client authentication) 
 - `kubex-valkey-secret` (Valkey server configuration)
 
-| Key | Type | Description | Default |
-|-----|------|-------------|---------|
-| `createSecrets` | `boolean` | **Controls whether the Helm chart creates all required secrets automatically or uses externally managed secrets for everything | `true` |
+| Key | Type | Description |
+|-----|------|-------------|
+| `createSecrets` | `boolean` | **Controls whether the Helm chart creates all required secrets automatically or uses externally managed secrets for everything |
 
 **Options:**
 - **`true`** (Recommended): Helm chart creates **all 3 secrets** automatically based on credentials you provide in the configuration file
