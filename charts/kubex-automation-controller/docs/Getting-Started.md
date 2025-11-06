@@ -60,7 +60,7 @@ chmod a+x ./deploy-kubex-automation-controller.sh
 
 Open `kubex-automation-values.yaml` with your preferred editor. You'll be pasting values into it in steps 2-6 below. When done, save your changes.
 
-The instructions in this document assume that you leave the value of `createSecrets` to be `true`, and let the helm chart create the required secrets. If you want to provide external secrets, managed by some secret management tool, please follow [these instructions](./Configuration-Reference.md#secret-creation).
+The instructions in this document assume that you leave the value of `createSecrets` to be `true`, and let the helm chart create the required secrets. If you want to provide external secrets, managed by some secret management tool, please follow [these instructions](./Configuration-Reference.md#secret-management-configuration).
 
 ---
 

@@ -1,11 +1,17 @@
 # ================================================================
+# SECTION: SECRET MANAGEMENT CONFIGURATION
+# Instructions:
+# → Configure how secrets are managed in your deployment
+# ================================================================
+
+createSecrets: true # Set to false if you provide your own secrets, created outside of this helm chart
+
+# ================================================================
 # SECTION: CONNECTION PARAMETERS - COPY/PASTE FROM KUBEX UI
 # Instructions:
 # → Go to Kubex UI > Automation tab
 # → Copy "Secure Connection Parameters" and paste below
 # ================================================================
-
-createSecrets: true # Set to false if you provide your own secrets, created outside of this helm chart
 
 densify:
   url:

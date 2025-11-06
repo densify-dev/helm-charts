@@ -23,7 +23,7 @@ This document provides a detailed reference for every field in your `kubex-autom
     - [RBAC \& Security](#rbac--security)
     - [Certificate Management (if cert-manager enabled)](#certificate-management-if-cert-manager-enabled)
     - [Storage \& Cache](#storage--cache)
-  - [Secret Creation](#secret-creation)
+  - [Secret Management Configuration](#secret-management-configuration)
   - [Connection Parameters with Secret Creation](#connection-parameters-with-secret-creation)
   - [Connection Parameters with External Secret](#connection-parameters-with-external-secret)
     - [API Secret Format](#api-secret-format)
@@ -185,12 +185,24 @@ If the value `createSecrets` is `false`, the helm chart does not create any secr
 
 ---
 
-## Secret Creation
+## Secret Management Configuration
 
-One global value determines whether the helm chart itself creates the three secrets it requires (based on credential information supplied as values), or it relies on secrets created by an external secret management tool. In the latter case, each secret needs to be created according to a specific format.
+This section configures how **all secrets** are managed in your deployment. This is a **global Helm configuration setting** that affects every secret the chart needs.
 
-The parameter is `createSecrets`, and it can have a value of `true` or `false`.
+**What secrets are affected:**
+- `kubex-api-secret-container-automation` (Densify API credentials)
+- `kubex-valkey-client-auth` (Valkey client authentication) 
+- `kubex-valkey-secret` (Valkey server configuration)
 
+| Key | Type | Description |
+|-----|------|-------------|
+| `createSecrets` | `boolean` | **Controls whether the Helm chart creates all required secrets automatically or uses externally managed secrets for everything |
+
+**Options:**
+- **`true`** (Recommended): Helm chart creates **all 3 secrets** automatically based on credentials you provide in the configuration file
+- **`false`** (Advanced): You manage **all 3 secrets** externally (e.g., using external-secrets operator, sealed-secrets, or manual creation)
+
+**Configuration Flow:**
 - If `createSecrets` is `true`, follow these steps:
   - [Connection Parameters with Secret Creation](#connection-parameters-with-secret-creation)
   - [Valkey Configuration with Secret Creation](#valkey-configuration-with-secret-creation)
