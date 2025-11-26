@@ -54,10 +54,10 @@ data:
 {{- $promUrl := .Values.config.prometheus.url | required ".Values.config.prometheus.url is required." }}
 {{- $promHost := $promUrl.host | required ".Values.config.prometheus.url.host is required." }}
       url: {{- omit $promUrl "PrometheusSecretName" | toYaml | trim | nindent 8 }}
-{{- if or (.Values.serviceAccount.create) (.Values.serviceAccount.name) (.Values.config.prometheus.bearer_token) }}
+{{- if and (not (.Values.serviceAccount.isGKE)) (or (.Values.serviceAccount.create) (.Values.serviceAccount.name) (.Values.config.prometheus.bearer_token)) }}
       bearer_token: {{ template "common.serviceAccountToken" . }}
 {{- end }}
-{{- if or (.Values.serviceAccount.create) (.Values.serviceAccount.name) (.Values.config.prometheus.ca_cert) }}
+{{- if and (not (or (.Values.config.prometheus.sigv4) (.Values.config.prometheus.AzureMonitorSecretName) (.Values.config.prometheus.GoogleMonitoringSecretName) (.Values.serviceAccount.isGKE))) (or (.Values.serviceAccount.create) (.Values.serviceAccount.name) (.Values.config.prometheus.ca_cert)) }}
       ca_cert: {{ template "common.serviceAccountCaCert" . }}
 {{- end }}
 {{- if .Values.config.prometheus.sigv4 }}

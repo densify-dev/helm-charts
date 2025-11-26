@@ -6,6 +6,7 @@ nameOverride: densify-forwarder
 # application image
 image: densify/container-optimization-data-forwarder:4
 imageAzureToken: densify/azure-rest-api-token:latest
+imageGCPOAuth2Token: densify/gcp-oauth2-token:latest
 imageCheckPrometheusReady: busybox:latest
 pullPolicy: Always
 
@@ -58,6 +59,8 @@ config:
 #    # For Azure Monitor Managed Prometheus, DO NOT set bearer_token; instead, set this Secret;
 #    # it should have one entry with the name app.json - a JSON file with the entries appId, displayName, password & tenant
 #    AzureMonitorSecretName: <name of secret to use>
+#    GoogleMonitoringSecretName: <name of secret to use>
+#    GoogleMonitoringKeyName: <name of key in the secret>
 #    ca_cert: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
 #    # In case the CA Cert is external and needs to be mounted as a secret, DO NOT set ca_cert; instead, set this Secret;
 #    # it should have one entry with the name ca.crt - the CA cert file
@@ -125,6 +128,7 @@ rbac:
   create: false
 
 serviceAccount:
+  isGKE: false
   # Create service account.
   create: false
   # The name of the Service account to use
@@ -140,3 +144,5 @@ nodeSelector: {}
 resources: {}
 
 tolerations: []
+
+topologySpreadConstraints: []

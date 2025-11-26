@@ -1,4 +1,5 @@
 {{- if .Values.job.enable }}
+{{- include "common.validateGoogleMonitoringKeys" . -}}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -37,6 +38,10 @@ spec:
       {{- if .Values.tolerations }}
       tolerations:
 {{ toYaml .Values.tolerations | indent 8 }}
+      {{- end }}
+      {{- if .Values.topologySpreadConstraints }}
+      topologySpreadConstraints:
+{{ toYaml .Values.topologySpreadConstraints | indent 8 }}
       {{- end }}
       {{- if or (.Values.serviceAccount.create) (.Values.serviceAccount.name) (and (.Values.config.prometheus.sigv4) (not (or .Values.config.prometheus.sigv4.AwsSecretName .Values.config.prometheus.sigv4.access_key))) }}
       serviceAccountName: {{ template "common.serviceAccountName" . }}
@@ -93,6 +98,34 @@ spec:
         - mountPath: /home/densify/.tokens
           name: tokens
       {{- end }}
+      {{- if or (.Values.config.prometheus.GoogleMonitoringSecretName) (.Values.serviceAccount.isGKE) }}
+      - name: gcp-token
+        image: "{{ .Values.imageGCPOAuth2Token }}"
+        imagePullPolicy: {{ .Values.pullPolicy }}
+        securityContext:
+          readOnlyRootFilesystem: true
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+          seccompProfile:
+            type: RuntimeDefault
+        env:
+        {{- if .Values.config.prometheus.GoogleMonitoringKeyName }}
+        - name: GOOGLE_SERVICE_ACCOUNT_KEY
+          value: "/home/densify/.gcpmon/{{ .Values.config.prometheus.GoogleMonitoringKeyName }}"
+        {{- end }}
+        - name: BEARER_TOKEN_FILE
+          value: "/home/densify/.tokens/token"
+        volumeMounts:
+        {{- if .Values.config.prometheus.GoogleMonitoringSecretName }}
+        - mountPath: /home/densify/.gcpmon
+          name: gcpmon
+          readOnly: true
+        {{- end }}
+        - mountPath: /home/densify/.tokens
+          name: tokens
+      {{- end }}
       containers:
         - name: {{ template "common.name" . }}
           image: "{{ .Values.image }}"
@@ -138,7 +171,7 @@ spec:
             - name: PROMETHEUS_PASSWORD
               value: "/home/densify/.prometheus/password"
             {{- end }}              
-            {{- if .Values.config.prometheus.AzureMonitorSecretName }}
+            {{- if or (.Values.config.prometheus.AzureMonitorSecretName) (.Values.config.prometheus.GoogleMonitoringSecretName) (.Values.serviceAccount.isGKE) }}
             - name: PROMETHEUS_OAUTH_TOKEN
               value: "/home/densify/.tokens/token"
             {{- end }}
@@ -161,7 +194,7 @@ spec:
             mountPath: /home/densify/.aws
             readOnly: true
           {{- end }}
-          {{- if .Values.config.prometheus.AzureMonitorSecretName }}
+          {{- if or (.Values.config.prometheus.AzureMonitorSecretName) (.Values.config.prometheus.GoogleMonitoringSecretName) (.Values.serviceAccount.isGKE) }}
           - name: tokens
             mountPath: /home/densify/.tokens
             readOnly: true
@@ -193,12 +226,19 @@ spec:
           secret:
             secretName: {{ .Values.config.prometheus.sigv4.AwsSecretName }}
         {{- end }}
-        {{- if .Values.config.prometheus.AzureMonitorSecretName }}
+        {{- if or (.Values.config.prometheus.AzureMonitorSecretName) (.Values.config.prometheus.GoogleMonitoringSecretName) (.Values.serviceAccount.isGKE) }}
         - name: tokens
           emptyDir: {}
+        {{- end }}
+        {{- if .Values.config.prometheus.AzureMonitorSecretName }}
         - name: azmon
           secret:
             secretName: {{ .Values.config.prometheus.AzureMonitorSecretName }}
+        {{- end }}
+        {{- if .Values.config.prometheus.GoogleMonitoringSecretName }}
+        - name: gcpmon
+          secret:
+            secretName: {{ .Values.config.prometheus.GoogleMonitoringSecretName }}
         {{- end }}
         {{- if .Values.config.prometheus.CaCertSecretName }}
         - name: certs
