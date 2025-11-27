@@ -68,3 +68,11 @@
 {{- define "common.prometheusPort" -}}
   {{- default "9090" .Values.config.prometheus.url.port | quote -}}
 {{- end -}}
+{{/*
+  Validate that config.prometheus.GoogleMonitoringSecretName and config.prometheus.GoogleMonitoringKeyName appear together or not at all
+*/}}
+{{- define "common.validateGoogleMonitoringKeys" -}}
+{{- if ne (empty .Values.config.prometheus.GoogleMonitoringSecretName) (empty .Values.config.prometheus.GoogleMonitoringKeyName) -}}
+  {{- fail "Validation Failed: config.prometheus.GoogleMonitoringSecretName and config.prometheus.GoogleMonitoringKeyName must either both be defined or both be empty." -}}
+{{- end -}}
+{{- end -}}
