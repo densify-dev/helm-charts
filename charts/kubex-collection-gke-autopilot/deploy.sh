@@ -1,8 +1,9 @@
 #!/bin/bash
 # Check args
 usage() {
-  echo "Usage: ${0} -g <GKE_CLUSTER_NAME> [-k <KUBEX_CLUSTER_NAME>] [-a <ARCH>] [-n] [-h]" >&2
-  echo ""
+  echo "Usage: ${0} -g <GKE_CLUSTER_NAME> -r <GCP_REGION> [-k <KUBEX_CLUSTER_NAME>] [-a <ARCH>] [-n] [-h]" >&2
+  echo "  or:"
+  echo "       ${0} -g <GKE_CLUSTER_NAME> -z <GCP_ZONE> [-k <KUBEX_CLUSTER_NAME>] [-a <ARCH>] [-n] [-h]" >&2
   echo "     -g <GKE_CLUSTER_NAME> (required)"
   echo "     -r <GCP_REGION>*"
   echo "     -z <GCP_ZONE>*"
