@@ -1,0 +1,19 @@
+{{- if .Values.stack.runsInGKEAutopilot }}
+apiVersion: monitoring.googleapis.com/v1
+kind: ClusterNodeMonitoring
+metadata:
+  name: cadvisor-kubex
+spec:
+  # The selector is left empty to target all nodes in the cluster.
+  endpoints:
+  - interval: 20s
+    path: /metrics/cadvisor
+    scheme: https
+    metricRelabeling:
+    - sourceLabels: [__name__]
+      regex: '^container_(cpu_(cfs_(periods_total|throttled_(periods_total|seconds_total))|usage_seconds_total)|fs_usage_bytes|memory_(rss|usage_bytes|working_set_bytes)|oom_events_total|spec_memory_limit_bytes)$'
+      action: 'keep'
+    - targetLabel: 'collected_by'
+      replacement: 'kubex-stack'
+      action: 'replace'
+{{- end }}

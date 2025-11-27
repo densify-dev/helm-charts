@@ -1,0 +1,51 @@
+#################################################################
+# densify/container-optimization-data-forwarder parameters
+#################################################################
+
+stack:
+  runsInGKEAutopilot: true
+  densify:
+    createSecret: true
+
+container-optimization-data-forwarder:
+  nameOverride: kubex-collection
+  config:
+    forwarder:
+      densify:
+        url:
+          UserSecretName: densify-api-secret
+
+#################################################################
+# prometheus-community/kube-state-metrics parameters
+#################################################################
+
+kube-state-metrics:
+  rbac:
+    create: true
+  metricAnnotationsAllowList:
+    - 'namespaces=[*]'
+  metricLabelsAllowlist:
+    - 'nodes=[*]'
+    - 'namespaces=[*]'
+    - 'pods=[*]'
+    - 'deployments=[*]'
+    - 'replicasets=[*]'
+    - 'daemonsets=[*]'
+    - 'statefulsets=[*]'
+    - 'jobs=[*]'
+    - 'cronjobs=[*]'
+    - 'horizontalpodautoscalers=[*]'
+  collectors:
+    - cronjobs
+    - daemonsets
+    - deployments
+    - horizontalpodautoscalers
+    - jobs
+    - namespaces
+    - nodes
+    - poddisruptionbudgets
+    - pods
+    - replicasets
+    - replicationcontrollers
+    - resourcequotas
+    - statefulsets

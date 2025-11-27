@@ -1,0 +1,19 @@
+{{- if .Values.stack.runsInGKEAutopilot }}
+apiVersion: monitoring.googleapis.com/v1
+kind: ClusterNodeMonitoring
+metadata:
+  name: kubelet-kubex
+spec:
+  # The selector is left empty to target all nodes in the cluster.
+  endpoints:
+  - interval: 20s
+    path: /metrics
+    scheme: https
+    metricRelabeling:
+    - sourceLabels: [__name__]
+      regex: '^kubernetes_build_info$'
+      action: 'keep'
+    - targetLabel: 'collected_by'
+      replacement: 'kubex-stack'
+      action: 'replace'
+{{- end }}

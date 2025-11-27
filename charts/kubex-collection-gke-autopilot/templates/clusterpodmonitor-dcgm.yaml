@@ -1,0 +1,20 @@
+{{- if .Values.stack.runsInGKEAutopilot }}
+apiVersion: monitoring.googleapis.com/v1
+kind: ClusterPodMonitoring
+metadata:
+  name: dcgm-exporter-kubex
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: gke-managed-dcgm-exporter
+  endpoints:
+  - port: 9400
+    interval: 20s
+    metricRelabeling:
+    - sourceLabels: [__name__]
+      regex: '^(DCGM_FI_(DEV_(FB_(FREE|USED)|GPU_UTIL|POWER_USAGE)|PROF_(DRAM_ACTIVE|GR_ENGINE_ACTIVE|PIPE_TENSOR_ACTIVE)))$'
+      action: 'keep'
+    - targetLabel: 'collected_by'
+      replacement: 'kubex-stack'
+      action: 'replace'
+{{- end }}
