@@ -72,6 +72,7 @@ The following table lists configuration parameters in `values-edit.yaml`.
 ## Limitations
 
 * Supported architectures: amd64 (x64), arm64
+* Release name: the helm chart release name **must** be set to `kubex` to ensure interdependencies are met
 
 ## Further Details
 
