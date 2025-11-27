@@ -120,6 +120,7 @@ cronJob:
   # successfulJobsHistoryLimit: <value>
   # failedJobsHistoryLimit: <value>
   # ttlSecondsAfterFinished: <value> # applies for both the cronjob and the job
+  # backoffLimit: <value> # applies for both the cronjob and the job, default: 4
 
 # If you are running Prometheus setup with Authentication such as OpenShift,
 # need to set up rbac with service account to allow API access to Prometheus

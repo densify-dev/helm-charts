@@ -19,6 +19,7 @@ spec:
   {{- end }}
   jobTemplate:
     spec:
+      backoffLimit: {{ template "common.jobBackoffLimit" . }}
       {{- if and (hasKey .Values.cronJob "ttlSecondsAfterFinished") (not (empty (toString .Values.cronJob.ttlSecondsAfterFinished))) (ge (int64 .Values.cronJob.ttlSecondsAfterFinished) 0) }}
       ttlSecondsAfterFinished: {{ .Values.cronJob.ttlSecondsAfterFinished }}
       {{- end }}

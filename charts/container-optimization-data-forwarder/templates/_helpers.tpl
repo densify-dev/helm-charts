@@ -76,3 +76,6 @@
   {{- fail "Validation Failed: config.prometheus.GoogleMonitoringSecretName and config.prometheus.GoogleMonitoringKeyName must either both be defined or both be empty." -}}
 {{- end -}}
 {{- end -}}
+{{- define "common.jobBackoffLimit" -}}
+  {{- default 4 .Values.cronJob.backoffLimit -}}
+{{- end -}}
