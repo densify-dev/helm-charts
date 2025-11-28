@@ -87,6 +87,9 @@ Create the name of the service account to use
   - apiGroups: [""]
     resources: ["pods/eviction"]
     verbs: ["create"]
+  - apiGroups: [""]
+    resources: ["pods/resize"]
+    verbs: ["patch", "update"]
   - nonResourceURLs:
     - "/metrics"
     verbs:
