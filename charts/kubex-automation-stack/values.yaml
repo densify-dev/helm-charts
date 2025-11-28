@@ -72,6 +72,8 @@ prometheus:
           - ALL
       seccompProfile:
         type: RuntimeDefault
+    tolerations:
+      - operator: "Exists"
   server:
     fullnameOverride: kubex-prometheus-server
     global:

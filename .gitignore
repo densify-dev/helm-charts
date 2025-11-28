@@ -1,6 +1,9 @@
 Gemfile*
 _site
 /charts/*/charts
+# generated files
+/charts/kubex-collection-gke-autopilot/values-gke-autopilot.yaml
+/charts/kubex-collection-gke-autopilot/*-key.json
 .idea
 .vscode
 .DS_Store

@@ -1,24 +1,27 @@
 apiVersion: v2
-description: Kubex Automation Stack
-name: kubex-automation-stack
-version: 1.0.1
+description: Kubex Collection Stack for GKE Autopilot Clusters
+name: kubex-collection-gke-autopilot
+version: 1.0.0
 type: application
 icon: https://www.densify.com/wp-content/uploads/kubex-by-densify-logo.png
 dependencies:
   - name: container-optimization-data-forwarder
     version: "4.*.*"
     repository: https://densify-dev.github.io/helm-charts
-  - name: prometheus
-    version: "27.*.*"
+  - name: kube-state-metrics
+    version: "6.*.*"
     repository: https://prometheus-community.github.io/helm-charts
+    condition: stack.runsInGKEAutopilot
 keywords:
 - kubex
 - densify
-- automation
+- collection
 - container
 - optimization
+- GKE
+- Autopilot
 maintainers:
 - email: support@densify.com
   name: support
 details:
-  This Helm chart provides the entire stack required for automation of the Kubex container data collection and optimization
+  This Helm chart provides the entire stack required for automation of the Kubex container data collection and optimization for GKE Autopilot clusters.
