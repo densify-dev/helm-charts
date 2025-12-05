@@ -1,5 +1,5 @@
 apiVersion: v2
-description: Kubex Automation Stack
+description: Kubex Collection Stack
 name: kubex-automation-stack
 version: 1.0.1
 type: application
@@ -14,11 +14,10 @@ dependencies:
 keywords:
 - kubex
 - densify
-- automation
 - container
 - optimization
 maintainers:
 - email: support@densify.com
   name: support
 details:
-  This Helm chart provides the entire stack required for automation of the Kubex container data collection and optimization
+  This Helm chart provides the entire stack required for container data collection and optimization
