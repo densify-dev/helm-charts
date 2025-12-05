@@ -1,4 +1,4 @@
-# Kubex Automation Stack Helm Chart
+# Kubex Collection Stack Helm Chart
 
 <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://www.densify.com/wp-content/uploads/kubex-by-densify-logo-reverse.png">
