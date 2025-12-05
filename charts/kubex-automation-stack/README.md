@@ -14,7 +14,7 @@ This chart requires very minimal configuration in order to install the entire st
 
 ## Installation
 
-To deploy the Kubex stack, follow these steps below:
+To deploy the Kubex Collection Stack, follow these steps below:
 
 1. Determine your sizing file as described in [Sizing](#sizing) and download it.
 
