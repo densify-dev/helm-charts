@@ -19,7 +19,9 @@ This guide walks you through deploying Kubex Automation Controller in your Kuber
   - [Step 7: Deploy](#step-7-deploy)
     - [Option A: Quick Deploy (Recommended)](#option-a-quick-deploy-recommended)
       - [Option A1: Using cert-manager (Recommended)](#option-a1-using-cert-manager-recommended)
-      - [Option A2: Own Certificates](#option-a2-own-certificates)
+      - [Option A2: Using cert-manager for an `arm64` cluster (Recommended)](#option-a2-using-cert-manager-for-an-arm64-cluster-recommended)
+      - [Option A3: Own Certificates](#option-a3-own-certificates)
+      - [Option A4: Own Certificates for an `arm64` cluster](#option-a4-own-certificates-for-an-arm64-cluster)
     - [Option B: Manual Deploy](#option-b-manual-deploy)
       - [Add Helm repositories](#add-helm-repositories)
       - [Option B1: Using cert-manager](#option-b1-using-cert-manager)
@@ -56,6 +58,13 @@ Download the configuration template and installation script:
 curl -LO https://github.com/densify-dev/helm-charts/raw/master/charts/kubex-automation-controller/kubex-automation-values.yaml
 curl -LO https://github.com/densify-dev/helm-charts/raw/master/charts/kubex-automation-controller/deploy-kubex-automation-controller.sh
 chmod a+x ./deploy-kubex-automation-controller.sh
+```
+
+If the cluster is an `arm64` cluster, download these additional files as well:
+
+```bash
+curl -LO https://github.com/densify-dev/helm-charts/raw/master/charts/kubex-automation-controller/values-arm64.yaml
+curl -LO https://github.com/densify-dev/helm-charts/raw/master/charts/kubex-automation-controller/cert-manager-values-arm64.yaml
 ```
 
 Open `kubex-automation-values.yaml` with your preferred editor. You'll be pasting values into it in steps 2-6 below. When done, save your changes.
@@ -169,10 +178,22 @@ scope:
 ./deploy-kubex-automation-controller.sh --certmanager
 ```
 
-#### Option A2: Own Certificates
+#### Option A2: Using cert-manager for an `arm64` cluster (Recommended)
+
+```bash
+./deploy-kubex-automation-controller.sh --certmanager --arm64
+```
+
+#### Option A3: Own Certificates
 
 ```bash
 ./deploy-kubex-automation-controller.sh
+```
+
+#### Option A4: Own Certificates for an `arm64` cluster
+
+```bash
+./deploy-kubex-automation-controller.sh --arm64
 ```
 
 ### Option B: Manual Deploy
@@ -198,6 +219,18 @@ helm upgrade --install cert-manager jetstack/cert-manager \
   --set crds.enabled=true
 ```
 
+Or, for an `arm64` cluster, run:
+
+```bash
+helm repo add jetstack https://charts.jetstack.io --force-update
+helm upgrade --install cert-manager jetstack/cert-manager \
+  --namespace cert-manager \
+  --create-namespace \
+  --version v1.18.2 \
+  -f cert-manager-values-arm64.yaml \
+  --set crds.enabled=true
+```
+
 2. Wait for cert-manager deployments to be ready, for example (using `bash`):
 
 ```bash
@@ -216,7 +249,18 @@ done
 helm upgrade --install kubex-automation-controller densify/kubex-automation-controller \
   --namespace kubex \
   --create-namespace \
-  -f kubex-automation-values.yaml
+  -f kubex-automation-values.yaml \
+  --set certmanager.enabled=true
+```
+
+Or, for an `arm64` cluster, run:
+
+```bash
+helm upgrade --install kubex-automation-controller densify/kubex-automation-controller \
+  --namespace kubex \
+  --create-namespace \
+  -f kubex-automation-values.yaml \
+  -f values-arm64.yaml \
   --set certmanager.enabled=true
 ```
 
@@ -226,7 +270,18 @@ helm upgrade --install kubex-automation-controller densify/kubex-automation-cont
 helm upgrade --install kubex-automation-controller densify/kubex-automation-controller \
   --namespace kubex \
   --create-namespace \
-  -f kubex-automation-values.yaml
+  -f kubex-automation-values.yaml \
+  --set certmanager.enabled=false
+```
+
+Or, for an `arm64` cluster, run:
+
+```bash
+helm upgrade --install kubex-automation-controller densify/kubex-automation-controller \
+  --namespace kubex \
+  --create-namespace \
+  -f kubex-automation-values.yaml \
+  -f values-arm64.yaml \
   --set certmanager.enabled=false
 ```
 

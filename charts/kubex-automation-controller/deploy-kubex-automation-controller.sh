@@ -14,6 +14,9 @@ print_usage() {
   echo "  --delete            Uninstalls the kubex-automation-controller Helm release."
   echo "                      If --certmanager is also specified, cert-manager and its resources will be removed."
   echo
+  echo "  --arm64             Installs the Helm chart on an arm64 cluster."
+  echo "                      If --certmanager is also specified, this option applies to cert-manager as well."
+  echo
 }
 
 
@@ -21,6 +24,8 @@ print_usage() {
 NAMESPACE="kubex"
 CERT_MANAGER_ACTION=false
 DELETE_MODE=false
+EXTRA_ARGS=
+EXTRA_CERT_MANGER_ARGS=
 
 # Parse arguments
 while [[ "$#" -gt 0 ]]; do
@@ -30,6 +35,10 @@ while [[ "$#" -gt 0 ]]; do
       ;;
     --delete)
       DELETE_MODE=true
+      ;;
+    --arm64)
+      EXTRA_ARGS="-f values-arm64.yaml"
+      EXTRA_CERT_MANGER_ARGS="-f cert-manager-values-arm64.yaml"
       ;;
     -*)
       echo "Unknown parameter passed: $1"
@@ -102,7 +111,7 @@ if [ "${CERT_MANAGER_ACTION}" = true ]; then
       --namespace cert-manager \
       --create-namespace \
       --version v1.18.2 \
-      --set crds.enabled=true
+      ${EXTRA_CERT_MANGER_ARGS} --set crds.enabled=true
 
     for deploy in cert-manager cert-manager-webhook cert-manager-cainjector; do
       echo "Waiting for deployment/$deploy rollout..."
@@ -125,7 +134,7 @@ helm repo update
 helm upgrade --install "${RELEASE_NAME}" "densify/${RELEASE_NAME}" \
   --namespace "${NAMESPACE}" \
   --create-namespace \
-  -f "./kubex-automation-values.yaml" \
+  -f "./kubex-automation-values.yaml" ${EXTRA_ARGS} \
   --set certmanager.enabled="${CERT_MANAGER_ACTION}"
 
 echo "Installation complete in namespace: ${NAMESPACE}"

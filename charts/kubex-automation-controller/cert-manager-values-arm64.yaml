@@ -1,0 +1,6 @@
+# Use this file for an arm64 k8s cluster
+tolerations:
+  - key: 'kubernetes.io/arch'
+    value: 'arm64'
+    operator: 'Equal'
+    effect: 'NoSchedule'
