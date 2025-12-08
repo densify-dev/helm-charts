@@ -4,3 +4,21 @@ tolerations:
     value: 'arm64'
     operator: 'Equal'
     effect: 'NoSchedule'
+webhook:
+  tolerations:
+    - key: 'kubernetes.io/arch'
+      value: 'arm64'
+      operator: 'Equal'
+      effect: 'NoSchedule'
+cainjector:
+  tolerations:
+    - key: 'kubernetes.io/arch'
+      value: 'arm64'
+      operator: 'Equal'
+      effect: 'NoSchedule'
+startupapicheck:
+  tolerations:
+    - key: 'kubernetes.io/arch'
+      value: 'arm64'
+      operator: 'Equal'
+      effect: 'NoSchedule'
