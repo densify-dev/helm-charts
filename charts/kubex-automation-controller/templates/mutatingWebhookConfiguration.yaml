@@ -32,7 +32,6 @@ webhooks:
           {{- end }}
         {{- else }}
           - CREATE
-          - UPDATE
         {{- end }}
         apiGroups:
           - ""
