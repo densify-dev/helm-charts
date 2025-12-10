@@ -110,7 +110,7 @@ if [ "${CERT_MANAGER_ACTION}" = true ]; then
     helm upgrade --install cert-manager jetstack/cert-manager \
       --namespace cert-manager \
       --create-namespace \
-      --version v1.18.2 \
+      --version v1.19.2 \
       ${EXTRA_CERT_MANGER_ARGS} --set crds.enabled=true
 
     for deploy in cert-manager cert-manager-webhook cert-manager-cainjector; do

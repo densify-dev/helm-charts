@@ -152,19 +152,27 @@ Configure which namespaces and workloads to automate:
 
 ```yaml
 scope:
-  - name: production-workloads
-    policy: safe-optimization  # We'll create this policy in Step 9
+  - name: production-workloads  # Unique identifier
+    policy: safe-optimization   # Must match a policy name (Step 9)
     namespaces:
-      operator: In
+      operator: In              # 'In' to include, 'NotIn' to exclude
       values:
         - production
         - staging
     podLabels:
       - key: app
-        operator: NotIn
+        operator: NotIn         # 'In' to include, 'NotIn' to exclude
         values:
-          - database  # Exclude databases from automation
+          - database            # Exclude databases from automation
 ```
+**Key Rules:**
+- Required fields: `name`, `policy`, `namespaces`
+- Optional field: `podLabels` (adds additional filtering on top of namespace selection)
+- Always exclude the namespace where kubex-automation-controller is installed (default: `kubex`) - automation cannot resize itself
+- Auto-excluded namespaces: `kube-node-lease`, `kube-public`, `kube-system`
+- Use `operator: In` to include matching items, `operator: NotIn` to exclude them
+
+**Multiple Scopes:** Define separate scopes for different environments by repeating the block with different names, policies, and filters. See [Configuration Reference](./Configuration-Reference.md#scope-definition-manual-input) for examples and field details
 
 ---
 
@@ -215,7 +223,7 @@ helm repo add jetstack https://charts.jetstack.io --force-update
 helm upgrade --install cert-manager jetstack/cert-manager \
   --namespace cert-manager \
   --create-namespace \
-  --version v1.18.2 \
+  --version v1.19.2 \
   --set crds.enabled=true
 ```
 
@@ -226,7 +234,7 @@ helm repo add jetstack https://charts.jetstack.io --force-update
 helm upgrade --install cert-manager jetstack/cert-manager \
   --namespace cert-manager \
   --create-namespace \
-  --version v1.18.2 \
+  --version v1.19.2 \
   -f cert-manager-values-arm64.yaml \
   --set crds.enabled=true
 ```
@@ -298,8 +306,9 @@ kubectl get pods -n kubex
 # Expected output:
 # NAME                                       READY   STATUS    RESTARTS   AGE
 # kubex-automation-controller-xxx            2/2     Running   0          2m
+# kubex-automation-controller-valkey-xxx     2/2     Running   0          2m
 # kubex-webhook-server-xxx                   2/2     Running   0          2m
-# kubex-automation-controller-valkey-xxx     1/1     Running   0          2m
+
 
 # Check webhook registration
 kubectl get mutatingwebhookconfigurations | grep kubex
@@ -375,7 +384,7 @@ helm upgrade kubex-automation-controller densify/kubex-automation-controller -n 
 kubectl logs -l app=kubex-controller -n kubex -f
 
 # Check for optimization events
-kubectl get events -n kubex --sort-by='.lastTimestamp'
+kubectl get events -n <namespace where you are automating> --sort-by='.lastTimestamp'
 ```
 
 ### Expand Your Configuration
