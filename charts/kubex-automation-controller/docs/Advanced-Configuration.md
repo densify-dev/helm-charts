@@ -6,17 +6,158 @@ This guide covers advanced configuration options for the Kubex Automation Contro
 
 - [Advanced Configuration Guide](#advanced-configuration-guide)
 - [Quick Links](#quick-links)
-- [Node Scheduling Configuration](#node-scheduling-configuration)
-  - [Configuring Node Affinity](#configuring-node-affinity)
-  - [Common Scheduling Patterns](#common-scheduling-patterns)
-- [Performance Optimization](#performance-optimization)
-  - [Resource Sizing](#resource-sizing)
-  - [Pod Scan Configuration](#pod-scan-configuration)
-  - [Valkey Cache Tuning](#valkey-cache-tuning)
-- [Enterprise Features](#enterprise-features)
-  - [High Availability Setup](#high-availability-setup)
-  - [Monitoring Integration](#monitoring-integration)
-  - [Security Hardening](#security-hardening)
+  - [Pausing Automation for Specific Pods](#pausing-automation-for-specific-pods)
+    - [Annotation Format](#annotation-format)
+    - [Permanent Pause](#permanent-pause)
+    - [Time-Based Pause](#time-based-pause)
+    - [Behavior](#behavior)
+    - [Use Cases](#use-cases)
+  - [Node Scheduling Configuration](#node-scheduling-configuration)
+    - [Configuring Node Affinity](#configuring-node-affinity)
+    - [Common Scheduling Patterns](#common-scheduling-patterns)
+  - [Performance Optimization](#performance-optimization)
+    - [Resource Sizing](#resource-sizing)
+    - [Pod Scan Configuration](#pod-scan-configuration)
+    - [Eviction Throttling](#eviction-throttling)
+    - [Valkey Cache Tuning](#valkey-cache-tuning)
+  - [Enterprise Features](#enterprise-features)
+    - [High Availability Setup](#high-availability-setup)
+    - [Monitoring Integration](#monitoring-integration)
+    - [Security Hardening](#security-hardening)
+
+---
+
+## Pausing Automation for Specific Pods
+
+You can temporarily or permanently pause automation for individual pods using the `rightsizing.kubex.com/pause-until` annotation. This is useful for:
+
+- **Learning period**: Pause automation after application changes to allow relearning of utilization patterns
+- **Troubleshooting**: Isolate pods while diagnosing issues
+- **Gradual rollout**: Control which pods are automated and when
+- **Permanent exclusions**: Exclude specific pods without changing scope configuration
+
+### Annotation Format
+
+```yaml
+rightsizing.kubex.com/pause-until: "<RFC3339 timestamp | infinite>"
+```
+
+### Permanent Pause
+
+Exclude a pod from automation indefinitely:
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app
+spec:
+  template:
+    metadata:
+      annotations:
+        rightsizing.kubex.com/pause-until: "infinite"
+    spec:
+      containers:
+      - name: app
+        # ... container spec
+```
+
+### Time-Based Pause
+
+Pause automation until a specific date/time (uses RFC3339 format):
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app
+spec:
+  template:
+    metadata:
+      annotations:
+        # Pause until December 31, 2025 at 23:59:59 UTC
+        rightsizing.kubex.com/pause-until: "2025-12-31T23:59:59Z"
+    spec:
+      containers:
+      - name: app
+        # ... container spec
+```
+
+**Time zone examples:**
+```yaml
+# UTC timezone
+rightsizing.kubex.com/pause-until: "2025-12-31T23:59:59Z"
+
+# With timezone offset (EST = UTC-5)
+rightsizing.kubex.com/pause-until: "2025-12-31T18:59:59-05:00"
+
+# With milliseconds
+rightsizing.kubex.com/pause-until: "2025-12-31T23:59:59.999Z"
+```
+
+### Behavior
+
+- **Controller**: Skips paused pods during optimization scans
+- **Webhook**: Does not mutate paused pods during creation
+- **Automatic resumption**: Time-based pauses automatically expire after the specified timestamp
+- **Monitoring**: Check controller logs for "paused pod" messages
+
+### Use Cases
+
+**Learning Period After Application Changes:**
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app
+spec:
+  template:
+    metadata:
+      annotations:
+        # Pause for 2 weeks to learn new utilization patterns after code changes
+        rightsizing.kubex.com/pause-until: "2025-12-24T00:00:00Z"
+    spec:
+      containers:
+      - name: app
+        # ... container spec
+```
+
+**Gradual Rollout:**
+```yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: my-database
+spec:
+  template:
+    metadata:
+      annotations:
+        # Pause new deployments, remove annotation after validation
+        rightsizing.kubex.com/pause-until: "infinite"
+    spec:
+      containers:
+      - name: db
+        # ... container spec
+```
+
+**Troubleshooting:**
+```yaml
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: my-daemon
+spec:
+  template:
+    metadata:
+      annotations:
+        # Pause while investigating issues
+        rightsizing.kubex.com/pause-until: "infinite"
+        # Remove annotation when ready to resume
+    spec:
+      containers:
+      - name: daemon
+        # ... container spec
+```
 
 ---
 

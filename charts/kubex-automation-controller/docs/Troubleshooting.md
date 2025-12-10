@@ -6,6 +6,8 @@ This guide provides comprehensive guidance for diagnosing and resolving common i
 
 - [Troubleshooting Guide](#troubleshooting-guide)
 - [Quick Links](#quick-links)
+  - [Helm Upgrade Conflicts](#helm-upgrade-conflicts)
+    - [MutatingWebhookConfiguration Ownership Conflicts](#mutatingwebhookconfiguration-ownership-conflicts)
   - [Initial Deployment Issues](#initial-deployment-issues)
     - [Check Pod Status](#check-pod-status)
     - [Common Deployment Problems](#common-deployment-problems)
@@ -35,6 +37,31 @@ This guide provides comprehensive guidance for diagnosing and resolving common i
     - [Collect Diagnostics](#collect-diagnostics)
     - [Key Information to Provide](#key-information-to-provide)
 
+---
+
+## Helm Upgrade Conflicts
+
+### MutatingWebhookConfiguration Ownership Conflicts
+
+**Symptom:** Helm upgrade fails with error:
+```bash
+Error: UPGRADE FAILED: conflict occurred while applying object /kubex-resource-optimization-webhook
+admissionregistration.k8s.io/v1, Kind=MutatingWebhookConfiguration: Apply failed with conflicts:
+conflicts with "admissionsenforcer" using admissionregistration.k8s.io/v1:
+- .webhooks[name="..."].namespaceSelector
+```
+
+**Cause:** Helm v4 uses server-side apply by default. External admission controllers (like `admissionsenforcer`, policy enforcers, or security tools) may modify the `MutatingWebhookConfiguration`, claiming field ownership. This creates conflicts when Helm tries to update the same fields.
+
+**Solution:**
+```bash
+# Delete the webhook configuration before upgrading
+kubectl delete mutatingwebhookconfiguration kubex-resource-optimization-webhook
+
+# Then run your Helm upgrade
+helm upgrade kubex-automation-controller densify/kubex-automation-controller \
+  -n kubex -f kubex-automation-values.yaml
+```
 ---
 
 ## Initial Deployment Issues
