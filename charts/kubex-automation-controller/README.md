@@ -39,6 +39,7 @@ The deployment consists of several key services:
 
 - **🚀 Automated Resizing**: Dynamic CPU and memory optimization based on actual usage patterns
 - **🛡️ Safety-First Approach**: Multi-layered validation including HPA awareness, LimitRange compliance, ResourceQuota checking, node allocatable capacity validation, PodDisruptionBudget respect, and configurable pod eviction delays
+- **⏸️ Smart Pause Control**: Per-pod annotation-based pausing for learning periods after application changes or permanent exclusions
 - **📋 Policy-Driven**: Configurable automation rules for downsizing, upsizing, and constraint handling
 - **🎯 Flexible Targeting**: Multiple scope configurations for different automation behaviors across cluster regions
 - **📈 Enterprise Ready**: RBAC integration, audit trails, and GitOps compatibility
