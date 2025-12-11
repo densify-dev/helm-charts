@@ -80,7 +80,7 @@ A scope references a policy by name, allowing you to apply different automation 
 - **Namespace exclusion**: Use `NotIn` operator in scope configuration
 - **Label exclusion**: Add `podLabels` filters to exclude specific apps
 - **Policy exclusion**: Set `allowedPodOwners` to exclude certain resource types
-- **Per-pod pause**: Use the `rightsizing.kubex.com/pause-until` annotation to temporarily or permanently pause automation for specific pods
+- **Per-pod pause**: Use the `rightsizing.kubex.ai/pause-until` annotation to temporarily or permanently pause automation for specific pods
 
 **Pausing automation for individual pods:**
 
@@ -96,7 +96,7 @@ spec:
   template:
     metadata:
       annotations:
-        rightsizing.kubex.com/pause-until: "infinite"
+        rightsizing.kubex.ai/pause-until: "infinite"
     spec:
       containers:
       - name: app
@@ -113,7 +113,7 @@ spec:
   template:
     metadata:
       annotations:
-        rightsizing.kubex.com/pause-until: "2025-12-31T23:59:59Z"  # RFC3339 timestamp
+        rightsizing.kubex.ai/pause-until: "2025-12-31T23:59:59Z"  # RFC3339 timestamp
     spec:
       containers:
       - name: app

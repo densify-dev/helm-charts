@@ -29,7 +29,7 @@ This guide covers advanced configuration options for the Kubex Automation Contro
 
 ## Pausing Automation for Specific Pods
 
-You can temporarily or permanently pause automation for individual pods using the `rightsizing.kubex.com/pause-until` annotation. This is useful for:
+You can temporarily or permanently pause automation for individual pods using the `rightsizing.kubex.ai/pause-until` annotation. This is useful for:
 
 - **Learning period**: Pause automation after application changes to allow relearning of utilization patterns
 - **Troubleshooting**: Isolate pods while diagnosing issues
@@ -39,7 +39,7 @@ You can temporarily or permanently pause automation for individual pods using th
 ### Annotation Format
 
 ```yaml
-rightsizing.kubex.com/pause-until: "<RFC3339 timestamp | infinite>"
+rightsizing.kubex.ai/pause-until: "<RFC3339 timestamp | infinite>"
 ```
 
 ### Permanent Pause
@@ -55,7 +55,7 @@ spec:
   template:
     metadata:
       annotations:
-        rightsizing.kubex.com/pause-until: "infinite"
+        rightsizing.kubex.ai/pause-until: "infinite"
     spec:
       containers:
       - name: app
@@ -76,7 +76,7 @@ spec:
     metadata:
       annotations:
         # Pause until December 31, 2025 at 23:59:59 UTC
-        rightsizing.kubex.com/pause-until: "2025-12-31T23:59:59Z"
+        rightsizing.kubex.ai/pause-until: "2025-12-31T23:59:59Z"
     spec:
       containers:
       - name: app
@@ -86,13 +86,13 @@ spec:
 **Time zone examples:**
 ```yaml
 # UTC timezone
-rightsizing.kubex.com/pause-until: "2025-12-31T23:59:59Z"
+rightsizing.kubex.ai/pause-until: "2025-12-31T23:59:59Z"
 
 # With timezone offset (EST = UTC-5)
-rightsizing.kubex.com/pause-until: "2025-12-31T18:59:59-05:00"
+rightsizing.kubex.ai/pause-until: "2025-12-31T18:59:59-05:00"
 
 # With milliseconds
-rightsizing.kubex.com/pause-until: "2025-12-31T23:59:59.999Z"
+rightsizing.kubex.ai/pause-until: "2025-12-31T23:59:59.999Z"
 ```
 
 ### Behavior
@@ -115,7 +115,7 @@ spec:
     metadata:
       annotations:
         # Pause for 2 weeks to learn new utilization patterns after code changes
-        rightsizing.kubex.com/pause-until: "2025-12-24T00:00:00Z"
+        rightsizing.kubex.ai/pause-until: "2025-12-24T00:00:00Z"
     spec:
       containers:
       - name: app
@@ -133,7 +133,7 @@ spec:
     metadata:
       annotations:
         # Pause new deployments, remove annotation after validation
-        rightsizing.kubex.com/pause-until: "infinite"
+        rightsizing.kubex.ai/pause-until: "infinite"
     spec:
       containers:
       - name: db
@@ -151,7 +151,7 @@ spec:
     metadata:
       annotations:
         # Pause while investigating issues
-        rightsizing.kubex.com/pause-until: "infinite"
+        rightsizing.kubex.ai/pause-until: "infinite"
         # Remove annotation when ready to resume
     spec:
       containers:
