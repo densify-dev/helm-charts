@@ -80,9 +80,7 @@ policy:
             downsize: false
             upsize: true
             setFromUnspecified: false
-      inPlaceResize:                      # (Future release)
-        enabled: false
-      inPlaceResizeContainerRestart:      # (Future release)
+      inPlaceResize:                      
         enabled: false
       podEviction:
         enabled: true
@@ -145,9 +143,8 @@ Controls which types of changes are allowed for CPU and memory resources.
 
 | Section                         | Key                  | Description                                                                          | Default Value |
 | ------------------------------- | -------------------- | ------------------------------------------------------------------------------------ | ------------- |
-| `inPlaceResize`                 | `enabled`            | Allow in-place resizing without pod restart. (Future Release)                                        | `false`        |
-| `inPlaceResizeContainerRestart` | `enabled`            | Allow restarting containers after in-place resize only if the pod's restartPolicy allows it. (FUture Release) | `false`        |
-| `podEviction`                   | `enabled`            | Allow eviction-based resizing.                                                      | `true`        |
+| `inPlaceResize`                 | `enabled`            | Enable in-place resizing (no pod restart) when supported by the node. If in-place resizing is not supported or fails, automatically falls back to pod eviction. | `true`        |
+| `podEviction`                   | `enabled`            | Allow eviction-based resizing. Used as fallback when in-place resizing is not supported or fails.                                                      | `true`        |
 | `safetyChecks`                  | `maxAnalysisAgeDays` | Max age (in days) of recommendations used for automation. Older analysis is ignored. | `5`           |
 
 ---
@@ -174,6 +171,7 @@ policy:
         memory:
           request: { downsize: false, upsize: true, setFromUnspecified: true }
           limit: { downsize: false, upsize: true, setFromUnspecified: true }
+      inPlaceResize: { enabled: true }
       podEviction: { enabled: true }
       safetyChecks: { maxAnalysisAgeDays: 3 }
 ```
@@ -238,10 +236,8 @@ policy:
             downsize: false                # Conservative: don't reduce memory limits
             upsize: true
             setFromUnspecified: false      # Don't set memory limits if not already specified
-      inPlaceResize:                       # (Future release)
-        enabled: false
-      inPlaceResizeContainerRestart:       # (Future release)
-        enabled: false
+      inPlaceResize:                       
+        enabled: true
       podEviction:
         enabled: true
       safetyChecks:
@@ -280,84 +276,11 @@ policy:
             downsize: true                 # Allow memory limit reductions
             upsize: true
             setFromUnspecified: true       # Set memory limits if missing
-      inPlaceResize:                       # (Future release)
-        enabled: false
-      inPlaceResizeContainerRestart:       # (Future release)
-        enabled: false
+      inPlaceResize:
+        enabled: true
       podEviction:
         enabled: true
       safetyChecks:
-        maxAnalysisAgeDays: 7              # Use older analysis if needed
-```
-      podEviction:
-        enabled: true
-      safetyChecks:
-        maxAnalysisAgeDays: 5
+        maxAnalysisAgeDays: 5              # Use older analysis if needed
 ```
 
-## Full Optimization (All Settings Enabled)
-This policy enables all automation features - suitable for development or testing environments where maximum optimization is desired:
-
-```yaml
-policy:
-  automationEnabled: true
-  defaultPolicy: full-optimization
-  remoteEnablement: true                 # Allow UI overrides for flexibility
-  
-  policies:
-    full-optimization:
-      allowedPodOwners: "Deployment,StatefulSet,CronJob,Rollout,Job,ReplicaSet,AnalysisRun,DaemonSet"
-      enablement:
-        cpu:
-          request:
-            downsize: true
-            upsize: true
-            setFromUnspecified: true       # Set CPU requests if missing
-          limit:
-            downsize: true
-            upsize: true
-            setFromUnspecified: true       # Set CPU limits if missing
-            unsetFromSpecified: false      # (Future release)
-        memory:
-          request:
-            downsize: true
-            upsize: true
-            setFromUnspecified: true       # Set memory requests if missing
-          limit:
-            downsize: true                 # Allow memory limit reductions
-            upsize: true
-            setFromUnspecified: true       # Set memory limits if missing
-      inPlaceResize:                       # (Future release)
-        enabled: false
-      inPlaceResizeContainerRestart:       # (Future release)
-        enabled: false
-      podEviction:
-        enabled: true
-      safetyChecks:
-        maxAnalysisAgeDays: 7              # Use older analysis if needed
-```
-
-## ⚠️ Important: Policy Naming Requirements
-
-**Policy names MUST follow RFC 1123 subdomain rules:**
-
-- ✅ **Use lowercase letters, numbers, hyphens, and dots only**
-- ✅ **Start and end with alphanumeric characters**
-- ❌ **No uppercase letters, underscores, or special characters**
-
-### Examples:
-```yaml
-# ✅ Valid policy names
-base-optimization          # lowercase with hyphens
-dev-env                    # short and simple
-production.cpu.aggressive  # dots are allowed
-stage2-memory             # numbers are allowed
-
-# ❌ Invalid policy names (will cause deployment errors)
-baseOptimization          # camelCase not allowed
-dev_environment           # underscores not allowed  
-PRODUCTION               # uppercase not allowed
-aggressive-cpu!          # special characters not allowed
-```
-
-**Why this matters**: Policy names become part of Kubernetes webhook URLs (`/mutate/{policy-name}`), and Kubernetes enforces strict RFC 1123 validation on webhook paths.

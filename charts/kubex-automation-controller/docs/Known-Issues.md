@@ -9,7 +9,6 @@ This document lists current known issues, limitations, and their status in the K
   - [Container Optimization Issues](#container-optimization-issues)
     - [Redundant Processing of Correctly Sized Containers](#redundant-processing-of-correctly-sized-containers)
     - [Single-Threaded Pod Processing](#single-threaded-pod-processing)
-    - [Container Resize Decision Reasoning Not Exposed](#container-resize-decision-reasoning-not-exposed)
     - [Pod Eviction Order Not Optimized](#pod-eviction-order-not-optimized)
   - [Policy and Configuration Issues](#policy-and-configuration-issues)
     - [Scope Selector Requirements Too Restrictive](#scope-selector-requirements-too-restrictive)
@@ -43,17 +42,6 @@ This document lists current known issues, limitations, and their status in the K
 **Impact**: Longer processing time in clusters with thousands of pods  
 
 **Future Enhancement**: Optional multi-threaded processing mode for high-scale environments (planned for future release)
-
-### Container Resize Decision Reasoning Not Exposed
-**Status**: Known Limitation  
-
-**Description**: When containers are not resized, the specific reason (policy restrictions, safety checks, etc.) is not explicitly surfaced to users  
-
-**Impact**: Users must manually dig through controller logs to understand why expected optimizations didn't occur
-
-**Root Cause**: Decision reasoning is logged but not exposed through annotations, events, or status fields 
-
-**Planned Fix**: Enhanced visibility through container annotations and via Kubex UI
 
 ### Pod Eviction Order Not Optimized
 **Status**: Partially Improved  

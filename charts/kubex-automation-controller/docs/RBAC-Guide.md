@@ -44,7 +44,8 @@ The automation controller requires **cluster-wide** permissions to monitor and m
 
 ### Workload Management
 - **Pods**: `get`, `list`, `watch`, `create`, `update`, `patch`, `delete` - Full pod lifecycle management
-- **Pod Eviction**: `create` - Restart pods to apply resource changes
+- **Pod Eviction**: `create` - Restart pods to apply resource changes (used when in-place resizing is unavailable or fails)
+- **Pod Resize**: `patch`, `update` - Perform in-place container resizing without pod restart (Kubernetes 1.33+)
 - **Deployments**: `get`, `list`, `watch` - Monitor deployment configurations
 - **ReplicaSets**: `get`, `list`, `watch` - Track pod ownership and scaling
 - **Jobs**: `get`, `list`, `watch` - Monitor batch workload configurations
@@ -57,7 +58,7 @@ The webhook server operates with **minimal permissions** and primarily receives 
 
 ### Principle of Least Privilege
 - Controller has read-only access to most resources
-- Write permissions limited to pods and pod eviction only  
+- Write permissions limited to pods, pod eviction, and pod resize subresources only
 - Webhook has no additional RBAC permissions beyond authentication
 
 ### Cluster Scope Requirements

@@ -80,6 +80,57 @@ A scope references a policy by name, allowing you to apply different automation 
 - **Namespace exclusion**: Use `NotIn` operator in scope configuration
 - **Label exclusion**: Add `podLabels` filters to exclude specific apps
 - **Policy exclusion**: Set `allowedPodOwners` to exclude certain resource types
+- **Per-pod pause**: Use the `rightsizing.kubex.ai/pause-until` annotation to temporarily or permanently pause automation for specific pods
+
+**Pausing automation for individual pods:**
+
+Add the annotation to your pod owner's template (Deployment, StatefulSet, DaemonSet, etc.):
+
+```yaml
+# Permanent pause
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app
+spec:
+  template:
+    metadata:
+      annotations:
+        rightsizing.kubex.ai/pause-until: "infinite"
+    spec:
+      containers:
+      - name: app
+        # ... container spec
+```
+
+```yaml
+# Time-based pause (resumes after specified time)
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: my-app
+spec:
+  template:
+    metadata:
+      annotations:
+        rightsizing.kubex.ai/pause-until: "2025-12-31T23:59:59Z"  # RFC3339 timestamp
+    spec:
+      containers:
+      - name: app
+        # ... container spec
+```
+
+**Usage:**
+- **`infinite`**: Permanently exclude the pod from automation
+- **RFC3339 timestamp**: Pause automation until the specified date/time, then automatically resume
+- Applies to both webhook mutations and controller-driven evictions
+
+**Common use cases:**
+- **Learning period**: After deploying application changes, pause automation for 1-2 weeks to allow Kubex to relearn utilization patterns before applying new recommendations
+- **Troubleshooting**: Temporarily isolate pods while diagnosing issues
+- **Gradual rollout**: Control which pods are automated and when
+
+See **[Advanced Configuration Guide](./Advanced-Configuration.md#pausing-automation-for-specific-pods)** for detailed examples and best practices.
 
 ### Q: How do I safely test policy changes?
 **A:** We recommend using Helm upgrades for all configuration changes:

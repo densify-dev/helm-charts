@@ -64,6 +64,8 @@ spec:
               value: {{ .Values.deployment.controllerEnv.podScanInterval }}
             - name: UPDATER_TIMEOUT
               value: {{ .Values.deployment.controllerEnv.podScanTimeout }}
+            - name: UPDATER_INITIAL_INTERVAL
+              value: {{ .Values.deployment.controllerEnv.podScanInitialInterval }}
             - name: RECOMMENDATIONS_UPDATE_INTERVAL
               value: {{ .Values.deployment.controllerEnv.recommendationsFetchInterval }}
             - name: RECOMMENDATIONS_INITIAL_INTERVAL
@@ -149,6 +151,8 @@ spec:
                 configMapKeyRef:
                   name: kubex-config
                   key: KUBEX_BASE_URL
+            - name: API_REQUEST_TIMEOUT
+              value: {{ .Values.deployment.controllerEnv.apiRequestTimeout | quote }} 
           volumeMounts:
             - name: cfg-volume
               mountPath: "/densify/config/api"
@@ -261,6 +265,8 @@ spec:
               value: "/densify/config/kubex-automation-policy/kubex-automation-policy"
             - name: RECOMMENDATION_ENCODING
               value: {{ .Values.deployment.controllerEnv.recommendationDataFormat | quote }}
+            - name: SCOPE_FILE_PATH
+              value: "/densify/config/kubex-automation-scope/kubex-automation-scope"
           volumeMounts:
             - name: webhook-certs
               mountPath: "/etc/webhook/certs"
@@ -269,6 +275,9 @@ spec:
               mountPath: "/densify/data"
             - name: config-volume
               mountPath: "/densify/config/kubex-automation-policy"
+              readOnly: true
+            - name: scope-config-volume
+              mountPath: "/densify/config/kubex-automation-scope"
               readOnly: true
             - name: valkey-cfg-volume
               mountPath: "/densify/config/redis-cfg"
@@ -324,6 +333,11 @@ spec:
         - name: config-volume
           configMap:
             name: kubex-automation-policy
+        - name: scope-config-volume
+          projected:
+            sources:
+              - configMap:
+                  name: kubex-automation-scope
         - name: cfg-volume
           secret:
             secretName: {{ include "kubex-automation-controller.densifyUserSecretName" . }}

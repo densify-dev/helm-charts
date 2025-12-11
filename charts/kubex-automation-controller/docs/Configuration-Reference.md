@@ -30,7 +30,6 @@ This document provides a detailed reference for every field in your `kubex-autom
   - [Cluster Configuration (Manual Input)](#cluster-configuration-manual-input)
     - [Certificate Management](#certificate-management)
   - [Scope Definition (Manual Input)](#scope-definition-manual-input)
-    - [Adding Multiple Scopes](#adding-multiple-scopes)
     - [Field Reference](#field-reference)
   - [Deployment Configuration (Optional)](#deployment-configuration-optional)
     - [Pod Scan Configuration](#pod-scan-configuration)
@@ -286,41 +285,9 @@ See [Certificates-BYOC.md](Certificates-BYOC.md) for complete custom certificate
 
 ## Scope Definition (Manual Input)
 
-Defines which pods are eligible for automation using namespace and label filters. Each scope references a policy that defines automation behavior. Multiple scopes allow different automation rules for different parts of your cluster.
+> **📖 For setup instructions and examples**, see [Getting Started - Step 6](./Getting-Started.md#step-6-define-automation-scope)
 
-### Adding Multiple Scopes
-
-To configure multiple scopes for different environments or teams:
-
-1. Copy the entire scope block (from `- name:` to the end of `podLabels:`)
-2. Paste it below the existing scope and modify:
-   - Change the scope name to be unique
-   - Reference a different policy if desired  
-   - Adjust namespace and label filters
-
-**Example: Multiple scopes for different environments**
-```yaml
-scope:
-  - name: production-scope
-    policy: conservative-policy
-    namespaces:
-      operator: In
-      values: ["prod-*"]
-    podLabels:
-      - key: env
-        operator: In
-        values: ["production"]
-        
-  - name: development-scope
-    policy: aggressive-policy
-    namespaces:
-      operator: In
-      values: ["dev-*", "staging-*"]
-    podLabels:
-      - key: env
-        operator: In
-        values: ["development", "staging"]
-```
+Defines which pods are eligible for automation using namespace and label filters. Each scope references a policy and can have different rules.
 
 ### Field Reference
 
@@ -331,7 +298,7 @@ scope:
 | `scope[].namespaces`   | **Mandatory** - Namespace filter configuration that defines which namespaces to include/exclude.                                          |
 | `namespaces.operator`  | `In` or `NotIn` – whether to include or exclude listed namespaces.                                                                        |
 | `namespaces.values`    | List of namespaces to include/exclude. Always exclude `kubex` namespace.  These namespaces are excluded by default: kube-node-lease, kube-public and kube-system.                                  |
-| `scope[].podLabels`    | **Mandatory** - List of pod label selector blocks for filtering based on pod labels.                                                     |
+| `scope[].podLabels`    | **Optional** - List of pod label selector blocks for filtering based on pod labels.                                                     |
 | `podLabels[].key`      | Pod label key to evaluate (e.g., "app", "env", "tier").                                                                                   |
 | `podLabels[].operator` | `In` or `NotIn` – how to evaluate label values.                                                                                           |
 | `podLabels[].values`   | List of values for the given label key.                                                                                                   |
@@ -348,6 +315,7 @@ For clusters with many pods, you may need to adjust scan timing. See [Pod-Scan-C
 | ------------------------------------ | ---------------------------------------------------------------------------------------------- |
 | `deployment.controllerEnv.podScanInterval`            | How often the controller scans all pods for optimization opportunities (default: 6h45m)       |
 | `deployment.controllerEnv.podScanTimeout`             | Maximum time allowed for a complete pod scanning cycle (default: 6h30m)                       |
+| `deployment.controllerEnv.podScanInitialInterval`     | Initial delay before the first pod scan after controller startup (default: 1m)               |
 | `deployment.controllerEnv.podEvictionCooldownPeriod`  | Wait time between individual pod evictions. Default: 1m (allows for resource quotas and termination grace periods). Use 10-15s for aggressive resizing. Use longer cooldowns (2-5m) for: large images/no cache, heavy cluster load, slow API server. |
 
 ### Eviction Throttling
@@ -379,6 +347,7 @@ Additional controller behavior configuration:
 
 | Field                                | Description                                                                                    |
 | ------------------------------------ | ---------------------------------------------------------------------------------------------- |
+| `deployment.controllerEnv.recommendationsFetchInitialDelay` | Startup delay before first recommendation fetch from Kubex API (default: 1m)                 |
 | `deployment.controllerEnv.recommendationsFetchInterval`    | How often to fetch fresh recommendations from Kubex API (default: 1h)                        |
 | `deployment.controllerEnv.recommendationsResyncTimeout`    | Maximum time for recommendation synchronization operations (default: 45m)                     |
 | `deployment.controllerEnv.recommendationDataFormat`        | Storage format in Valkey: "json" (readable) or "protobuf" (compact, default)                 |

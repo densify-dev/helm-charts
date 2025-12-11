@@ -10,9 +10,9 @@ webhook:
   metadataName: kubex-resource-optimization-webhook # Name of the webhook configuration.
 
 deployment:
-  webhookImage: densify/container-automation:1.3 # Container image for the Densify automation webhook server.
-  gatewayImage: densify/automation-gateway:1.0 # Container image for the Densify automation gateway.
-  controllerImage: densify/automation-director:1.0 # Container image for the Densify automation controller.
+  webhookImage: densify/container-automation:1.4 # Container image for the Densify automation webhook server.
+  gatewayImage: densify/automation-gateway:1.1 # Container image for the Densify automation gateway.
+  controllerImage: densify/automation-director:1.1 # Container image for the Densify automation controller.
 
   replicas: # Number of pod replicas to run ([set >1 for high availability).
     webhookServer: 1
@@ -36,17 +36,18 @@ deployment:
     limits:
       memory: "512Mi" # Maximum memory the pod can use before being throttled or killed
   controllerEnv: # Environment variables for the controller pod
+    podScanInitialInterval: "2m"  # Initial delay before first pod scan after startup
     podScanInterval: "6h45m"  # Default for 1000 pods initial deployment with 1m cooldown
     podScanTimeout: "6h30m"   # Default for 1000 pods initial deployment with 1m cooldown
     podEvictionCooldownPeriod: "1m"  # Default cooldown allowing for resource quotas and termination grace periods
-
+  
     recommendationsFetchInitialDelay: "1m"
     recommendationsFetchInterval: "1h"  
     recommendationsResyncTimeout: "45m"
     recommendationDataFormat: "protobuf"
     
     debug: false # Enable debug mode (true/false).
-    suppressInPlaceResizing: "true"
+    suppressInPlaceResizing: "false"
     shufflePods: "false"
     
     # Node resource headroom configuration
@@ -55,7 +56,9 @@ deployment:
 
     evictionThrottlingWindow: "6h"
     evictionThrottlingMax: "1000"
-    
+
+    apiRequestTimeout: "30s"
+        
   # Node scheduling configuration for controller deployment
   controller:
     nodeSelector: {} # Node labels for pod assignment (e.g., node-pool: system)
