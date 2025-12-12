@@ -13,6 +13,7 @@ deployment:
   webhookImage: densify/container-automation:1.4 # Container image for the Densify automation webhook server.
   gatewayImage: densify/automation-gateway:1.1 # Container image for the Densify automation gateway.
   controllerImage: densify/automation-director:1.1 # Container image for the Densify automation controller.
+  waitForValkeyImage: busybox:latest
 
   replicas: # Number of pod replicas to run ([set >1 for high availability).
     webhookServer: 1
