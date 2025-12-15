@@ -32,7 +32,7 @@ Kubex Automation Controller provides intelligent, policy-driven automation for m
 The deployment consists of several key services:
 
 - **🎯 Automation Controller**: Fetches optimization recommendations, evaluates policies, and safely applies resizing actions
-- **🔄 Mutating Admission Webhook**: Real-time pod optimization during creation/updates
+- **🔄 Mutating Admission Webhook**: Real-time pod optimization during creation
 - **📊 Valkey Cache**: High-performance in-memory store for recommendations and state management
 
 ## Key Features
