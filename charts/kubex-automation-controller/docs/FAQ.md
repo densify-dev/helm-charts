@@ -23,14 +23,13 @@ Common questions and answers about Kubex Automation Controller deployment, confi
 - Helm 3.0+
 - At least 2 CPU cores and 4GB RAM available across nodes
 - Valid Kubex UI credentials and instance access
-- TLS certificate management (cert-manager recommended)
+- TLS certificates (automatically generated self-signed certificates by default, or optionally use cert-manager)
 - **Persistent storage**: Available StorageClass with at least 10Gi capacity for Valkey cache
 
 ### Q: How long does initial deployment take?
-**A:** Typically 5-10 minutes:
+**A:** Typically 3-5 minutes:
 - 2-3 minutes for Helm deployment
-- 2-5 minutes for certificate generation (if using cert-manager)
-- 1-2 minutes for pods to be running and ready
+- 1-2 minutes for certificate generation and pods to be running and ready
 
 ### Q: Do I need to install anything on worker nodes?
 **A:** No, Kubex Automation Controller is deployed entirely as Kubernetes workloads. No node agents or DaemonSets are required.

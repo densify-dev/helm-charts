@@ -46,7 +46,7 @@ This document provides a detailed reference for every field in your `kubex-autom
   - [Valkey Configuration with External Secrets](#valkey-configuration-with-external-secrets)
     - [Valkey Server Secret Format](#valkey-server-secret-format)
     - [Valkey Client Secret Format](#valkey-client-secret-format)
-  - [Local Storage Configuration](#local-storage-configuration)
+  - [TLS Certificate Secret (External Secret Management)](#tls-certificate-secret-external-secret-management)
 
 ## ⚠️ Important: Configuration Update Requirements
 
@@ -192,22 +192,60 @@ This section configures how **all secrets** are managed in your deployment. This
 - `kubex-api-secret-container-automation` (Densify API credentials)
 - `kubex-valkey-client-auth` (Valkey client authentication) 
 - `kubex-valkey-secret` (Valkey server configuration)
+- `kubex-automation-tls` (TLS certificate for webhook communication)
 
 | Key | Type | Description |
 |-----|------|-------------|
 | `createSecrets` | `boolean` | **Controls whether the Helm chart creates all required secrets automatically or uses externally managed secrets for everything |
 
 **Options:**
-- **`true`** (Recommended): Helm chart creates **all 3 secrets** automatically based on credentials you provide in the configuration file
-- **`false`** (Advanced): You manage **all 3 secrets** externally (e.g., using external-secrets operator, sealed-secrets, or manual creation)
+- **`true`** (Recommended): Helm chart creates **all 4 secrets** automatically based on credentials you provide in the configuration file
+- **`false`** (Advanced): You manage **all 4 secrets** externally (e.g., using external-secrets operator, sealed-secrets, or manual creation)
 
 **Configuration Flow:**
-- If `createSecrets` is `true`, follow these steps:
+
+**1. Choose Secret Management Approach:**
+- If `createSecrets: true`:
   - [Connection Parameters with Secret Creation](#connection-parameters-with-secret-creation)
   - [Valkey Configuration with Secret Creation](#valkey-configuration-with-secret-creation)
-- If `createSecrets` is `false`, follow these steps:
+  - Choose TLS certificate method below (3 options available)
+- If `createSecrets: false`:
   - [Connection Parameters with External Secret](#connection-parameters-with-external-secret)
   - [Valkey Configuration with External Secrets](#valkey-configuration-with-external-secrets)
+  - Choose TLS certificate method below (2 options available: cert-manager or BYOC)
+
+**2. Choose TLS Certificate Method:**
+
+**When `createSecrets: true`, you have 3 options:**
+
+- **Option A: Helm-generated self-signed** (default, simplest)
+  - Use deploy script: `./deploy-kubex-automation-controller.sh`
+  - 10-year validity, automatically generated during installation
+  - No external dependencies required
+  
+- **Option B: cert-manager** (managed rotation)
+  - Use deploy script: `./deploy-kubex-automation-controller.sh --certmanager`
+  - Requires cert-manager pre-installed in cluster
+  - Automatic certificate rotation
+  - See [Certificate Management](#certificate-management)
+  
+- **Option C: BYOC** (Bring Your Own Certificate)
+  - Use deploy script: `./deploy-kubex-automation-controller.sh`
+  - Manually create the `kubex-automation-tls` secret before deployment
+  - See [Certificates-BYOC.md](Certificates-BYOC.md) and [TLS Certificate Secret (External Secret Management)](#tls-certificate-secret-external-secret-management)
+
+**When `createSecrets: false`, you have 2 options:**
+
+- **Option B: cert-manager** (managed rotation)
+  - Use deploy script: `./deploy-kubex-automation-controller.sh --certmanager`
+  - Requires cert-manager pre-installed in cluster
+  - Automatic certificate rotation
+  - See [Certificate Management](#certificate-management)
+  
+- **Option C: BYOC** (Bring Your Own Certificate) - **Required if not using cert-manager**
+  - Use deploy script: `./deploy-kubex-automation-controller.sh`
+  - You must create the `kubex-automation-tls` secret manually or via external secret management
+  - See [Certificates-BYOC.md](Certificates-BYOC.md) and [TLS Certificate Secret (External Secret Management)](#tls-certificate-secret-external-secret-management)
 
 ## Connection Parameters with Secret Creation
 
@@ -249,18 +287,51 @@ stringData:
 | Key                   | Description                                                  |
 | --------------------- | ------------------------------------------------------------ |
 | `cluster.name`        | Name of the Kubernetes cluster as recognized in Densify      |
-| `certmanager.enabled` | Set to `true` to use cert-manager for certificate management |
+
+**Note**: TLS certificate method is controlled by the deploy script (see [Certificate Management](#certificate-management) below), not by settings in `kubex-automation-values.yaml`.
 
 ### Certificate Management
 
-**Using cert-manager (Default)**
-When `certmanager.enabled: true`, certificates are automatically managed:
+**Option 1: Self-Signed Certificates (Default)**
+
+Self-signed certificates with 10-year validity are automatically generated during installation. No configuration needed!
+
+```bash
+# Deploy with self-signed certificates (default behavior)
+./deploy-kubex-automation-controller.sh
+```
+
+The certificate generation happens automatically via Helm template functions during chart installation. The certificate includes all required DNS names for the webhook service and is valid for 10 years.
+
+**How TLS certificate creation is affected by `createSecrets`:**
+
+The `createSecrets` setting (documented in [Secret Management Configuration](#secret-management-configuration)) controls ALL secrets in the deployment, including the TLS certificate:
+
+- **`createSecrets: true`** (default): The chart generates and creates the `kubex-automation-tls` secret automatically using Helm's built-in certificate generation functions.
+
+- **`createSecrets: false`**: The chart does NOT generate any certificates. You must provide your own certificate (BYOC - Bring Your Own Certificate). Since the certificate is generated at Helm template rendering time, it cannot be extracted for external secret management. See [TLS Certificate Secret (External Secret Management)](#tls-certificate-secret-external-secret-management) for BYOC instructions.
+
+**Option 2: Using cert-manager**
+
+If you prefer managed certificate rotation with cert-manager:
+
+**Prerequisites**: cert-manager must be pre-installed in your cluster.
+
+```bash
+# Deploy with cert-manager
+./deploy-kubex-automation-controller.sh --certmanager
+```
+
+When using cert-manager:
 - A self-signed ClusterIssuer is created
-- TLS certificates are generated and rotated automatically
+- TLS certificates are generated and rotated automatically (30-day validity, renewed 10 days before expiration)
 - The CA bundle is injected into the MutatingWebhookConfiguration
 
-**Using Custom Certificates**
-When `certmanager.enabled: false`, you must provide your own certificates:
+**Option 3: Using Custom Certificates (BYOC)**
+
+For advanced users who need to provide their own certificates (e.g., signed by an internal CA, compliance requirements):
+
+**Prerequisites**: `createSecrets: false` must be set in `kubex-automation-values.yaml` (see [TLS Certificate Secret (External Secret Management)](#tls-certificate-secret-external-secret-management))
 
 1. **Create the required secret:**
    ```bash
@@ -313,10 +384,10 @@ For clusters with many pods, you may need to adjust scan timing. See [Pod-Scan-C
 
 | Field                                | Description                                                                                    |
 | ------------------------------------ | ---------------------------------------------------------------------------------------------- |
-| `deployment.controllerEnv.podScanInterval`            | How often the controller scans all pods for optimization opportunities (default: 6h45m)       |
-| `deployment.controllerEnv.podScanTimeout`             | Maximum time allowed for a complete pod scanning cycle (default: 6h30m)                       |
-| `deployment.controllerEnv.podScanInitialInterval`     | Initial delay before the first pod scan after controller startup (default: 1m)               |
-| `deployment.controllerEnv.podEvictionCooldownPeriod`  | Wait time between individual pod evictions. Default: 1m (allows for resource quotas and termination grace periods). Use 10-15s for aggressive resizing. Use longer cooldowns (2-5m) for: large images/no cache, heavy cluster load, slow API server. |
+| `deployment.controllerEnv.podScanInterval`            | How often the controller scans all pods for optimization opportunities (default: 1h, optimized for in-place resizing on Kubernetes 1.33+). See Pod-Scan-Configuration.md for pod eviction mode settings. |
+| `deployment.controllerEnv.podScanTimeout`             | Maximum time allowed for a complete pod scanning cycle (default: 30m, optimized for in-place resizing)                       |
+| `deployment.controllerEnv.podScanInitialInterval`     | Initial delay before the first pod scan after controller startup (default: 2m)               |
+| `deployment.controllerEnv.podEvictionCooldownPeriod`  | Wait time between individual pod evictions (default: 1m). Only used when in-place resizing is unavailable (Kubernetes < 1.33 or policy inPlaceResize.enabled: false). Allows for resource quotas and termination grace periods. Use 15s for aggressive resizing. Use longer cooldowns (2-5m) for: large images/no cache, heavy cluster load, slow API server. |
 
 ### Eviction Throttling
 
@@ -546,13 +617,54 @@ stringData:
   REDIS_PASSWORD: "{valkey-password}"
 ```
 
-## Local Storage Configuration
+---
 
-The Densify Automation Controller now uses **emptyDir** volumes for local storage instead of PersistentVolumeClaims. This approach provides several benefits:
+## TLS Certificate Secret (External Secret Management)
 
-- **Simplified deployment**: No need to provision PVCs or manage storage classes
-- **Better scheduling**: Pods can run on any node without volume constraints
-- **Faster updates**: No volume attachment delays during rolling updates
-- **Cloud-agnostic**: Works consistently across all Kubernetes environments
+When `createSecrets: false`, you have two options for TLS certificates:
 
-The recommendation data is ephemeral and regenerated as needed. For persistent data requirements, Valkey provides caching and state management.
+1. **Use cert-manager** - Run deploy script with `--certmanager` flag (see [Certificate Management](#certificate-management))
+2. **Use BYOC** - Provide your own certificate as described below
+
+**If using BYOC (not cert-manager):**
+
+The chart does NOT generate certificates for external secret management. You must provide your own certificate (BYOC). Since Helm-generated certificates are created at template rendering time, they cannot be extracted for external secret management.
+
+**Steps to provide your own certificate:**
+
+1. **Generate or obtain a TLS certificate** with the following DNS names:
+   - `kubex-webhook-service`
+   - `kubex-webhook-service.kubex`
+   - `kubex-webhook-service.kubex.svc`
+   - `kubex-webhook-service.kubex.svc.cluster.local`
+
+2. **Create the secret** in your external secret management system (Vault, AWS Secrets Manager, etc.) with three keys:
+   ```yaml
+   tls.crt: <your-certificate-pem-data>
+   tls.key: <your-private-key-pem-data>
+   ca.crt: <your-ca-certificate-pem-data>
+   ```
+
+3. **Sync the secret to Kubernetes** using your secret management tool (External Secrets Operator, Sealed Secrets, etc.) to create the `kubex-automation-tls` secret in the `kubex` namespace.
+
+4. **Verify the secret exists:**
+   ```bash
+   kubectl get secret kubex-automation-tls -n kubex
+   ```
+
+**Alternative: Manual Secret Creation**
+
+If not using external secret management, create the secret manually:
+
+```bash
+kubectl create secret generic kubex-automation-tls \
+  --from-file=tls.crt=your-cert.pem \
+  --from-file=tls.key=your-key.pem \
+  --from-file=ca.crt=your-ca.pem \
+  --type=kubernetes.io/tls \
+  -n kubex
+```
+
+**Certificate Generation:**
+
+For BYOC requirements and guidelines, see [Certificates-BYOC.md](Certificates-BYOC.md).

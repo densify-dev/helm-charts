@@ -62,7 +62,7 @@ Ready to deploy? Follow our step-by-step guide:
 This guide covers:
 - Prerequisites and requirements
 - Configuration file setup  
-- Certificate management options
+- Certificate management options (self-signed by default, cert-manager optional)
 - Deployment verification
 - First automation policies
 
@@ -94,7 +94,6 @@ This guide covers:
 |----------|---------|
 | **[Troubleshooting](./docs/Troubleshooting.md)** | Common issues and diagnostic procedures |
 | **[Known Issues](./docs/Known-Issues.md)** | Current limitations and workarounds |
-| **[Certificate Management](./docs/Certificates-Manual.md)** | TLS certificate setup options |
 
 ---
 

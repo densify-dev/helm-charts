@@ -1,7 +1,13 @@
 certmanager:
+  enabled: false # Set to true to use cert-manager instead of self-signed certificates
   duration: 720h # Certificate validity duration (e.g., 30 days = 720h)
   renewBefore: 240h # Time before expiration to trigger renewal (e.g., 10 days = 240h).
   rotationPolicy: Always
+
+# Self-signed certificate configuration (used when certmanager.enabled=false)
+selfSignedCert:
+  enabled: true # Generate self-signed certificate during installation
+  validity: 3650 # Certificate validity in days (default: 10 years)
 
 policy:
   policies: {} # Additional policies can be defined here, remove {} when adding new policies
@@ -38,9 +44,9 @@ deployment:
       memory: "512Mi" # Maximum memory the pod can use before being throttled or killed
   controllerEnv: # Environment variables for the controller pod
     podScanInitialInterval: "2m"  # Initial delay before first pod scan after startup
-    podScanInterval: "6h45m"  # Default for 1000 pods initial deployment with 1m cooldown
-    podScanTimeout: "6h30m"   # Default for 1000 pods initial deployment with 1m cooldown
-    podEvictionCooldownPeriod: "1m"  # Default cooldown allowing for resource quotas and termination grace periods
+    podScanInterval: "1h"  # Default optimized for in-place resizing (Kubernetes 1.33+). See Pod-Scan-Configuration.md for pod eviction mode settings.
+    podScanTimeout: "30m"   # Default optimized for in-place resizing. Adjust based on cluster size - see Pod-Scan-Configuration.md
+    podEvictionCooldownPeriod: "1m"  # Cooldown between pod evictions (only used when in-place resizing unavailable on Kubernetes < 1.33 or policy inPlaceResize.enabled: false)
   
     recommendationsFetchInitialDelay: "1m"
     recommendationsFetchInterval: "1h"  
@@ -64,14 +70,22 @@ deployment:
   controller:
     nodeSelector: {} # Node labels for pod assignment (e.g., node-pool: system)
     affinity: {} # Affinity rules for advanced node selection
-    tolerations: [] # Tolerations for node taints
+    tolerations:
+      # Tolerate arch taints (works on both amd64 and arm64 clusters)
+      - key: "kubernetes.io/arch"
+        operator: "Exists"
+        effect: "NoSchedule"
     topologySpreadConstraints: [] # Topology spread constraints for pod distribution
   
   # Node scheduling configuration for webhook deployment  
   webhook:
     nodeSelector: {} # Node labels for pod assignment (e.g., node-pool: system)
     affinity: {} # Affinity rules for advanced node selection
-    tolerations: [] # Tolerations for node taints
+    tolerations:
+      # Tolerate arch taints (works on both amd64 and arm64 clusters)
+      - key: "kubernetes.io/arch"
+        operator: "Exists"
+        effect: "NoSchedule"
     topologySpreadConstraints: [] # Topology spread constraints for pod distribution
 
 valkey:
@@ -114,6 +128,13 @@ valkey:
 
   # Use a Deployment in non-HA mode (default)
   useDeploymentWhenNonHA: true
+
+  # Node scheduling configuration
+  tolerations:
+    # Tolerate arch taints (works on both amd64 and arm64 clusters)
+    - key: "kubernetes.io/arch"
+      operator: "Exists"
+      effect: "NoSchedule"
 
     # Metrics exporter enabled; no Prometheus Operator
   metrics:

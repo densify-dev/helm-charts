@@ -63,9 +63,6 @@ valkey:
 cluster:
   name: <clusterName>   # [REPLACE] Kubernetes cluster name
 
-certmanager:
-  enabled: false        # Set to true if using cert-manager
-
 # ================================================================
 # SCOPE CONFIGURATION
 # Instructions:
@@ -194,9 +191,9 @@ policy:
 #deployment:
 #  controllerEnv:  # Override controller environment variables (defaults in values.yaml)
 #    debug: true                                  # Uncomment to enable debug mode for troubleshooting
-#    podScanInterval: "6h45m"                     # How often to scan cluster for pods to check 
-#    podScanTimeout: "6h30m"                      # Max time allowed for each pod scanning cycle  
-#    podEvictionCooldownPeriod: "1m"              # Wait time between pod evictions (recommended default) 
+#    podScanInterval: "1h"                        # Default optimized for in-place resizing (Kubernetes 1.33+)
+#    podScanTimeout: "30m"                        # Default optimized for in-place resizing
+#    podEvictionCooldownPeriod: "1m"              # Only used when in-place resizing unavailable (Kubernetes < 1.33)
 #    podScanInitialInterval: "2m"                 # Initial delay before first pod scan after startup  
 #    recommendationsFetchInitialDelay: "1m"       # Startup delay before first recommendation fetch 
 #    recommendationsFetchInterval: "1h"           # How often to refresh recommendations from API 

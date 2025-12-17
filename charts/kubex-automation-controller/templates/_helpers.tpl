@@ -24,6 +24,35 @@ If release name contains chart name it will be used as a full name.
 {{- end }}
 
 {{/*
+Generate self-signed certificates for webhook
+*/}}
+{{- define "kubex-automation-controller.gen-certs" -}}
+{{- $serviceName := "kubex-webhook-service" -}}
+{{- $namespace := .Release.Namespace -}}
+{{- $validity := int .Values.selfSignedCert.validity -}}
+{{- $cn := printf "%s.%s.svc" $serviceName $namespace -}}
+{{- $altNames := list $serviceName (printf "%s.%s" $serviceName $namespace) (printf "%s.%s.svc" $serviceName $namespace) (printf "%s.%s.svc.cluster.local" $serviceName $namespace) -}}
+{{- $ca := genCA "kubex-webhook-ca" $validity -}}
+{{- $cert := genSignedCert $cn nil $altNames $validity $ca -}}
+ca.crt: {{ $ca.Cert | b64enc }}
+tls.crt: {{ $cert.Cert | b64enc }}
+tls.key: {{ $cert.Key | b64enc }}
+{{- end -}}
+
+{{/*
+Get CA certificate for webhook configuration
+*/}}
+{{- define "kubex-automation-controller.ca-bundle" -}}
+{{- $serviceName := "kubex-webhook-service" -}}
+{{- $namespace := .Release.Namespace -}}
+{{- $validity := int .Values.selfSignedCert.validity -}}
+{{- $cn := printf "%s.%s.svc" $serviceName $namespace -}}
+{{- $altNames := list $serviceName (printf "%s.%s" $serviceName $namespace) (printf "%s.%s.svc" $serviceName $namespace) (printf "%s.%s.svc.cluster.local" $serviceName $namespace) -}}
+{{- $ca := genCA "kubex-webhook-ca" $validity -}}
+{{ $ca.Cert | b64enc }}
+{{- end -}}
+
+{{/*
 Create chart name and version as used by the chart label.
 */}}
 {{- define "kubex-automation-controller.chart" -}}
