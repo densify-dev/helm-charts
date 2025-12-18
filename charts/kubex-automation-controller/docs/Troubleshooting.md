@@ -318,7 +318,7 @@ helm upgrade kubex-automation-controller densify/kubex-automation-controller -n 
 
 ### Disable Automation Quickly
 
-**Method 1: Configuration Update (Recommended)**
+**Method 1: Helm redeploy (Recommended)**
 ```bash
 # Edit kubex-automation-values.yaml and set policy.automationEnabled to false
 vim kubex-automation-values.yaml

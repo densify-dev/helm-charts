@@ -201,6 +201,8 @@ You must create the `kubex-automation-tls` secret **before** deploying (see BYOC
 
 ## Step 8: Deploy
 
+> **Future updates**: After editing `kubex-automation-values.yaml`, rerun the deploy script or the exact `helm upgrade --install … -f kubex-automation-values.yaml` command from this step. Do not patch live resources directly—the scripted deployment keeps the webhook and controller in sync.
+
 ### Option A: Quick Deploy (Recommended)
 
 #### Option A1: Using Self-Signed Certificates (Default)
@@ -318,7 +320,7 @@ Once comfortable with the basic setup:
 
 1. **[Policy Configuration](./Policy-Configuration.md)** - Create more sophisticated automation rules
 2. **[Advanced Configuration](./Advanced-Configuration.md)** - Node scheduling, performance tuning
-3. **[Configuration Updates](./Configuration-Updates.md)** - Learn safe update procedures
+3. **Reapply via deploy script or `helm upgrade`** - Edit `kubex-automation-values.yaml` and rerun either the deploy script or the Step 8 `helm upgrade --install … -f kubex-automation-values.yaml` command after every change
 
 ### Need Help?
 

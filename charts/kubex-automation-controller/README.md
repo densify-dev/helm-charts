@@ -77,7 +77,7 @@ This guide covers:
 | **[Getting Started](./docs/Getting-Started.md)** | Step-by-step deployment guide |
 | **[Configuration Reference](./docs/Configuration-Reference.md)** | Complete field-by-field reference for `kubex-automation-values.yaml` |
 | **[Policy Configuration](./docs/Policy-Configuration.md)** | Define automation behaviors and safety rules |
-| **[Configuration Updates](./docs/Configuration-Updates.md)** | Safe procedures for changing settings |
+| **[Apply Updates](./docs/Getting-Started.md#step-8-deploy)** | Rerun the deploy script or `helm upgrade --install … -f kubex-automation-values.yaml` after configuration changes |
 
 ## Advanced Topics
 

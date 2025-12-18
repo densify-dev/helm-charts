@@ -120,7 +120,7 @@ if [ "${CREATE_SECRETS}" = "false" ]; then
   echo "The Helm chart has been deployed, but pods will NOT start until you:"
   echo ""
   echo "1. Create the following secrets in your external secret management system:"
-  echo "   - kubex-api-secret-container-automation (Densify API credentials)"
+  echo "   - kubex-api-secret-container-automation (Kubex API credentials)"
   echo "   - kubex-valkey-client-auth (Valkey client authentication)"
   echo "   - kubex-valkey-secret (Valkey server configuration)"
   echo "   - kubex-automation-tls (TLS certificate - use cert-manager or BYOC)"

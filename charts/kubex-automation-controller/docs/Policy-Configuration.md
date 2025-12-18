@@ -50,7 +50,7 @@ policy:
   remoteEnablement: false
     # false: Automation scope controlled ONLY by this Helm configuration
     #        - Recommended for strict GitOps workflows and production environments
-    # true:  Automation scope controlled by BOTH Helm configuration AND Densify UI
+    # true:  Automation scope controlled by BOTH Helm configuration AND Kubex UI
     #        - Provides flexibility for ad-hoc automation control without Helm updates
     #        - Useful for development environments and testing scenarios
   
@@ -98,16 +98,16 @@ policy:
 | ---------------------- | ----------------------------------------------------------------------------------------------- | ------------- |
 | `automationEnabled`    | Global switch to enable or disable automation for the entire cluster                           | `true`        |
 | `defaultPolicy`        | Policy name to use when a scope doesn't specify a policy                                       | `base-optimization` |
-| `remoteEnablement`     | Controls whether automation scope can be modified via Densify UI in addition to Helm configuration | `false`   |
+| `remoteEnablement`     | Controls whether automation scope can be modified via Kubex UI in addition to Helm configuration | `false`   |
 
 ### Remote Enablement Options:
 - **`false`** (Recommended for production):
   - Automation scope controlled **ONLY** by Helm configuration
-  - Densify UI cannot override automation decisions
+  - Kubex UI cannot override automation decisions
   - Best for strict GitOps workflows and production environments
   
 - **`true`** (Useful for development):
-  - Automation scope controlled by **BOTH** Helm configuration AND Densify UI
+  - Automation scope controlled by **BOTH** Helm configuration AND Kubex UI
   - Allows ad-hoc automation control without Helm updates
   - Provides flexibility for development and testing scenarios
 

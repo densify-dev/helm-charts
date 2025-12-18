@@ -126,7 +126,7 @@ Create the name of the service account to use
 {{- end }}
 
 {{/*
-Generate Densify epassword that persists across upgrades
+Generate Kubex epassword that persists across upgrades
 */}}
 {{- define "kubex-automation-controller.densifyEpassword" -}}
 {{- if .Values.createSecrets }}
@@ -134,7 +134,7 @@ Generate Densify epassword that persists across upgrades
 {{- end }}
 {{- end }}
 {{/*
-Generate Densify username that persists across upgrades
+Generate Kubex username that persists across upgrades
 */}}
 {{- define "kubex-automation-controller.densifyUsername" -}}
 {{- if .Values.createSecrets }}
