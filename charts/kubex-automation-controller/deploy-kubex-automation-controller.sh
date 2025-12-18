@@ -88,7 +88,6 @@ if [ "${CERT_MANAGER_ACTION}" = true ]; then
     echo "  helm install cert-manager jetstack/cert-manager \\"
     echo "    --namespace cert-manager \\"
     echo "    --create-namespace \\"
-    echo "    --version v1.19.2 \\"
     echo "    --set crds.enabled=true"
     exit 1
   fi
