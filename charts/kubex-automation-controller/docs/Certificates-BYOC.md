@@ -41,13 +41,37 @@ Your certificate must include the following DNS names in the Subject Alternative
    - `tls.key`: Your private key  
    - `ca.crt`: The CA certificate that signed `tls.crt`
 
-3. **Set cert-manager to disabled in your kubex-automation-values.yaml file:**
+3. **Configure `createSecrets: false` in your kubex-automation-values.yaml:**
    ```yaml
-   certmanager:
-     enabled: false
+   createSecrets: false  # Required for BYOC - prevents Helm from generating certificates
+   ```
+   
+   **Important:** When `createSecrets: false`, you must also provide all other required secrets externally (API credentials, Valkey secrets). See [Configuration Reference](./Configuration-Reference.md#secret-management-configuration) for details.
+
+4. **Deploy with your certificate:**
+   
+   Simply run the deploy script:
+   ```bash
+   ./deploy-kubex-automation-controller.sh
+   ```
+
+   Or if using helm directly:
+   ```bash
+   helm upgrade --install kubex-automation-controller densify/kubex-automation-controller \
+     --namespace kubex \
+     --create-namespace \
+     -f kubex-automation-values.yaml
    ```
 
 ## Troubleshooting
+
+- **Pods not starting**: When `createSecrets: false`, Helm does NOT create any secrets automatically. Verify you've created all required secrets manually:
+  ```bash
+  kubectl get secrets -n kubex
+  # Should show: kubex-api-secret-container-automation, kubex-valkey-client-auth, 
+  #              kubex-valkey-secret, kubex-automation-tls
+  ```
+  Missing secrets will cause pods to fail.
 
 - **Certificate validation errors**: Ensure your certificate includes all required DNS names
 - **Namespace mismatch**: Update DNS names if using a different namespace  
@@ -58,9 +82,3 @@ Your certificate must include the following DNS names in the Subject Alternative
   kubectl get secret kubex-automation-tls -n kubex -o yaml
   # Should show data keys: ca.crt, tls.crt, tls.key
   ```
-
-## Alternative: Generate Compatible Certificate
-
-If your existing certificate doesn't have the required DNS names, see:
-- [Certificate-Manual-OpenSSL.md](Certificate-Manual-OpenSSL.md)
-- [Certificate-Manual-CFSSL.md](Certificate-Manual-CFSSL.md)

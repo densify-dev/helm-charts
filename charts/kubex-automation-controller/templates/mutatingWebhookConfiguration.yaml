@@ -15,9 +15,15 @@ webhooks:
         namespace: {{ $.Release.Namespace }}
         path: "/mutate/{{ .policy | default $.Values.policy.defaultPolicy }}"
       {{- if not $.Values.certmanager.enabled }}
+      {{- if $.Values.selfSignedCert.enabled }}
+      # Self-signed certificate CA bundle
+      caBundle: {{ include "kubex-automation-controller.ca-bundle" $ }}
+      {{- else }}
+      # BYOC: Lookup existing secret
       {{- $secret := (lookup "v1" "Secret" $.Release.Namespace "kubex-automation-tls") }}
       {{- if $secret }}
-      caBundle: {{ index $secret.data "tls.crt" }}
+      caBundle: {{ index $secret.data "ca.crt" }}
+      {{- end }}
       {{- end }}
       {{- else }}
       # cert-manager will inject this

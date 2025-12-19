@@ -11,23 +11,21 @@ This guide walks you through deploying Kubex Automation Controller in your Kuber
   - [Step 2: Configure Connection Parameters](#step-2-configure-connection-parameters)
   - [Step 3: Configure Valkey Parameters](#step-3-configure-valkey-parameters)
   - [Step 4: Configure Your Cluster](#step-4-configure-your-cluster)
-  - [Step 5: Set Up TLS Certificates](#step-5-set-up-tls-certificates)
-    - [Option A: Use cert-manager (Recommended)](#option-a-use-cert-manager-recommended)
-    - [Option B: Manual Certificate Management](#option-b-manual-certificate-management)
+  - [Step 5: Define Automation Scope](#step-5-define-automation-scope)
+  - [Step 6: Configure Automation Policy](#step-6-configure-automation-policy)
+  - [Step 7: Set Up TLS Certificates](#step-7-set-up-tls-certificates)
+    - [Option A: Self-Signed Certificates (Default)](#option-a-self-signed-certificates-default)
+    - [Option B: Use cert-manager](#option-b-use-cert-manager)
     - [Option C: Bring Your Own Certificates](#option-c-bring-your-own-certificates)
-  - [Step 6: Define Automation Scope](#step-6-define-automation-scope)
-  - [Step 7: Deploy](#step-7-deploy)
+  - [Step 8: Deploy](#step-8-deploy)
     - [Option A: Quick Deploy (Recommended)](#option-a-quick-deploy-recommended)
-      - [Option A1: Using cert-manager (Recommended)](#option-a1-using-cert-manager-recommended)
-      - [Option A2: Using cert-manager for an `arm64` cluster (Recommended)](#option-a2-using-cert-manager-for-an-arm64-cluster-recommended)
-      - [Option A3: Own Certificates](#option-a3-own-certificates)
-      - [Option A4: Own Certificates for an `arm64` cluster](#option-a4-own-certificates-for-an-arm64-cluster)
-    - [Option B: Manual Deploy](#option-b-manual-deploy)
+      - [Option A1: Using Self-Signed Certificates (Default)](#option-a1-using-self-signed-certificates-default)
+      - [Option A2: Using cert-manager](#option-a2-using-cert-manager)
+    - [Option B: Deploy via Helm Command](#option-b-deploy-via-helm-command)
       - [Add Helm repositories](#add-helm-repositories)
-      - [Option B1: Using cert-manager](#option-b1-using-cert-manager)
-      - [Option B2: Own Certificates](#option-b2-own-certificates)
-  - [Step 8: Verify Installation](#step-8-verify-installation)
-  - [Step 9: Create Your First Policy](#step-9-create-your-first-policy)
+      - [Option B1: Self-Signed or Own Certificates (Default)](#option-b1-self-signed-or-own-certificates-default)
+      - [Option B2: Using cert-manager](#option-b2-using-cert-manager)
+  - [Step 9: Verify Installation](#step-9-verify-installation)
   - [Next Steps](#next-steps)
     - [Monitor Your First Optimizations](#monitor-your-first-optimizations)
     - [Expand Your Configuration](#expand-your-configuration)
@@ -58,13 +56,6 @@ Download the configuration template and installation script:
 curl -LO https://github.com/densify-dev/helm-charts/raw/master/charts/kubex-automation-controller/kubex-automation-values.yaml
 curl -LO https://github.com/densify-dev/helm-charts/raw/master/charts/kubex-automation-controller/deploy-kubex-automation-controller.sh
 chmod a+x ./deploy-kubex-automation-controller.sh
-```
-
-If the cluster is an `arm64` cluster, download these additional files as well:
-
-```bash
-curl -LO https://github.com/densify-dev/helm-charts/raw/master/charts/kubex-automation-controller/values-arm64.yaml
-curl -LO https://github.com/densify-dev/helm-charts/raw/master/charts/kubex-automation-controller/cert-manager-values-arm64.yaml
 ```
 
 Open `kubex-automation-values.yaml` with your preferred editor. You'll be pasting values into it in steps 2-6 below. When done, save your changes.
@@ -123,37 +114,14 @@ cluster:
 
 ---
 
-## Step 5: Set Up TLS Certificates
-
-The webhook requires TLS certificates. Choose one option:
-
-### Option A: Use cert-manager (Recommended)
-
-```yaml
-certmanager:
-  enabled: true
-```
-
-### Option B: Manual Certificate Management
-
-See our [Certificate Management Guide](./Certificates-Manual.md) for detailed instructions.
-
-### Option C: Bring Your Own Certificates
-
-See [BYOC Guide](./Certificates-BYOC.md) if you have existing certificates.
-
-**Important**: When using custom certificates, your Kubernetes secret **must** include the CA certificate that signed your TLS certificate. The kubex-automation-controller requires this CA certificate for proper webhook operation.
-
----
-
-## Step 6: Define Automation Scope
+## Step 5: Define Automation Scope
 
 Configure which namespaces and workloads to automate:
 
 ```yaml
 scope:
   - name: production-workloads  # Unique identifier
-    policy: safe-optimization   # Must match a policy name (Step 9)
+    policy: base-optimization   # Uses the default policy
     namespaces:
       operator: In              # 'In' to include, 'NotIn' to exclude
       values:
@@ -176,35 +144,82 @@ scope:
 
 ---
 
-## Step 7: Deploy
+## Step 6: Configure Automation Policy
+
+**No configuration needed!** The chart includes a safe `base-optimization` policy by default:
+
+- ✅ Allows CPU and memory request optimization (both upsize and downsize)
+- ✅ Allows CPU and memory limit increases
+- ⚠️ Prevents memory limit decreases (for stability)
+- 🔒 Only optimizes Deployments, StatefulSets, CronJobs, Jobs, Rollouts, ReplicaSets, and AnalysisRuns
+- 📅 Uses recommendations up to 5 days old
+
+This policy is already referenced in your scope configuration from Step 5.
+
+**Want to customize?** See [Policy Configuration](./Policy-Configuration.md) for advanced options like:
+- Creating more conservative policies (upsize-only)
+- Enabling aggressive optimization (DaemonSets, all limits)
+- Adjusting safety thresholds
+
+---
+
+## Step 7: Set Up TLS Certificates
+
+The webhook requires TLS certificates. Certificate method is controlled during deployment (Step 8) via deploy script flags:
+
+### Option A: Self-Signed Certificates (Default)
+
+**No configuration needed!** Self-signed certificates with 10-year validity are automatically generated during installation.
+
+Simply deploy without any certificate flags (see Step 8).
+
+### Option B: Use cert-manager
+
+**Prerequisites**: cert-manager must be pre-installed in your cluster.
+
+To install cert-manager:
+```bash
+helm repo add jetstack https://charts.jetstack.io
+helm repo update
+helm install cert-manager jetstack/cert-manager \
+  --namespace cert-manager \
+  --create-namespace \
+  --set crds.enabled=true
+```
+
+Deploy with the `--certmanager` flag (see Step 8).
+
+### Option C: Bring Your Own Certificates
+
+See [BYOC Guide](./Certificates-BYOC.md) if you have existing certificates.
+
+**Important**: When using custom certificates, your Kubernetes secret **must** include the CA certificate that signed your TLS certificate. The kubex-automation-controller requires this CA certificate for proper webhook operation.
+
+You must create the `kubex-automation-tls` secret **before** deploying (see BYOC Guide for details).
+
+---
+
+## Step 8: Deploy
+
+> **Future updates**: After editing `kubex-automation-values.yaml`, rerun the deploy script or the exact `helm upgrade --install … -f kubex-automation-values.yaml` command from this step. Do not patch live resources directly—the scripted deployment keeps the webhook and controller in sync.
 
 ### Option A: Quick Deploy (Recommended)
 
-#### Option A1: Using cert-manager (Recommended)
-
-```bash
-./deploy-kubex-automation-controller.sh --certmanager
-```
-
-#### Option A2: Using cert-manager for an `arm64` cluster (Recommended)
-
-```bash
-./deploy-kubex-automation-controller.sh --certmanager --arm64
-```
-
-#### Option A3: Own Certificates
+#### Option A1: Using Self-Signed Certificates (Default)
 
 ```bash
 ./deploy-kubex-automation-controller.sh
 ```
 
-#### Option A4: Own Certificates for an `arm64` cluster
+#### Option A2: Using cert-manager
+
+**Prerequisites**: cert-manager must be pre-installed in your cluster.
 
 ```bash
-./deploy-kubex-automation-controller.sh --arm64
+./deploy-kubex-automation-controller.sh --certmanager
 ```
 
-### Option B: Manual Deploy
+### Option B: Deploy via Helm Command
 
 #### Add Helm repositories
 
@@ -214,7 +229,18 @@ helm repo add groundhog2k https://groundhog2k.github.io/helm-charts
 helm repo update
 ```
 
-#### Option B1: Using cert-manager
+#### Option B1: Self-Signed or Own Certificates (Default)
+
+```bash
+helm upgrade --install kubex-automation-controller densify/kubex-automation-controller \
+  --namespace kubex \
+  --create-namespace \
+  -f kubex-automation-values.yaml
+
+# Note: For BYOC, create kubex-automation-tls secret before running the above command
+```
+
+#### Option B2: Using cert-manager
 
 1. Install cert-manager:
 
@@ -223,19 +249,6 @@ helm repo add jetstack https://charts.jetstack.io --force-update
 helm upgrade --install cert-manager jetstack/cert-manager \
   --namespace cert-manager \
   --create-namespace \
-  --version v1.19.2 \
-  --set crds.enabled=true
-```
-
-Or, for an `arm64` cluster, run:
-
-```bash
-helm repo add jetstack https://charts.jetstack.io --force-update
-helm upgrade --install cert-manager jetstack/cert-manager \
-  --namespace cert-manager \
-  --create-namespace \
-  --version v1.19.2 \
-  -f cert-manager-values-arm64.yaml \
   --set crds.enabled=true
 ```
 
@@ -261,41 +274,9 @@ helm upgrade --install kubex-automation-controller densify/kubex-automation-cont
   --set certmanager.enabled=true
 ```
 
-Or, for an `arm64` cluster, run:
-
-```bash
-helm upgrade --install kubex-automation-controller densify/kubex-automation-controller \
-  --namespace kubex \
-  --create-namespace \
-  -f kubex-automation-values.yaml \
-  -f values-arm64.yaml \
-  --set certmanager.enabled=true
-```
-
-#### Option B2: Own Certificates
-
-```bash
-helm upgrade --install kubex-automation-controller densify/kubex-automation-controller \
-  --namespace kubex \
-  --create-namespace \
-  -f kubex-automation-values.yaml \
-  --set certmanager.enabled=false
-```
-
-Or, for an `arm64` cluster, run:
-
-```bash
-helm upgrade --install kubex-automation-controller densify/kubex-automation-controller \
-  --namespace kubex \
-  --create-namespace \
-  -f kubex-automation-values.yaml \
-  -f values-arm64.yaml \
-  --set certmanager.enabled=false
-```
-
 ---
 
-## Step 8: Verify Installation
+## Step 9: Verify Installation
 
 Check that all components are running:
 
@@ -315,60 +296,6 @@ kubectl get mutatingwebhookconfigurations | grep kubex
 
 # View controller logs
 kubectl logs -l app=kubex-controller -n kubex -f
-```
-
----
-
-## Step 9: Create Your First Policy
-
-Add a safe automation policy to your `kubex-automation-values.yaml`:
-
-```yaml
-policy:
-  automationEnabled: true
-  defaultPolicy: safe-optimization
-  
-  policies:
-    safe-optimization:
-      # Only automate Deployments and StatefulSets
-      allowedPodOwners: "Deployment,StatefulSet"
-      
-      enablement:
-        cpu:
-          request:
-            downsize: false    # Start conservative - no downsizing
-            upsize: true       # Allow CPU increases
-            setFromUnspecified: false  # Don't set if not already set
-          limit:
-            downsize: false
-            upsize: true
-            setFromUnspecified: false
-            
-        memory:
-          request:
-            downsize: false    # Start conservative - no downsizing
-            upsize: true       # Allow memory increases
-            setFromUnspecified: false
-          limit:
-            downsize: false
-            upsize: true
-            setFromUnspecified: false
-            
-      # Safety settings
-      safetyChecks:
-        maxAnalysisAgeDays: 7  # Only use recent recommendations
-      
-      # Enable safe resizing methods
-      inPlaceResize:
-        enabled: true
-      podEviction:
-        enabled: true
-```
-
-Apply the updated configuration:
-
-```bash
-helm upgrade kubex-automation-controller densify/kubex-automation-controller -n kubex -f kubex-automation-values.yaml
 ```
 
 ---
@@ -393,7 +320,7 @@ Once comfortable with the basic setup:
 
 1. **[Policy Configuration](./Policy-Configuration.md)** - Create more sophisticated automation rules
 2. **[Advanced Configuration](./Advanced-Configuration.md)** - Node scheduling, performance tuning
-3. **[Configuration Updates](./Configuration-Updates.md)** - Learn safe update procedures
+3. **Reapply via deploy script or `helm upgrade`** - Edit `kubex-automation-values.yaml` and rerun either the deploy script or the Step 8 `helm upgrade --install … -f kubex-automation-values.yaml` command after every change
 
 ### Need Help?
 

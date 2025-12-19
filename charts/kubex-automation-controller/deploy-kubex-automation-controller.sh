@@ -4,18 +4,15 @@ set -e
 
 print_usage() {
   echo "Usage:"
-  echo "  ./deploy-kubex-automation-controller.sh [--certmanager] [--delete]"
+  echo "  ./deploy-kubex-automation-controller.sh [--certmanager] [--uninstall]"
   echo
   echo "Options:"
-  echo "  --certmanager       Include this flag if you intend to use cert-manager."
-  echo "                      If cert-manager is not already installed, it will be installed."
-  echo "                      If used with --delete, cert-manager and its resources will be deleted."
+  echo "  --certmanager       Use cert-manager for certificate management instead of self-signed certificates."
+  echo "                      NOTE: cert-manager must be pre-installed in your cluster."
   echo
-  echo "  --delete            Uninstalls the kubex-automation-controller Helm release."
-  echo "                      If --certmanager is also specified, cert-manager and its resources will be removed."
+  echo "  --uninstall         Uninstalls the kubex-automation-controller Helm release."
   echo
-  echo "  --arm64             Installs the Helm chart on an arm64 cluster."
-  echo "                      If --certmanager is also specified, this option applies to cert-manager as well."
+  echo "By default, self-signed certificates with 10-year validity are automatically generated."
   echo
 }
 
@@ -24,8 +21,6 @@ print_usage() {
 NAMESPACE="kubex"
 CERT_MANAGER_ACTION=false
 DELETE_MODE=false
-EXTRA_ARGS=
-EXTRA_CERT_MANGER_ARGS=
 
 # Parse arguments
 while [[ "$#" -gt 0 ]]; do
@@ -33,12 +28,8 @@ while [[ "$#" -gt 0 ]]; do
     --certmanager)
       CERT_MANAGER_ACTION=true
       ;;
-    --delete)
+    --uninstall)
       DELETE_MODE=true
-      ;;
-    --arm64)
-      EXTRA_ARGS="-f values-arm64.yaml"
-      EXTRA_CERT_MANGER_ARGS="-f cert-manager-values-arm64.yaml"
       ;;
     -*)
       echo "Unknown parameter passed: $1"
@@ -57,39 +48,24 @@ done
 RELEASE_NAME="kubex-automation-controller"
 
 if [ "${DELETE_MODE}" = true ]; then
-  echo "===== Deleting kubex-automation-controller helm package ====="
-  echo "Deleting kubex-automation-controller Helm release..."
+  echo "===== Uninstalling kubex-automation-controller helm package ====="
+  echo "Uninstalling kubex-automation-controller Helm release..."
   helm uninstall "${RELEASE_NAME}" -n "${NAMESPACE}" || echo "kubex-automation-controller release not found."
-
-  if [ "${CERT_MANAGER_ACTION}" = true ]; then
-    echo "===== Deleting cert-manager resources ====="
-    echo "Uninstalling cert-manager Helm release..."
-    helm uninstall cert-manager -n cert-manager || echo "cert-manager release not found."
-
-    echo "Deleting cert-manager Custom Resource Definitions (CRDs)..."
-    kubectl delete crd \
-    issuers.cert-manager.io \
-    clusterissuers.cert-manager.io \
-    certificates.cert-manager.io \
-    certificaterequests.cert-manager.io \
-    orders.acme.cert-manager.io \
-    challenges.acme.cert-manager.io
-
-    echo "Deleting cert-manager namespace..."
-    kubectl delete namespace cert-manager || echo "Namespace cert-manager not found."
-  else
-    echo "Skipping cert-manager deletion."
-  fi
-
-  echo "Deletion complete."
+  
+  echo ""
+  echo "Note: If the kubex-automation-tls secret was created outside of Helm"
+  echo "(e.g., BYOC, cert-manager, or previous installation), it will not be"
+  echo "automatically deleted. You may need to remove it manually before reinstalling:"
+  echo "  kubectl delete secret kubex-automation-tls -n ${NAMESPACE}"
+  echo ""
+  
+  echo "Uninstallation complete."
   exit 0
 fi
 
 
 # INSTALLATION MODE
 echo "===== Installation Mode Activated ====="
-echo "Install Cert-Manager: ${CERT_MANAGER_ACTION}"
-
 
 # Validate kubex-automation-values.yaml exists
 if [ ! -f "kubex-automation-values.yaml" ]; then
@@ -98,31 +74,25 @@ if [ ! -f "kubex-automation-values.yaml" ]; then
 fi
 
 if [ "${CERT_MANAGER_ACTION}" = true ]; then
+  echo "Verifying cert-manager is installed..."
   if helm status cert-manager -n cert-manager >/dev/null 2>&1 || \
      kubectl get crd certificates.cert-manager.io >/dev/null 2>&1; then
-    echo "cert-manager is already installed (via Helm or kubectl). Skipping installation."
+    echo "cert-manager detected. Will use cert-manager for certificate management."
   else
-    echo "cert-manager not detected. Proceeding with Helm install."
-    echo "Adding Jetstack Helm repo for cert-manager..."
-    helm repo add jetstack https://charts.jetstack.io --force-update
-
-    echo "Installing cert-manager..."
-    helm upgrade --install cert-manager jetstack/cert-manager \
-      --namespace cert-manager \
-      --create-namespace \
-      --version v1.19.2 \
-      ${EXTRA_CERT_MANGER_ARGS} --set crds.enabled=true
-
-    for deploy in cert-manager cert-manager-webhook cert-manager-cainjector; do
-      echo "Waiting for deployment/$deploy rollout..."
-      kubectl rollout status deployment/$deploy -n cert-manager --timeout=120s || {
-        echo "Rollout failed for $deploy"
-        exit 1
-      }
-    done
+    echo "ERROR: --certmanager flag specified but cert-manager is not installed."
+    echo "Please install cert-manager first or remove the --certmanager flag to use self-signed certificates."
+    echo ""
+    echo "To install cert-manager, run:"
+    echo "  helm repo add jetstack https://charts.jetstack.io"
+    echo "  helm repo update"
+    echo "  helm install cert-manager jetstack/cert-manager \\"
+    echo "    --namespace cert-manager \\"
+    echo "    --create-namespace \\"
+    echo "    --set crds.enabled=true"
+    exit 1
   fi
 else
-  echo "Skipping cert-manager installation."
+  echo "Using self-signed certificates (10-year validity)."
 fi
 
 echo "Installing ${RELEASE_NAME}"
@@ -134,7 +104,39 @@ helm repo update
 helm upgrade --install "${RELEASE_NAME}" "densify/${RELEASE_NAME}" \
   --namespace "${NAMESPACE}" \
   --create-namespace \
-  -f "./kubex-automation-values.yaml" ${EXTRA_ARGS} \
+  -f "./kubex-automation-values.yaml" \
   --set certmanager.enabled="${CERT_MANAGER_ACTION}"
 
 echo "Installation complete in namespace: ${NAMESPACE}"
+
+# Check if createSecrets is set to false and warn
+CREATE_SECRETS=$(grep -E "^createSecrets:" kubex-automation-values.yaml | awk '{print $2}')
+if [ "${CREATE_SECRETS}" = "false" ]; then
+  echo ""
+  echo "⚠️  ========================================"
+  echo "⚠️  IMPORTANT: createSecrets is set to false"
+  echo "⚠️  ========================================"
+  echo ""
+  echo "The Helm chart has been deployed, but pods will NOT start until you:"
+  echo ""
+  echo "1. Create the following secrets in your external secret management system:"
+  echo "   - kubex-api-secret-container-automation (Kubex API credentials)"
+  echo "   - kubex-valkey-client-auth (Valkey client authentication)"
+  echo "   - kubex-valkey-secret (Valkey server configuration)"
+  echo "   - kubex-automation-tls (TLS certificate - use cert-manager or BYOC)"
+  echo ""
+  echo "2. Sync the secrets to the 'kubex' namespace using your secret management tool"
+  echo "   (e.g., External Secrets Operator, Sealed Secrets, etc.)"
+  echo ""
+  echo "3. Verify secrets exist:"
+  echo "   kubectl get secrets -n kubex"
+  echo ""
+  echo "4. Once secrets are created, pods will automatically start."
+  echo "   If pods don't start automatically, restart them:"
+  echo "   kubectl rollout restart deployment -n kubex"
+  echo ""
+  echo "For detailed instructions, see:"
+  echo "  docs/Configuration-Reference.md#secret-management-configuration"
+  echo "  docs/Configuration-Reference.md#tls-certificate-secret-external-secret-management"
+  echo ""
+fi

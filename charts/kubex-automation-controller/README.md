@@ -62,7 +62,7 @@ Ready to deploy? Follow our step-by-step guide:
 This guide covers:
 - Prerequisites and requirements
 - Configuration file setup  
-- Certificate management options
+- Certificate management options (self-signed by default, cert-manager optional)
 - Deployment verification
 - First automation policies
 
@@ -77,7 +77,7 @@ This guide covers:
 | **[Getting Started](./docs/Getting-Started.md)** | Step-by-step deployment guide |
 | **[Configuration Reference](./docs/Configuration-Reference.md)** | Complete field-by-field reference for `kubex-automation-values.yaml` |
 | **[Policy Configuration](./docs/Policy-Configuration.md)** | Define automation behaviors and safety rules |
-| **[Configuration Updates](./docs/Configuration-Updates.md)** | Safe procedures for changing settings |
+| **[Apply Updates](./docs/Getting-Started.md#step-8-deploy)** | Rerun the deploy script or `helm upgrade --install … -f kubex-automation-values.yaml` after configuration changes |
 
 ## Advanced Topics
 
@@ -94,7 +94,6 @@ This guide covers:
 |----------|---------|
 | **[Troubleshooting](./docs/Troubleshooting.md)** | Common issues and diagnostic procedures |
 | **[Known Issues](./docs/Known-Issues.md)** | Current limitations and workarounds |
-| **[Certificate Management](./docs/Certificates-Manual.md)** | TLS certificate setup options |
 
 ---
 

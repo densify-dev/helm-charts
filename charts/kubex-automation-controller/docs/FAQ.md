@@ -23,14 +23,13 @@ Common questions and answers about Kubex Automation Controller deployment, confi
 - Helm 3.0+
 - At least 2 CPU cores and 4GB RAM available across nodes
 - Valid Kubex UI credentials and instance access
-- TLS certificate management (cert-manager recommended)
+- TLS certificates (automatically generated self-signed certificates by default, or optionally use cert-manager)
 - **Persistent storage**: Available StorageClass with at least 10Gi capacity for Valkey cache
 
 ### Q: How long does initial deployment take?
-**A:** Typically 5-10 minutes:
+**A:** Typically 3-5 minutes:
 - 2-3 minutes for Helm deployment
-- 2-5 minutes for certificate generation (if using cert-manager)
-- 1-2 minutes for pods to be running and ready
+- 1-2 minutes for certificate generation and pods to be running and ready
 
 ### Q: Do I need to install anything on worker nodes?
 **A:** No, Kubex Automation Controller is deployed entirely as Kubernetes workloads. No node agents or DaemonSets are required.
@@ -133,14 +132,11 @@ spec:
 See **[Advanced Configuration Guide](./Advanced-Configuration.md#pausing-automation-for-specific-pods)** for detailed examples and best practices.
 
 ### Q: How do I safely test policy changes?
-**A:** We recommend using Helm upgrades for all configuration changes:
+**A:** Capture every change in `kubex-automation-values.yaml` and apply it with the deploy script or the full `helm upgrade --install … -f kubex-automation-values.yaml` command:
 
-1. **Recommended approach**: Use `helm upgrade` for both policy and scope changes to ensure consistency
-2. **Quick testing**: For rapid policy iteration, you can edit the ConfigMap directly (takes effect in ~60 seconds)
-3. **Scope changes**: Must always use `helm upgrade` - ConfigMap edits won't work for scope changes
-4. **Test first**: Use non-production namespaces for initial validation
-
-**Note**: ConfigMap edits are useful for quick policy testing but should be followed by a proper Helm upgrade to maintain infrastructure-as-code practices.
+1. **Always redeploy via Helm**: Both policy and scope edits must be rendered through Helm so the controller and webhook stay aligned.
+2. **Use test environments**: Validate new policies in non-production namespaces or clusters before promoting to production.
+3. **Commit the values file**: Keep changes under source control (or GitOps) so you can track who modified automation behavior and when.
 
 ### Q: What happens if I have multiple policies that match the same pod?
 **A:** The controller handles scope overlap with these behaviors:
@@ -199,7 +195,7 @@ scope:
 - **Emergency**: Scale both components to 0 replicas:
   ```bash
   kubectl scale deployment kubex-automation-controller -n kubex --replicas=0
-  kubectl scale deployment kubex-webhook -n kubex --replicas=0
+  kubectl scale deployment kubex-webhook-server -n kubex --replicas=0
   ```
 
 ### Q: Does this work with GitOps?
@@ -234,7 +230,7 @@ See [Pod Scan Configuration](./Pod-Scan-Configuration.md) for optimization guide
 ### Q: Can I optimize the Kubex components themselves?
 **A:** Yes! As an automation solution, Kubex cannot automate its own components, so you should manually optimize based on Kubex recommendations:
 
-1. **Monitor in Densify**: Check recommendations for `kubex-automation-controller`, `kubex-webhook`, and `kubex-valkey` pods
+1. **Monitor in Kubex**: Check recommendations for `kubex-automation-controller`, `kubex-webhook`, and `kubex-valkey` pods
 2. **Override resources** in your `kubex-automation-values.yaml`:
 ```yaml
 deployment:

@@ -107,22 +107,6 @@ kubectl get configmap kubex-automation-policy -n kubex -o yaml
 
 #### Pod Optimization Troubleshooting
 
-**Why aren't my pods being optimized?**
-
-**⚠️ IMPORTANT: Allow startup time before troubleshooting**
-
-The controller will not process any pods until after the first pod scan cycle completes. This is controlled by the `podScanInterval` setting in your `kubex-automation-values.yaml`:
-
-```bash
-# Check your configured pod scan interval (default: 5m)
-kubectl get configmap kubex-automation-policy -n kubex -o yaml | grep podScanInterval
-
-# Wait at least this amount of time after controller startup before expecting pod processing
-# Example: If podScanInterval is "10m", wait 10+ minutes after pods are Running
-```
-
-If the controller has been running longer than your `podScanInterval`, then proceed with troubleshooting:
-
 1. **Verify pods are in scope:**
    ```bash
    # Check which pods match your scope configuration
@@ -137,8 +121,9 @@ If the controller has been running longer than your `podScanInterval`, then proc
    # Verify automation is enabled globally
    kubectl get configmap kubex-automation-policy -n kubex -o yaml | grep automationEnabled
    
-   # Check if policy allows the change type (upsize/downsize)
-   kubectl get configmap kubex-automation-policy -n kubex -o yaml | grep -A5 -B5 "allowUpsize\|allowDownsize"
+   # Check policy enablement settings (shows upsize/downsize configuration)
+   kubectl get configmap kubex-automation-policy -n kubex -o yaml
+   # Look for the "enablement" section in the output to see upsize/downsize settings
    ```
 
 3. **Look for safety blocks:**
@@ -160,12 +145,6 @@ If the controller has been running longer than your `podScanInterval`, then proc
    ```bash
    # Controller may skip recently modified pods
    kubectl get pods -n <target-namespace> -o custom-columns="NAME:.metadata.name,AGE:.metadata.creationTimestamp"
-   ```
-
-5. **Review eviction rate limits:**
-   ```bash
-   # Look for rate limiting messages in controller logs
-   kubectl logs -l app=kubex-controller -n kubex | grep -i "rate\|cooldown\|eviction"
    ```
 
 **Stale Recommendations:**
@@ -194,7 +173,7 @@ kubectl logs -l app=kubex-webhook -n kubex -f
 
 #### Certificate Issues with Custom Certificates
 
-When using custom certificates (`certmanager.enabled: false`), the secret **must** include the CA certificate:
+When not using cert-manager (default self-signed or BYOC), the secret **must** include the CA certificate:
 
 **Check secret structure:**
 ```bash
@@ -232,8 +211,8 @@ kubectl rollout restart deployment kubex-webhook-server -n kubex
 # Check controller resource consumption
 kubectl top pod -n kubex
 
-# Monitor processing rate in logs
-kubectl logs kubex-automation-controller-* -n kubex | grep "Processing pod"
+# View controller logs for activity
+kubectl logs -l app=kubex-controller -n kubex -f
 ```
 
 ### Performance Indicators
@@ -339,7 +318,7 @@ helm upgrade kubex-automation-controller densify/kubex-automation-controller -n 
 
 ### Disable Automation Quickly
 
-**Method 1: Configuration Update (Recommended)**
+**Method 1: Helm redeploy (Recommended)**
 ```bash
 # Edit kubex-automation-values.yaml and set policy.automationEnabled to false
 vim kubex-automation-values.yaml

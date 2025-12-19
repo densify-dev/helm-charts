@@ -24,6 +24,53 @@ If release name contains chart name it will be used as a full name.
 {{- end }}
 
 {{/*
+Generate or retrieve self-signed certificates for webhook
+Returns a dict with ca, cert, and key
+*/}}
+{{- define "kubex-automation-controller.gen-certs-data" -}}
+{{- $secretName := "kubex-automation-tls" -}}
+{{- $secret := lookup "v1" "Secret" .Release.Namespace $secretName -}}
+{{- if $secret -}}
+{{/* Reuse existing certificates */}}
+{{- $_ := set . "caCert" (index $secret.data "ca.crt") -}}
+{{- $_ := set . "tlsCert" (index $secret.data "tls.crt") -}}
+{{- $_ := set . "tlsKey" (index $secret.data "tls.key") -}}
+{{- else -}}
+{{/* Generate new certificates and cache in context */}}
+{{- if not .caCert -}}
+{{- $serviceName := "kubex-webhook-service" -}}
+{{- $namespace := .Release.Namespace -}}
+{{- $validity := int .Values.selfSignedCert.validity -}}
+{{- $cn := printf "%s.%s.svc" $serviceName $namespace -}}
+{{- $altNames := list $serviceName (printf "%s.%s" $serviceName $namespace) (printf "%s.%s.svc" $serviceName $namespace) (printf "%s.%s.svc.cluster.local" $serviceName $namespace) -}}
+{{- $ca := genCA "kubex-webhook-ca" $validity -}}
+{{- $cert := genSignedCert $cn nil $altNames $validity $ca -}}
+{{- $_ := set . "caCert" ($ca.Cert | b64enc) -}}
+{{- $_ := set . "tlsCert" ($cert.Cert | b64enc) -}}
+{{- $_ := set . "tlsKey" ($cert.Key | b64enc) -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Format certificates for secret data
+*/}}
+{{- define "kubex-automation-controller.gen-certs" -}}
+{{- include "kubex-automation-controller.gen-certs-data" . -}}
+ca.crt: {{ .caCert }}
+tls.crt: {{ .tlsCert }}
+tls.key: {{ .tlsKey }}
+{{- end -}}
+
+{{/*
+Get CA certificate for webhook configuration
+*/}}
+{{- define "kubex-automation-controller.ca-bundle" -}}
+{{- include "kubex-automation-controller.gen-certs-data" . -}}
+{{ .caCert }}
+{{- end -}}
+
+{{/*
 Create chart name and version as used by the chart label.
 */}}
 {{- define "kubex-automation-controller.chart" -}}
@@ -97,7 +144,7 @@ Create the name of the service account to use
 {{- end }}
 
 {{/*
-Generate Densify epassword that persists across upgrades
+Generate Kubex epassword that persists across upgrades
 */}}
 {{- define "kubex-automation-controller.densifyEpassword" -}}
 {{- if .Values.createSecrets }}
@@ -105,7 +152,7 @@ Generate Densify epassword that persists across upgrades
 {{- end }}
 {{- end }}
 {{/*
-Generate Densify username that persists across upgrades
+Generate Kubex username that persists across upgrades
 */}}
 {{- define "kubex-automation-controller.densifyUsername" -}}
 {{- if .Values.createSecrets }}

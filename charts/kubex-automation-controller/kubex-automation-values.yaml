@@ -18,9 +18,9 @@ densify:
     host: <customerName>.densify.com # mandatory: <instance>.densify.com
 
 densifyCredentials:
-  # username: '<username>' # Username to access Densify, mandatory if createSecrets is true
-  # epassword: '<epassword>' # Encrypted password to access Densify, mandatory if createSecrets is true
-  # userSecretName: # Densify API secret name, mandatory if createSecrets is false
+  # username: '<username>' # Username to access Kubex, mandatory if createSecrets is true
+  # epassword: '<epassword>' # Encrypted password to access Kubex, mandatory if createSecrets is true
+  # userSecretName: # Kubex API secret name, mandatory if createSecrets is false
 
 # ================================================================
 # SECTION: VALKEY CONFIGURATION
@@ -45,13 +45,13 @@ valkey:
   # tolerations: [] # Optional. Define if your environment requires it.
   # topologySpreadConstraints: [] # Optional. Define if your environment requires it.
 
-  # Override Valkey resources based on Densify recommendations
+  # Override Valkey resources based on Kubex recommendations
 #  resources: # Resource sizing (tune for your cluster/workload)
 #    requests:
-#      cpu: "250m"                                # Update based on Densify recommendations
-#      memory: "256Mi"                            # Update based on Densify recommendations
+#      cpu: "250m"                                # Update based on Kubex recommendations
+#      memory: "256Mi"                            # Update based on Kubex recommendations
 #    limits:
-#      memory: "512Mi"                              # Update based on Densify recommendations
+#      memory: "512Mi"                              # Update based on Kubex recommendations
 
 
 # ================================================================
@@ -62,9 +62,6 @@ valkey:
 
 cluster:
   name: <clusterName>   # [REPLACE] Kubernetes cluster name
-
-certmanager:
-  enabled: false        # Set to true if using cert-manager
 
 # ================================================================
 # SCOPE CONFIGURATION
@@ -132,9 +129,9 @@ policy:
     #        - Kubex UI cannot override these automation decisions
     #        - Recommended for strict GitOps workflows and production environments
     #
-    # true:  Automation scope is controlled by BOTH Helm configuration AND Densify UI
+    # true:  Automation scope is controlled by BOTH Helm configuration AND Kubex UI
     #        - Base rules still apply from namespace/label selectors above
-    #        - Customers can additionally enable/disable automation for specific containers via Densify UI
+    #        - Customers can additionally enable/disable automation for specific containers via Kubex UI
     #        - Provides flexibility for ad-hoc automation control without Helm updates
     #        - Useful for development environments and testing scenarios
   
@@ -194,9 +191,9 @@ policy:
 #deployment:
 #  controllerEnv:  # Override controller environment variables (defaults in values.yaml)
 #    debug: true                                  # Uncomment to enable debug mode for troubleshooting
-#    podScanInterval: "6h45m"                     # How often to scan cluster for pods to check 
-#    podScanTimeout: "6h30m"                      # Max time allowed for each pod scanning cycle  
-#    podEvictionCooldownPeriod: "1m"              # Wait time between pod evictions (recommended default) 
+#    podScanInterval: "1h"                        # Default optimized for in-place resizing (Kubernetes 1.33+)
+#    podScanTimeout: "30m"                        # Default optimized for in-place resizing
+#    podEvictionCooldownPeriod: "1m"              # Only used when in-place resizing unavailable (Kubernetes < 1.33)
 #    podScanInitialInterval: "2m"                 # Initial delay before first pod scan after startup  
 #    recommendationsFetchInitialDelay: "1m"       # Startup delay before first recommendation fetch 
 #    recommendationsFetchInterval: "1h"           # How often to refresh recommendations from API 
@@ -209,32 +206,32 @@ policy:
 
   # ================================================================
   # RESOURCE OPTIMIZATION (Recommended)
-  # Kubex cannot automate its own components - monitor them in Densify UI and manually optimize
+  # Kubex cannot automate its own components - monitor them in Kubex UI and manually optimize
   # ================================================================
   
-  # Override webhook resources based on Densify recommendations
+  # Override webhook resources based on Kubex recommendations
 #  webhookResources: # Resource Specs for the webhook server pod
 #    requests:
-#      memory: "64Mi"                            # Update based on Densify recommendations
-#      cpu: "100m"                                # Update based on Densify recommendations
+#      memory: "64Mi"                            # Update based on Kubex recommendations
+#      cpu: "100m"                                # Update based on Kubex recommendations
 #    limits:
-#      memory: "512Mi"                            # Update based on Densify recommendations
+#      memory: "512Mi"                            # Update based on Kubex recommendations
   
-  # Override gateway resources based on Densify recommendations
+  # Override gateway resources based on Kubex recommendations
 #  gatewayResources: # CPU and memory resource requests and limits for the pod
 #    requests:
-#      memory: "64Mi"                            # Update based on Densify recommendations
-#      cpu: "100m"                                # Update based on Densify recommendations
+#      memory: "64Mi"                            # Update based on Kubex recommendations
+#      cpu: "100m"                                # Update based on Kubex recommendations
 #    limits:
-#      memory: "512Mi"                            # Update based on Densify recommendations
+#      memory: "512Mi"                            # Update based on Kubex recommendations
   
-  # Override controller resources based on Densify recommendations
+  # Override controller resources based on Kubex recommendations
 #  controllerResources: # Resource Specs for the controller pod
 #    requests:
-#      memory: "128Mi"                            # Update based on Densify recommendations
-#      cpu: "250m"                                # Update based on Densify recommendations
+#      memory: "128Mi"                            # Update based on Kubex recommendations
+#      cpu: "250m"                                # Update based on Kubex recommendations
 #    limits:
-#      memory: "512Mi"                              # Update based on Densify recommendations
+#      memory: "512Mi"                              # Update based on Kubex recommendations
 
 
 

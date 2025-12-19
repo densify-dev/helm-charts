@@ -1,118 +1,96 @@
-# Pod Scan Configuration Guide
+# Pod Scan Configuration
 
-## Overview
+Use this guide to tune scan cadence and eviction controls without duplicating information across modes.
 
-For clusters with many pods, you need to adjust scan timing to ensure the controller has enough time to process all pods. This guide provides pre-calculated values based on your cluster size.
+## Determine Your Mode
 
-## Quick Setup
+| Requirement | In-Place (default) | Pod Eviction |
+|-------------|--------------------|--------------|
+| Kubernetes version | ≥ 1.33 | < 1.33 |
+| Policy flag | `inPlaceResize.enabled: true` | `inPlaceResize.enabled: false` |
+| Behavior | Live resource patching | Evict + recreate pods |
 
-**Step 1**: Count your pods
+Count pods cluster-wide for a quick estimate:
+
 ```bash
 kubectl get pods --all-namespaces | wc -l
 ```
 
-**Step 2**: Choose your configuration from the tables below
+> For tighter sizing, repeat the count per namespace or selector that matches your automation scopes.
 
-**Step 3**: Update your `kubex-automation-values.yaml` and run `helm upgrade`
+## In-Place Mode Settings
 
-> **Note**: Default settings are optimized for 1000 pods initial deployment with 1m cooldown. For different cluster sizes, use the tables below.
-
-## Pod Eviction Cooldown Period
-
-The `podEvictionCooldownPeriod` controls the wait time between individual pod evictions:
-
-- **Default: 1m** - Allows time for resource quota checks and termination grace periods
-- **Aggressive: 10-15s** - For faster resizing when cluster conditions allow
-- **Conservative: 2-5m** - Use longer cooldowns when you have:
-  - Large container images with no image cache
-  - Heavy cluster load or slow API server responses
-  - Complex termination procedures
-
-## When Do You Need This?
-
-- **Most clusters (≤1000 pods)**: Default settings work well for initial deployment
-- **Large clusters (>1000 pods)**: Use the configurations below for optimal performance
-- **Very large clusters (>2000 pods)**: Consider phased deployment during maintenance windows
-
-## Configuration Tables
-
-Choose based on your cluster size and deployment phase:
-
-### First-Time Deployment (Most pods need optimization)
-
-| Pod Count | 10-15s Cooldown (Aggressive) | 1m Cooldown (Default) | 2-5m Cooldown (Conservative) |
-|-----------|------------------------------|------------------------|-------------------------------|
-| **100 pods** | `podScanTimeout: "15m"`<br>`podScanInterval: "30m"`<br>`podEvictionCooldownPeriod: "15s"` | `podScanTimeout: "45m"`<br>`podScanInterval: "1h"`<br>`podEvictionCooldownPeriod: "1m"` | `podScanTimeout: "1h15m"`<br>`podScanInterval: "1h30m"`<br>`podEvictionCooldownPeriod: "3m"` |
-| **500 pods** | `podScanTimeout: "1h15m"`<br>`podScanInterval: "1h30m"`<br>`podEvictionCooldownPeriod: "15s"` | `podScanTimeout: "3h20m"`<br>`podScanInterval: "3h35m"`<br>`podEvictionCooldownPeriod: "1m"` | `podScanTimeout: "8h45m"`<br>`podScanInterval: "9h"`<br>`podEvictionCooldownPeriod: "3m"` |
-| **1000 pods** | `podScanTimeout: "2h25m"`<br>`podScanInterval: "2h40m"`<br>`podEvictionCooldownPeriod: "15s"` | `podScanTimeout: "6h30m"`<br>`podScanInterval: "6h45m"`<br>`podEvictionCooldownPeriod: "1m"` | `podScanTimeout: "17h15m"`<br>`podScanInterval: "17h30m"`<br>`podEvictionCooldownPeriod: "3m"` |
-| **2000 pods** | `podScanTimeout: "4h45m"`<br>`podScanInterval: "5h"`<br>`podEvictionCooldownPeriod: "15s"` | `podScanTimeout: "12h55m"`<br>`podScanInterval: "13h10m"`<br>`podEvictionCooldownPeriod: "1m"` | `podScanTimeout: "34h15m"`<br>`podScanInterval: "34h30m"`<br>`podEvictionCooldownPeriod: "3m"` |
-| **5000 pods** | `podScanTimeout: "11h45m"`<br>`podScanInterval: "12h"`<br>`podEvictionCooldownPeriod: "15s"` | `podScanTimeout: "31h15m"`<br>`podScanInterval: "31h30m"`<br>`podEvictionCooldownPeriod: "1m"` | Use eviction throttling instead |
-
-### After Several Weeks (Fewer pods need changes)
-
-| Pod Count | 10-15s Cooldown (Aggressive) | 1m Cooldown (Default) | 2-5m Cooldown (Conservative) |
-|-----------|------------------------------|------------------------|-------------------------------|
-| **100 pods** | `podScanTimeout: "10m"`<br>`podScanInterval: "25m"`<br>`podEvictionCooldownPeriod: "15s"` | `podScanTimeout: "15m"`<br>`podScanInterval: "30m"`<br>`podEvictionCooldownPeriod: "1m"` | `podScanTimeout: "30m"`<br>`podScanInterval: "45m"`<br>`podEvictionCooldownPeriod: "3m"` |
-| **500 pods** | `podScanTimeout: "30m"`<br>`podScanInterval: "45m"`<br>`podEvictionCooldownPeriod: "15s"` | `podScanTimeout: "1h"`<br>`podScanInterval: "1h15m"`<br>`podEvictionCooldownPeriod: "1m"` | `podScanTimeout: "2h45m"`<br>`podScanInterval: "3h"`<br>`podEvictionCooldownPeriod: "3m"` |
-| **1000 pods** | `podScanTimeout: "55m"`<br>`podScanInterval: "1h10m"`<br>`podEvictionCooldownPeriod: "15s"` | `podScanTimeout: "1h55m"`<br>`podScanInterval: "2h10m"`<br>`podEvictionCooldownPeriod: "1m"` | `podScanTimeout: "5h20m"`<br>`podScanInterval: "5h35m"`<br>`podEvictionCooldownPeriod: "3m"` |
-| **2000 pods** | `podScanTimeout: "1h45m"`<br>`podScanInterval: "2h"`<br>`podEvictionCooldownPeriod: "15s"` | `podScanTimeout: "3h45m"`<br>`podScanInterval: "4h"`<br>`podEvictionCooldownPeriod: "1m"` | `podScanTimeout: "10h30m"`<br>`podScanInterval: "10h45m"`<br>`podEvictionCooldownPeriod: "3m"` |
-| **5000 pods** | `podScanTimeout: "4h15m"`<br>`podScanInterval: "4h30m"`<br>`podEvictionCooldownPeriod: "15s"` | `podScanTimeout: "9h20m"`<br>`podScanInterval: "9h35m"`<br>`podEvictionCooldownPeriod: "1m"` | Use eviction throttling instead |
-
-## Cooldown Period Guide
-
-**10s cooldown**: Faster processing, but creates more cluster load during pod evictions
-**30s cooldown**: Slower but safer for cluster stability (recommended default)
-
-**Recommendation**: Use 30s for most clusters. Only use 10s if you need faster processing and can handle higher cluster load.
-
-## How to Apply Configuration
-
-1. **Find your pod count** in the tables above
-2. **Copy the configuration** that matches your cluster size and deployment phase  
-3. **Add to your kubex-automation-values.yaml**:
+Default values cover most clusters up to 5000 pods:
 
 ```yaml
 deployment:
   controllerEnv:
-    podScanInterval: "6h45m"           # Example: 1000 pods initial deployment
-    podScanTimeout: "6h30m"            # Example: 1000 pods initial deployment
-    podEvictionCooldownPeriod: "30s"   # Recommended default
+    podScanInterval: "1h"
+    podScanTimeout: "30m"
+    podEvictionCooldownPeriod: "1m"  # only used when falling back to eviction
 ```
 
-4. **Apply the changes**:
+Adjust only for scale-related API latency:
+
+- 1000-2000 pods → timeout 45m, interval 1h
+- 2000-5000 pods → timeout 1h, interval 1h15m
+- 5000+ pods → timeout 1h30m, interval 2h
+
+## Pod Eviction Mode Settings
+
+Use when Kubernetes < 1.33 or the policy disables in-place resizing. Evictions require a cooldown to respect termination grace periods, quotas, and scheduling limits.
+
+- 15s cooldown: aggressive, higher API and scheduler load
+- 1m cooldown: default balance
+- 3m cooldown: conservative for slow storage, large images, or overloaded clusters
+
+### Initial Rollout (many pods change)
+
+| Pods | 15s cooldown | 1m cooldown | 3m cooldown |
+|------|--------------|-------------|-------------|
+| 100 | Timeout 15m, Interval 30m | Timeout 45m, Interval 1h | Timeout 1h15m, Interval 1h30m |
+| 500 | 1h15m / 1h30m | 3h20m / 3h35m | 8h45m / 9h |
+| 1000 | 2h25m / 2h40m | 6h30m / 6h45m | 17h15m / 17h30m |
+| 2000 | 4h45m / 5h | 12h55m / 13h10m | 34h15m / 34h30m |
+| 5000 | 11h45m / 12h | 31h15m / 31h30m | Use eviction throttling |
+
+### Steady State (fewer pods change)
+
+| Pods | 15s cooldown | 1m cooldown | 3m cooldown |
+|------|--------------|-------------|-------------|
+| 100 | Timeout 10m, Interval 25m | 15m / 30m | 30m / 45m |
+| 500 | 30m / 45m | 1h / 1h15m | 2h45m / 3h |
+| 1000 | 55m / 1h10m | 1h55m / 2h10m | 5h20m / 5h35m |
+| 2000 | 1h45m / 2h | 3h45m / 4h | 10h30m / 10h45m |
+| 5000 | 4h15m / 4h30m | 9h20m / 9h35m | Use eviction throttling |
+
+### Applying Changes
+
+```yaml
+deployment:
+  controllerEnv:
+    podScanInterval: "6h45m"
+    podScanTimeout: "6h30m"
+    podEvictionCooldownPeriod: "1m"
+```
+
 ```bash
 helm upgrade kubex-automation-controller densify/kubex-automation-controller -n kubex -f kubex-automation-values.yaml
 ```
 
 ## Troubleshooting
 
-**Seeing timeout errors?** Increase your `podScanTimeout` by 50%
+- Timeouts: raise `podScanTimeout` by ~50%
+- Too many API calls: lengthen `podScanInterval`
+- Eviction backlog: increase cooldown or enable throttling
 
-**Scans taking too long?** 
-- Use 10s cooldown instead of 30s
-- Consider deploying during maintenance windows for large clusters
-
-**High cluster load during automation?** 
-- Increase `podEvictionCooldownPeriod` to 30s or 60s
-- Use eviction throttling to limit total evictions over time
-
-## Eviction Throttling for Large Clusters
-
-For very large clusters or production environments, you can limit the total number of pod evictions over a longer time period:
+## Eviction Throttling
 
 ```yaml
 deployment:
   controllerEnv:
-    evictionThrottlingWindow: "6h"     # Time window for counting
-    evictionThrottlingMax: "1000"      # Max evictions in window
+    evictionThrottlingWindow: "6h"
+    evictionThrottlingMax: "1000"
 ```
 
-**When to use eviction throttling:**
-- **Very large clusters** (>2000 pods): Prevent infrastructure overload
-- **Production safety**: Limit automation impact during business hours  
-- **Rolling deployment coordination**: Control eviction rate during major updates
-
-**Example configurations:**
-- **Conservative**: 500 evictions per 24h for mission-critical production
-- **Moderate**: 1000 evictions per 6h for typical production environments
-- **Development**: 2000 evictions per 3h for faster testing cycles
+Use 500/24h for conservative production, 1000/6h for typical prod, 2000/3h for dev and testing.
