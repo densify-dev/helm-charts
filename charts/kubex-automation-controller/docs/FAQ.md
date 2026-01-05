@@ -132,7 +132,7 @@ spec:
 See **[Advanced Configuration Guide](./Advanced-Configuration.md#pausing-automation-for-specific-pods)** for detailed examples and best practices.
 
 ### Q: How do I safely test policy changes?
-**A:** Capture every change in `kubex-automation-values.yaml` and apply it with the deploy script or the full `helm upgrade --install … -f kubex-automation-values.yaml` command:
+**A:** Capture every change in `kubex-automation-values.yaml` and apply it with the deploy script or the `helm upgrade` command from [Getting Started Step 8](./Getting-Started.md#step-8-deploy):
 
 1. **Always redeploy via Helm**: Both policy and scope edits must be rendered through Helm so the controller and webhook stay aligned.
 2. **Use test environments**: Validate new policies in non-production namespaces or clusters before promoting to production.

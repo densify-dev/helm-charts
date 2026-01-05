@@ -6,7 +6,7 @@ This document provides a detailed reference for every field in your `kubex-autom
 
 - Populate `kubex-automation-values.yaml` section by section using the tables below.
 - Need the deployment workflow? Stay in [Getting Started](./Getting-Started.md).
-- For rollout or future edits, update `kubex-automation-values.yaml` and rerun either the deploy script or the `helm upgrade --install … -f kubex-automation-values.yaml` command from [Getting Started Step 8](./Getting-Started.md#step-8-deploy).
+- For rollout or future edits, update `kubex-automation-values.yaml` and rerun either the deploy script or the `helm upgrade` command from [Getting Started Step 8](./Getting-Started.md#step-8-deploy).
 - Cross-reference dedicated guides (Policy Configuration, Certificates, Pod Scan Configuration) for deeper explanations.
 
 ---
