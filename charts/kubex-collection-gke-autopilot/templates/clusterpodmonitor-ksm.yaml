@@ -8,7 +8,7 @@ spec:
   # regardless of the namespace they are in.
   selector:
     matchLabels:
-      app.kubernetes.io/instance: kubex
+      app.kubernetes.io/instance: {{ .Release.Name }}
       app.kubernetes.io/name: kube-state-metrics
   endpoints:
   - port: 8080
