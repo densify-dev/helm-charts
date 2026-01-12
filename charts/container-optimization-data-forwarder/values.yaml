@@ -18,11 +18,11 @@ config:
 #        scheme: https
         host: # <instance>.densify.com
 #        port: 443
-#        username: <Densify user>
-#        password: <plaintext Densify password, or:>
-#        encrypted_password: <encrypted Densify password>
+#        username: <Kubex user>
+#        password: <plaintext Kubex password, or:>
+#        encrypted_password: <encrypted Kubex password>
 #        # Set only the above username and (encrypted_)password settings, or this Secret - but not both.
-#        # Secret must contain 2 fields username and epassword that will be used to connect to Densify.
+#        # Secret must contain 2 fields username and epassword that will be used to connect to Kubex.
 #        UserSecretName: <name of secret to use>
 #      endpoint: /api/v2/
 #      retry:
