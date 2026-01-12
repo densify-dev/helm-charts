@@ -2,9 +2,9 @@
   {{- default .Release.Namespace .Values.nsPrefix -}}
 {{- end -}}
 {{- define "common.checkValues" -}}
-{{- $hostValueName := ".Values.container-optimization-data-forwarder.config.forwarder.densify.url.host" -}}
+{{- $hostValueName := ".Values.container-optimization-data-forwarder.config.forwarder.kubex.url.host" -}}
 {{- $hostValueErr := printf "%s is required" $hostValueName -}}
-{{- $host1 := index .Values "container-optimization-data-forwarder" "config" "forwarder" "densify" "url" "host" -}}
+{{- $host1 := index .Values "container-optimization-data-forwarder" "config" "forwarder" "kubex" "url" "host" -}}
 {{- $host2 := trim $host1 -}}
 {{- $host := required $hostValueErr $host2 -}}
 {{- $domain := ".densify.com" -}}

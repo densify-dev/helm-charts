@@ -1,5 +1,5 @@
 stack:
-  densify:
+  kubex:
     username: '<changeme-username>' # mandatory (unless createSecret = false)
     encrypted_password: '<changeme-encrypted-password>' # mandatory (unless createSecret = false)
 

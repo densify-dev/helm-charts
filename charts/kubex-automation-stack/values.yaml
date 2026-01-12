@@ -3,7 +3,7 @@
 #################################################################
 
 stack:
-  densify:
+  kubex:
     createSecret: true
 
 container-optimization-data-forwarder:
@@ -12,9 +12,9 @@ container-optimization-data-forwarder:
     checkPrometheusReady: true
   config:
     forwarder:
-      densify:
+      kubex:
         url:
-          UserSecretName: densify-api-secret
+          UserSecretName: kubex-api-secret
     prometheus:
       url:
         host: kubex-prometheus-server
