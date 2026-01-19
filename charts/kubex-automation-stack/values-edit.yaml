@@ -1,28 +1,69 @@
-stack:
+#################################################################
+# Global Configuration
+# Shared settings used across all subcharts
+#################################################################
+global:
+  cluster:
+    name: '<changeme-cluster-name>' # MANDATORY: Unique cluster name (must be unique customer-wide)
+  createSecret: true # Set to false if providing your own secret
   kubex:
-    username: '<changeme-username>' # mandatory (unless createSecret = false)
-    encrypted_password: '<changeme-encrypted-password>' # mandatory (unless createSecret = false)
+    url:
+      host: '<changeme-kubex-host>' # MANDATORY: Kubex instance (e.g., <instance>.kubex.ai or <instance>.densify.com)
 
-container-optimization-data-forwarder:
-  config:
-    forwarder:
-      densify:
-        url:
-          host: '<changeme-densify-host>' # mandatory: <instance>.densify.com
-    clusters:
-      - name: '<changeme-cluster-name>' # mandatory
-# The following values are optional, if job cleanup is required;
-# each one of these should be a non-negative integer (0 is allowed)
+#################################################################
+# Kubex Data Collector
+# Collects and sends container metrics to Kubex for analysis
+#################################################################
+kubex-data-collector:
+#  enabled: true # Set to false to disable Kubex Data Collector
+  credentials:
+    username: '<changeme-username>' # MANDATORY (unless createSecret = false): Kubex user for Kubex Data Collector
+    epassword: '<changeme-encrypted-password>' # MANDATORY (unless createSecret = false): Encrypted password for Kubex Data Collector
+
+  # Optional: Job cleanup configuration
+  # Each value should be a non-negative integer (0 is allowed)
   # cronJob:
-    # successfulJobsHistoryLimit: <value>
-    # failedJobsHistoryLimit: <value>
-    # ttlSecondsAfterFinished: <value> # applies for both the cronjob and the job
-    # backoffLimit: <value> # applies for both the cronjob and the job, default: 4
+    # successfulJobsHistoryLimit: <value> # Number of successful jobs to retain
+    # failedJobsHistoryLimit: <value> # Number of failed jobs to retain
+    # ttlSecondsAfterFinished: <value> # Time to live after job completion (applies to both CronJob and Job)
+    # backoffLimit: <value> # Number of retries for failed jobs (default: 4)
 
-# The following section is optional, and is required only in the following use-case:
-# 1. The persistent volume for Prometheus has to use an explicit storage class (not the default)
+#################################################################
+# Prometheus
+# Optional configuration for Prometheus subchart
+#################################################################
+# Uncomment and configure if:
+# 1. Installing on GKE Autopilot (disable Prometheus)
+# 2. Using a non-default storage class for persistent volumes
 
-# prometheus: # optional
+# prometheus:
+  # enabled: true # Set to false if installing on GKE Autopilot
   # server:
     # persistentVolume:
-    #   storageClass: <changeme-storage-class>
+      # storageClass: <changeme-storage-class> # Specify storage class if not using default
+
+#################################################################
+# Kubex Automation Controller
+# Automates resource optimization based on Kubex recommendations
+# Note: Uses separate credentials from Kubex Data Collector
+#
+# IMPORTANT: Detailed configuration for automation policies,
+# valkey settings, and cluster scope is located in
+# 'kubex-automation-values.yaml'. Review and update that file
+# if enabling automation.
+#################################################################
+kubex-automation-controller:
+  enabled: false # Set to true to enable automated optimization
+  credentials:
+    username: '<changeme-username>' # MANDATORY (if enabled): Kubex user for automation
+    epassword: '<changeme-encrypted-password>' # MANDATORY (if enabled): Encrypted password for automation
+  valkey:
+    credentials:
+      password: '<changeme-valkey-password>' # MANDATORY (if enabled): Valkey authentication password
+    storage:
+      className: '' # Optional: Specify storage class if not using default
+
+  # Optional: Additional automation settings
+  # scope: [] # Define which namespaces/workloads to manage
+  # policy:
+  #   policies: {} # Define custom automation policies

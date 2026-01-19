@@ -5,12 +5,19 @@ version: 1.0.2
 type: application
 icon: https://www.kubex.ai/wp-content/uploads/kubex-by-densify-logo.png
 dependencies:
+  - name: kubex-automation-controller
+    version: "1.0.9"
+    repository: file://../kubex-automation-controller
+    condition: kubex-automation-controller.enabled
   - name: container-optimization-data-forwarder
-    version: "4.*.*"
-    repository: https://densify-dev.github.io/helm-charts
+    alias: kubex-data-collector
+    version: "4.0.13"
+    repository: file://../container-optimization-data-forwarder
+    condition: kubex-data-collector.enabled
   - name: prometheus
     version: "27.*.*"
     repository: https://prometheus-community.github.io/helm-charts
+    condition: prometheus.enabled
 keywords:
 - kubex
 - densify

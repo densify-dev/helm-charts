@@ -1,0 +1,265 @@
+# ================================================================
+# KUBEX AUTOMATION - ADVANCED CONFIGURATION
+# ================================================================
+# This file contains detailed automation behavior configuration.
+# Basic setup (credentials, cluster name, enable/disable) is in values-edit.yaml
+#
+# Use this file to configure:
+# → Advanced Valkey settings
+# → Automation scope (which namespaces/pods to manage)
+# → Automation policies (how to optimize resources)
+# → Controller deployment settings
+# ================================================================
+
+# ================================================================
+# SECTION: VALKEY ADVANCED CONFIGURATION
+# Instructions:
+# → Basic credentials and storage class are configured in values-edit.yaml
+# → This file contains advanced Valkey settings for special use cases
+# → Uncomment and configure only if you need advanced features
+# ================================================================
+
+valkey:
+  # Advanced valkey configuration options:
+  # extraSecretValkeyConfigs: # valkey server secret, mandatory if createSecrets is false
+  # metrics:
+  #   exporter:
+  #     extraExporterEnvSecrets:
+  #       - # valkey client secret, mandatory if createSecrets is false
+  # nodeSelector: {} # Optional. Define if your environment requires it.
+  # affinity: {} # Optional. Define if your environment requires it.
+  # tolerations: [] # Optional. Define if your environment requires it.
+  # topologySpreadConstraints: [] # Optional. Define if your environment requires it.
+
+  # Override Valkey resources based on Kubex recommendations
+  # resources: # Resource sizing (tune for your cluster/workload)
+  #   requests:
+  #     cpu: "250m"                                # Update based on Kubex recommendations
+  #     memory: "256Mi"                            # Update based on Kubex recommendations
+  #   limits:
+  #     memory: "512Mi"                              # Update based on Kubex recommendations
+
+
+# ================================================================
+# SCOPE CONFIGURATION
+# Instructions:
+# → Define which pods are eligible for automation using namespace and label filters
+# → Each scope references a policy that defines automation behavior
+# → Multiple scopes allow different automation rules for different parts of your cluster
+# → ⚠️ IMPORTANT: When policy.automationEnabled is set to true, you MUST define at least one scope
+#
+# To add multiple scopes:
+# 1. Copy the entire scope block below (from "- name:" to the end of "podLabels:")
+# 2. Paste it below the existing scope and modify:
+#    - Change the scope name to be unique
+#    - Reference a different policy if desired
+#    - Adjust namespace and label filters
+#
+# Example multiple scopes:
+# scope:
+#   - name: production-scope
+#     policy: conservative-policy
+#     namespaces: { operator: In, values: ["prod-*"] }
+#   - name: development-scope  
+#     policy: aggressive-policy
+#     namespaces: { operator: In, values: ["dev-*"] }
+# ================================================================
+
+# Uncomment and configure the scope below when enabling automation:
+scope: []
+  # - name: base-optimization-scope # Unique scope name
+  #   policy: base-optimization     # Policy name (optional - uses defaultPolicy if omitted)
+  #   namespaces:           # Mandatory - defines which namespaces to include/exclude
+  #     operator: NotIn     # Options: In | NotIn
+  #     values:
+  #       - kubex           # Kubex namespace (exclude automation components)
+  #   podLabels:            # Optional - defines which pods to include/exclude based on labels
+  #     - key: app        # Replace with actual label key (e.g., "app", "env", "tier")
+  #       operator: In              # Options: In | NotIn  
+  #       values:
+  #         - myapp     # Replace with actual label values
+
+# ================================================================
+# SECTION: AUTOMATION POLICY - MANUAL CUSTOMIZATION ALLOWED
+# Instructions:
+# → Adjust automation and resizing behavior as needed
+# → You can define multiple policies by duplicating the block under 'base-optimization'
+#    - Change the policy name (e.g., 'dev-automation', 'prod-automation')
+#    - Customize each policy's CPU/memory/resizing behavior separately
+#    - Reference the desired policy by name in the 'scope.policy' field above
+#
+# Note: Some settings are included for forward compatibility and will be activated in future releases
+# ================================================================
+
+policy:
+  # ================================================================
+  # GLOBAL SETTINGS
+  # ================================================================
+  automationEnabled: false # Global Switch to enable/disable automation for the cluster
+  defaultPolicy: base-optimization # Default policy used when scope.policy is not specified
+  
+  # ================================================================
+  # AUTOMATION SCOPE CONTROL
+  # Determines where automation inclusion/exclusion rules are defined
+  # ================================================================
+  remoteEnablement: false
+    # false: Automation scope is controlled ONLY by this Helm configuration
+    #        - Containers are included/excluded based on namespace and label selectors defined above
+    #        - Kubex UI cannot override these automation decisions
+    #        - Recommended for strict GitOps workflows and production environments
+    #
+    # true:  Automation scope is controlled by BOTH Helm configuration AND Kubex UI
+    #        - Base rules still apply from namespace/label selectors above
+    #        - Customers can additionally enable/disable automation for specific containers via Kubex UI
+    #        - Provides flexibility for ad-hoc automation control without Helm updates
+    #        - Useful for development environments and testing scenarios
+  
+  # ================================================================
+  # POLICY DEFINITIONS
+  # Instructions:
+  # → If you wish to define multiple policies:
+  #    - Copy the entire block under policies currently called 'base-optimization'.
+  #    - Paste it below and give it a new, unique name (e.g., production-policy).
+  #    - Reference the new policy name in the scope[].policy field above.
+  #
+  # ⚠️  IMPORTANT: Policy names MUST follow RFC 1123 subdomain rules:
+  #    ✅ Use: lowercase letters, numbers, hyphens, dots only
+  #    ✅ Examples: base-optimization, dev-env, production.cpu
+  #    ❌ Avoid: camelCase, snake_case, UPPERCASE, special characters
+  #    Why: Policy names become webhook URLs (/mutate/{policy-name})
+  # ================================================================
+  policies: 
+    base-optimization:
+      allowedPodOwners: "Deployment,StatefulSet,CronJob,Rollout,Job,ReplicaSet,AnalysisRun"
+      enablement:
+        cpu:
+          request:
+            downsize: true
+            upsize: true
+            setFromUnspecified: false
+          limit:
+            downsize: false
+            upsize: true
+            setFromUnspecified: false
+            unsetFromSpecified: false     # (Future release)
+        memory:
+          request:
+            downsize: true
+            upsize: true
+            setFromUnspecified: false
+          limit:
+            downsize: false
+            upsize: true
+            setFromUnspecified: false
+      inPlaceResize:                      
+        enabled: true
+      podEviction:
+        enabled: true
+      safetyChecks:
+        maxAnalysisAgeDays: 5             # Number of days before optimization is considered stale
+
+
+# ================================================================
+# DEPLOYMENT CONFIGURATION OVERRIDES (Optional)
+# Uncomment and customize the values below to override default settings
+# 
+# ⚠️  IMPORTANT: For pod scan optimization in large clusters, see:
+#    docs/Pod-Scan-Configuration.md for calculation formulas and pre-configured values
+#    based on your cluster size and deployment phase.
+# ================================================================
+#deployment:
+#  controllerEnv:  # Override controller environment variables (defaults in values.yaml)
+#    debug: true                                  # Uncomment to enable debug mode for troubleshooting
+#    podScanInterval: "1h"                        # Default optimized for in-place resizing (Kubernetes 1.33+)
+#    podScanTimeout: "30m"                        # Default optimized for in-place resizing
+#    podEvictionCooldownPeriod: "1m"              # Only used when in-place resizing unavailable (Kubernetes < 1.33)
+#    podScanInitialInterval: "2m"                 # Initial delay before first pod scan after startup  
+#    recommendationsFetchInitialDelay: "1m"       # Startup delay before first recommendation fetch 
+#    recommendationsFetchInterval: "1h"           # How often to refresh recommendations from API 
+#    recommendationsResyncTimeout: "45m"          # Max time for recommendation sync operations 
+#    recommendationDataFormat: "json"             # Storage format in Valkey: "json" (readable) or "protobuf" (compact)
+#    nodeCpuHeadroom: "10%"                       # CPU headroom to reserve on each node (Can be in absolute value i.e. "100m" or in Percentage format i.e. "10%")
+#    nodeMemoryHeadroom: "200Mi"                  # Memory headroom to reserve on each node (Can be in absolute value i.e. "200Mi" or in Percentage format i.e. "10%")
+#    evictionThrottlingWindow: "6h"               # Time window for throttling pod evictions 
+#    evictionThrottlingMax: "1000"                # Max number of pod evictions allowed within the time window 
+
+  # ================================================================
+  # RESOURCE OPTIMIZATION (Recommended)
+  # Kubex cannot automate its own components - monitor them in Kubex UI and manually optimize
+  # ================================================================
+  
+  # Override webhook resources based on Kubex recommendations
+#  webhookResources: # Resource Specs for the webhook server pod
+#    requests:
+#      memory: "64Mi"                            # Update based on Kubex recommendations
+#      cpu: "100m"                                # Update based on Kubex recommendations
+#    limits:
+#      memory: "512Mi"                            # Update based on Kubex recommendations
+  
+  # Override gateway resources based on Kubex recommendations
+#  gatewayResources: # CPU and memory resource requests and limits for the pod
+#    requests:
+#      memory: "64Mi"                            # Update based on Kubex recommendations
+#      cpu: "100m"                                # Update based on Kubex recommendations
+#    limits:
+#      memory: "512Mi"                            # Update based on Kubex recommendations
+  
+  # Override controller resources based on Kubex recommendations
+#  controllerResources: # Resource Specs for the controller pod
+#    requests:
+#      memory: "128Mi"                            # Update based on Kubex recommendations
+#      cpu: "250m"                                # Update based on Kubex recommendations
+#    limits:
+#      memory: "512Mi"                              # Update based on Kubex recommendations
+
+
+
+  # ================================================================
+  # NODE SCHEDULING CONFIGURATION (Optional)
+  # Uncomment and customize to control where controller and webhook pods are deployed
+  # ================================================================
+  
+  # Node scheduling for controller deployment
+#  controller:
+#    nodeSelector:
+#      node-pool: system                          # Example: target specific node pool
+#    affinity:
+#      nodeAffinity:
+#        requiredDuringSchedulingIgnoredDuringExecution:
+#          nodeSelectorTerms:
+#          - matchExpressions:
+#            - key: kubernetes.io/instance-type
+#              operator: In
+#              values: ["m5.large", "m5.xlarge"]
+#    tolerations:
+#    - key: "system-workloads"
+#      operator: "Equal"
+#      value: "true"
+#      effect: "NoSchedule"
+#    topologySpreadConstraints:
+#    - maxSkew: 1
+#      topologyKey: topology.kubernetes.io/zone
+#      whenUnsatisfiable: DoNotSchedule
+#      labelSelector:
+#        matchLabels:
+#          app: kubex-controller
+  
+  # Node scheduling for webhook deployment
+#  webhook:
+#    nodeSelector:
+#      node-pool: system                          # Example: target specific node pool
+#    affinity:
+#      nodeAffinity:
+#        preferredDuringSchedulingIgnoredDuringExecution:
+#        - weight: 100
+#          preference:
+#            matchExpressions:
+#            - key: node-type
+#              operator: In
+#              values: ["stable"]
+#    tolerations:
+#    - key: "system-workloads"
+#      operator: "Equal"
+#      value: "true"
+#      effect: "NoSchedule"
+

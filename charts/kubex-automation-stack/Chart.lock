@@ -1,9 +1,12 @@
 dependencies:
+- name: kubex-automation-controller
+  repository: file://../kubex-automation-controller
+  version: 1.0.9
 - name: container-optimization-data-forwarder
-  repository: https://densify-dev.github.io/helm-charts
-  version: 4.0.12
+  repository: file://../container-optimization-data-forwarder
+  version: 4.0.13
 - name: prometheus
   repository: https://prometheus-community.github.io/helm-charts
-  version: 27.46.0
-digest: sha256:efece295d669ea0fdb52336add5d81db526a32a15437f2c7859b331f38c5ee14
-generated: "2025-11-27T11:53:44.488556902-05:00"
+  version: 27.52.0
+digest: sha256:656de943acd473532ee8eb816c82af63d583bb76f6f536e5699a30aaf366cd6f
+generated: "2026-01-14T11:53:24.711869361Z"

@@ -1,24 +1,63 @@
 #################################################################
-# densify/container-optimization-data-forwarder parameters
+# Global configuration shared across all subcharts
 #################################################################
 
-stack:
+global:
+  cluster:
+    name: "" # The name of your Kubernetes cluster (set in values-edit.yaml)
+  createSecret: true # Set to false if providing your own secret
   kubex:
-    createSecret: true
+    url:
+      host: "" # <instance>.kubex.ai or <instance>.densify.com (set in values-edit.yaml)
 
-container-optimization-data-forwarder:
+#################################################################
+# kubex-data-collector parameters
+# Kubex Data Collector
+#################################################################
+
+kubex-data-collector:
+  enabled: true # Set to false to disable Kubex Data Collector
+  credentials:
+    username: "" # Kubex API username for Kubex Data Collector (set in values-edit.yaml)
+    epassword: "" # Kubex API encrypted password for Kubex Data Collector (set in values-edit.yaml)
   nameOverride: kubex-stack
   job:
     checkPrometheusReady: true
+  tolerations:
+    # Tolerate arch taints (works on both amd64 and arm64 clusters)
+    - key: "kubernetes.io/arch"
+      operator: "Exists"
+      effect: "NoSchedule"
   config:
-    forwarder:
-      kubex:
-        url:
-          UserSecretName: kubex-api-secret
+    userSecretName: kubex-api-secret
+    collector:
+      url:
+        UserSecretName: kubex-api-secret
     prometheus:
       url:
         host: kubex-prometheus-server
         port: 80
+    clusters:
+    - name: "" # Will be populated from global.cluster.name by _helpers.tpl
+
+#################################################################
+# kubex-automation-controller parameters
+# Automated resource optimization
+#################################################################
+
+kubex-automation-controller:
+  enabled: false # Set to true in values-edit.yaml to enable automation controller
+  createSecrets: true # Set to false if providing your own secrets
+  credentials:
+    username: "" # Set in values-edit.yaml (can be same or different from Kubex Data Collector)
+    epassword: "" # Set in values-edit.yaml (can be same or different from Kubex Data Collector)
+  cluster:
+    name: "" # Will be populated from global.cluster.name
+  config:
+    kubex:
+      url: {} # Will be populated from global.kubex.url
+
+
 
 #################################################################
 # prometheus-community/prometheus parameters
@@ -31,6 +70,11 @@ prometheus:
     enabled: false 
   kube-state-metrics:
     prometheusScrape: false
+    tolerations:
+      # Tolerate arch taints (works on both amd64 and arm64 clusters)
+      - key: "kubernetes.io/arch"
+        operator: "Exists"
+        effect: "NoSchedule"
     metricAnnotationsAllowList:
       - 'namespaces=[*]'
     metricLabelsAllowlist:
@@ -74,8 +118,17 @@ prometheus:
         type: RuntimeDefault
     tolerations:
       - operator: "Exists"
+      # Tolerate arch taints (works on both amd64 and arm64 clusters)
+      - key: "kubernetes.io/arch"
+        operator: "Exists"
+        effect: "NoSchedule"
   server:
     fullnameOverride: kubex-prometheus-server
+    tolerations:
+      # Tolerate arch taints (works on both amd64 and arm64 clusters)
+      - key: "kubernetes.io/arch"
+        operator: "Exists"
+        effect: "NoSchedule"
     global:
       scrape_interval: 20s
       scrape_timeout: 10s

@@ -8,7 +8,7 @@
 
 ## Introduction
 
-Kubex analyses Kubernetes clusters and produces recommendations for rightsizing resources to mitigate risk and reduce waste. This chart includes all components required for that.
+Kubex analyses Kubernetes clusters and produces recommendations for rightsizing resources to mitigate risk and reduce waste. This chart includes all components required for the Kubex Data Collector, optimization recommendations, and optional automated resource optimization.
 
 This chart requires very minimal configuration in order to install the entire stack. All of it is in `values-edit.yaml`.
 
@@ -58,17 +58,58 @@ The following table indicates - depending on the cluster size - which sizing fil
 
 The following table lists configuration parameters in `values-edit.yaml`.
 
-| Parameter                                                                        | Mandatory          | Description                                            |
-| -------------------------------------------------------------------------------- | ------------------ | ------------------------------------------------------ |
-| `stack.kubex.username`                                                         | :white_check_mark: | Kubex user account                                   |
-| `stack.kubex.encrypted_password`                                               | :white_check_mark: | Encrypted password for the Kubex User                |
-| `container-optimization-data-forwarder.`<br/>`config.forwarder.densify.url.host` | :white_check_mark: | Kubex instance hostname (`< instance >.densify.com`) |
-| `container-optimization-data-forwarder.`<br/>`config.clusters[0].name`           | :white_check_mark: | Cluster name **(must be unique, customer-wide; if not, specify an alternate name)** |
-| `container-optimization-data-forwarder.`<br/>`cronJob.successfulJobsHistoryLimit` |                    | Number of successful jobs to keep |
-| `container-optimization-data-forwarder.`<br/>`cronJob.failedJobsHistoryLimit` |                    | Number of failed jobs to keep |
-| `container-optimization-data-forwarder.`<br/>`cronJob.ttlSecondsAfterFinished` |                    | TTL to keep jobs after completion/failure |
-| `container-optimization-data-forwarder.`<br/>`cronJob.backoffLimit` |                    | Backoff limit for jobs |
-| `prometheus.server.persistentVolume.`<br/>`storageClass`                         |                    | Storage class for Prometheus persistent volume |
+### Global Configuration
+
+| Parameter                                                | Mandatory          | Description                                            |
+| -------------------------------------------------------- | ------------------ | ------------------------------------------------------ |
+| `global.cluster.name`                                    | :white_check_mark: | Cluster name **(must be unique, customer-wide)**      |
+| `global.kubex.url.host`                                  | :white_check_mark: | Kubex instance hostname (e.g., `<instance>.kubex.ai` or `<instance>.densify.com`) |
+| `global.createSecret`                                    |                    | Set to `false` if providing your own secret (default: `true`) |
+
+### Kubex Data Collector
+
+| Parameter                                                | Mandatory          | Description                                            |
+| -------------------------------------------------------- | ------------------ | ------------------------------------------------------ |
+| `kubex-data-collector.enabled`                          |                    | Enable Kubex Data Collector (default: `true`) |
+| `kubex-data-collector.credentials.username`             | :white_check_mark: | Kubex user account for Kubex Data Collector                 |
+| `kubex-data-collector.credentials.epassword`            | :white_check_mark: | Encrypted password for Kubex Data Collector user            |
+| `kubex-data-collector.`<br/>`cronJob.successfulJobsHistoryLimit` |                    | Number of successful jobs to keep |
+| `kubex-data-collector.`<br/>`cronJob.failedJobsHistoryLimit` |                    | Number of failed jobs to keep |
+| `kubex-data-collector.`<br/>`cronJob.ttlSecondsAfterFinished` |                    | TTL to keep jobs after completion/failure |
+| `kubex-data-collector.`<br/>`cronJob.backoffLimit` |                    | Backoff limit for jobs |
+
+### Kubex Automation Controller (Optional)
+
+**Note:** The automation controller uses separate credentials that can be the same or different from the Kubex Data Collector credentials.
+
+#### Basic Configuration (in values-edit.yaml)
+
+| Parameter                                                        | Mandatory          | Description                                            |
+| ---------------------------------------------------------------- | ------------------ | ------------------------------------------------------ |
+| `kubex-automation-controller.enabled`                            |                    | Enable automated resource optimization (default: `false`) |
+| `kubex-automation-controller.createSecrets`                      |                    | Create secrets for Kubex API and Valkey (default: `true`) |
+| `kubex-automation-controller.credentials.username`               | :white_check_mark: (if enabled) | Kubex API username for automation **(can be different from Kubex Data Collector user)** |
+| `kubex-automation-controller.credentials.epassword`              | :white_check_mark: (if enabled) | Kubex API encrypted password for automation |
+| `kubex-automation-controller.valkey.credentials.password`        | :white_check_mark: (if enabled) | Password for Valkey authentication    |
+
+#### Advanced Automation Configuration (Optional)
+
+For advanced automation settings (policies, scopes, Valkey tuning, resource limits), download and customize [kubex-automation-values.yaml](https://github.com/densify-dev/helm-charts/blob/master/charts/kubex-automation-stack/kubex-automation-values.yaml):
+
+1. Download the file: `wget https://raw.githubusercontent.com/densify-dev/helm-charts/master/charts/kubex-automation-stack/kubex-automation-values.yaml`
+2. Edit settings as needed (see inline comments for guidance)
+3. Install with: `helm install -n kubex -f values-edit.yaml -f kubex-automation-values.yaml -f <sizing-file> kubex densify/kubex-automation-stack`
+
+**Important Notes:**
+- When `policy.automationEnabled: true`, you **must** define at least one scope in `kubex-automation-values.yaml`
+- Default policy (`base-optimization`) is included - customize only if needed
+- Without `kubex-automation-values.yaml`, automation uses conservative defaults with `automationEnabled: false`
+
+### Prometheus Configuration
+
+| Parameter                                                        | Mandatory          | Description                                            |
+| ---------------------------------------------------------------- | ------------------ | ------------------------------------------------------ |
+| `prometheus.server.persistentVolume.`<br/>`storageClass`         |                    | Storage class for Prometheus persistent volume |
 
 ## Limitations
 
@@ -77,11 +118,25 @@ The following table lists configuration parameters in `values-edit.yaml`.
 
 ## Further Details
 
-This chart consists of two subcharts:
+This chart consists of three subcharts:
 
-* [Kubex Data Collector](../container-optimization-data-forwarder), which collects data and forwards it to a Kubex instance for analysis
+* [Kubex Automation Controller](../kubex-automation-controller) (optional), which automates the application of optimization recommendations to running containers
+
+* [Kubex Data Collector](../container-optimization-data-forwarder) (aliased as `kubex-data-collector`), which collects and sends metrics to a Kubex instance for analysis
 
 * [Prometheus Community Prometheus chart](https://github.com/prometheus-community/helm-charts/blob/main/charts/prometheus/) which contains the entire stack required for the Kubex Data Collector
+
+### Configuration Structure
+
+**Global values** (`global.cluster.name` and `global.kubex.url.host`) are automatically shared across all subcharts. This simplifies configuration when multiple components are enabled.
+
+**Credentials:** The stack uses two separate sets of credentials:
+1. **Kubex Data Collector Credentials** (`kubex-data-collector.credentials.*`) - Used by the Kubex Data Collector to send metrics to Kubex
+2. **Automation Credentials** (`kubex-automation-controller.credentials.*`) - Used by the automation controller to apply optimization recommendations
+
+These credentials **can be the same or different** depending on your security requirements.
+
+**kubex-automation-controller:** Always uses global values for cluster name and URL when enabled. No subchart-specific overrides are supported for these settings.
 
 ## Documentation
 
