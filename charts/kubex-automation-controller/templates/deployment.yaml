@@ -60,6 +60,8 @@ spec:
               value: "/densify/config/kubex-automation-scope/kubex-automation-scope"
             - name: RECOMMENDATIONS_PATH
               value: "/densify/data/recommendations.json"
+            - name: LOGGER_PARSE_TIMESTAMP
+              value: {{ .Values.deployment.controllerEnv.loggerParseTimestamp | quote }}
             - name: UPDATER_INTERVAL
               value: {{ .Values.deployment.controllerEnv.podScanInterval }}
             - name: UPDATER_TIMEOUT
@@ -151,6 +153,8 @@ spec:
                 configMapKeyRef:
                   name: kubex-config
                   key: KUBEX_BASE_URL
+            - name: LOGGER_PARSE_TIMESTAMP
+              value: {{ .Values.deployment.controllerEnv.loggerParseTimestamp | quote }}
             - name: API_REQUEST_TIMEOUT
               value: {{ .Values.deployment.controllerEnv.apiRequestTimeout | quote }} 
           volumeMounts:
@@ -267,6 +271,8 @@ spec:
               value: {{ .Values.deployment.controllerEnv.recommendationDataFormat | quote }}
             - name: SCOPE_FILE_PATH
               value: "/densify/config/kubex-automation-scope/kubex-automation-scope"
+            - name: LOGGER_PARSE_TIMESTAMP
+              value: {{ .Values.deployment.controllerEnv.loggerParseTimestamp | quote }}
           volumeMounts:
             - name: webhook-certs
               mountPath: "/etc/webhook/certs"
@@ -313,6 +319,8 @@ spec:
                 configMapKeyRef:
                   name: kubex-config
                   key: KUBEX_BASE_URL
+            - name: LOGGER_PARSE_TIMESTAMP
+              value: {{ .Values.deployment.controllerEnv.loggerParseTimestamp | quote }}
           volumeMounts:
             - name: cfg-volume
               mountPath: "/densify/config/api"

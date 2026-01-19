@@ -101,6 +101,7 @@ deployment:
     evictionThrottlingMax: "1000"
 
     apiRequestTimeout: "30s"
+    loggerParseTimestamp: "true"
         
   # Node scheduling configuration for controller deployment
   controller:
