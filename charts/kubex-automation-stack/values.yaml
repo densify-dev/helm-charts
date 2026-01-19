@@ -103,6 +103,8 @@ prometheus:
       - resourcequotas
       - statefulsets
   prometheus-node-exporter:
+    hostNetwork: false
+    affinity: {}
     service:
       port: 9191
       targetPort: 9191
