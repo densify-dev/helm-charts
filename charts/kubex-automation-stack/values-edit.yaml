@@ -63,7 +63,26 @@ kubex-automation-controller:
     storage:
       className: '' # Optional: Specify storage class if not using default
 
-  # Optional: Additional automation settings
-  # scope: [] # Define which namespaces/workloads to manage
-  # policy:
-  #   policies: {} # Define custom automation policies
+  # ================================================================
+  # AUTOMATION POLICY
+  # ================================================================
+  policy:
+    automationEnabled: true # Global Switch to enable/disable automation for the cluster
+
+  # ================================================================
+  # SCOPE CONFIGURATION
+  # → Define which pods are eligible for automation using namespace and label filters
+  # → ⚠️ IMPORTANT: When policy.automationEnabled is set to true, you MUST define at least one scope
+  # ================================================================
+  scope: []
+    # - name: base-optimization-scope # Unique scope name
+    #   policy: base-optimization     # Policy name (optional - uses defaultPolicy in kubex-automation-values.yaml)
+    #   namespaces:           # Mandatory - defines which namespaces to include/exclude
+    #     operator: NotIn     # Options: In | NotIn
+    #     values:
+    #       - kubex           # Kubex namespace (exclude automation components)
+    #   podLabels:            # Optional - defines which pods to include/exclude based on labels
+    #     - key: app        # Replace with actual label key (e.g., "app", "env", "tier")
+    #       operator: In              # Options: In | NotIn
+    #       values:
+    #         - myapp     # Replace with actual label values

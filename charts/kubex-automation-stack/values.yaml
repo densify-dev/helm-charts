@@ -16,29 +16,46 @@ global:
 #################################################################
 
 kubex-data-collector:
-  enabled: true # Set to false to disable Kubex Data Collector
+  enabled: true
+  nameOverride: kubex-data-collector
   credentials:
-    username: "" # Kubex API username for Kubex Data Collector (set in values-edit.yaml)
-    epassword: "" # Kubex API encrypted password for Kubex Data Collector (set in values-edit.yaml)
-  nameOverride: kubex-stack
-  job:
-    checkPrometheusReady: true
-  tolerations:
-    # Tolerate arch taints (works on both amd64 and arm64 clusters)
-    - key: "kubernetes.io/arch"
-      operator: "Exists"
-      effect: "NoSchedule"
+    username: "" # Set in values-edit.yaml or via --set
+    epassword: "" # Set in values-edit.yaml or via --set
+  image: densify/container-optimization-data-forwarder:4
+  imageAzureToken: densify/azure-rest-api-token:latest
+  imageGCPOAuth2Token: densify/gcp-oauth2-token:latest
+  imageCheckPrometheusReady: busybox:latest
+  pullPolicy: Always
   config:
     userSecretName: kubex-api-secret
     collector:
-      url:
-        UserSecretName: kubex-api-secret
+      url: {}
     prometheus:
       url:
         host: kubex-prometheus-server
         port: 80
     clusters:
     - name: "" # Will be populated from global.cluster.name by _helpers.tpl
+  job:
+    enable: true
+    checkPrometheusReady: true
+  cronJob:
+    schedule: 5 * * * *
+  rbac:
+    create: false
+  serviceAccount:
+    isGKE: false
+    create: false
+    name:
+    annotations:
+      serviceaccounts.openshift.io/oauth-want-challenges: "true"
+  nodeSelector: {}
+  resources: {}
+  tolerations:
+    - key: "kubernetes.io/arch"
+      operator: "Exists"
+      effect: "NoSchedule"
+  topologySpreadConstraints: []
 
 #################################################################
 # kubex-automation-controller parameters
@@ -56,8 +73,164 @@ kubex-automation-controller:
   config:
     kubex:
       url: {} # Will be populated from global.kubex.url
-
-
+  certmanager:
+    enabled: false
+    duration: 720h
+    renewBefore: 240h
+    rotationPolicy: Always
+  selfSignedCert:
+    enabled: true
+    validity: 3650
+  scope: []
+  policy:
+    automationEnabled: false
+    defaultPolicy: base-optimization
+    remoteEnablement: false
+    policies:
+      base-optimization:
+        allowedPodOwners: "Deployment,StatefulSet,CronJob,Rollout,Job,ReplicaSet,AnalysisRun"
+        enablement:
+          cpu:
+            request:
+              downsize: true
+              upsize: true
+              setFromUnspecified: false
+            limit:
+              downsize: false
+              upsize: true
+              setFromUnspecified: false
+              unsetFromSpecified: false
+          memory:
+            request:
+              downsize: true
+              upsize: true
+              setFromUnspecified: false
+            limit:
+              downsize: false
+              upsize: true
+              setFromUnspecified: false
+        inPlaceResize:
+          enabled: true
+        podEviction:
+          enabled: true
+        safetyChecks:
+          maxAnalysisAgeDays: 5
+  webhook:
+    metadataName: kubex-resource-optimization-webhook
+  deployment:
+    webhookImage: densify/container-automation:1.4
+    gatewayImage: densify/automation-gateway:1.1
+    controllerImage: densify/automation-director:1.2
+    waitForValkeyImage: busybox:latest
+    replicas:
+      webhookServer: 1
+      controller: 1
+    webhookResources:
+      requests:
+        memory: "64Mi"
+        cpu: "100m"
+      limits:
+        memory: "512Mi"
+    gatewayResources:
+      requests:
+        memory: "64Mi"
+        cpu: "100m"
+      limits:
+        memory: "512Mi"
+    controllerResources:
+      requests:
+        memory: "128Mi"
+        cpu: "250m"
+      limits:
+        memory: "512Mi"
+    controllerEnv:
+      podScanInitialInterval: "2m"
+      podScanInterval: "1h"
+      podScanTimeout: "30m"
+      podEvictionCooldownPeriod: "1m"
+      recommendationsFetchInitialDelay: "1m"
+      recommendationsFetchInterval: "1h"
+      recommendationsResyncTimeout: "45m"
+      recommendationDataFormat: "protobuf"
+      nodeCpuHeadroom: "10%"
+      nodeMemoryHeadroom: "10%"
+      evictionThrottlingWindow: "6h"
+      evictionThrottlingMax: "1000"
+      debug: false
+      suppressInPlaceResizing: "false"
+      shufflePods: "false"
+      apiRequestTimeout: "30s"
+      loggerParseTimestamp: "true"
+    controller:
+      nodeSelector: {}
+      affinity: {}
+      tolerations:
+        - key: "kubernetes.io/arch"
+          operator: "Exists"
+          effect: "NoSchedule"
+      topologySpreadConstraints: []
+    webhook:
+      nodeSelector: {}
+      affinity: {}
+      tolerations:
+        - key: "kubernetes.io/arch"
+          operator: "Exists"
+          effect: "NoSchedule"
+      topologySpreadConstraints: []
+  valkey:
+    credentials:
+      user: "kubexAutomation"
+    image:
+      registry: docker.io
+      repository: valkey/valkey
+      tag: "9.0"
+      pullPolicy: Always
+    extraSecretValkeyConfigs: kubex-valkey-secret
+    storage:
+      requestedSize: "10Gi"
+      className: ""
+      keepPvc: false
+    service:
+      type: ClusterIP
+      serverPort: 6379
+    resources:
+      requests:
+        cpu: "250m"
+        memory: "256Mi"
+      limits:
+        memory: "512Mi"
+    useDeploymentWhenNonHA: true
+    tolerations:
+      - key: "kubernetes.io/arch"
+        operator: "Exists"
+        effect: "NoSchedule"
+    metrics:
+      enabled: true
+      exporter:
+        image:
+          registry: docker.io
+          repository: oliver006/redis_exporter
+          tag: v1.76.0
+          pullPolicy: Always
+        extraExporterEnvSecrets:
+          - kubex-valkey-client-auth
+        resources:
+          requests:
+            cpu: "50m"
+            memory: "64Mi"
+          limits:
+            memory: "128Mi"
+      service:
+        enabled: true
+        type: ClusterIP
+        servicePort: 9121
+        containerPort: 9121
+        annotations:
+          prometheus.io/scrape: "true"
+          prometheus.io/port: "9121"
+          prometheus.io/path: "/metrics"
+      serviceMonitor:
+        enabled: false
 
 #################################################################
 # prometheus-community/prometheus parameters

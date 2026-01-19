@@ -41,52 +41,13 @@ valkey:
 
 
 # ================================================================
-# SCOPE CONFIGURATION
-# Instructions:
-# → Define which pods are eligible for automation using namespace and label filters
-# → Each scope references a policy that defines automation behavior
-# → Multiple scopes allow different automation rules for different parts of your cluster
-# → ⚠️ IMPORTANT: When policy.automationEnabled is set to true, you MUST define at least one scope
-#
-# To add multiple scopes:
-# 1. Copy the entire scope block below (from "- name:" to the end of "podLabels:")
-# 2. Paste it below the existing scope and modify:
-#    - Change the scope name to be unique
-#    - Reference a different policy if desired
-#    - Adjust namespace and label filters
-#
-# Example multiple scopes:
-# scope:
-#   - name: production-scope
-#     policy: conservative-policy
-#     namespaces: { operator: In, values: ["prod-*"] }
-#   - name: development-scope  
-#     policy: aggressive-policy
-#     namespaces: { operator: In, values: ["dev-*"] }
-# ================================================================
-
-# Uncomment and configure the scope below when enabling automation:
-scope: []
-  # - name: base-optimization-scope # Unique scope name
-  #   policy: base-optimization     # Policy name (optional - uses defaultPolicy if omitted)
-  #   namespaces:           # Mandatory - defines which namespaces to include/exclude
-  #     operator: NotIn     # Options: In | NotIn
-  #     values:
-  #       - kubex           # Kubex namespace (exclude automation components)
-  #   podLabels:            # Optional - defines which pods to include/exclude based on labels
-  #     - key: app        # Replace with actual label key (e.g., "app", "env", "tier")
-  #       operator: In              # Options: In | NotIn  
-  #       values:
-  #         - myapp     # Replace with actual label values
-
-# ================================================================
 # SECTION: AUTOMATION POLICY - MANUAL CUSTOMIZATION ALLOWED
 # Instructions:
 # → Adjust automation and resizing behavior as needed
 # → You can define multiple policies by duplicating the block under 'base-optimization'
 #    - Change the policy name (e.g., 'dev-automation', 'prod-automation')
 #    - Customize each policy's CPU/memory/resizing behavior separately
-#    - Reference the desired policy by name in the 'scope.policy' field above
+#    - Reference the desired policy by name in the 'scope.policy' field in values-edit.yaml
 #
 # Note: Some settings are included for forward compatibility and will be activated in future releases
 # ================================================================
@@ -95,7 +56,6 @@ policy:
   # ================================================================
   # GLOBAL SETTINGS
   # ================================================================
-  automationEnabled: false # Global Switch to enable/disable automation for the cluster
   defaultPolicy: base-optimization # Default policy used when scope.policy is not specified
   
   # ================================================================
@@ -103,13 +63,13 @@ policy:
   # Determines where automation inclusion/exclusion rules are defined
   # ================================================================
   remoteEnablement: false
-    # false: Automation scope is controlled ONLY by this Helm configuration
-    #        - Containers are included/excluded based on namespace and label selectors defined above
+    # false: Automation scope is controlled ONLY by the Helm configuration in values-edit.yaml
+    #        - Containers are included/excluded based on namespace and label selectors defined there
     #        - Kubex UI cannot override these automation decisions
     #        - Recommended for strict GitOps workflows and production environments
     #
     # true:  Automation scope is controlled by BOTH Helm configuration AND Kubex UI
-    #        - Base rules still apply from namespace/label selectors above
+    #        - Base rules still apply from namespace/label selectors in values-edit.yaml
     #        - Customers can additionally enable/disable automation for specific containers via Kubex UI
     #        - Provides flexibility for ad-hoc automation control without Helm updates
     #        - Useful for development environments and testing scenarios
@@ -120,7 +80,7 @@ policy:
   # → If you wish to define multiple policies:
   #    - Copy the entire block under policies currently called 'base-optimization'.
   #    - Paste it below and give it a new, unique name (e.g., production-policy).
-  #    - Reference the new policy name in the scope[].policy field above.
+  #    - Reference the new policy name in the scope[].policy field in values-edit.yaml
   #
   # ⚠️  IMPORTANT: Policy names MUST follow RFC 1123 subdomain rules:
   #    ✅ Use: lowercase letters, numbers, hyphens, dots only
