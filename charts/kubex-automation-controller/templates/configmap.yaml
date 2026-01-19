@@ -4,12 +4,20 @@ metadata:
   name: kubex-config
   namespace: {{ .Release.Namespace }}
 data:
-  CLUSTER_NAME: {{ .Values.cluster.name | required ".Values.cluster.name is required." | quote }}
+  CLUSTER_NAME: {{ .Values.global.cluster.name | default .Values.cluster.name | required ".Values.global.cluster.name or .Values.cluster.name is required." | quote }}
   KUBEX_BASE_URL: >-
-    {{- $scheme := .Values.densify.url.scheme | default "https" }}
-    {{- $host := .Values.densify.url.host | required ".Values.densify.url.host is required." }}
-    {{- if and (hasKey .Values.densify.url "port") .Values.densify.url.port }}
-    {{ printf "%s://%s:%d" $scheme $host (.Values.densify.url.port | int) }}
+{{- $kubexUrl := .Values.config.kubex.url | default dict }}
+{{- if not $kubexUrl.host }}
+  {{- if .Values.global.kubex.url.host }}
+    {{- $_ := set $kubexUrl "host" .Values.global.kubex.url.host }}
+  {{- else }}
+    {{- fail "A Kubex URL host is required. Set .Values.global.kubex.url.host" }}
+  {{- end }}
+{{- end }}
+    {{- $scheme := $kubexUrl.scheme | default "https" }}
+    {{- $host := $kubexUrl.host }}
+    {{- if and (hasKey $kubexUrl "port") $kubexUrl.port }}
+    {{ printf "%s://%s:%d" $scheme $host ($kubexUrl.port | int) }}
     {{- else }}
     {{ printf "%s://%s" $scheme $host }}
     {{- end }}
@@ -33,6 +41,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
 data:
   kubex-automation-scope: |-
+{{- if and .Values.policy.automationEnabled (gt (len .Values.scope) 0) }}
   {{- range .Values.scope }}
     {{ .name }}:
       policyName: {{ .policy | default $.Values.policy.defaultPolicy | quote }}
@@ -43,6 +52,7 @@ data:
       podLabels:{{ toYaml .podLabels | nindent 8 }}
       {{- end }}
   {{- end }}
+{{- end }}
 
 ---
 

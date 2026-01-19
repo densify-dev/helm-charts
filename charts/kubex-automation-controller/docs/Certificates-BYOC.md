@@ -50,12 +50,6 @@ Your certificate must include the following DNS names in the Subject Alternative
 
 4. **Deploy with your certificate:**
    
-   Simply run the deploy script:
-   ```bash
-   ./deploy-kubex-automation-controller.sh
-   ```
-
-   Or if using helm directly:
    ```bash
    helm upgrade --install kubex-automation-controller densify/kubex-automation-controller \
      --namespace kubex \

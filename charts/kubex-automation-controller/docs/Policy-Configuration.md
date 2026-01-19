@@ -1,8 +1,18 @@
 # Policy Configuration Guide
 
-This guide describes how to configure policies for the Kubex Automation Controller directly in your `kubex-automation-values.yaml` file.
+**⚠️ Note:** This documentation applies to the [kubex-automation-stack](../../kubex-automation-stack) chart.
+
+This guide describes how to configure policies for the Kubex Automation Controller in your `kubex-automation-values.yaml` file (optional - defaults are provided).
 
 **Quick Navigation:** [Configuration Structure](#configuration-structure) | [Field Reference](#policy-field-reference) | [Adding Policies](#adding-multiple-policies) | [Examples](#common-policy-examples)
+
+## Default Policy Included
+
+The chart includes a sensible default policy (`base-optimization`) with conservative settings. You only need to customize `kubex-automation-values.yaml` if you want to:
+- Change the default policy behavior
+- Add additional policies for different workload types
+- Enable automation (`automationEnabled: true`)
+- Define scopes (required when automation is enabled)
 
 ## ⚠️ Important: Policy Naming Requirements
 
@@ -96,9 +106,11 @@ policy:
 
 | Field                  | Description                                                                                     | Default Value |
 | ---------------------- | ----------------------------------------------------------------------------------------------- | ------------- |
-| `automationEnabled`    | Global switch to enable or disable automation for the entire cluster                           | `true`        |
+| `automationEnabled`    | Global switch to enable or disable automation for the entire cluster                           | `false`       |
 | `defaultPolicy`        | Policy name to use when a scope doesn't specify a policy                                       | `base-optimization` |
 | `remoteEnablement`     | Controls whether automation scope can be modified via Kubex UI in addition to Helm configuration | `false`   |
+
+**Important:** When setting `automationEnabled: true`, you **must** define at least one scope in `kubex-automation-values.yaml`, otherwise the webhook will not be created and pods will not be optimized.
 
 ### Remote Enablement Options:
 - **`false`** (Recommended for production):

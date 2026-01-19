@@ -9,8 +9,44 @@ selfSignedCert:
   enabled: true # Generate self-signed certificate during installation
   validity: 3650 # Certificate validity in days (default: 10 years)
 
+# Automation scope configuration - defines which namespaces/pods are eligible for automation
+# Empty by default - users should configure in kubex-automation-values.yaml
+scope: []
+
+# Automation policy configuration
 policy:
-  policies: {} # Additional policies can be defined here, remove {} when adding new policies
+  automationEnabled: false # Global switch to enable/disable automation
+  defaultPolicy: base-optimization # Default policy name when scope.policy is not specified
+  remoteEnablement: false # Allow Kubex UI to override automation decisions
+  policies:
+    base-optimization: # Default policy with conservative settings
+      allowedPodOwners: "Deployment,StatefulSet,CronJob,Rollout,Job,ReplicaSet,AnalysisRun"
+      enablement:
+        cpu:
+          request:
+            downsize: true
+            upsize: true
+            setFromUnspecified: false
+          limit:
+            downsize: false
+            upsize: true
+            setFromUnspecified: false
+            unsetFromSpecified: false
+        memory:
+          request:
+            downsize: true
+            upsize: true
+            setFromUnspecified: false
+          limit:
+            downsize: false
+            upsize: true
+            setFromUnspecified: false
+      inPlaceResize:
+        enabled: true
+      podEviction:
+        enabled: true
+      safetyChecks:
+        maxAnalysisAgeDays: 5
 
 webhook:
   metadataName: kubex-resource-optimization-webhook # Name of the webhook configuration.
@@ -94,7 +130,7 @@ valkey:
     # Username for Valkey authentication (defaults to "kubexAutomation" if not set)
     user: "kubexAutomation"
     # Password for Valkey authentication.
-    # This is a mandatory field and must be set in kubex-automation-values.yaml.
+    # This is a mandatory field and must be set when enabled via kubex-automation-stack.
     # password: ""
 
   image:
@@ -111,7 +147,7 @@ valkey:
   # Storage for single-instance (non-HA)
   storage:
     requestedSize: "10Gi"
-    className: ""  # Use cluster default storage class (users override in kubex-automation-values.yaml)
+    className: ""  # Use cluster default storage class
     keepPvc: false
 
   service:

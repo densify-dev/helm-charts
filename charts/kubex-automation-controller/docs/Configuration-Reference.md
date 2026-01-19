@@ -1,13 +1,16 @@
 # Configuration Reference (`kubex-automation-values.yaml`)
 
+**⚠️ Note:** This documentation applies to the [kubex-automation-stack](../../kubex-automation-stack) chart. The `kubex-automation-values.yaml` file is located in the stack chart directory, not in this subchart.
+
 This document provides a detailed reference for every field in your `kubex-automation-values.yaml` file. Each section includes guidance on which values must be copied from the Kubex UI and which require manual input based on your environment.
 
 ## How to Use This Reference
 
-- Populate `kubex-automation-values.yaml` section by section using the tables below.
-- Need the deployment workflow? Stay in [Getting Started](./Getting-Started.md).
-- For rollout or future edits, update `kubex-automation-values.yaml` and rerun either the deploy script or the `helm upgrade` command from [Getting Started Step 8](./Getting-Started.md#step-8-deploy).
-- Cross-reference dedicated guides (Policy Configuration, Certificates, Pod Scan Configuration) for deeper explanations.
+- Download `kubex-automation-values.yaml` from the [kubex-automation-stack chart](https://github.com/densify-dev/helm-charts/blob/master/charts/kubex-automation-stack/kubex-automation-values.yaml)
+- Populate it section by section using the tables below
+- Basic configuration goes in `values-edit.yaml` (credentials, cluster name, enable/disable)
+- Advanced configuration (policies, scopes) goes in `kubex-automation-values.yaml` (optional)
+- Apply with: `helm install -n kubex -f values-edit.yaml -f kubex-automation-values.yaml kubex densify/kubex-automation-stack`
 
 ---
 
@@ -23,11 +26,11 @@ This document provides a detailed reference for every field in your `kubex-autom
 
 ### ConfigMaps
 
-| Name | Purpose |
-| --- | --- |
-| `kubex-config` | Stores cluster name and Kubex API base URL |
-| `kubex-automation-policy` | Contains automation policies and rules |
-| `kubex-automation-scope` | Defines which namespaces/workloads are in scope |
+| Name | Purpose | When Created |
+| --- | --- | --- |
+| `kubex-config` | Stores cluster name and Kubex API base URL | Always |
+| `kubex-automation-policy` | Contains automation policies and rules | Always (with default policy) |
+| `kubex-automation-scope` | Defines which namespaces/workloads are in scope | Always (empty if no scopes defined) |
 | `kubex-automation-controller-clusterrole` | RBAC rules for the controller |
 
 ### Secrets
@@ -119,14 +122,12 @@ stringData:
 | --------------------- | ------------------------------------------------------------ |
 | `cluster.name`        | Name of the Kubernetes cluster as recognized in Kubex      |
 
-**Note**: TLS certificate method is controlled by the deploy script (see [Certificate Management](#certificate-management) below), not by settings in `kubex-automation-values.yaml`.
-
 ### Certificate Management
 
-| Method | Deploy command | Notes |
-|--------|----------------|-------|
-| Helm-generated self-signed | `./deploy-kubex-automation-controller.sh` | Default, 10-year validity, requires `createSecrets: true` |
-| cert-manager | `./deploy-kubex-automation-controller.sh --certmanager` | cert-manager must already exist; rotates every 30 days |
+| Method | Configuration | Notes |
+|--------|---------------|-------|
+| Helm-generated self-signed | `createSecrets: true` (default) | Default, 10-year validity |
+| cert-manager | Set `certManager.enabled: true` in values | cert-manager must already exist; rotates every 30 days |
 | BYOC | `createSecrets: false` + manual secret | Follow [Certificates-BYOC.md](Certificates-BYOC.md) and [TLS Certificate Secret](#tls-certificate-secret-external-secret-management) |
 
 ## Scope Definition (Manual Input)

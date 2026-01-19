@@ -2,15 +2,36 @@
 
 Enterprise-grade Kubernetes resource optimization automation with intelligent policy-driven container resizing.
 
-# Quick Links
+## ⚠️ Important Notice
+
+**This chart should NOT be installed directly.**
+
+Use the [kubex-automation-stack](../kubex-automation-stack) chart instead, which includes this automation controller along with all necessary components for comprehensive Kubex container optimization (data collection, automation, and monitoring).
+
+The standalone installation of this chart is deprecated and no longer supported.
+
+## For New Installations
+
+Please refer to the [kubex-automation-stack documentation](../kubex-automation-stack/README.md) for installation instructions.
+
+---
+
+## Legacy Documentation
+
+The information below is maintained for reference purposes only and applies to the deprecated standalone installation.
+
+# Quick Links (Legacy - For Reference Only)
 
 - [Kubex Automation Controller](#kubex-automation-controller)
-- [Quick Links](#quick-links)
+- [Important Notice](#️-important-notice)
+- [For New Installations](#for-new-installations)
+- [Legacy Documentation](#legacy-documentation)
+- [Quick Links (Legacy - For Reference Only)](#quick-links-legacy---for-reference-only)
 - [Overview](#overview)
   - [Core Components](#core-components)
   - [Key Features](#key-features)
   - [Supported Resource Types](#supported-resource-types)
-- [Getting Started](#getting-started)
+- [Legacy Getting Started (Deprecated)](#legacy-getting-started-deprecated)
 - [Documentation](#documentation)
   - [Configuration](#configuration)
   - [Advanced Topics](#advanced-topics)
@@ -24,6 +45,8 @@ Enterprise-grade Kubernetes resource optimization automation with intelligent po
 ---
 
 # Overview
+
+**Note:** This component is now part of [kubex-automation-stack](../kubex-automation-stack). For new deployments, use the stack chart instead.
 
 Kubex Automation Controller provides intelligent, policy-driven automation for managing container resource configurations in Kubernetes clusters. It safely and efficiently resizes workload resources based on optimization recommendations while respecting your operational constraints.
 
@@ -53,7 +76,12 @@ By default, automation applies to: `Deployment`, `StatefulSet`, `CronJob`, `Roll
 
 ---
 
-# Getting Started
+# Legacy Getting Started (Deprecated)
+
+**⚠️ Warning:** Standalone installation is deprecated. Use [kubex-automation-stack](../kubex-automation-stack) instead.
+
+<details>
+<summary>Click to expand legacy getting started guide</summary>
 
 Ready to deploy? Follow our step-by-step guide:
 
@@ -66,9 +94,16 @@ This guide covers:
 - Deployment verification
 - First automation policies
 
+</details>
+
 ---
 
 # Documentation
+
+**⚠️ For current documentation, see [kubex-automation-stack documentation](../kubex-automation-stack/README.md)**
+
+<details>
+<summary>Click to expand legacy documentation references</summary>
 
 ## Configuration
 
@@ -94,6 +129,8 @@ This guide covers:
 |----------|---------|
 | **[Troubleshooting](./docs/Troubleshooting.md)** | Common issues and diagnostic procedures |
 | **[Known Issues](./docs/Known-Issues.md)** | Current limitations and workarounds |
+
+</details>
 
 ---
 

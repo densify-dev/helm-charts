@@ -1,3 +1,4 @@
+{{- if .Values.policy.automationEnabled }}
 apiVersion: admissionregistration.k8s.io/v1
 kind: MutatingWebhookConfiguration
 metadata:
@@ -70,3 +71,4 @@ webhooks:
     sideEffects: "None"
     timeoutSeconds: 10
   {{- end }}
+{{- end }}

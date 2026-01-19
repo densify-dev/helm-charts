@@ -97,9 +97,17 @@ kubectl get configmap kubex-automation-scope -n kubex -o yaml
 kubectl get configmap kubex-automation-policy -n kubex -o yaml
 ```
 
+### Common Webhook Issues
+- **Webhook not created**: Check that `policy.automationEnabled: true` and at least one scope is defined in `kubex-automation-values.yaml`
+- **Webhook timing out**: Verify the webhook server pod is running and service is accessible
+- **TLS certificate errors**: Certificate may have expired or CABundle is incorrect
+- **Namespace selector not matching**: Verify webhook's namespaceSelector matches your target namespaces
+- **Object selector conflicts**: Label selectors in scope may be excluding pods unintentionally
+
 ### Common Controller Issues
 - **No pods in scope**: Verify namespace and label selectors match target pods
-- **Policy restrictions**: Check if automation is globally enabled
+- **Policy restrictions**: Check if automation is globally enabled (`policy.automationEnabled: true`)
+- **Scopes not defined**: When automation is enabled, at least one scope must be defined
 - **Resource quota limits**: Controller may skip optimizations if quota headroom is insufficient
 - **HPA conflicts**: Controller skips pods with active HPAs on CPU/memory metrics
 - **RBAC permission denied**: Verify ClusterRole and ClusterRoleBinding are properly configured

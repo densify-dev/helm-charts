@@ -146,17 +146,17 @@ Create the name of the service account to use
 {{/*
 Generate Kubex epassword that persists across upgrades
 */}}
-{{- define "kubex-automation-controller.densifyEpassword" -}}
+{{- define "kubex-automation-controller.credentials.epassword" -}}
 {{- if .Values.createSecrets }}
-{{- .Values.densifyCredentials.epassword | required "An epassword must be provided in kubex-automation-values.yaml under densifyCredentials.epassword" -}}
+{{- .Values.credentials.epassword | required "An epassword must be provided in kubex-automation-values.yaml under credentials.epassword" -}}
 {{- end }}
 {{- end }}
 {{/*
 Generate Kubex username that persists across upgrades
 */}}
-{{- define "kubex-automation-controller.densifyUsername" -}}
+{{- define "kubex-automation-controller.credentials.username" -}}
 {{- if .Values.createSecrets }}
-{{- .Values.densifyCredentials.username | required "A username must be provided in kubex-automation-values.yaml under valkey.densifyCredentials.username" -}}
+{{- .Values.credentials.username | required "A username must be provided in kubex-automation-values.yaml under credentials.username" -}}
 {{- end }}
 {{- end }}
 {{/*
@@ -176,6 +176,10 @@ Generate Valkey username - defaults to kubexAutomation but can be overridden
 {{- end }}
 {{- end }}
 
+{{- define "kubex-automation-controller.userSecretName" -}}
+{{- .Values.credentials.userSecretName | default "kubex-api-secret-container-automation" -}}
+{{- end }}
+
 {{- define "kubex-automation-controller.densifyUserSecretName" -}}
-{{- .Values.densifyCredentials.userSecretName | default "kubex-api-secret-container-automation" -}}
+{{- include "kubex-automation-controller.userSecretName" . -}}
 {{- end }}

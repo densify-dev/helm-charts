@@ -63,6 +63,28 @@ This phased approach helps you learn the system behavior before broader deployme
 
 The controller includes extensive safety checks, but a methodical rollout reduces risk.
 
+### Q: I enabled automation but nothing is happening. What's wrong?
+**A:** When `policy.automationEnabled: true`, you **must** also define at least one scope in `kubex-automation-values.yaml`. The system works as follows:
+
+- **Automation disabled** (`automationEnabled: false`): No webhook created, no mutations happen (safe default)
+- **Automation enabled without scopes**: Webhook not created because no scopes are defined, pods not optimized
+- **Automation enabled with scopes**: Webhook created, mutations active for matching pods
+
+**To fix:**
+1. Download [kubex-automation-values.yaml](https://github.com/densify-dev/helm-charts/blob/master/charts/kubex-automation-stack/kubex-automation-values.yaml)
+2. Set `policy.automationEnabled: true`
+3. Define at least one scope (see example in the file)
+4. Apply with: `helm upgrade -n kubex -f values-edit.yaml -f kubex-automation-values.yaml kubex densify/kubex-automation-stack`
+
+**Verify:**
+```bash
+# Check webhook exists
+kubectl get mutatingwebhookconfiguration kubex-resource-optimization-webhook
+
+# Check scope configmap has content
+kubectl get configmap kubex-automation-scope -n kubex -o yaml
+```
+
 ---
 
 ## Configuration Questions
