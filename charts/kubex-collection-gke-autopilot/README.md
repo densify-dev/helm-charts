@@ -1,16 +1,16 @@
 # Kubex Automation Stack Helm Chart for GKE Autopilot Clusters
 
 <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://www.densify.com/wp-content/uploads/kubex-by-densify-logo-reverse.png">
-    <source media="(prefers-color-scheme: light)" srcset="https://www.densify.com/wp-content/uploads/kubex-by-densify-logo.png">
-    <img src="https://www.densify.com/wp-content/uploads/kubex-by-densify-logo.png" width="300">
+    <source media="(prefers-color-scheme: dark)" srcset="https://www.kubex.ai/wp-content/uploads/kubex-by-densify-logo-reverse.png">
+    <source media="(prefers-color-scheme: light)" srcset="https://www.kubex.ai/wp-content/uploads/kubex-by-densify-logo.png">
+    <img src="https://www.kubex.ai/wp-content/uploads/kubex-by-densify-logo.png" width="300">
 </picture>
 
 ## Introduction
 
-Densify's Kubex analyses Kubernetes clusters and produces recommendations for rightsizing resources to mitigate risk and reduce waste. 
+Kubex analyses Kubernetes clusters and produces recommendations for rightsizing resources to mitigate risk and reduce waste. 
 
-GKE Autopilot clusters have restrictions which do not allow the usage of the general-purpose [Kubex automation stack helm chart](https://github.com/densify-dev/helm-charts/blob/master/charts/kubex-automation-stack). This chart replaces it.
+GKE Autopilot clusters have restrictions which do not allow the usage of the general-purpose [Kubex Automation Stack helm chart](https://github.com/densify-dev/helm-charts/blob/master/charts/kubex-automation-stack). This chart replaces it.
 
 This chart requires very minimal configuration in order to install the entire stack. All of it is in `values-edit.yaml`.
 
@@ -71,9 +71,9 @@ The following table lists configuration parameters in `values-edit.yaml`.
 
 | Parameter                                                                        | Mandatory          | Description                                            |
 | -------------------------------------------------------------------------------- | ------------------ | ------------------------------------------------------ |
-| `stack.densify.username`                                                         | :white_check_mark: | Densify user account                                   |
-| `stack.densify.encrypted_password`                                               | :white_check_mark: | Encrypted password for the Densify User                |
-| `container-optimization-data-forwarder.`<br/>`config.forwarder.densify.url.host` | :white_check_mark: | Densify instance hostname (`< instance >.densify.com`) |
+| `stack.densify.username`                                                         | :white_check_mark: | Kubex user account                                   |
+| `stack.densify.encrypted_password`                                               | :white_check_mark: | Encrypted password for the Kubex User                |
+| `container-optimization-data-forwarder.`<br/>`config.forwarder.densify.url.host` | :white_check_mark: | Kubex instance hostname (`< instance >.kubex.ai`) |
 | `container-optimization-data-forwarder.`<br/>`config.clusters[0].name`           | :white_check_mark: | Cluster name **(must be unique, customer-wide; if not, specify an alternate name)** |
 | `container-optimization-data-forwarder.`<br/>`cronJob.successfulJobsHistoryLimit` |                    | Number of successful jobs to keep |
 | `container-optimization-data-forwarder.`<br/>`cronJob.failedJobsHistoryLimit` |                    | Number of failed jobs to keep |
@@ -92,13 +92,13 @@ The following table lists configuration parameters in `values-edit.yaml`.
 
 This chart consists of two subcharts:
 
-* [Densify Container Optimization Data Forwarder](../container-optimization-data-forwarder), which collects data and forwards it to a Densify instance for analysis
+* [Kubex Data Collector](../container-optimization-data-forwarder), which collects data and forwards it to a Densify instance for analysis
 
 * [Prometheus Community kube-state-metrics chart](https://github.com/prometheus-community/helm-charts/blob/main/charts/kube-state-metrics/) which deploys kube-state-metrics with the requirements of Kubex data collection (the default rollout of kube-state-metrics in GKE Autopilot clusters lacks a lot of metrics required by Kubex)
 
 ## Documentation
 
-* [Kubex](https://www.densify.com/product/kubernetes-resource-optimization/)
+* [Kubex](https://www.kubex.ai)
 
 ## License
 
