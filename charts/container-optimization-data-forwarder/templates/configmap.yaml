@@ -12,21 +12,33 @@ data:
   config.yaml : |
     forwarder:
       densify:
-{{- $densifyUrl := .Values.config.forwarder.densify.url | required ".Values.config.forwarder.densify.url is required." }}
-{{- $densifyHost := $densifyUrl.host | required ".Values.config.forwarder.densify.url.host is required." }}
-        url: {{- omit $densifyUrl "UserSecretName" | toYaml | trim | nindent 10 }}
-{{- if .Values.config.forwarder.densify.endpoint }}
-        endpoint: {{ .Values.config.forwarder.densify.endpoint }}
+{{- $collectorUrl := .Values.config.collector.url | default dict }}
+{{- if not $collectorUrl.host }}
+  {{- if .Values.global.kubex.url.host }}
+    {{- $_ := set $collectorUrl "host" .Values.global.kubex.url.host }}
+  {{- else }}
+    {{- fail "A Kubex URL host is required. Set .Values.global.kubex.url.host" }}
+  {{- end }}
 {{- end }}
-{{- if .Values.config.forwarder.densify.retry }}
-        retry: {{- .Values.config.forwarder.densify.retry | toYaml | trim | nindent 10 }}
+{{- if not $collectorUrl.scheme }}
+  {{- $_ := set $collectorUrl "scheme" (.Values.global.kubex.url.scheme | default "https") }}
 {{- end }}
-{{- if .Values.config.forwarder.proxy }}
-{{- $proxyUrl := .Values.config.forwarder.proxy.url | required ".Values.config.forwarder.proxy.url is required." }}
+{{- if and (not $collectorUrl.port) (not (hasKey $collectorUrl "port")) }}
+  {{- $_ := set $collectorUrl "port" (.Values.global.kubex.url.port | default 443) }}
+{{- end }}
+        url: {{- omit $collectorUrl "UserSecretName" | toYaml | trim | nindent 10 }}
+{{- if .Values.config.collector.endpoint }}
+        endpoint: {{ .Values.config.collector.endpoint }}
+{{- end }}
+{{- if .Values.config.collector.retry }}
+        retry: {{- .Values.config.collector.retry | toYaml | trim | nindent 10 }}
+{{- end }}
+{{- if .Values.config.collector.proxy }}
+{{- $proxyUrl := .Values.config.collector.proxy.url | required ".Values.config.collector.proxy.url is required." }}
       proxy:
         url:
-          scheme: {{ $proxyUrl.scheme | required ".Values.config.forwarder.proxy.url.scheme is required." }}
-          host: {{ $proxyUrl.host | required ".Values.config.forwarder.proxy.url.host is required." }}
+          scheme: {{ $proxyUrl.scheme | required ".Values.config.collector.proxy.url.scheme is required." }}
+          host: {{ $proxyUrl.host | required ".Values.config.collector.proxy.url.host is required." }}
 {{- if $proxyUrl.port }}
           port: {{ $proxyUrl.port }}
 {{- end }}
@@ -39,16 +51,16 @@ data:
 {{- if $proxyUrl.encrypted_password }}
           encrypted_password: {{ $proxyUrl.encrypted_password }}
 {{- end }}
-{{- if .Values.config.forwarder.proxy.auth }}
-        auth: {{ .Values.config.forwarder.proxy.auth }}
-{{- if eq (lower .Values.config.forwarder.proxy.auth) "ntlm" }}
-        server: {{ .Values.config.forwarder.proxy.server | required ".Values.config.forwarder.proxy.server is required for ntlm auth." }}
-        domain: {{ .Values.config.forwarder.proxy.domain | required ".Values.config.forwarder.proxy.domain is required for ntlm auth." }}
+{{- if .Values.config.collector.proxy.auth }}
+        auth: {{ .Values.config.collector.proxy.auth }}
+{{- if eq (lower .Values.config.collector.proxy.auth) "ntlm" }}
+        server: {{ .Values.config.collector.proxy.server | required ".Values.config.collector.proxy.server is required for ntlm auth." }}
+        domain: {{ .Values.config.collector.proxy.domain | required ".Values.config.collector.proxy.domain is required for ntlm auth." }}
 {{- end }}
 {{- end }}
 {{- end }}
-{{- if .Values.config.forwarder.prefix }}
-      prefix: {{ .Values.config.forwarder.prefix }}
+{{- if .Values.config.collector.prefix }}
+      prefix: {{ .Values.config.collector.prefix }}
 {{- end }}
     prometheus:
 {{- $promUrl := .Values.config.prometheus.url | required ".Values.config.prometheus.url is required." }}
@@ -72,7 +84,8 @@ data:
 {{- end }}
     clusters:
 {{- range $cluster := .Values.config.clusters }}
-      - name: {{ $cluster.name | quote }}
+{{- $clusterName := $cluster.name | default $.Values.global.cluster.name | default "" }}
+      - name: {{ $clusterName | quote }}
         identifiers:
 {{- range $key, $value := $cluster.identifiers }}
 {{- printf "%s: %s" $key (tpl $value $ | quote) | nindent 10 }}

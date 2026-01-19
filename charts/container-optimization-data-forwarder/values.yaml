@@ -1,7 +1,7 @@
 #################################################################
 # Global configuration defaults.
 #################################################################
-nameOverride: densify-forwarder
+nameOverride: kubex-data-collector
 
 # application image
 image: densify/container-optimization-data-forwarder:4
@@ -12,24 +12,23 @@ pullPolicy: Always
 
 # application configuration
 config:
-  forwarder:
-    densify:
-      url:
-#        scheme: https
-        host: # <instance>.densify.com
-#        port: 443
-#        username: <Kubex user>
-#        password: <plaintext Kubex password, or:>
-#        encrypted_password: <encrypted Kubex password>
-#        # Set only the above username and (encrypted_)password settings, or this Secret - but not both.
-#        # Secret must contain 2 fields username and epassword that will be used to connect to Kubex.
-#        UserSecretName: <name of secret to use>
-#      endpoint: /api/v2/
-#      retry:
-#        wait_min: 1 # in seconds
-#        wait_max: 30 # in seconds
-#        max_attempts: 4
-#        policy: default # valid values: default (same as exponential), exponential, jitter
+  collector:
+    url:
+#      scheme: https
+      host: # <instance>.densify.com
+#      port: 443
+#      username: <Kubex user>
+#      password: <plaintext Kubex password, or:>
+#      encrypted_password: <encrypted Kubex password>
+#      # Set only the above username and (encrypted_)password settings, or this Secret - but not both.
+#      # Secret must contain 2 fields username and epassword that will be used to connect to Kubex.
+#      UserSecretName: <name of secret to use>
+#    endpoint: /api/v2/
+#    retry:
+#      wait_min: 1 # in seconds
+#      wait_max: 30 # in seconds
+#      max_attempts: 4
+#      policy: default # valid values: default (same as exponential), exponential, jitter
 #    proxy:
 #      url:
 #        scheme: https <mandatory>
@@ -82,7 +81,7 @@ config:
 #      max_attempts: 4
 #      policy: default # valid values: default (same as exponential), exponential, jitter
 #  collection:
-#    # the include section is optional, if omitted or empty then all entity types are included
+#    # the include section is optional; if omitted or empty then all entity types are included
 #    include:
 #      cluster: true
 #      container: true
@@ -95,16 +94,16 @@ config:
 #    offset: 0
 #    sample_rate: 5
 #    node_group_list: label_karpenter_sh_nodepool,label_cloud_google_com_gke_nodepool,label_eks_amazonaws_com_nodegroup,label_agentpool,label_pool_name,label_alpha_eksctl_io_nodegroup_name,label_kops_k8s_io_instancegroup
-  clusters:
-    - name: <cluster-1 name>
-      identifiers: # identifiers is a map of Prometheus labels (name and value) to uniquely identify the cluster; if omitted, only one cluster can be present in the list
-        <label name>: <label value>
-        #  ... (more labels)
-    - name: <cluster-2 name>
-      identifiers: # identifiers is a map of Prometheus labels (name and value) to uniquely identify the cluster; if omitted, only one cluster can be present in the list
-        <label name>: <label value>
-        #  ... (more labels)
-    #   ... (more clusters)
+#  clusters:
+#    - name: <cluster-1 name>
+#      identifiers: # identifiers is a map of Prometheus labels (name and value) to uniquely identify the cluster; if omitted, only one cluster can be present in the list
+#        <label name>: <label value>
+#        #  ... (more labels)
+#    - name: <cluster-2 name>
+#      identifiers: # identifiers is a map of Prometheus labels (name and value) to uniquely identify the cluster; if omitted, only one cluster can be present in the list
+#        <label name>: <label value>
+#        #  ... (more labels)
+#    #   ... (more clusters)
 #  debug: <true|false (default)>
 
 job:
@@ -112,7 +111,7 @@ job:
   checkPrometheusReady: false
 
 cronJob:
-# The cronjob schedule. By default, data collection is triggered a few minutes after every hour.
+# The cronjob schedule. By default, the kubex data collector is triggered a few minutes after every hour.
 # This is in line with the default interval settings of collecting the last hour of data.
   schedule: 5 * * * *
 # The following values are optional, if job cleanup is required;
@@ -144,6 +143,10 @@ nodeSelector: {}
 
 resources: {}
 
-tolerations: []
+tolerations:
+  # Tolerate arch taints (works on both amd64 and arm64 clusters)
+  - key: "kubernetes.io/arch"
+    operator: "Exists"
+    effect: "NoSchedule"
 
 topologySpreadConstraints: []

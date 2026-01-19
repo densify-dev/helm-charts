@@ -141,28 +141,28 @@ spec:
           env:
             - name: CONFIG_TYPE
               value: "yaml"
-            {{- if .Values.config.forwarder.densify.url.UserSecretName }}
+            {{- if .Values.config.userSecretName }}
             - name: DENSIFY_USER
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.config.forwarder.densify.url.UserSecretName }}
+                  name: {{ .Values.config.userSecretName }}
                   key: username
             - name: DENSIFY_EPASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.config.forwarder.densify.url.UserSecretName }}
+                  name: {{ .Values.config.userSecretName }}
                   key: epassword
             {{- end }}
-            {{- if and (.Values.config.forwarder.proxy) (.Values.config.forwarder.proxy.url) (.Values.config.forwarder.proxy.url.ProxySecretName) }}
+            {{- if and (.Values.config.collector.proxy) (.Values.config.collector.proxy.url) (.Values.config.collector.proxy.url.ProxySecretName) }}
             - name: DENSIFY_PROXYUSER
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.config.forwarder.proxy.url.ProxySecretName }}
+                  name: {{ .Values.config.collector.proxy.url.ProxySecretName }}
                   key: username
             - name: DENSIFY_PROXYPASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.config.forwarder.proxy.url.ProxySecretName }}
+                  name: {{ .Values.config.collector.proxy.url.ProxySecretName }}
                   key: password
             {{- end }}
             {{- if .Values.config.prometheus.url.PrometheusSecretName }}
