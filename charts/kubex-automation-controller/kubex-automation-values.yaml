@@ -93,12 +93,20 @@ scope:
       operator: NotIn     # Options: In | NotIn
       values:
         - kubex           # Kubex namespace (exclude automation components)
-    podLabels:            # Optional - defines which pods to include/exclude based on labels
-      - key: <podLabelKey>        # Replace with actual label key (e.g., "app", "env", "tier")
-        operator: In              # Options: In | NotIn  
-        values:
-          - <podLabelValue_1>     # Replace with actual label values
-          - <podLabelValue_2>
+    podLabels: []         # Optional - defines which pods to include/exclude based on labels
+      # Example - Exclude specific apps from automation:
+      # - key: app
+      #   operator: NotIn
+      #   values:
+      #     - legacy-app
+      #     - manual-sizing
+      #
+      # Example - Only automate specific environments:
+      # - key: environment
+      #   operator: In
+      #   values:
+      #     - development
+      #     - staging
 
 # ================================================================
 # SECTION: AUTOMATION POLICY - MANUAL CUSTOMIZATION ALLOWED
