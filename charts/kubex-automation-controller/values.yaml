@@ -1,3 +1,15 @@
+serviceAccount:
+  # Additional labels to apply to all kubex service accounts
+  labels: {}
+    # Example:
+    # app: kubex-automation
+    # environment: production
+  
+  # Additional annotations to apply to all kubex service accounts
+  annotations: {}
+    # Example:
+    # iam.gke.io/gcp-service-account: my-gcp-sa@project.iam.gserviceaccount.com
+
 certmanager:
   enabled: false # Set to true to use cert-manager instead of self-signed certificates
   duration: 720h # Certificate validity duration (e.g., 30 days = 720h)
@@ -65,6 +77,7 @@ deployment:
     evictionThrottlingMax: "1000"
 
     apiRequestTimeout: "30s"
+    loggerParseTimestamp: "true"
         
   # Node scheduling configuration for controller deployment
   controller:
