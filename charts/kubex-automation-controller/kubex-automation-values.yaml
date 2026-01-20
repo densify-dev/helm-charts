@@ -211,6 +211,33 @@ policy:
 #    nodeMemoryHeadroom: "200Mi"                  # Memory headroom to reserve on each node (Can be in absolute value i.e. "200Mi" or in Percentage format i.e. "10%")
 #    evictionThrottlingWindow: "6h"               # Time window for throttling pod evictions 
 #    evictionThrottlingMax: "1000"                # Max number of pod evictions allowed within the time window 
+#
+#  # Add custom environment variables for containers
+#  # Use this to add NEW custom variables that don't exist in controllerEnv defaults
+#  extraEnv:
+#    # Environment variables for controller container
+#    controller:
+#      - name: CUSTOM_FEATURE_FLAG
+#        value: "enabled"
+#      - name: MY_CUSTOM_VAR
+#        value: "custom-value"
+#    
+#    # Environment variables for controller gateway initContainer
+#    controllerGateway:
+#      - name: GATEWAY_SPECIFIC_VAR
+#        value: "gateway-value"
+#    
+#    # Environment variables for webhook container
+#    webhook:
+#      - name: WEBHOOK_FEATURE_FLAG
+#        value: "enabled"
+#      - name: MY_WEBHOOK_VAR
+#        value: "webhook-value"
+#    
+#    # Environment variables for webhook gateway initContainer
+#    webhookGateway:
+#      - name: WEBHOOK_GATEWAY_VAR
+#        value: "webhook-gateway-value" 
 
   # ================================================================
   # RESOURCE OPTIMIZATION (Recommended)
