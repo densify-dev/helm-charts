@@ -1,7 +1,7 @@
 #################################################################
 # Global configuration defaults.
 #################################################################
-nameOverride: densify-forwarder
+nameOverride: kubex-forwarder
 
 # application image
 image: densify/container-optimization-data-forwarder:4
@@ -121,6 +121,9 @@ cronJob:
   # failedJobsHistoryLimit: <value>
   # ttlSecondsAfterFinished: <value> # applies for both the cronjob and the job
   # backoffLimit: <value> # applies for both the cronjob and the job, default: 4
+
+# If you are running on an OpenShift cluster, change to true
+assignedUIDs: false
 
 # If you are running Prometheus setup with Authentication such as OpenShift,
 # need to set up rbac with service account to allow API access to Prometheus

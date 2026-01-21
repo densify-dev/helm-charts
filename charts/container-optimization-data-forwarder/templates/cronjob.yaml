@@ -30,10 +30,12 @@ spec:
             release: {{ .Release.Name }}
         spec:
           securityContext:
+            {{- if not (.Values.assignedUIDs) }}
             fsGroup: 3000
             runAsGroup: 3000
-            runAsNonRoot: true
             runAsUser: 3000
+            {{- end }}
+            runAsNonRoot: true
             seccompProfile:
               type: RuntimeDefault
           {{- if .Values.nodeSelector }}
