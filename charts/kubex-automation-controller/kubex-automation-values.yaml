@@ -93,12 +93,20 @@ scope:
       operator: NotIn     # Options: In | NotIn
       values:
         - kubex           # Kubex namespace (exclude automation components)
-    podLabels:            # Optional - defines which pods to include/exclude based on labels
-      - key: <podLabelKey>        # Replace with actual label key (e.g., "app", "env", "tier")
-        operator: In              # Options: In | NotIn  
-        values:
-          - <podLabelValue_1>     # Replace with actual label values
-          - <podLabelValue_2>
+    podLabels: []         # Optional - defines which pods to include/exclude based on labels
+      # Example - Exclude specific apps from automation:
+      # - key: app
+      #   operator: NotIn
+      #   values:
+      #     - legacy-app
+      #     - manual-sizing
+      #
+      # Example - Only automate specific environments:
+      # - key: environment
+      #   operator: In
+      #   values:
+      #     - development
+      #     - staging
 
 # ================================================================
 # SECTION: AUTOMATION POLICY - MANUAL CUSTOMIZATION ALLOWED
@@ -203,6 +211,14 @@ policy:
 #    nodeMemoryHeadroom: "200Mi"                  # Memory headroom to reserve on each node (Can be in absolute value i.e. "200Mi" or in Percentage format i.e. "10%")
 #    evictionThrottlingWindow: "6h"               # Time window for throttling pod evictions 
 #    evictionThrottlingMax: "1000"                # Max number of pod evictions allowed within the time window 
+#
+#  # Add custom environment variables for containers
+#  # Use this to add NEW custom variables that don't exist in controllerEnv defaults
+#  extraEnv:
+#    controller: []          # Environment variables for controller container
+#    controllerGateway: []   # Environment variables for controller gateway initContainer
+#    webhook: []             # Environment variables for webhook container
+#    webhookGateway: []      # Environment variables for webhook gateway initContainer 
 
   # ================================================================
   # RESOURCE OPTIMIZATION (Recommended)

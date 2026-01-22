@@ -67,6 +67,30 @@ If the value `createSecrets` is `false`, the helm chart does not create any secr
 
 ---
 
+## Service Account Configuration
+
+Add custom labels and annotations to all Kubex service accounts (`kubex-automation-controller-sa` and `kubex-webhook-sa`) for image pull secrets, cloud IAM integration, or organizational tagging.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `serviceAccount.labels` | `object` | Key-value pairs to add as labels on all Kubex service accounts |
+| `serviceAccount.annotations` | `object` | Key-value pairs to add as annotations on all Kubex service accounts |
+
+**Example:**
+```yaml
+serviceAccount:
+  labels:
+    imagepullsecret-provider: "enabled"
+    environment: "production"
+    team: "platform"
+  annotations:
+    iam.gke.io/gcp-service-account: "kubex-automation@my-project.iam.gserviceaccount.com"
+    description: "Kubex automation service accounts"
+    owner: "platform-team@example.com"
+```
+
+---
+
 ## Secret Management Configuration
 
 Use `createSecrets` to decide whether Helm renders all required secrets or you supply them externally. This flag covers the Kubex API secret, both Valkey secrets, and the webhook TLS secret.
