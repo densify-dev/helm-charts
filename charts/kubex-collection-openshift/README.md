@@ -79,9 +79,9 @@ The following table lists configuration parameters in `values-edit.yaml`.
 
 ## Further Details
 
-This chart consists of two subcharts:
+This chart consists of one subchart:
 
-* [Kubex Container Optimization Data Forwarder](../container-optimization-data-forwarder), which collects data and forwards it to a Kubex instance for analysis
+* [Kubex Data Collector](../container-optimization-data-forwarder), which collects data and forwards it to a Kubex instance for analysis
 
 ## Documentation
 
