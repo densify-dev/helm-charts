@@ -1,7 +1,7 @@
 apiVersion: v2
 description: Kubex Collection Stack for OpenShift Clusters
 name: kubex-collection-openshift
-version: 1.0.0
+version: 1.0.1
 type: application
 icon: https://kubex.ai/wp-content/uploads/kubex-logo-landscape.svg
 dependencies:

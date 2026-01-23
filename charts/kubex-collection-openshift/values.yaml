@@ -3,7 +3,7 @@ stack:
     createSecret: true
 
 container-optimization-data-forwarder:
-  image: densify/container-optimization-data-forwarder:ubi10-4.3.2
+  image: densify/container-optimization-data-forwarder:ubi10-4
   # required for OpenShift
   assignedUIDs: true
   nameOverride: kubex-collection
