@@ -64,22 +64,6 @@ cluster:
   name: <clusterName>   # [REPLACE] Kubernetes cluster name
 
 # ================================================================
-# SECTION: OPENSHIFT CONFIGURATION (Optional)
-# Instructions:
-# → Enable to create an SCC RoleBinding for anyuid
-# → For OpenShift installs, also apply values-openshift.yaml
-# ================================================================
-#openshift:
-#  enabled: true
-#  scc:
-#    createRoleBinding: true
-#    name: anyuid
-#    serviceAccounts:
-#      - kubex-automation-controller-sa
-#      - kubex-webhook-sa
-#      - default
-
-# ================================================================
 # SCOPE CONFIGURATION
 # Instructions:
 # → Define which pods are eligible for automation using namespace and label filters
@@ -315,3 +299,9 @@ policy:
 #      operator: "Equal"
 #      value: "true"
 #      effect: "NoSchedule"
+
+# ================================================================
+# OPENSHIFT CONFIGURATION (Optional)
+# Instructions:
+#  Use the values from values-openshift.yaml to enable OpenShift-specific settings in this file or add the file as an override during helm install/upgrade
+
