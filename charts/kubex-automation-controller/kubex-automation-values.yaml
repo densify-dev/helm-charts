@@ -67,6 +67,7 @@ cluster:
 # SECTION: OPENSHIFT CONFIGURATION (Optional)
 # Instructions:
 # → Enable to create an SCC RoleBinding for anyuid
+# → For OpenShift installs, also apply values-openshift.yaml
 # ================================================================
 #openshift:
 #  enabled: true

@@ -1,0 +1,10 @@
+openshift:
+  enabled: true
+
+# Valkey subchart overrides for OpenShift SCC compatibility.
+valkey:
+  podSecurityContext: null
+  securityContext: null
+  metrics:
+    exporter:
+      securityContext: null
