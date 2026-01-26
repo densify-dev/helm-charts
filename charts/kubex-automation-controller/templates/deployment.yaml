@@ -131,6 +131,14 @@ spec:
         - name: wait-for-valkey
           image: {{ .Values.deployment.waitForValkeyImage | quote }}
           command: ['sh', '-c', "until nc -vz {{ .Release.Name }}-valkey 6379; do echo 'Waiting for Valkey'; sleep 2; done"]
+          securityContext:
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            seccompProfile:
+              type: RuntimeDefault
         - name: kubex-automation-gw
           image: {{ .Values.deployment.gatewayImage | quote }}
           imagePullPolicy: Always
@@ -303,6 +311,14 @@ spec:
         - name: wait-for-valkey
           image: {{ .Values.deployment.waitForValkeyImage | quote }}
           command: ['sh', '-c', "until nc -vz {{ .Release.Name }}-valkey 6379; do echo 'Waiting for Valkey'; sleep 2; done"]
+          securityContext:
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            seccompProfile:
+              type: RuntimeDefault
         - name: kubex-webhook-gw
           image: {{ .Values.deployment.gatewayImage | quote }}
           imagePullPolicy: Always
