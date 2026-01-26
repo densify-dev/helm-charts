@@ -64,6 +64,21 @@ cluster:
   name: <clusterName>   # [REPLACE] Kubernetes cluster name
 
 # ================================================================
+# SECTION: OPENSHIFT CONFIGURATION (Optional)
+# Instructions:
+# → Enable to create an SCC RoleBinding for anyuid
+# ================================================================
+#openshift:
+#  enabled: true
+#  scc:
+#    createRoleBinding: true
+#    name: anyuid
+#    serviceAccounts:
+#      - kubex-automation-controller-sa
+#      - kubex-webhook-sa
+#      - default
+
+# ================================================================
 # SCOPE CONFIGURATION
 # Instructions:
 # → Define which pods are eligible for automation using namespace and label filters
@@ -299,4 +314,3 @@ policy:
 #      operator: "Equal"
 #      value: "true"
 #      effect: "NoSchedule"
-

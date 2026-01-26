@@ -22,13 +22,11 @@ spec:
         checksum/valkey-client-secret: {{ include (print $.Template.BasePath "/valkey-client-secret.yaml") . | sha256sum }}
         checksum/valkey-config-secret: {{ include (print $.Template.BasePath "/valkey-config-secret.yaml") . | sha256sum }}
     spec:
+      {{- $podSecurityContext := ternary .Values.deployment.podSecurityContextOpenShift .Values.deployment.podSecurityContext .Values.openshift.enabled }}
+      {{- with $podSecurityContext }}
       securityContext:
-        fsGroup: 3000
-        runAsGroup: 3000
-        runAsNonRoot: true
-        runAsUser: 3000
-        seccompProfile:
-          type: RuntimeDefault
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       serviceAccountName: kubex-automation-controller-sa
       containers:
         - name: kubex-automation-controller
@@ -36,14 +34,11 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 8443
+          {{- $containerSecurityContext := ternary .Values.deployment.containerSecurityContextOpenShift .Values.deployment.containerSecurityContext .Values.openshift.enabled }}
+          {{- with $containerSecurityContext }}
           securityContext:
-            readOnlyRootFilesystem: true
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop:
-                - ALL
-            seccompProfile:
-              type: RuntimeDefault
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           resources:
             {{- toYaml .Values.deployment.controllerResources | nindent 12 }}
           env:
@@ -131,28 +126,21 @@ spec:
         - name: wait-for-valkey
           image: {{ .Values.deployment.waitForValkeyImage | quote }}
           command: ['sh', '-c', "until nc -vz {{ .Release.Name }}-valkey 6379; do echo 'Waiting for Valkey'; sleep 2; done"]
+          {{- $initContainerSecurityContext := ternary .Values.deployment.initContainerSecurityContextOpenShift .Values.deployment.initContainerSecurityContext .Values.openshift.enabled }}
+          {{- with $initContainerSecurityContext }}
           securityContext:
-            readOnlyRootFilesystem: true
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop:
-                - ALL
-            seccompProfile:
-              type: RuntimeDefault
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
         - name: kubex-automation-gw
           image: {{ .Values.deployment.gatewayImage | quote }}
           imagePullPolicy: Always
           restartPolicy: Always
           ports:
             - containerPort: 8181
+          {{- with $initContainerSecurityContext }}
           securityContext:
-            readOnlyRootFilesystem: true
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop:
-                - ALL
-            seccompProfile:
-              type: RuntimeDefault
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           resources:
             {{- toYaml .Values.deployment.gatewayResources | nindent 12 }}
           env:
@@ -249,13 +237,11 @@ spec:
         checksum/kubex-valkey-client-secret: {{ include (print $.Template.BasePath "/valkey-client-secret.yaml") . | sha256sum }}
         checksum/kubex-valkey-config-secret: {{ include (print $.Template.BasePath "/valkey-config-secret.yaml") . | sha256sum }}
     spec:
+      {{- $podSecurityContext := ternary .Values.deployment.podSecurityContextOpenShift .Values.deployment.podSecurityContext .Values.openshift.enabled }}
+      {{- with $podSecurityContext }}
       securityContext:
-        fsGroup: 3000
-        runAsGroup: 3000
-        runAsNonRoot: true
-        runAsUser: 3000
-        seccompProfile:
-          type: RuntimeDefault
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       serviceAccountName: kubex-webhook-sa
       containers:
         - name: kubex-webhook
@@ -263,14 +249,11 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 8443
+          {{- $containerSecurityContext := ternary .Values.deployment.containerSecurityContextOpenShift .Values.deployment.containerSecurityContext .Values.openshift.enabled }}
+          {{- with $containerSecurityContext }}
           securityContext:
-            readOnlyRootFilesystem: true
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop:
-                - ALL
-            seccompProfile:
-              type: RuntimeDefault
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           resources:
             {{- toYaml .Values.deployment.webhookResources | nindent 12 }}
           env:
@@ -311,28 +294,21 @@ spec:
         - name: wait-for-valkey
           image: {{ .Values.deployment.waitForValkeyImage | quote }}
           command: ['sh', '-c', "until nc -vz {{ .Release.Name }}-valkey 6379; do echo 'Waiting for Valkey'; sleep 2; done"]
+          {{- $initContainerSecurityContext := ternary .Values.deployment.initContainerSecurityContextOpenShift .Values.deployment.initContainerSecurityContext .Values.openshift.enabled }}
+          {{- with $initContainerSecurityContext }}
           securityContext:
-            readOnlyRootFilesystem: true
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop:
-                - ALL
-            seccompProfile:
-              type: RuntimeDefault
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
         - name: kubex-webhook-gw
           image: {{ .Values.deployment.gatewayImage | quote }}
           imagePullPolicy: Always
           restartPolicy: Always
           ports:
             - containerPort: 8181
+          {{- with $initContainerSecurityContext }}
           securityContext:
-            readOnlyRootFilesystem: true
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop:
-                - ALL
-            seccompProfile:
-              type: RuntimeDefault
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           resources:
             {{- toYaml .Values.deployment.gatewayResources | nindent 12 }}
           env:

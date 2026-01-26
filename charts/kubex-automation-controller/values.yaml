@@ -54,6 +54,44 @@ deployment:
       cpu: "250m" # Minimum guaranteed CPU
     limits:
       memory: "512Mi" # Maximum memory the pod can use before being throttled or killed
+  # Pod and container security contexts.
+  podSecurityContext:
+    fsGroup: 3000
+    runAsGroup: 3000
+    runAsNonRoot: true
+    runAsUser: 3000
+    seccompProfile:
+      type: RuntimeDefault
+  # OpenShift default: omit fixed UID/GID and seccomp.
+  podSecurityContextOpenShift: {}
+  containerSecurityContext:
+    readOnlyRootFilesystem: true
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+    seccompProfile:
+      type: RuntimeDefault
+  containerSecurityContextOpenShift:
+    readOnlyRootFilesystem: true
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+  initContainerSecurityContext:
+    readOnlyRootFilesystem: true
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+    seccompProfile:
+      type: RuntimeDefault
+  initContainerSecurityContextOpenShift:
+    readOnlyRootFilesystem: true
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
   controllerEnv: # Environment variables for the controller pod
     podScanInitialInterval: "2m"  # Initial delay before first pod scan after startup
     podScanInterval: "1h"  # Default optimized for in-place resizing (Kubernetes 1.33+). See Pod-Scan-Configuration.md for pod eviction mode settings.
@@ -215,3 +253,13 @@ valkey:
         prometheus.io/path: "/metrics"
     serviceMonitor:
       enabled: false
+
+openshift:
+  enabled: false
+  scc:
+    createRoleBinding: true
+    name: anyuid
+    serviceAccounts:
+      - kubex-automation-controller-sa
+      - kubex-webhook-sa
+      - default
