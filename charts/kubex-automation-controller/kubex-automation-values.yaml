@@ -15,7 +15,7 @@ createSecrets: true # Set to false if you provide your own secrets, created outs
 
 densify:
   url:
-    host: <customerName>.densify.com # mandatory: <instance>.densify.com
+    host: <customerName>.kubex.ai # mandatory: <instance>.kubex.ai
 
 densifyCredentials:
   # username: '<username>' # Username to access Kubex, mandatory if createSecrets is true
@@ -300,8 +300,9 @@ policy:
 #      value: "true"
 #      effect: "NoSchedule"
 
+
 # ================================================================
 # OPENSHIFT CONFIGURATION (Optional)
 # Instructions:
 #  Use the values from values-openshift.yaml to enable OpenShift-specific settings in this file or add the file as an override during helm install/upgrade
-
+# ================================================================

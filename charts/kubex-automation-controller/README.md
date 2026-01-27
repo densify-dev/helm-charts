@@ -53,6 +53,7 @@ By default, automation applies to: `Deployment`, `StatefulSet`, `CronJob`, `Roll
 
 ---
 
+
 # Getting Started
 
 Ready to deploy? Follow our step-by-step guide:
@@ -61,8 +62,10 @@ Ready to deploy? Follow our step-by-step guide:
 
 This guide covers:
 - Prerequisites and requirements
-- Configuration file setup  
-- Certificate management options (self-signed by default, cert-manager optional)
+- Configuration file setup (including OpenShift-specific options)
+- Default installation with auto-generated self-signed certificates (no extra steps required)
+- OpenShift installation using the --openshift flag and values-openshift.yaml
+- Advanced certificate management (cert-manager/BYOC)
 - Deployment verification
 - First automation policies
 
@@ -70,14 +73,15 @@ This guide covers:
 
 # Documentation
 
+
 ## Configuration
 
 | Document | Purpose |
 |----------|---------|
-| **[Getting Started](./docs/Getting-Started.md)** | Step-by-step deployment guide |
-| **[Configuration Reference](./docs/Configuration-Reference.md)** | Complete field-by-field reference for `kubex-automation-values.yaml` |
+| **[Getting Started](./docs/Getting-Started.md)** | Step-by-step deployment guide (includes OpenShift and standard Kubernetes instructions) |
+| **[Configuration Reference](./docs/Configuration-Reference.md)** | Complete field-by-field reference for `kubex-automation-values.yaml` and OpenShift overrides |
 | **[Policy Configuration](./docs/Policy-Configuration.md)** | Define automation behaviors and safety rules |
-| **[Apply Updates](./docs/Getting-Started.md#step-8-deploy)** | Rerun the deploy script or `helm upgrade --install … -f kubex-automation-values.yaml` after configuration changes |
+| **[Apply Updates](./docs/Getting-Started.md#step-7-install-kubex-automation-controller)** | Rerun the deploy script or `helm upgrade --install … -f kubex-automation-values.yaml` after configuration changes |
 
 ## Advanced Topics
 
@@ -118,10 +122,11 @@ Have questions? Check our **[Frequently Asked Questions](./docs/FAQ.md)** coveri
 - **🐛 Bug Reports**: Include logs from all components and configuration details
 - **💡 Feature Requests**: Submit enhancement proposals with use cases
 
+
 ## Diagnostic Collection
 
 ```bash
-# Quick diagnostic collection
+# Quick diagnostic collection (use kubectl or oc for OpenShift)
 kubectl logs -l app=kubex-controller -n kubex --all-containers=true > controller.log
 kubectl logs -l app=kubex-webhook -n kubex --all-containers=true > webhook.log
 kubectl get configmap,secret -n kubex -o yaml > config.yaml

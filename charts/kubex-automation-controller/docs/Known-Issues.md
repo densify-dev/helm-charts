@@ -105,7 +105,7 @@ This document lists current known issues, limitations, and their status in the K
 **Planned Fix**: Enhanced LimitRange validation to include maxLimitRequestRatio constraint checking
 
 ## Storage and Deployment Issues
-
+**Note:** On OpenShift, you can run Valkey with ephemeral (non-persistent) storage by using the provided `values-openshift.yaml` overrides. This disables PVC creation for Valkey. See the OpenShift section in the Getting Started guide for details.
 ### Valkey Password Special Character Limitations
 **Status**: Known Limitation  
 
