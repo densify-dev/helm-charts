@@ -57,13 +57,13 @@ kubectl delete mutatingwebhookconfiguration kubex-resource-optimization-webhook
 
 # Then run your Helm upgrade
 ```bash
-helm upgrade --install kubex ./kubex-automation-controller \
+helm upgrade --install kubex-automation-controller kubex/kubex-automation-controller \
   -n kubex --create-namespace \
   -f kubex-automation-values.yaml
 ```
 > **For OpenShift, use:**
 ```bash
-helm upgrade --install kubex ./kubex-automation-controller \
+helm upgrade --install kubex-automation-controller kubex/kubex-automation-controller \
   -n kubex --create-namespace \
   -f kubex-automation-values.yaml \
   -f values-openshift.yaml
@@ -284,17 +284,17 @@ kubectl logs kubex-automation-controller-valkey-* -n kubex
 ### Validate YAML Syntax
 ```bash
 # Test configuration changes
-helm template densify/kubex-automation-controller -n kubex -f kubex-automation-values.yaml --debug
+helm template kubex/kubex-automation-controller -n kubex -f kubex-automation-values.yaml --debug
 
 # Dry-run deployment
 ```bash
-helm upgrade --install kubex ./kubex-automation-controller \
+helm upgrade --install kubex-automation-controller kubex/kubex-automation-controller \
   -n kubex --create-namespace \
   -f kubex-automation-values.yaml --dry-run
 ```
 > **For OpenShift, use:**
 ```bash
-helm upgrade --install kubex ./kubex-automation-controller \
+helm upgrade --install kubex-automation-controller kubex/kubex-automation-controller \
   -n kubex --create-namespace \
   -f kubex-automation-values.yaml \
   -f values-openshift.yaml --dry-run
@@ -319,13 +319,13 @@ kubectl auth can-i --list --as=system:serviceaccount:kubex:kubex-automation-cont
 1. Uncomment `debug: true` in the deployment section of `kubex-automation-values.yaml`
 2. Run:
    ```bash
-   helm upgrade --install kubex ./kubex-automation-controller \
+   helm upgrade --install kubex-automation-controller kubex/kubex-automation-controller \
      -n kubex --create-namespace \
      -f kubex-automation-values.yaml 
    ```
    > **For OpenShift, use:**
    ```bash
-   helm upgrade --install kubex ./kubex-automation-controller \
+   helm upgrade --install kubex-automation-controller kubex/kubex-automation-controller \
      -n kubex --create-namespace \
      -f kubex-automation-values.yaml \
      -f values-openshift.yaml
@@ -335,13 +335,13 @@ kubectl auth can-i --list --as=system:serviceaccount:kubex:kubex-automation-cont
 **Validate configuration changes:**
 ```bash
 # Check YAML syntax and template rendering
-helm template densify/kubex-automation-controller -n kubex -f kubex-automation-values.yaml --debug
+helm template kubex/kubex-automation-controller -n kubex -f kubex-automation-values.yaml --debug
 
 # Review all generated ConfigMaps
 kubectl get configmap -n kubex -o yaml
 
 # Test configuration without applying
-helm upgrade --install kubex ./kubex-automation-controller \
+helm upgrade --install kubex-automation-controller kubex/kubex-automation-controller \
      -n kubex --create-namespace \
      -f kubex-automation-values.yaml --dry-run --debug
 ```
