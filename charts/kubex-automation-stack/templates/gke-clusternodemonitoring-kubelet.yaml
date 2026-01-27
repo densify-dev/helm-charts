@@ -1,0 +1,22 @@
+{{- $stackVals := .Values.stack | default dict -}}
+{{- $gkeSettings := $stackVals.gkeAutopilot | default dict -}}
+{{- $runsInCluster := default true $stackVals.runsInGKEAutopilot -}}
+{{- $collectedBy := default "kubex-stack" $gkeSettings.collectedByLabel -}}
+{{- if and (eq (include "stack.normalizedFlavor" .) "gke-autopilot") $runsInCluster }}
+apiVersion: monitoring.googleapis.com/v1
+kind: ClusterNodeMonitoring
+metadata:
+  name: kubelet-kubex
+spec:
+  endpoints:
+  - interval: 20s
+    path: /metrics
+    scheme: https
+    metricRelabeling:
+    - sourceLabels: [__name__]
+      regex: '^kubernetes_build_info$'
+      action: 'keep'
+    - targetLabel: 'collected_by'
+      replacement: '{{ $collectedBy }}'
+      action: 'replace'
+{{- end }}

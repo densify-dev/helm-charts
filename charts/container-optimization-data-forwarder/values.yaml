@@ -1,0 +1,152 @@
+#################################################################
+# Global configuration defaults.
+#################################################################
+nameOverride: kubex-forwarder
+
+# application image
+image: densify/container-optimization-data-forwarder:4
+imageAzureToken: densify/azure-rest-api-token:latest
+imageGCPOAuth2Token: densify/gcp-oauth2-token:latest
+imageCheckPrometheusReady: busybox:latest
+pullPolicy: Always
+
+# application configuration
+config:
+  forwarder:
+    densify:
+      url:
+#        scheme: https
+        host: # <instance>.densify.com
+#        port: 443
+#        username: <Densify user>
+#        password: <plaintext Densify password, or:>
+#        encrypted_password: <encrypted Densify password>
+#        # Set only the above username and (encrypted_)password settings, or this Secret - but not both.
+#        # Secret must contain 2 fields username and epassword that will be used to connect to Densify.
+#        UserSecretName: <name of secret to use>
+#      endpoint: /api/v2/
+#      retry:
+#        wait_min: 1 # in seconds
+#        wait_max: 30 # in seconds
+#        max_attempts: 4
+#        policy: default # valid values: default (same as exponential), exponential, jitter
+#    proxy:
+#      url:
+#        scheme: https <mandatory>
+#        host: proxy.company.com <mandatory>
+#        port: 443
+#        username: <proxy user>
+#        password: <plaintext proxy password, or:>
+#        encrypted_password: <encrypted proxy password>
+#        # Set only the above username and (encrypted_)password settings, or this Secret - but not both.
+#        # Secret must contain 2 fields username and password that will be used to connect to the proxy.
+#        ProxySecretName: <name of secret to use>
+#      auth: <Basic (default)|NTLM>
+#      server: <proxy server, required for NTLM>
+#      domain: <proxy domain, required for NTLM>
+#    prefix: <zip file prefix>
+  prometheus:
+    url:
+#      scheme: <http (default)|https>
+      host: # <Prometheus hostname>
+#      port: <Prometheus port|9090 (default)>
+#      username: <Prometheus basic auth username / name of file containing this info>
+#      password: <Prometheus basic auth password / name of file containing this info>
+#      # For Prometheus with HTTP basic auth, set only the above username and password settings, or this Secret - but not both.
+#      # Secret must contain 2 fields - username and password that will be used to connect to Prometheus.
+#      PrometheusSecretName: <name of secret to use>
+#    bearer_token: /var/run/secrets/kubernetes.io/serviceaccount/token # required by some observability platforms; the value can be the token or name of file containing it
+#    # For Azure Monitor Managed Prometheus, DO NOT set bearer_token; instead, set this Secret;
+#    # it should have one entry with the name app.json - a JSON file with the entries appId, displayName, password & tenant
+#    AzureMonitorSecretName: <name of secret to use>
+#    GoogleMonitoringSecretName: <name of secret to use>
+#    GoogleMonitoringKeyName: <name of key in the secret>
+#    ca_cert: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+#    # In case the CA Cert is external and needs to be mounted as a secret, DO NOT set ca_cert; instead, set this Secret;
+#    # it should have one entry with the name ca.crt - the CA cert file
+#    CaCertSecretName: <name of secret to use>
+#    sigv4: # required for Amazon Managed Prometheus (see https://docs.aws.amazon.com/prometheus/latest/userguide/AMP-onboard-query-APIs.html)
+#      region: <AWS region, mandatory>
+#      # if running on AWS / EKS under a service account with the appropriate IAM roles, all other sigv4 attributes can be left empty
+#      # (see https://docs.aws.amazon.com/prometheus/latest/userguide/AMP-onboard-ingest-metrics.html#AMP-quick-new-Prometheus-IRSA);
+#      # if not running on AWS / EKS, you can specify either AwsSecretName (secret should include standard AWS config and credentials entries),
+#      # or the 4 values (access_key, secret_key, profile, role_arn)
+#      AwsSecretName: <name of secret to use>
+#      access_key: <AWS access key>
+#      secret_key: <AWS secret key>
+#      profile: <AWS profile>
+#      role_arn: <AWS role ARN>
+#    retry:
+#      wait_min: 1 # in seconds
+#      wait_max: 30 # in seconds
+#      max_attempts: 4
+#      policy: default # valid values: default (same as exponential), exponential, jitter
+#  collection:
+#    # the include section is optional, if omitted or empty then all entity types are included
+#    include:
+#      cluster: true
+#      container: true
+#      node: true
+#      nodegroup: true
+#      quota: true
+#    interval: <days|hours (default)|minutes>
+#    interval_size: 1
+#    history: 1
+#    offset: 0
+#    sample_rate: 5
+#    node_group_list: label_karpenter_sh_nodepool,label_cloud_google_com_gke_nodepool,label_eks_amazonaws_com_nodegroup,label_agentpool,label_pool_name,label_alpha_eksctl_io_nodegroup_name,label_kops_k8s_io_instancegroup
+  clusters:
+    - name: <cluster-1 name>
+      identifiers: # identifiers is a map of Prometheus labels (name and value) to uniquely identify the cluster; if omitted, only one cluster can be present in the list
+        <label name>: <label value>
+        #  ... (more labels)
+    - name: <cluster-2 name>
+      identifiers: # identifiers is a map of Prometheus labels (name and value) to uniquely identify the cluster; if omitted, only one cluster can be present in the list
+        <label name>: <label value>
+        #  ... (more labels)
+    #   ... (more clusters)
+#  debug: <true|false (default)>
+
+job:
+  enable: true
+  checkPrometheusReady: false
+
+cronJob:
+# The cronjob schedule. By default, data collection is triggered a few minutes after every hour.
+# This is in line with the default interval settings of collecting the last hour of data.
+  schedule: 5 * * * *
+# The following values are optional, if job cleanup is required;
+# each one of these should be a non-negative integer (0 is allowed)
+  # successfulJobsHistoryLimit: <value>
+  # failedJobsHistoryLimit: <value>
+  # ttlSecondsAfterFinished: <value> # applies for both the cronjob and the job
+  # backoffLimit: <value> # applies for both the cronjob and the job, default: 4
+
+# If you are running on an OpenShift cluster, change to true
+assignedUIDs: false
+
+# If you are running Prometheus setup with Authentication such as OpenShift,
+# need to set up rbac with service account to allow API access to Prometheus
+rbac:
+  # Create and use RBAC resources.
+  create: false
+
+serviceAccount:
+  isGKE: false
+  # Create service account.
+  create: false
+  # The name of the Service account to use
+  # If not set, will be generated using fullname. Can be used to specify existing service account.
+  name:
+
+  # Annotations to add to the service account
+  annotations:
+    serviceaccounts.openshift.io/oauth-want-challenges: "true"
+
+nodeSelector: {}
+
+resources: {}
+
+tolerations: []
+
+topologySpreadConstraints: []

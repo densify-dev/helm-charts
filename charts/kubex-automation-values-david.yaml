@@ -1,0 +1,286 @@
+# ================================================================
+# SECTION: SECRET MANAGEMENT CONFIGURATION
+# Instructions:
+# → Configure how secrets are managed in your deployment
+# ================================================================
+
+createSecrets: true # Set to false if you provide your own secrets, created outside of this helm chart
+
+# ================================================================
+# SECTION: CONNECTION PARAMETERS - COPY/PASTE FROM KUBEX UI
+# Instructions:
+# → Go to Kubex UI > Automation tab
+# → Copy "Secure Connection Parameters" and paste below
+# ================================================================
+
+densify:
+  url:
+    host: densifytest.densify.com # mandatory: <instance>.densify.com
+
+densifyCredentials:
+  username: 'forwarder' # Username to access Densify, mandatory if createSecrets is true
+  epassword: 'v117e99fe4f74c299f9275106fcb890cb9ab0af38336a46c7e0372081525a76640d2a9d71b245c0b140155cfd4ffeba57c7a3a1f01d44f1ce84c8a54241efc2be9' # Encrypted password to access Densify, mandatory if createSecrets is true
+  # userSecretName: # Densify API secret name, mandatory if createSecrets is false
+
+# ================================================================
+# SECTION: VALKEY CONFIGURATION
+# Instructions:
+# → Configure credentials and storage for the Valkey cache
+# → Uncomment storage.className if your cluster requires explicit storage class
+# ================================================================
+
+valkey:
+  credentials:
+    password: yM73txhrUpRJ # valkey password, mandatory if createSecrets is true,
+                # quote if includes special characters, cannot include SPACES
+  # extraSecretValkeyConfigs: # valkey server secret, mandatory if createSecrets is false
+  # metrics:
+  #   exporter:
+  #     extraExporterEnvSecrets:
+  #       - # valkey client secret, mandatory if createSecrets is false
+  # storage:
+  #   className: <storageClassName> # Optional. Define if your environment requires it. 
+  # nodeSelector: {} # Optional. Define if your environment requires it.
+  # affinity: {} # Optional. Define if your environment requires it.
+  # tolerations: [] # Optional. Define if your environment requires it.
+  # topologySpreadConstraints: [] # Optional. Define if your environment requires it.
+
+  # Override Valkey resources based on Densify recommendations
+#  resources: # Resource sizing (tune for your cluster/workload)
+#    requests:
+#      cpu: "250m"                                # Update based on Densify recommendations
+#      memory: "256Mi"                            # Update based on Densify recommendations
+#    limits:
+#      memory: "512Mi"                              # Update based on Densify recommendations
+
+
+# ================================================================
+# SECTION: CLUSTER CONFIGURATION - MANUAL INPUT REQUIRED
+# Instructions:
+# → Manually configure based on your cluster and policies
+# ================================================================
+
+cluster:
+  name: dchase-testing   # [REPLACE] Kubernetes cluster name
+
+
+# ================================================================
+# SCOPE CONFIGURATION
+# Instructions:
+# → Define which pods are eligible for automation using namespace and label filters
+# → Each scope references a policy that defines automation behavior
+# → Multiple scopes allow different automation rules for different parts of your cluster
+#
+# To add multiple scopes:
+# 1. Copy the entire scope block below (from "- name:" to the end of "podLabels:")
+# 2. Paste it below the existing scope and modify:
+#    - Change the scope name to be unique
+#    - Reference a different policy if desired
+#    - Adjust namespace and label filters
+#
+# Example multiple scopes:
+# scope:
+#   - name: production-scope
+#     policy: conservative-policy
+#     namespaces: { operator: In, values: ["prod-*"] }
+#   - name: development-scope  
+#     policy: aggressive-policy
+#     namespaces: { operator: In, values: ["dev-*"] }
+# ================================================================
+scope:
+  - name: base-optimization-scope # Unique scope name
+    policy: base-optimization     # Policy name (optional - uses defaultPolicy if omitted)
+    namespaces:           # Mandatory - defines which namespaces to include/exclude
+      operator: In     # Options: In | NotIn
+      values:
+        - retailstore-unspecified          # Kubex namespace (exclude automation components)
+    # podLabels:            # Optional - defines which pods to include/exclude based on labels
+    #   - key: app        # Replace with actual label key (e.g., "app", "env", "tier")
+    #     operator: NotIn              # Options: In | NotIn  
+    #    values:
+    #      - somevalue     # This automates everything
+
+
+# ================================================================
+# SECTION: AUTOMATION POLICY - MANUAL CUSTOMIZATION ALLOWED
+# Instructions:
+# → Adjust automation and resizing behavior as needed
+# → You can define multiple policies by duplicating the block under 'base-optimization'
+#    - Change the policy name (e.g., 'dev-automation', 'prod-automation')
+#    - Customize each policy's CPU/memory/resizing behavior separately
+#    - Reference the desired policy by name in the 'scope.policy' field above
+#
+# Note: Some settings are included for forward compatibility and will be activated in future releases
+# ================================================================
+
+policy:
+  # ================================================================
+  # GLOBAL SETTINGS
+  # ================================================================
+  automationEnabled: true # Global Switch to enable/disable automation for the cluster
+  defaultPolicy: base-optimization # Default policy used when scope.policy is not specified
+  
+  # ================================================================
+  # AUTOMATION SCOPE CONTROL
+  # Determines where automation inclusion/exclusion rules are defined
+  # ================================================================
+  remoteEnablement: false
+    # false: Automation scope is controlled ONLY by this Helm configuration
+    #        - Containers are included/excluded based on namespace and label selectors defined above
+    #        - Kubex UI cannot override these automation decisions
+    #        - Recommended for strict GitOps workflows and production environments
+    #
+    # true:  Automation scope is controlled by BOTH Helm configuration AND Densify UI
+    #        - Base rules still apply from namespace/label selectors above
+    #        - Customers can additionally enable/disable automation for specific containers via Densify UI
+    #        - Provides flexibility for ad-hoc automation control without Helm updates
+    #        - Useful for development environments and testing scenarios
+  
+  # ================================================================
+  # POLICY DEFINITIONS
+  # Instructions:
+  # → If you wish to define multiple policies:
+  #    - Copy the entire block under policies currently called 'base-optimization'.
+  #    - Paste it below and give it a new, unique name (e.g., production-policy).
+  #    - Reference the new policy name in the scope[].policy field in kubex-automation-values.yaml to apply it selectively.
+  #
+  # ⚠️  IMPORTANT: Policy names MUST follow RFC 1123 subdomain rules:
+  #    ✅ Use: lowercase letters, numbers, hyphens, dots only
+  #    ✅ Examples: base-optimization, dev-env, production.cpu
+  #    ❌ Avoid: camelCase, snake_case, UPPERCASE, special characters
+  #    Why: Policy names become webhook URLs (/mutate/{policy-name})
+  # ================================================================
+  policies: 
+    base-optimization:
+      allowedPodOwners: "Deployment,StatefulSet,CronJob,Rollout,Job,ReplicaSet,AnalysisRun"
+      enablement:
+        cpu:
+          request:
+            downsize: true
+            upsize: true
+            setFromUnspecified: true
+          limit:
+            downsize: true
+            upsize: true
+            setFromUnspecified: true
+            unsetFromSpecified: false     # (Future release)
+        memory:
+          request:
+            downsize: true
+            upsize: true
+            setFromUnspecified: true
+          limit:
+            downsize: true
+            upsize: true
+            setFromUnspecified: true
+      inPlaceResize:                      
+        enabled: true
+      podEviction:
+        enabled: true
+      safetyChecks:
+        maxAnalysisAgeDays: 5             # Number of days before optimization is considered stale
+
+
+# ================================================================
+# DEPLOYMENT CONFIGURATION OVERRIDES (Optional)
+# Uncomment and customize the values below to override default settings
+# 
+# ⚠️  IMPORTANT: For pod scan optimization in large clusters, see:
+#    docs/Pod-Scan-Configuration.md for calculation formulas and pre-configured values
+#    based on your cluster size and deployment phase.
+# ================================================================
+deployment:
+  controllerEnv:  # Override controller environment variables (defaults in values.yaml)
+    podScanInitialInterval: "2m"
+    debug: false                                  # Uncomment to enable debug mode for troubleshooting
+    podScanInterval: "2m"                     # How often to scan cluster for pods to check 
+    podScanTimeout: "100s"                      # Max time allowed for each pod scanning cycle  
+#    podEvictionCooldownPeriod: "1m"              # Wait time between pod evictions (recommended default) 
+    recommendationsFetchInitialDelay: "30s"       # Startup delay before first recommendation fetch 
+#    recommendationsFetchInterval: "1h"           # How often to refresh recommendations from API 
+#    recommendationsResyncTimeout: "45m"          # Max time for recommendation sync operations 
+#    recommendationDataFormat: "json"             # Storage format in Valkey: "json" (readable) or "protobuf" (compact)
+#    nodeCpuHeadroom: "10%"                       # CPU headroom to reserve on each node (Can be in absolute value i.e. "100m" or in Percentage format i.e. "10%")
+#    nodeMemoryHeadroom: "200Mi"                  # Memory headroom to reserve on each node (Can be in absolute value i.e. "200Mi" or in Percentage format i.e. "10%")
+#    evictionThrottlingWindow: "6h"               # Time window for throttling pod evictions 
+#    evictionThrottlingMax: "1000"                # Max number of pod evictions allowed within the time window 
+
+  # ================================================================
+  # RESOURCE OPTIMIZATION (Recommended)
+  # Kubex cannot automate its own components - monitor them in Densify UI and manually optimize
+  # ================================================================
+  
+  # Override webhook resources based on Densify recommendations
+#  webhookResources: # Resource Specs for the webhook server pod
+#    requests:
+#      memory: "64Mi"                            # Update based on Densify recommendations
+#      cpu: "100m"                                # Update based on Densify recommendations
+#    limits:
+#      memory: "512Mi"                            # Update based on Densify recommendations
+  
+  # Override gateway resources based on Densify recommendations
+#  gatewayResources: # CPU and memory resource requests and limits for the pod
+#    requests:
+#      memory: "64Mi"                            # Update based on Densify recommendations
+#      cpu: "100m"                                # Update based on Densify recommendations
+#    limits:
+#      memory: "512Mi"                            # Update based on Densify recommendations
+  
+  # Override controller resources based on Densify recommendations
+#  controllerResources: # Resource Specs for the controller pod
+#    requests:
+#      memory: "128Mi"                            # Update based on Densify recommendations
+#      cpu: "250m"                                # Update based on Densify recommendations
+#    limits:
+#      memory: "512Mi"                              # Update based on Densify recommendations
+
+
+
+  # ================================================================
+  # NODE SCHEDULING CONFIGURATION (Optional)
+  # Uncomment and customize to control where controller and webhook pods are deployed
+  # ================================================================
+  
+  # Node scheduling for controller deployment
+#  controller:
+#    nodeSelector:
+#      node-pool: system                          # Example: target specific node pool
+#    affinity:
+#      nodeAffinity:
+#        requiredDuringSchedulingIgnoredDuringExecution:
+#          nodeSelectorTerms:
+#          - matchExpressions:
+#            - key: kubernetes.io/instance-type
+#              operator: In
+#              values: ["m5.large", "m5.xlarge"]
+#    tolerations:
+#    - key: "system-workloads"
+#      operator: "Equal"
+#      value: "true"
+#      effect: "NoSchedule"
+#    topologySpreadConstraints:
+#    - maxSkew: 1
+#      topologyKey: topology.kubernetes.io/zone
+#      whenUnsatisfiable: DoNotSchedule
+#      labelSelector:
+#        matchLabels:
+#          app: kubex-controller
+  
+  # Node scheduling for webhook deployment
+#  webhook:
+#    nodeSelector:
+#      node-pool: system                          # Example: target specific node pool
+#    affinity:
+#      nodeAffinity:
+#        preferredDuringSchedulingIgnoredDuringExecution:
+#        - weight: 100
+#          preference:
+#            matchExpressions:
+#            - key: node-type
+#              operator: In
+#              values: ["stable"]
+#    tolerations:
+#    - key: "system-workloads"
+#      operator: "Equal"
+#      value: "true"
+#      effect: "NoSchedule"

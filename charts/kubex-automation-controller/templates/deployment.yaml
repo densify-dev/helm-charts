@@ -23,10 +23,20 @@ spec:
         checksum/valkey-config-secret: {{ include (print $.Template.BasePath "/valkey-config-secret.yaml") . | sha256sum }}
     spec:
       securityContext:
+        {{- if eq .Values.global.stack.flavor "openshift" }}
+        runAsNonRoot: true
+        {{- else }}
+        {{- if not (.Values.deployment.assignedUIDs) }}
         fsGroup: 3000
         runAsGroup: 3000
-        runAsNonRoot: true
+          {{- if and (hasKey .Values.deployment "runAsUser") (not (eq .Values.deployment.runAsUser nil)) }}
+        runAsUser: {{ .Values.deployment.runAsUser }}
+          {{- else }}
         runAsUser: 3000
+          {{- end }}
+        {{- end }}
+        runAsNonRoot: true
+        {{- end }}
         seccompProfile:
           type: RuntimeDefault
       serviceAccountName: kubex-automation-controller-sa
@@ -126,6 +136,25 @@ spec:
         - name: wait-for-valkey
           image: {{ .Values.deployment.waitForValkeyImage | quote }}
           command: ['sh', '-c', "until nc -vz {{ .Release.Name }}-valkey 6379; do echo 'Waiting for Valkey'; sleep 2; done"]
+          securityContext:
+            {{- if eq .Values.global.stack.flavor "openshift" }}
+            # OpenShift: Omit UIDs to allow SCC to inject them
+            runAsNonRoot: true
+            {{- else }}
+            # Standard K8s: Use fixed UIDs unless assignedUIDs is true
+            {{- if not (.Values.deployment.assignedUIDs) }}
+            fsGroup: 3000
+            runAsGroup: 3000
+              {{- if and (hasKey .Values.deployment "runAsUser") (not (eq .Values.deployment.runAsUser nil)) }}
+            runAsUser: {{ .Values.deployment.runAsUser }}
+              {{- else }}
+            runAsUser: 3000
+              {{- end }}
+            {{- end }}
+            runAsNonRoot: true
+            {{- end }}
+            seccompProfile:
+              type: RuntimeDefault
         - name: kubex-automation-gw
           image: {{ .Values.deployment.gatewayImage | quote }}
           imagePullPolicy: Always
@@ -234,10 +263,16 @@ spec:
         checksum/kubex-valkey-config-secret: {{ include (print $.Template.BasePath "/valkey-config-secret.yaml") . | sha256sum }}
     spec:
       securityContext:
+        {{- if eq .Values.global.stack.flavor "openshift" }}
+        runAsNonRoot: true
+        {{- else }}
+        {{- if not (.Values.deployment.assignedUIDs) }}
         fsGroup: 3000
         runAsGroup: 3000
-        runAsNonRoot: true
         runAsUser: 3000
+        {{- end }}
+        runAsNonRoot: true
+        {{- end }}
         seccompProfile:
           type: RuntimeDefault
       serviceAccountName: kubex-webhook-sa
@@ -292,6 +327,19 @@ spec:
         - name: wait-for-valkey
           image: {{ .Values.deployment.waitForValkeyImage | quote }}
           command: ['sh', '-c', "until nc -vz {{ .Release.Name }}-valkey 6379; do echo 'Waiting for Valkey'; sleep 2; done"]
+          securityContext:
+            {{- if eq .Values.global.stack.flavor "openshift" }}
+            runAsNonRoot: true
+            {{- else }}
+            {{- if not (.Values.deployment.assignedUIDs) }}
+            fsGroup: 3000
+            runAsGroup: 3000
+            runAsUser: 3000
+            {{- end }}
+            runAsNonRoot: true
+            {{- end }}
+            seccompProfile:
+              type: RuntimeDefault
         - name: kubex-webhook-gw
           image: {{ .Values.deployment.gatewayImage | quote }}
           imagePullPolicy: Always

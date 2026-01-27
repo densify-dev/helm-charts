@@ -9,6 +9,34 @@ global:
   kubex:
     url:
       host: "" # <instance>.kubex.ai or <instance>.densify.com (set in values-edit.yaml)
+  credentials:
+    username: "" # Kubex username (shared by data collector and automation controller)
+    epassword: "" # Kubex encrypted password (shared by data collector and automation controller)
+
+#################################################################
+# Stack deployment targets
+#################################################################
+
+stack:
+  flavor: standard # standard | gkeAutopilot | openshift
+  runsInGKEAutopilot: true # Only relevant when flavor is gkeAutopilot
+  densify:
+    createSecret: true
+    username: ""
+    encrypted_password: ""
+  gkeAutopilot:
+    collectedByLabel: kubex-stack
+    serviceAccountName: kubex-forwarder
+  openshift:
+    serviceAccountName: kubex-collection
+    image: densify/container-optimization-data-forwarder:ubi10-4.3.2
+    prometheus:
+      scheme: https
+      host: prometheus-k8s.openshift-monitoring.svc
+      port: 9091
+      caCert: /var/run/secrets/kubernetes.io/serviceaccount/service-ca.crt
+  gcpServiceAccountKeyName: ""
+  gcpServiceAccountKeyContents: ""
 
 #################################################################
 # kubex-data-collector parameters
@@ -19,9 +47,14 @@ kubex-data-collector:
   enabled: true
   nameOverride: kubex-data-collector
   credentials:
-    username: "" # Set in values-edit.yaml or via --set
-    epassword: "" # Set in values-edit.yaml or via --set
+    username: "" # Will use global.credentials.username if not set
+    epassword: "" # Will use global.credentials.epassword if not set
   image: densify/container-optimization-data-forwarder:4
+  # Note: Image will be overridden to UBI version when stack.flavor=openshift
+  # via values-edit.yaml or command-line --set
+  assignedUIDs: false
+  # Note: assignedUIDs will be set to true when stack.flavor=openshift
+  # via values-edit.yaml or command-line --set
   imageAzureToken: densify/azure-rest-api-token:latest
   imageGCPOAuth2Token: densify/gcp-oauth2-token:latest
   imageCheckPrometheusReady: busybox:latest
@@ -32,21 +65,35 @@ kubex-data-collector:
       url: {}
     prometheus:
       url:
+        scheme: http
+        # Note: scheme, host, port, and ca_cert will be overridden when stack.flavor=openshift or gkeAutopilot
+        # via values-edit.yaml or command-line --set
         host: kubex-prometheus-server
         port: 80
+      ca_cert: "" # Set when stack.flavor=openshift
     clusters:
     - name: "" # Will be populated from global.cluster.name by _helpers.tpl
   job:
     enable: true
     checkPrometheusReady: true
+    # Note: checkPrometheusReady will be set to false when stack.flavor=openshift or gkeAutopilot
+    # via values-edit.yaml or command-line --set
   cronJob:
     schedule: 5 * * * *
   rbac:
     create: false
+    # Note: rbac.create will be set to true when stack.flavor=openshift
+    # via values-edit.yaml or command-line --set
   serviceAccount:
     isGKE: false
+    # Note: isGKE will be set to true when stack.flavor=gkeAutopilot
+    # via values-edit.yaml or command-line --set
     create: false
+    # Note: serviceAccount.create will be set to true when stack.flavor=openshift or gkeAutopilot
+    # via values-edit.yaml or command-line --set
     name:
+    # Note: serviceAccount.name will be set when stack.flavor=openshift or gkeAutopilot
+    # via values-edit.yaml or command-line --set
     annotations:
       serviceaccounts.openshift.io/oauth-want-challenges: "true"
   nodeSelector: {}
@@ -66,8 +113,8 @@ kubex-automation-controller:
   enabled: false # Set to true in values-edit.yaml to enable automation controller
   createSecrets: true # Set to false if providing your own secrets
   credentials:
-    username: "" # Set in values-edit.yaml (can be same or different from Kubex Data Collector)
-    epassword: "" # Set in values-edit.yaml (can be same or different from Kubex Data Collector)
+    username: "" # Will use global.credentials.username if not set
+    epassword: "" # Will use global.credentials.epassword if not set
   cluster:
     name: "" # Will be populated from global.cluster.name
   config:
@@ -180,6 +227,7 @@ kubex-automation-controller:
   valkey:
     credentials:
       user: "kubexAutomation"
+      password: "" # Set in values-edit.yaml or via --set
     image:
       registry: docker.io
       repository: valkey/valkey
@@ -200,6 +248,21 @@ kubex-automation-controller:
       limits:
         memory: "512Mi"
     useDeploymentWhenNonHA: true
+    persistence:
+      enabled: true
+    securityContext:
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+          - ALL
+      seccompProfile:
+        type: RuntimeDefault
+    podSecurityContext:
+      fsGroup: 3000
+      runAsGroup: 3000
+      runAsUser: 3000
     tolerations:
       - key: "kubernetes.io/arch"
         operator: "Exists"
@@ -429,3 +492,44 @@ prometheus:
             - source_labels: [__name__]
               regex: '^(DCGM_FI_(DEV_(FB_(FREE|USED)|GPU_UTIL|POWER_USAGE)|PROF_(DRAM_ACTIVE|GR_ENGINE_ACTIVE|PIPE_TENSOR_ACTIVE))|kube_(cronjob_(created|info|labels|next_schedule_time|status_(active|last_schedule_time))|daemonset_(created|labels|status_number_available)|deployment_(created|labels|metadata_generation|spec_strategy_rollingupdate_max_(surge|unavailable))|horizontalpodautoscaler_(info|labels|spec_(max_replicas|min_replicas|target_metric)|status_(condition|current_replicas|target_metric))|job_(created|info|labels|owner|spec_(completions|parallelism)|status_(active|completion_time|start_time))|namespace_(annotations|labels)|node_(info|labels|role|spec_taint|status_(allocatable|capacity))|pod_(container_(info|resource_(limits|requests)|status_(last_terminated_(exitcode|timestamp)|restarts_total|terminated(?:_reason)?))|created|info|labels|owner|status_(phase|qos_class))|replicaset_(created|labels|owner|spec_replicas)|replicationcontroller_(created|spec_replicas)|resourcequota(?:_created)?|statefulset_(created|labels|replicas))|node_(cpu_(core_throttles_total|seconds_total)|disk_(read_bytes_total|reads_completed_total|writes_completed_total|written_bytes_total)|memory_(Buffers_bytes|Cached_bytes|MemFree_bytes|MemTotal_bytes|SReclaimable_bytes)|network_(receive_(bytes_total|packets_total)|speed_bytes|transmit_(bytes_total|packets_total))|vmstat_oom_kill)|openshift_clusterresourcequota_(created|labels|namespace_usage|selector|usage))$'
               action: keep
+
+#################################################################
+# prometheus-community/kube-state-metrics parameters
+#################################################################
+
+kube-state-metrics:
+  enabled: false
+  rbac:
+    create: true
+  tolerations:
+    # Tolerate arch taints (works on both amd64 and arm64 clusters)
+    - key: "kubernetes.io/arch"
+      operator: "Exists"
+      effect: "NoSchedule"
+  metricAnnotationsAllowList:
+    - 'namespaces=[*]'
+  metricLabelsAllowlist:
+    - 'nodes=[*]'
+    - 'namespaces=[*]'
+    - 'pods=[*]'
+    - 'deployments=[*]'
+    - 'replicasets=[*]'
+    - 'daemonsets=[*]'
+    - 'statefulsets=[*]'
+    - 'jobs=[*]'
+    - 'cronjobs=[*]'
+    - 'horizontalpodautoscalers=[*]'
+  collectors:
+    - cronjobs
+    - daemonsets
+    - deployments
+    - horizontalpodautoscalers
+    - jobs
+    - namespaces
+    - nodes
+    - poddisruptionbudgets
+    - pods
+    - replicasets
+    - replicationcontrollers
+    - resourcequotas
+    - statefulsets

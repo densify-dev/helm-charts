@@ -1,0 +1,38 @@
+# Disable the bundled Prometheus stack to stop those UID 65534 errors
+prometheus:
+  enabled: false
+
+kubex-automation-controller:
+  valkey:
+    # Official helper to strip default UIDs
+    global:
+      compatibility:
+        openshift:
+          adaptSecurityContext: force
+    
+    # Disable PVC to fix the FailedBinding error
+    master:
+      persistence:
+        enabled: false
+
+    # Pod-level: No 'enabled' key, just the settings
+    podSecurityContext:
+      fsGroup: null
+      runAsUser: null
+      seccompProfile:
+        type: RuntimeDefault
+    
+    # Container-level: No 'enabled' key
+    containerSecurityContext:
+      runAsUser: null
+      runAsGroup: null
+      seccompProfile:
+        type: RuntimeDefault
+
+    # Exporter-level: No 'enabled' key
+    metrics:
+      enabled: true
+      containerSecurityContext:
+        runAsUser: null
+        seccompProfile:
+          type: RuntimeDefault

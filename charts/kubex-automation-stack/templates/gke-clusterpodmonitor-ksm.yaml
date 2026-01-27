@@ -1,0 +1,25 @@
+{{- $stackVals := .Values.stack | default dict -}}
+{{- $gkeSettings := $stackVals.gkeAutopilot | default dict -}}
+{{- $runsInCluster := default true $stackVals.runsInGKEAutopilot -}}
+{{- $collectedBy := default "kubex-stack" $gkeSettings.collectedByLabel -}}
+{{- if and (eq (include "stack.normalizedFlavor" .) "gke-autopilot") $runsInCluster }}
+apiVersion: monitoring.googleapis.com/v1
+kind: ClusterPodMonitoring
+metadata:
+  name: kube-state-metrics-kubex
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/name: kube-state-metrics
+  endpoints:
+  - port: 8080
+    interval: 20s
+    metricRelabeling:
+    - sourceLabels: [__name__]
+      regex: '^(kube_(cronjob_(created|info|labels|next_schedule_time|status_(active|last_schedule_time))|daemonset_(created|labels|status_number_available)|deployment_(created|labels|metadata_generation|spec_strategy_rollingupdate_max_(surge|unavailable))|horizontalpodautoscaler_(info|labels|spec_(max_replicas|min_replicas|target_metric)|status_(condition|current_replicas|target_metric))|job_(created|info|labels|owner|spec_(completions|parallelism)|status_(active|completion_time|start_time))|namespace_(annotations|labels)|node_(info|labels|role|spec_taint|status_(allocatable|capacity))|pod_(container_(info|resource_(limits|requests)|status_(last_terminated_(exitcode|timestamp)|restarts_total|terminated(?:_reason)?))|created|info|labels|owner|status_(phase|qos_class))|replicaset_(created|labels|owner|spec_replicas)|replicationcontroller_(created|spec_replicas)|resourcequota(?:_created)?|statefulset_(created|labels|replicas)))$'
+      action: 'keep'
+    - targetLabel: 'collected_by'
+      replacement: '{{ $collectedBy }}'
+      action: 'replace'
+{{- end }}

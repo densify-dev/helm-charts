@@ -1,0 +1,26 @@
+stack:
+  densify:
+    createSecret: true
+
+container-optimization-data-forwarder:
+  image: densify/container-optimization-data-forwarder:ubi10-4.3.2
+  # required for OpenShift
+  assignedUIDs: true
+  nameOverride: kubex-collection
+  config:
+    forwarder:
+      densify:
+        url:
+          UserSecretName: densify-api-secret
+    prometheus:
+      url:
+        scheme: https
+        host: prometheus-k8s.openshift-monitoring.svc
+        port: 9091
+      # OpenShift Service CA Operator ca cert
+      ca_cert: /var/run/secrets/kubernetes.io/serviceaccount/service-ca.crt
+  rbac:
+    create: true
+  serviceAccount:
+    create: true
+    name: kubex-collection

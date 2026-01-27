@@ -1,7 +1,7 @@
 apiVersion: v2
 description: Kubex Collection Stack
 name: kubex-automation-stack
-version: 1.0.2
+version: 1.1.0
 type: application
 icon: https://www.kubex.ai/wp-content/uploads/kubex-by-densify-logo.png
 dependencies:
@@ -18,6 +18,10 @@ dependencies:
     version: "27.*.*"
     repository: https://prometheus-community.github.io/helm-charts
     condition: prometheus.enabled
+  - name: kube-state-metrics
+    version: "6.*.*"
+    repository: https://prometheus-community.github.io/helm-charts
+    condition: kube-state-metrics.enabled
 keywords:
 - kubex
 - densify
@@ -26,5 +30,3 @@ keywords:
 maintainers:
 - email: support@kubex.ai
   name: support
-details:
-  This Helm chart provides the entire stack required for container data collection and optimization

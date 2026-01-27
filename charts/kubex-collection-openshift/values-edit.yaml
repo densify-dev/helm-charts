@@ -1,0 +1,21 @@
+stack:
+  densify:
+    username: '<changeme-username>' # mandatory (unless createSecret = false)
+    encrypted_password: '<changeme-encrypted-password>' # mandatory (unless createSecret = false)
+
+container-optimization-data-forwarder:
+  config:
+    forwarder:
+      densify:
+        url:
+          host: '<changeme-kubex-host>' # mandatory: <instance>.kubex.ai
+    clusters:
+      - name: '<changeme-cluster-name>' # Mandatory, must be unique!
+
+# The following values are optional, if job cleanup is required;
+# each one of these should be a non-negative integer (0 is allowed)
+  # cronJob:
+    # successfulJobsHistoryLimit: <value>
+    # failedJobsHistoryLimit: <value>
+    # ttlSecondsAfterFinished: <value> # applies for both the cronjob and the job
+    # backoffLimit: <value> # applies for both the cronjob and the job, default: 4

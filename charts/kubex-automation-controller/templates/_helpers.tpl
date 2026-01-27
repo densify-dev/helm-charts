@@ -148,7 +148,15 @@ Generate Kubex epassword that persists across upgrades
 */}}
 {{- define "kubex-automation-controller.credentials.epassword" -}}
 {{- if .Values.createSecrets }}
-{{- .Values.credentials.epassword | required "An epassword must be provided in kubex-automation-values.yaml under credentials.epassword" -}}
+{{- $epassword := .Values.credentials.epassword | default "" -}}
+{{- if not $epassword -}}
+  {{- if .Values.global -}}
+    {{- if .Values.global.credentials -}}
+      {{- $epassword = .Values.global.credentials.epassword | default "" -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $epassword | required "An epassword must be provided in global.credentials.epassword or credentials.epassword" -}}
 {{- end }}
 {{- end }}
 {{/*
@@ -156,7 +164,15 @@ Generate Kubex username that persists across upgrades
 */}}
 {{- define "kubex-automation-controller.credentials.username" -}}
 {{- if .Values.createSecrets }}
-{{- .Values.credentials.username | required "A username must be provided in kubex-automation-values.yaml under credentials.username" -}}
+{{- $username := .Values.credentials.username | default "" -}}
+{{- if not $username -}}
+  {{- if .Values.global -}}
+    {{- if .Values.global.credentials -}}
+      {{- $username = .Values.global.credentials.username | default "" -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- $username | required "A username must be provided in global.credentials.username or credentials.username" -}}
 {{- end }}
 {{- end }}
 {{/*

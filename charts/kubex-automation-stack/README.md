@@ -8,7 +8,7 @@
 
 ## Introduction
 
-Kubex analyses Kubernetes clusters and produces recommendations for rightsizing resources to mitigate risk and reduce waste. This chart includes all components required for the Kubex Data Collector, optimization recommendations, and optional automated resource optimization.
+Kubex analyses Kubernetes clusters and produces recommendations for rightsizing resources to mitigate risk and reduce waste. This chart includes all components required for the Kubex Data Collector, optimization recommendations, and optional automated resource optimization. It can now target standard Kubernetes, GKE Autopilot, and OpenShift clusters from a single release by selecting the desired `stack.flavor`.
 
 This chart requires very minimal configuration in order to install the entire stack. All of it is in `values-edit.yaml`.
 
@@ -20,7 +20,7 @@ To deploy the Kubex Collection Stack, follow these steps below:
 
 2. Download [values-edit.yaml](https://github.com/densify-dev/helm-charts/blob/master/charts/kubex-automation-stack/values-edit.yaml).
 
-3. Edit `values-edit.yaml` with the relevant mandatory parameters as described in [Configuration](#configuration).
+3. Edit `values-edit.yaml` with the relevant mandatory parameters as described in [Configuration](#configuration), including setting `stack.flavor` to `standard`, `gkeAutopilot`, or `openshift` to match your target cluster type.
 
 4. If your cluster has arm64 architecture, download also [values-arm64.yaml](https://github.com/densify-dev/helm-charts/blob/master/charts/kubex-automation-stack/values-arm64.yaml).
 
@@ -65,6 +65,17 @@ The following table lists configuration parameters in `values-edit.yaml`.
 | `global.cluster.name`                                    | :white_check_mark: | Cluster name **(must be unique, customer-wide)**      |
 | `global.kubex.url.host`                                  | :white_check_mark: | Kubex instance hostname (e.g., `<instance>.kubex.ai` or `<instance>.densify.com`) |
 | `global.createSecret`                                    |                    | Set to `false` if providing your own secret (default: `true`) |
+
+### Platform Selection
+
+| Parameter                          | Mandatory          | Description |
+| ---------------------------------- | ------------------ | ----------- |
+| `stack.flavor`                     | :white_check_mark: | Target platform. Use `standard` for generic Kubernetes clusters, `gkeAutopilot` to enable Google Managed Prometheus resources, or `openshift` to integrate with OpenShift monitoring. |
+| `stack.runsInGKEAutopilot`         |                    | Only used when `stack.flavor: gkeAutopilot`. Leave `true` when installing into the Autopilot cluster; set to `false` when deploying the chart elsewhere to collect from Google Managed Prometheus remotely. |
+| `stack.gcpServiceAccountKeyName`   |                    | (GKE Autopilot remote collection) Filename to use as the key inside the `gcp-service-account-secret`. |
+| `stack.gcpServiceAccountKeyContents` |                    | (GKE Autopilot remote collection) Raw contents for the service account key. Combine with `helm --set-file` to avoid inlining credentials. |
+
+> **Tip:** Existing automation values that previously populated `stack.densify.*` are still supported—the chart copies those credentials into `kubex-data-collector.credentials` automatically.
 
 ### Kubex Data Collector
 
@@ -111,6 +122,21 @@ For advanced automation settings (policies, scopes, Valkey tuning, resource limi
 | ---------------------------------------------------------------- | ------------------ | ------------------------------------------------------ |
 | `prometheus.server.persistentVolume.`<br/>`storageClass`         |                    | Storage class for Prometheus persistent volume |
 
+### Platform-Specific Behavior
+
+**GKE Autopilot (`stack.flavor: gkeAutopilot`)**
+
+- Prometheus subchart is disabled automatically and the chart renders Google Managed Prometheus resources (`ClusterNodeMonitoring`/`ClusterPodMonitoring`).
+- `kube-state-metrics` dependency is enabled whenever `stack.runsInGKEAutopilot` is `true`; set the flag to `false` when deploying the stack on a different cluster to scrape GMP remotely.
+- If `stack.gcpServiceAccountKeyName` and `stack.gcpServiceAccountKeyContents` are set while `stack.runsInGKEAutopilot: false`, a `gcp-service-account-secret` is created for use with GMP.
+- Remember to point `kubex-data-collector.config.prometheus.url.*` at `monitoring.googleapis.com` and add cluster identifiers (e.g., `collected_by`) just as in the previous Autopilot-only chart.
+
+**OpenShift (`stack.flavor: openshift`)**
+
+- Prometheus subchart is disabled automatically and the Kubex data collector is pointed at the in-cluster `prometheus-k8s.openshift-monitoring.svc:9091` endpoint with the appropriate CA certificate.
+- The collector switches to the UBI-based image, requests assigned UIDs, and enables RBAC with a `cluster-monitoring-view` binding for the generated service account.
+- You can further customize the injected OpenShift settings via `stack.openshift.*` if the defaults need to change.
+
 ## Limitations
 
 * Supported architectures: amd64 (x64), arm64
@@ -125,6 +151,8 @@ This chart consists of three subcharts:
 * [Kubex Data Collector](../container-optimization-data-forwarder) (aliased as `kubex-data-collector`), which collects and sends metrics to a Kubex instance for analysis
 
 * [Prometheus Community Prometheus chart](https://github.com/prometheus-community/helm-charts/blob/main/charts/prometheus/) which contains the entire stack required for the Kubex Data Collector
+
+Additionally, the chart can enable [kube-state-metrics](https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-state-metrics) automatically when `stack.flavor: gkeAutopilot` to ensure the required metrics are supplied by Google Managed Prometheus.
 
 ### Configuration Structure
 

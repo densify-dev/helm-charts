@@ -1,0 +1,22 @@
+apiVersion: v2
+description: Kubex Collection Stack for OpenShift Clusters
+name: kubex-collection-openshift
+version: 1.0.0
+type: application
+icon: https://kubex.ai/wp-content/uploads/kubex-logo-landscape.svg
+dependencies:
+  - name: container-optimization-data-forwarder
+    version: "4.*.*"
+    repository: https://densify-dev.github.io/helm-charts
+keywords:
+- kubex
+- densify
+- collection
+- container
+- optimization
+- OpenShift
+maintainers:
+- email: support@kubex.ai
+  name: support
+details:
+  This Helm chart provides the entire stack required for automation of the Kubex container data collection and optimization for OpenShift clusters.

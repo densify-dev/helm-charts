@@ -4,23 +4,87 @@
 #################################################################
 global:
   cluster:
-    name: '<changeme-cluster-name>' # MANDATORY: Unique cluster name (must be unique customer-wide)
+    name: '' # MANDATORY: Unique cluster name (must be unique customer-wide)
   createSecret: true # Set to false if providing your own secret
   kubex:
     url:
-      host: '<changeme-kubex-host>' # MANDATORY: Kubex instance (e.g., <instance>.kubex.ai or <instance>.densify.com)
+      host: '' # MANDATORY: Kubex instance (e.g., <instance>.kubex.ai or <instance>.densify.com)
+  credentials:
+    username: '' # MANDATORY: Kubex username (used by both data collector and automation controller)
+    epassword: '' # MANDATORY: Kubex encrypted password (used by both data collector and automation controller)
+
+#################################################################
+# Stack deployment target
+# IMPORTANT: Change stack.flavor below, then uncomment the corresponding
+# platform-specific section in the Kubex Data Collector configuration
+#################################################################
+stack:
+  flavor: standard # REQUIRED: Change to: standard | gkeAutopilot | openshift
+  
+  # GKE Autopilot specific (only when flavor: gkeAutopilot)
+  runsInGKEAutopilot: true # Set to false if collecting from GMP remotely
+  gcpServiceAccountKeyName: '' # (Remote GMP collection only) Secret key filename
+  gcpServiceAccountKeyContents: '' # (Remote GMP collection only) Inline contents
 
 #################################################################
 # Kubex Data Collector
 # Collects and sends container metrics to Kubex for analysis
+#
+# PLATFORM-SPECIFIC CONFIGURATION:
+# - For OpenShift: Uncomment the "OPENSHIFT CONFIGURATION" section below
+# - For GKE Autopilot: Uncomment the "GKE AUTOPILOT CONFIGURATION" section below
+# - For standard K8s: Leave platform sections commented
 #################################################################
 kubex-data-collector:
 #  enabled: true # Set to false to disable Kubex Data Collector
+  # Note: Credentials are inherited from global.credentials
+  # Override here only if you need different credentials for the data collector
   credentials:
-    username: '<changeme-username>' # MANDATORY (unless createSecret = false): Kubex user for Kubex Data Collector
-    epassword: '<changeme-encrypted-password>' # MANDATORY (unless createSecret = false): Encrypted password for Kubex Data Collector
+    username: '' # Override global.credentials.username if needed
+    epassword: '' # Override global.credentials.epassword if needed
 
-  # Optional: Job cleanup configuration
+  # ================================================================
+  # OPENSHIFT CONFIGURATION (uncomment when stack.flavor: openshift)
+  # ================================================================
+  # image: densify/container-optimization-data-forwarder:ubi10-4.3.2
+  # assignedUIDs: true
+  # job:
+  #   checkPrometheusReady: false
+  # rbac:
+  #   create: true
+  # serviceAccount:
+  #   create: true
+  #   name: kubex-collection
+  # config:
+  #   prometheus:
+  #     url:
+  #       scheme: https
+  #       host: prometheus-k8s.openshift-monitoring.svc
+  #       port: 9091
+  #     ca_cert: /var/run/secrets/kubernetes.io/serviceaccount/service-ca.crt
+  
+  # ================================================================
+  # GKE AUTOPILOT CONFIGURATION (uncomment when stack.flavor: gkeAutopilot)
+  # ================================================================
+  # job:
+  #   checkPrometheusReady: false
+  # serviceAccount:
+  #   isGKE: true
+  #   create: true
+  #   name: kubex-forwarder
+  # config:
+  #   prometheus:
+  #     url:
+  #       scheme: https
+  #       host: monitoring.googleapis.com
+  #       port: 443
+  #   clusters:
+  #     - name: '' # Will auto-populate from global.cluster.name
+  #       identifiers:
+  #         cluster: '<gke-cluster-name>' # REQUIRED: Your GKE cluster name
+  #         collected_by: kubex-stack
+
+  # Optional: Job cleanup configuration (applies to all flavors)
   # Each value should be a non-negative integer (0 is allowed)
   # cronJob:
     # successfulJobsHistoryLimit: <value> # Number of successful jobs to retain
@@ -30,17 +94,21 @@ kubex-data-collector:
 
 #################################################################
 # Prometheus
-# Optional configuration for Prometheus subchart
+# PLATFORM-SPECIFIC: Uncomment this section when using OpenShift or GKE Autopilot
+# (these platforms use external Prometheus, so we disable the built-in one)
 #################################################################
-# Uncomment and configure if:
-# 1. Installing on GKE Autopilot (disable Prometheus)
-# 2. Using a non-default storage class for persistent volumes
-
 # prometheus:
-  # enabled: true # Set to false if installing on GKE Autopilot
+  # enabled: false # REQUIRED for gkeAutopilot and openshift flavors
   # server:
     # persistentVolume:
       # storageClass: <changeme-storage-class> # Specify storage class if not using default
+
+#################################################################
+# Kube State Metrics
+# PLATFORM-SPECIFIC: Uncomment this section when using GKE Autopilot
+#################################################################
+# kube-state-metrics:
+  # enabled: true # REQUIRED when stack.flavor: gkeAutopilot
 
 #################################################################
 # Kubex Automation Controller
@@ -54,12 +122,14 @@ kubex-data-collector:
 #################################################################
 kubex-automation-controller:
   enabled: false # Set to true to enable automated optimization
+  # Note: Credentials are inherited from global.credentials
+  # Override here only if you need different credentials for the automation controller
   credentials:
-    username: '<changeme-username>' # MANDATORY (if enabled): Kubex user for automation
-    epassword: '<changeme-encrypted-password>' # MANDATORY (if enabled): Encrypted password for automation
+    username: '' # Override global.credentials.username if needed
+    epassword: '' # Override global.credentials.epassword if needed
   valkey:
     credentials:
-      password: '<changeme-valkey-password>' # MANDATORY (if enabled): Valkey authentication password
+      password: '' # MANDATORY (if enabled): Valkey authentication password
     storage:
       className: '' # Optional: Specify storage class if not using default
 
