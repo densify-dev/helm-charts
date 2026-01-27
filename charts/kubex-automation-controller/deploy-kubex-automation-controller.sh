@@ -120,7 +120,7 @@ helm repo update
 
 if [ "${OPENSHIFT_MODE}" = true ]; then
   echo "OpenShift mode enabled: using values-openshift.yaml for OpenShift compatibility."
-  helm upgrade --install kubex ./kubex-automation-controller \
+  helm upgrade --install kubex-automation-controller kubex/kubex-automation-controller \
     -n "${NAMESPACE}" --create-namespace \
     -f kubex-automation-values.yaml \
     -f values-openshift.yaml
