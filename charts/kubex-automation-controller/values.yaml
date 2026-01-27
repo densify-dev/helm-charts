@@ -256,10 +256,3 @@ valkey:
 
 openshift:
   enabled: false
-  scc:
-    createRoleBinding: true
-    name: anyuid
-    serviceAccounts:
-      - kubex-automation-controller-sa
-      - kubex-webhook-sa
-      - default
