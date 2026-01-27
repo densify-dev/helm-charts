@@ -4,6 +4,8 @@ openshift:
     createRoleBinding: true
     name: anyuid
     serviceAccounts:
+      - kubex-automation-controller-sa
+      - kubex-webhook-sa
       - kubex-valkey-sa
 
 # Valkey subchart overrides for OpenShift SCC compatibility.
