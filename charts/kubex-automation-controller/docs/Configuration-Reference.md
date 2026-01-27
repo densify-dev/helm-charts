@@ -123,7 +123,7 @@ Copy these fields from the Kubex UI when `createSecrets: true`.
 
 | Key                            | Description                                                 |
 | ------------------------------ | ----------------------------------------------------------- |
-| `densify.url.host`             | Your Kubex instance URL. Format: `<instance>.densify.com` |
+| `densify.url.host`             | Your Kubex instance URL. Format: `<instance>.kubex.ai` |
 | `densifyCredentials.username`  | The username used for accessing the Kubex API             |
 | `densifyCredentials.epassword` | The encrypted password for the API user                     |
 
@@ -133,7 +133,7 @@ When `createSecrets: false`, reference the secret name that already stores the A
 
 | Key                                 | Description                                                 |
 | ----------------------------------- | ----------------------------------------------------------- |
-| `densify.url.host`                  | Your Kubex instance URL. Format: `<instance>.densify.com` |
+| `densify.url.host`                  | Your Kubex instance URL. Format: `<instance>.kubex.ai` |
 | `densifyCredentials.userSecretName` | Kubex API secret name                                     |
 
 ### API Secret Format
