@@ -174,7 +174,7 @@ Install using the deploy script (recommended):
 Or install using Helm directly:
 
 ```bash
-helm upgrade --install kubex-automation-controller densify/kubex-automation-controller \
+helm upgrade --install kubex-automation-controller kubex/kubex-automation-controller \
   --namespace kubex \
   --create-namespace \
   -f kubex-automation-values.yaml
@@ -191,7 +191,7 @@ For OpenShift, use the deploy script with the `--openshift` flag (recommended):
 Or install using Helm directly:
 
 ```bash
-helm upgrade --install kubex ./kubex-automation-controller \
+helm upgrade --install kubex-automation-controller kubex/kubex-automation-controller \
   -n kubex --create-namespace \
   -f kubex-automation-values.yaml \
   -f values-openshift.yaml
@@ -260,7 +260,20 @@ Once comfortable with the basic setup:
 
 1. **[Policy Configuration](./Policy-Configuration.md)** - Create more sophisticated automation rules
 2. **[Advanced Configuration](./Advanced-Configuration.md)** - Node scheduling, performance tuning
-3. **Reapply via deploy script or `helm upgrade`** - Edit `kubex-automation-values.yaml` and rerun either the deploy script or the `helm upgrade` command from [Step 8](#step-8-deploy) after every change
+3. **Reapply via deploy script or `helm upgrade`** - Edit `kubex-automation-values.yaml` and rerun either the deploy script or the `helm upgrade` command from [Step 8](#step-8-deploy) after every change:
+
+```bash
+helm upgrade --install kubex-automation-controller kubex/kubex-automation-controller \
+  -n kubex --create-namespace \
+  -f kubex-automation-values.yaml
+```
+> **For OpenShift, use:**
+```bash
+helm upgrade --install kubex-automation-controller kubex/kubex-automation-controller \
+  -n kubex --create-namespace \
+  -f kubex-automation-values.yaml \
+  -f values-openshift.yaml
+```
 
 ### Need Help?
 

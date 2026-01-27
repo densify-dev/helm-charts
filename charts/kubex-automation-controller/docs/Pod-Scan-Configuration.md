@@ -74,8 +74,19 @@ deployment:
     podEvictionCooldownPeriod: "1m"
 ```
 
+
 ```bash
-helm upgrade kubex-automation-controller densify/kubex-automation-controller -n kubex -f kubex-automation-values.yaml
+helm upgrade --install kubex-automation-controller kubex/kubex-automation-controller \
+  -n kubex --create-namespace \
+  --create-namespace \
+  -f kubex-automation-values.yaml
+```
+> **For OpenShift, use:**
+```bash
+helm upgrade --install kubex-automation-controller kubex/kubex-automation-controller \
+  -n kubex --create-namespace \
+  -f kubex-automation-values.yaml \
+  -f values-openshift.yaml
 ```
 
 ## Troubleshooting

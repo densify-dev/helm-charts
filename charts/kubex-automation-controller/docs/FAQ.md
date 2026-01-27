@@ -134,7 +134,21 @@ spec:
 See **[Advanced Configuration Guide](./Advanced-Configuration.md#pausing-automation-for-specific-pods)** for detailed examples and best practices.
 
 ### Q: How do I safely test policy changes?
+
 **A:** Capture every change in `kubex-automation-values.yaml` and apply it with the deploy script or the `helm upgrade` command from [Getting Started Step 8](./Getting-Started.md#step-8-deploy):
+
+```bash
+helm upgrade --install kubex-automation-controller kubex/kubex-automation-controller \
+  -n kubex --create-namespace \
+  -f kubex-automation-values.yaml
+```
+> **For OpenShift, use:**
+```bash
+helm upgrade --install kubex-automation-controller kubex/kubex-automation-controller \
+  -n kubex --create-namespace \
+  -f kubex-automation-values.yaml \
+  -f values-openshift.yaml
+```
 
 1. **Always redeploy via Helm**: Both policy and scope edits must be rendered through Helm so the controller and webhook stay aligned.
 2. **Use test environments**: Validate new policies in non-production namespaces or clusters before promoting to production.
@@ -192,8 +206,21 @@ scope:
 - **Dry-run eviction**: Tests eviction safety before proceeding
 
 ### Q: What if I need to disable automation quickly?
+
 **A:** Two methods:
-- **Recommended**: Set `policy.automationEnabled: false` and run `helm upgrade`
+- **Recommended**: Set `policy.automationEnabled: false` and reapply your values file with Helm:
+  ```bash
+  helm upgrade --install kubex-automation-controller kubex/kubex-automation-controller \
+    -n kubex --create-namespace \
+    -f kubex-automation-values.yaml
+  ```
+  > **For OpenShift, use:**
+  ```bash
+  helm upgrade --install kubex-automation-controller kubex/kubex-automation-controller \
+    -n kubex --create-namespace \
+    -f kubex-automation-values.yaml \
+    -f values-openshift.yaml
+  ```
 - **Emergency**: Scale both components to 0 replicas:
   ```bash
   kubectl scale deployment kubex-automation-controller -n kubex --replicas=0
@@ -263,7 +290,19 @@ valkey:
     limits:
       memory: "1Gi"    # Adjust based on Kubex recommendations
 ```
-3. **Apply changes**: Run `helm upgrade kubex-automation-controller densify/kubex-automation-controller -n kubex -f kubex-automation-values.yaml`
+3. **Apply changes:**
+   ```bash
+    helm upgrade --install kubex-automation-controller kubex/kubex-automation-controller \
+      -n kubex --create-namespace \
+      -f kubex-automation-values.yaml
+   ```
+   > **For OpenShift, use:**
+   ```bash
+    helm upgrade --install kubex-automation-controller kubex/kubex-automation-controller \
+      -n kubex --create-namespace \
+      -f kubex-automation-values.yaml \
+      -f values-openshift.yaml
+   ```
 
 ### Q: How do I prevent too many pod evictions during large-scale optimization?
 **A:** Use eviction throttling to control the rate of pod evictions across your cluster:
