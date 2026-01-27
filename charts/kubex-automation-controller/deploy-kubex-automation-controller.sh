@@ -4,11 +4,14 @@ set -e
 
 print_usage() {
   echo "Usage:"
-  echo "  ./deploy-kubex-automation-controller.sh [--certmanager] [--uninstall]"
+  echo "  ./deploy-kubex-automation-controller.sh [--certmanager] [--openshift] [--uninstall]"
   echo
   echo "Options:"
   echo "  --certmanager       Use cert-manager for certificate management instead of self-signed certificates."
   echo "                      NOTE: cert-manager must be pre-installed in your cluster."
+  echo
+  echo "  --openshift         Deploy using OpenShift-specific values (values-openshift.yaml)."
+  echo "                      This enables OpenShift SCC and service accounts"
   echo
   echo "  --uninstall         Uninstalls the kubex-automation-controller Helm release."
   echo
@@ -17,10 +20,12 @@ print_usage() {
 }
 
 
+
 # Default values
 NAMESPACE="kubex"
 CERT_MANAGER_ACTION=false
 DELETE_MODE=false
+OPENSHIFT_MODE=false
 
 # Parse arguments
 while [[ "$#" -gt 0 ]]; do
@@ -28,15 +33,18 @@ while [[ "$#" -gt 0 ]]; do
     --certmanager)
       CERT_MANAGER_ACTION=true
       ;;
+    --openshift)
+      OPENSHIFT_MODE=true
+      ;;
     --uninstall)
       DELETE_MODE=true
       ;;
-    -*)
+    -* )
       echo "Unknown parameter passed: $1"
       print_usage
       exit 1
       ;;
-    *)
+    * )
       echo "Unexpected argument: $1"
       print_usage
       exit 1
@@ -48,9 +56,9 @@ done
 RELEASE_NAME="kubex-automation-controller"
 
 if [ "${DELETE_MODE}" = true ]; then
-  echo "===== Uninstalling kubex-automation-controller helm package ====="
-  echo "Uninstalling kubex-automation-controller Helm release..."
-  helm uninstall "${RELEASE_NAME}" -n "${NAMESPACE}" || echo "kubex-automation-controller release not found."
+  echo "===== Uninstalling ${RELEASE_NAME} helm package ====="
+  echo "Uninstalling ${RELEASE_NAME} Helm release..."
+  helm uninstall "${RELEASE_NAME}" -n "${NAMESPACE}" || echo "${RELEASE_NAME} release not found."
   
   echo ""
   echo "Note: If the kubex-automation-tls secret was created outside of Helm"
@@ -67,10 +75,18 @@ fi
 # INSTALLATION MODE
 echo "===== Installation Mode Activated ====="
 
-# Validate kubex-automation-values.yaml exists
-if [ ! -f "kubex-automation-values.yaml" ]; then
-  echo "Error: kubex-automation-values.yaml not found in the current directory: `pwd`"
-  exit 1
+
+# Validate values files exist
+if [ "${OPENSHIFT_MODE}" = true ]; then
+  if [ ! -f "kubex-automation-values.yaml" ] || [ ! -f "values-openshift.yaml" ]; then
+    echo "Error: kubex-automation-values.yaml and/or values-openshift.yaml not found in the current directory: `pwd`"
+    exit 1
+  fi
+else
+  if [ ! -f "kubex-automation-values.yaml" ]; then
+    echo "Error: kubex-automation-values.yaml not found in the current directory: `pwd`"
+    exit 1
+  fi
 fi
 
 if [ "${CERT_MANAGER_ACTION}" = true ]; then
@@ -97,15 +113,24 @@ fi
 
 echo "Installing ${RELEASE_NAME}"
 
-helm repo add densify https://densify-dev.github.io/helm-charts
+helm repo add kubex https://densify-dev.github.io/helm-charts
 helm repo add groundhog2k https://groundhog2k.github.io/helm-charts
 helm repo update
 
-helm upgrade --install "${RELEASE_NAME}" "densify/${RELEASE_NAME}" \
-  --namespace "${NAMESPACE}" \
-  --create-namespace \
-  -f "./kubex-automation-values.yaml" \
-  --set certmanager.enabled="${CERT_MANAGER_ACTION}"
+
+if [ "${OPENSHIFT_MODE}" = true ]; then
+  echo "OpenShift mode enabled: using values-openshift.yaml for OpenShift compatibility."
+  helm upgrade --install "${RELEASE_NAME}" "kubex/${RELEASE_NAME}" \
+    -n "${NAMESPACE}" --create-namespace \
+    -f kubex-automation-values.yaml \
+    -f values-openshift.yaml
+else
+  helm upgrade --install "${RELEASE_NAME}" "kubex/${RELEASE_NAME}" \
+    --namespace "${NAMESPACE}" \
+    --create-namespace \
+    -f "./kubex-automation-values.yaml" \
+    --set certmanager.enabled="${CERT_MANAGER_ACTION}"
+fi
 
 echo "Installation complete in namespace: ${NAMESPACE}"
 

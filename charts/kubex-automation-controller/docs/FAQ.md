@@ -24,7 +24,7 @@ Common questions and answers about Kubex Automation Controller deployment, confi
 - At least 2 CPU cores and 4GB RAM available across nodes
 - Valid Kubex UI credentials and instance access
 - TLS certificates (automatically generated self-signed certificates by default, or optionally use cert-manager)
-- **Persistent storage**: Available StorageClass with at least 10Gi capacity for Valkey cache
+- **Persistent storage**: Available StorageClass with at least 10Gi capacity for Valkey cache (unless using ephemeral Valkey; see below)
 
 ### Q: How long does initial deployment take?
 **A:** Typically 3-5 minutes:
@@ -35,11 +35,13 @@ Common questions and answers about Kubex Automation Controller deployment, confi
 **A:** No, Kubex Automation Controller is deployed entirely as Kubernetes workloads. No node agents or DaemonSets are required.
 
 ### Q: What storage do I need to configure?
-**A:** Valkey cache requires persistent storage:
-- **StorageClass**: Configure in `valkey.storage.className` (e.g., `gp2` for EKS, `azurefile` for AKS, `standard` for GKE)
-- **Capacity**: Default 10Gi, configurable via `valkey.storage.requestedSize`
-- **CSI Drivers**: Most managed Kubernetes services include required drivers by default
-- **Verify availability**: `kubectl get storageclass` to see available options
+**A:**
+- **Default:** Valkey cache requires persistent storage:
+  - **StorageClass**: Configure in `valkey.storage.className` (e.g., `gp2` for EKS, `azurefile` for AKS, `standard` for GKE)
+  - **Capacity**: Default 10Gi, configurable via `valkey.storage.requestedSize`
+  - **CSI Drivers**: Most managed Kubernetes services include required drivers by default
+  - **Verify availability**: `kubectl get storageclass` to see available options
+- **OpenShift:** If you are deploying on OpenShift and use the provided `values-openshift.yaml` overrides. See the [OpenShift section](./Getting-Started.md#openshift-installation) in the Getting Started guide for details.
 
 ### Q: What's the recommended way to test this?
 **A:** We strongly recommend starting with a dev/test cluster first:
@@ -132,7 +134,21 @@ spec:
 See **[Advanced Configuration Guide](./Advanced-Configuration.md#pausing-automation-for-specific-pods)** for detailed examples and best practices.
 
 ### Q: How do I safely test policy changes?
+
 **A:** Capture every change in `kubex-automation-values.yaml` and apply it with the deploy script or the `helm upgrade` command from [Getting Started Step 8](./Getting-Started.md#step-8-deploy):
+
+```bash
+helm upgrade --install kubex-automation-controller kubex/kubex-automation-controller \
+  -n kubex --create-namespace \
+  -f kubex-automation-values.yaml
+```
+> **For OpenShift, use:**
+```bash
+helm upgrade --install kubex-automation-controller kubex/kubex-automation-controller \
+  -n kubex --create-namespace \
+  -f kubex-automation-values.yaml \
+  -f values-openshift.yaml
+```
 
 1. **Always redeploy via Helm**: Both policy and scope edits must be rendered through Helm so the controller and webhook stay aligned.
 2. **Use test environments**: Validate new policies in non-production namespaces or clusters before promoting to production.
@@ -190,8 +206,21 @@ scope:
 - **Dry-run eviction**: Tests eviction safety before proceeding
 
 ### Q: What if I need to disable automation quickly?
+
 **A:** Two methods:
-- **Recommended**: Set `policy.automationEnabled: false` and run `helm upgrade`
+- **Recommended**: Set `policy.automationEnabled: false` and reapply your values file with Helm:
+  ```bash
+  helm upgrade --install kubex-automation-controller kubex/kubex-automation-controller \
+    -n kubex --create-namespace \
+    -f kubex-automation-values.yaml
+  ```
+  > **For OpenShift, use:**
+  ```bash
+  helm upgrade --install kubex-automation-controller kubex/kubex-automation-controller \
+    -n kubex --create-namespace \
+    -f kubex-automation-values.yaml \
+    -f values-openshift.yaml
+  ```
 - **Emergency**: Scale both components to 0 replicas:
   ```bash
   kubectl scale deployment kubex-automation-controller -n kubex --replicas=0
@@ -261,7 +290,19 @@ valkey:
     limits:
       memory: "1Gi"    # Adjust based on Kubex recommendations
 ```
-3. **Apply changes**: Run `helm upgrade kubex-automation-controller densify/kubex-automation-controller -n kubex -f kubex-automation-values.yaml`
+3. **Apply changes:**
+   ```bash
+    helm upgrade --install kubex-automation-controller kubex/kubex-automation-controller \
+      -n kubex --create-namespace \
+      -f kubex-automation-values.yaml
+   ```
+   > **For OpenShift, use:**
+   ```bash
+    helm upgrade --install kubex-automation-controller kubex/kubex-automation-controller \
+      -n kubex --create-namespace \
+      -f kubex-automation-values.yaml \
+      -f values-openshift.yaml
+   ```
 
 ### Q: How do I prevent too many pod evictions during large-scale optimization?
 **A:** Use eviction throttling to control the rate of pod evictions across your cluster:

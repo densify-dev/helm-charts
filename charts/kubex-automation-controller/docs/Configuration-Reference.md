@@ -6,7 +6,22 @@ This document provides a detailed reference for every field in your `kubex-autom
 
 - Populate `kubex-automation-values.yaml` section by section using the tables below.
 - Need the deployment workflow? Stay in [Getting Started](./Getting-Started.md).
-- For rollout or future edits, update `kubex-automation-values.yaml` and rerun either the deploy script or the `helm upgrade` command from [Getting Started Step 8](./Getting-Started.md#step-8-deploy).
+- For rollout or future edits, update `kubex-automation-values.yaml` and rerun either the deploy script or the `helm upgrade` command from [Getting Started Step 8](./Getting-Started.md#step-8-deploy):
+
+```bash
+helm upgrade --install kubex-automation-controller kubex/kubex-automation-controller \
+  --namespace kubex \
+  --create-namespace \
+  -f kubex-automation-values.yaml
+```
+> **For OpenShift, use:**
+```bash
+helm upgrade --install kubex-automation-controller kubex/kubex-automation-controller \
+  --namespace kubex \
+  --create-namespace \
+  -f kubex-automation-values.yaml \
+  -f values-openshift.yaml
+```
 - Cross-reference dedicated guides (Policy Configuration, Certificates, Pod Scan Configuration) for deeper explanations.
 
 ---
@@ -62,7 +77,7 @@ If the value `createSecrets` is `false`, the helm chart does not create any secr
 | Resource Type | Name | Purpose |
 | --- | --- | --- |
 | **EmptyDir Volume** | `recommendations-volume` | Local storage for recommendations (ephemeral) |
-| **Deployment** | `kubex-automation-controller-valkey` | Valkey cache instance (from subchart) |
+| **Deployment** | `kubex-automation-controller-valkey` | Valkey cache instance (from subchart). Persistent by default; both persistent and ephemeral storage are supported. |
 | **Service** | `kubex-automation-controller-valkey` | Service for Valkey cache (from subchart) |
 
 ---
@@ -108,7 +123,7 @@ Copy these fields from the Kubex UI when `createSecrets: true`.
 
 | Key                            | Description                                                 |
 | ------------------------------ | ----------------------------------------------------------- |
-| `densify.url.host`             | Your Kubex instance URL. Format: `<instance>.densify.com` |
+| `densify.url.host`             | Your Kubex instance URL. Format: `<instance>.kubex.ai` |
 | `densifyCredentials.username`  | The username used for accessing the Kubex API             |
 | `densifyCredentials.epassword` | The encrypted password for the API user                     |
 
@@ -118,7 +133,7 @@ When `createSecrets: false`, reference the secret name that already stores the A
 
 | Key                                 | Description                                                 |
 | ----------------------------------- | ----------------------------------------------------------- |
-| `densify.url.host`                  | Your Kubex instance URL. Format: `<instance>.densify.com` |
+| `densify.url.host`                  | Your Kubex instance URL. Format: `<instance>.kubex.ai` |
 | `densifyCredentials.userSecretName` | Kubex API secret name                                     |
 
 ### API Secret Format
@@ -313,6 +328,7 @@ Copy the generated password and use it in your `kubex-automation-values.yaml` un
 
 The following sections configure the credentials, storage and other optional parameters for the embedded Valkey cache, which is used for storing recommendations and state.
 
+
 ## Valkey Configuration with Secret Creation
 
 If `createSecrets` is `true`:
@@ -322,7 +338,7 @@ If `createSecrets` is `true`:
 | `valkey.credentials.user`       | The username for accessing the Valkey instance. Defaults to `"kubexAutomation"` if not set.             |
 | `valkey.credentials.password`   | **Required.** The password for the Valkey instance. Must be quoted if it includes special characters, cannot include SPACES. |
 | `valkey.storage.className`      | **Optional.** The storage class to use for Valkey persistent storage (e.g., `gp2` for EKS, `azurefile` for AKS, `standard` for GKE). Define if your environment requires it. |
-| `valkey.storage.requestedSize`  | Storage capacity for Valkey persistent volume. Default: `10Gi`.                                        |
+| `valkey.storage.requestedSize`  | Storage capacity for Valkey persistent volume. Default: `10Gi`. Set to `""` for ephemeral (no PVC, if desired). |
 | `valkey.resources`             | Resource specifications for Valkey pod. Can be overridden based on Kubex recommendations.             |
 | `valkey.nodeSelector`           | **Optional.** Node labels for valkey scheduling. Define if your environment requires it. |
 | `valkey.affinity`               | **Optional.** Valkey pod affinity. Define if your environment requires it. |
@@ -338,6 +354,8 @@ valkey:
   credentials:
     user: "kubexAutomation"
     password: "{your-secret-password}"
+  storage:
+    requestedSize: ""  # Use empty string for ephemeral storage (no PVC)
   # ...
 ```
 

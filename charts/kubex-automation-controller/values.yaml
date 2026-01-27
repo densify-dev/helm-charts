@@ -54,10 +54,48 @@ deployment:
       cpu: "250m" # Minimum guaranteed CPU
     limits:
       memory: "512Mi" # Maximum memory the pod can use before being throttled or killed
+  # Pod and container security contexts.
+  podSecurityContext:
+    fsGroup: 3000
+    runAsGroup: 3000
+    runAsNonRoot: true
+    runAsUser: 3000
+    seccompProfile:
+      type: RuntimeDefault
+  # OpenShift default: omit fixed UID/GID and seccomp.
+  podSecurityContextOpenShift: {}
+  containerSecurityContext:
+    readOnlyRootFilesystem: true
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+    seccompProfile:
+      type: RuntimeDefault
+  containerSecurityContextOpenShift:
+    readOnlyRootFilesystem: true
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+  initContainerSecurityContext:
+    readOnlyRootFilesystem: true
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+    seccompProfile:
+      type: RuntimeDefault
+  initContainerSecurityContextOpenShift:
+    readOnlyRootFilesystem: true
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
   controllerEnv: # Environment variables for the controller pod
     podScanInitialInterval: "2m"  # Initial delay before first pod scan after startup
     podScanInterval: "1h"  # Default optimized for in-place resizing (Kubernetes 1.33+). See Pod-Scan-Configuration.md for pod eviction mode settings.
-    podScanTimeout: "30m"   # Default optimized for in-place resizing. Adjust based on cluster size - see Pod-Scan-Configuration.md
+    podScanTimeout: "55m"   # Default optimized for in-place resizing. Adjust based on cluster size - see Pod-Scan-Configuration.md
     podEvictionCooldownPeriod: "1m"  # Cooldown between pod evictions (only used when in-place resizing unavailable on Kubernetes < 1.33 or policy inPlaceResize.enabled: false)
   
     recommendationsFetchInitialDelay: "1m"
@@ -148,6 +186,14 @@ valkey:
   # Add password to valkey.conf via a Secret file
   extraSecretValkeyConfigs: kubex-valkey-secret
 
+  podSecurityContext:
+    seccompProfile:
+      type: RuntimeDefault
+
+  securityContext:
+    seccompProfile:
+      type: RuntimeDefault
+
   # Storage for single-instance (non-HA)
   storage:
     requestedSize: "10Gi"
@@ -180,6 +226,9 @@ valkey:
   metrics:
     enabled: true
     exporter:
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
       image:
         registry: docker.io
         repository: oliver006/redis_exporter
@@ -204,3 +253,6 @@ valkey:
         prometheus.io/path: "/metrics"
     serviceMonitor:
       enabled: false
+
+openshift:
+  enabled: false

@@ -1,6 +1,7 @@
+
 # Getting Started with Kubex Automation Controller
 
-This guide walks you through deploying Kubex Automation Controller in your Kubernetes cluster.
+This guide walks you through deploying Kubex Automation Controller in your Kubernetes cluster using the default, auto-generated self-signed certificates. Advanced certificate options are covered at the end.
 
 # Quick Links
 
@@ -13,18 +14,11 @@ This guide walks you through deploying Kubex Automation Controller in your Kuber
   - [Step 4: Configure Your Cluster](#step-4-configure-your-cluster)
   - [Step 5: Define Automation Scope](#step-5-define-automation-scope)
   - [Step 6: Configure Automation Policy](#step-6-configure-automation-policy)
-  - [Step 7: Set Up TLS Certificates](#step-7-set-up-tls-certificates)
-    - [Option A: Self-Signed Certificates (Default)](#option-a-self-signed-certificates-default)
-    - [Option B: Use cert-manager](#option-b-use-cert-manager)
-    - [Option C: Bring Your Own Certificates](#option-c-bring-your-own-certificates)
-  - [Step 8: Deploy](#step-8-deploy)
-    - [Option A: Quick Deploy (Recommended)](#option-a-quick-deploy-recommended)
-      - [Option A1: Using Self-Signed Certificates (Default)](#option-a1-using-self-signed-certificates-default)
-      - [Option A2: Using cert-manager](#option-a2-using-cert-manager)
-    - [Option B: Deploy via Helm Command](#option-b-deploy-via-helm-command)
-      - [Add Helm repositories](#add-helm-repositories)
-      - [Option B1: Self-Signed or Own Certificates (Default)](#option-b1-self-signed-or-own-certificates-default)
-      - [Option B2: Using cert-manager](#option-b2-using-cert-manager)
+  - [Step 7: Install Kubex Automation Controller](#step-7-install-kubex-automation-controller)
+    - [Standard Kubernetes Installation](#standard-kubernetes-installation)
+    - [OpenShift Installation](#openshift-installation)
+  - [Step 8: Verify Installation](#step-8-verify-installation)
+- [Advanced: Custom Certificate Options](#advanced-custom-certificate-options)
   - [Step 9: Verify Installation](#step-9-verify-installation)
   - [Next Steps](#next-steps)
     - [Monitor Your First Optimizations](#monitor-your-first-optimizations)
@@ -73,7 +67,7 @@ The instructions in this document assume that you leave the value of `createSecr
 # ⚠️ Copy these EXACTLY from Kubex UI
 densify:
   url:
-    host: your-instance.densify.com
+    host: your-instance.kubex.ai
 
 densifyCredentials:
   username: 'your-api-username'
@@ -163,116 +157,58 @@ This policy is already referenced in your scope configuration from Step 5.
 
 ---
 
-## Step 7: Set Up TLS Certificates
 
-The webhook requires TLS certificates. Certificate method is controlled during deployment (Step 8) via deploy script flags:
+## Step 7: Install Kubex Automation Controller
 
-### Option A: Self-Signed Certificates (Default)
 
-**No configuration needed!** Self-signed certificates with 10-year validity are automatically generated during installation.
+### Standard Kubernetes Installation
 
-Simply deploy without any certificate flags (see Step 8).
+By default, the chart will auto-generate a self-signed certificate for the webhook. No extra configuration is needed for certificates.
 
-### Option B: Use cert-manager
-
-**Prerequisites**: cert-manager must be pre-installed in your cluster.
-
-To install cert-manager:
-```bash
-helm repo add jetstack https://charts.jetstack.io
-helm repo update
-helm install cert-manager jetstack/cert-manager \
-  --namespace cert-manager \
-  --create-namespace \
-  --set crds.enabled=true
-```
-
-Deploy with the `--certmanager` flag (see Step 8).
-
-### Option C: Bring Your Own Certificates
-
-See [BYOC Guide](./Certificates-BYOC.md) if you have existing certificates.
-
-**Important**: When using custom certificates, your Kubernetes secret **must** include the CA certificate that signed your TLS certificate. The kubex-automation-controller requires this CA certificate for proper webhook operation.
-
-You must create the `kubex-automation-tls` secret **before** deploying (see BYOC Guide for details).
-
----
-
-## Step 8: Deploy
-
-> **Future updates**: After editing `kubex-automation-values.yaml`, rerun the deploy script or the `helm upgrade` command from [Option B1](#option-b1-self-signed-or-own-certificates-default) below. Do not patch live resources directly—the scripted deployment keeps the webhook and controller in sync.
-
-### Option A: Quick Deploy (Recommended)
-
-#### Option A1: Using Self-Signed Certificates (Default)
+Install using the deploy script (recommended):
 
 ```bash
 ./deploy-kubex-automation-controller.sh
 ```
 
-#### Option A2: Using cert-manager
-
-**Prerequisites**: cert-manager must be pre-installed in your cluster.
+Or install using Helm directly:
 
 ```bash
-./deploy-kubex-automation-controller.sh --certmanager
-```
-
-### Option B: Deploy via Helm Command
-
-#### Add Helm repositories
-
-```bash
-helm repo add densify https://densify-dev.github.io/helm-charts
-helm repo add groundhog2k https://groundhog2k.github.io/helm-charts
-helm repo update
-```
-
-#### Option B1: Self-Signed or Own Certificates (Default)
-
-```bash
-helm upgrade --install kubex-automation-controller densify/kubex-automation-controller \
+helm upgrade --install kubex-automation-controller kubex/kubex-automation-controller \
   --namespace kubex \
   --create-namespace \
   -f kubex-automation-values.yaml
-
-# Note: For BYOC, create kubex-automation-tls secret before running the above command
 ```
 
-#### Option B2: Using cert-manager
+### OpenShift Installation
 
-1. Install cert-manager:
+For OpenShift, use the deploy script with the `--openshift` flag (recommended):
 
 ```bash
-helm repo add jetstack https://charts.jetstack.io --force-update
-helm upgrade --install cert-manager jetstack/cert-manager \
-  --namespace cert-manager \
-  --create-namespace \
-  --set crds.enabled=true
+./deploy-kubex-automation-controller.sh --openshift
 ```
 
-2. Wait for cert-manager deployments to be ready, for example (using `bash`):
+Or install using Helm directly:
 
 ```bash
-for deploy in cert-manager cert-manager-webhook cert-manager-cainjector; do
-  echo "Waiting for deployment/$deploy rollout..."
-  kubectl rollout status deployment/$deploy -n cert-manager --timeout=120s || {
-    echo "Rollout failed for $deploy"
-    exit 1
-  }
-done
-```
-
-3. Deploy Kubex Automation Controller:
-
-```bash
-helm upgrade --install kubex-automation-controller densify/kubex-automation-controller \
-  --namespace kubex \
-  --create-namespace \
+helm upgrade --install kubex-automation-controller kubex/kubex-automation-controller \
+  -n kubex --create-namespace \
   -f kubex-automation-values.yaml \
-  --set certmanager.enabled=true
+  -f values-openshift.yaml
 ```
+
+The `values-openshift.yaml` file will enable OpenShift SCC and service account settings
+
+---
+
+done
+
+## Step 8: Verify Installation
+
+
+# Advanced: Custom Certificate Options
+
+If you need to use cert-manager or bring your own certificates (BYOC), see the [Advanced Configuration](./Advanced-Configuration.md) and [Certificates-BYOC.md](./Certificates-BYOC.md) guides for details. These options are not required for most users.
 
 ---
 
@@ -320,7 +256,20 @@ Once comfortable with the basic setup:
 
 1. **[Policy Configuration](./Policy-Configuration.md)** - Create more sophisticated automation rules
 2. **[Advanced Configuration](./Advanced-Configuration.md)** - Node scheduling, performance tuning
-3. **Reapply via deploy script or `helm upgrade`** - Edit `kubex-automation-values.yaml` and rerun either the deploy script or the `helm upgrade` command from [Step 8](#step-8-deploy) after every change
+3. **Reapply via deploy script or `helm upgrade`** - Edit `kubex-automation-values.yaml` and rerun either the deploy script or the `helm upgrade` command from [Step 8](#step-8-deploy) after every change:
+
+```bash
+helm upgrade --install kubex-automation-controller kubex/kubex-automation-controller \
+  -n kubex --create-namespace \
+  -f kubex-automation-values.yaml
+```
+> **For OpenShift, use:**
+```bash
+helm upgrade --install kubex-automation-controller kubex/kubex-automation-controller \
+  -n kubex --create-namespace \
+  -f kubex-automation-values.yaml \
+  -f values-openshift.yaml
+```
 
 ### Need Help?
 

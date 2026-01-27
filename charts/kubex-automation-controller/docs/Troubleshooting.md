@@ -8,8 +8,6 @@ This guide provides comprehensive guidance for diagnosing and resolving common i
 - [Quick Links](#quick-links)
   - [Helm Upgrade Conflicts](#helm-upgrade-conflicts)
     - [MutatingWebhookConfiguration Ownership Conflicts](#mutatingwebhookconfiguration-ownership-conflicts)
-  - [Initial Deployment Issues](#initial-deployment-issues)
-    - [Check Pod Status](#check-pod-status)
     - [Common Deployment Problems](#common-deployment-problems)
   - [Controller Not Processing Pods](#controller-not-processing-pods)
     - [Verify Configuration](#verify-configuration)
@@ -28,7 +26,6 @@ This guide provides comprehensive guidance for diagnosing and resolving common i
       - [Storage Troubleshooting](#storage-troubleshooting)
   - [Configuration Debugging](#configuration-debugging)
     - [Validate YAML Syntax](#validate-yaml-syntax)
-    - [Check Resource References](#check-resource-references)
       - [Advanced Configuration Debugging](#advanced-configuration-debugging)
   - [Emergency Procedures](#emergency-procedures)
     - [Disable Automation Quickly](#disable-automation-quickly)
@@ -59,8 +56,18 @@ conflicts with "admissionsenforcer" using admissionregistration.k8s.io/v1:
 kubectl delete mutatingwebhookconfiguration kubex-resource-optimization-webhook
 
 # Then run your Helm upgrade
-helm upgrade kubex-automation-controller densify/kubex-automation-controller \
-  -n kubex -f kubex-automation-values.yaml
+```bash
+helm upgrade --install kubex-automation-controller kubex/kubex-automation-controller \
+  -n kubex --create-namespace \
+  -f kubex-automation-values.yaml
+```
+> **For OpenShift, use:**
+```bash
+helm upgrade --install kubex-automation-controller kubex/kubex-automation-controller \
+  -n kubex --create-namespace \
+  -f kubex-automation-values.yaml \
+  -f values-openshift.yaml
+```
 ```
 ---
 
@@ -277,10 +284,21 @@ kubectl logs kubex-automation-controller-valkey-* -n kubex
 ### Validate YAML Syntax
 ```bash
 # Test configuration changes
-helm template densify/kubex-automation-controller -n kubex -f kubex-automation-values.yaml --debug
+helm template kubex/kubex-automation-controller -n kubex -f kubex-automation-values.yaml --debug
 
 # Dry-run deployment
-helm upgrade kubex-automation-controller densify/kubex-automation-controller -n kubex -f kubex-automation-values.yaml --dry-run
+```bash
+helm upgrade --install kubex-automation-controller kubex/kubex-automation-controller \
+  -n kubex --create-namespace \
+  -f kubex-automation-values.yaml --dry-run
+```
+> **For OpenShift, use:**
+```bash
+helm upgrade --install kubex-automation-controller kubex/kubex-automation-controller \
+  -n kubex --create-namespace \
+  -f kubex-automation-values.yaml \
+  -f values-openshift.yaml --dry-run
+```
 ```
 
 ### Check Resource References
@@ -299,19 +317,33 @@ kubectl auth can-i --list --as=system:serviceaccount:kubex:kubex-automation-cont
 
 **Enable debug mode:**
 1. Uncomment `debug: true` in the deployment section of `kubex-automation-values.yaml`
-2. Run `helm upgrade kubex-automation-controller densify/kubex-automation-controller -n kubex -f kubex-automation-values.yaml`
+2. Run:
+   ```bash
+   helm upgrade --install kubex-automation-controller kubex/kubex-automation-controller \
+     -n kubex --create-namespace \
+     -f kubex-automation-values.yaml 
+   ```
+   > **For OpenShift, use:**
+   ```bash
+   helm upgrade --install kubex-automation-controller kubex/kubex-automation-controller \
+     -n kubex --create-namespace \
+     -f kubex-automation-values.yaml \
+     -f values-openshift.yaml
+   ```
 3. View debug logs: `kubectl logs -l app=kubex-controller -n kubex -f`
 
 **Validate configuration changes:**
 ```bash
 # Check YAML syntax and template rendering
-helm template densify/kubex-automation-controller -n kubex -f kubex-automation-values.yaml --debug
+helm template kubex/kubex-automation-controller -n kubex -f kubex-automation-values.yaml --debug
 
 # Review all generated ConfigMaps
 kubectl get configmap -n kubex -o yaml
 
 # Test configuration without applying
-helm upgrade kubex-automation-controller densify/kubex-automation-controller -n kubex -f kubex-automation-values.yaml --dry-run --debug
+helm upgrade --install kubex-automation-controller kubex/kubex-automation-controller \
+     -n kubex --create-namespace \
+     -f kubex-automation-values.yaml --dry-run --debug
 ```
 
 ## Emergency Procedures
@@ -324,7 +356,18 @@ helm upgrade kubex-automation-controller densify/kubex-automation-controller -n 
 vim kubex-automation-values.yaml
 
 # Apply the change via Helm upgrade
-helm upgrade kubex-automation-controller densify/kubex-automation-controller -n kubex -f kubex-automation-values.yaml
+```bash
+helm upgrade --install kubex-automation-controller kubex/kubex-automation-controller \
+  -n kubex --create-namespace \
+  -f kubex-automation-values.yaml
+```
+> **For OpenShift, use:**
+```bash
+helm upgrade --install kubex-automation-controller kubex/kubex-automation-controller \
+  -n kubex --create-namespace \
+  -f kubex-automation-values.yaml \
+  -f values-openshift.yaml
+```
 ```
 
 **Method 2: Emergency Pod Scaling**

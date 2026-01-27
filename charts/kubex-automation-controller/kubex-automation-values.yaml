@@ -15,11 +15,11 @@ createSecrets: true # Set to false if you provide your own secrets, created outs
 
 densify:
   url:
-    host: <customerName>.densify.com # mandatory: <instance>.densify.com
+    host: <customerName>.kubex.ai # mandatory: <instance>.kubex.ai
 
 densifyCredentials:
-  # username: '<username>' # Username to access Kubex, mandatory if createSecrets is true
-  # epassword: '<epassword>' # Encrypted password to access Kubex, mandatory if createSecrets is true
+  username: '<username>' # Username to access Kubex, mandatory if createSecrets is true
+  epassword: '<epassword>' # Encrypted password to access Kubex, mandatory if createSecrets is true
   # userSecretName: # Kubex API secret name, mandatory if createSecrets is false
 
 # ================================================================
@@ -30,8 +30,8 @@ densifyCredentials:
 # ================================================================
 
 valkey:
-  # credentials:
-    # password: # valkey password, mandatory if createSecrets is true,
+  credentials:
+    password: '<password>' # valkey password, mandatory if createSecrets is true,
                 # quote if includes special characters, cannot include SPACES
   # extraSecretValkeyConfigs: # valkey server secret, mandatory if createSecrets is false
   # metrics:
@@ -200,7 +200,7 @@ policy:
 #  controllerEnv:  # Override controller environment variables (defaults in values.yaml)
 #    debug: true                                  # Uncomment to enable debug mode for troubleshooting
 #    podScanInterval: "1h"                        # Default optimized for in-place resizing (Kubernetes 1.33+)
-#    podScanTimeout: "30m"                        # Default optimized for in-place resizing
+#    podScanTimeout: "55m"                        # Default optimized for in-place resizing
 #    podEvictionCooldownPeriod: "1m"              # Only used when in-place resizing unavailable (Kubernetes < 1.33)
 #    podScanInitialInterval: "2m"                 # Initial delay before first pod scan after startup  
 #    recommendationsFetchInitialDelay: "1m"       # Startup delay before first recommendation fetch 
@@ -300,3 +300,9 @@ policy:
 #      value: "true"
 #      effect: "NoSchedule"
 
+
+# ================================================================
+# OPENSHIFT CONFIGURATION (Optional)
+# Instructions:
+#  Use the values from values-openshift.yaml to enable OpenShift-specific settings in this file or add the file as an override during helm install/upgrade
+# ================================================================

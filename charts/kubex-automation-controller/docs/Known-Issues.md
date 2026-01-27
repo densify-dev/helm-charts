@@ -14,7 +14,6 @@ This document lists current known issues, limitations, and their status in the K
     - [Scope Selector Requirements Too Restrictive](#scope-selector-requirements-too-restrictive)
     - [Resource Optimization May Temporarily Exceed Quotas During Pod Replacement](#resource-optimization-may-temporarily-exceed-quotas-during-pod-replacement)
     - [LimitRange maxLimitRequestRatio Not Supported](#limitrange-maxlimitrequestratio-not-supported)
-  - [Storage and Deployment Issues](#storage-and-deployment-issues)
     - [Valkey Password Special Character Limitations](#valkey-password-special-character-limitations)
 
 ---
@@ -103,8 +102,6 @@ This document lists current known issues, limitations, and their status in the K
 **Workaround**: Exclude namespaces containing LimitRange objects with `maxLimitRequestRatio` constraints from your automation scope configuration 
 
 **Planned Fix**: Enhanced LimitRange validation to include maxLimitRequestRatio constraint checking
-
-## Storage and Deployment Issues
 
 ### Valkey Password Special Character Limitations
 **Status**: Known Limitation  
