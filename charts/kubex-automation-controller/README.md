@@ -81,7 +81,8 @@ This guide covers:
 | **[Getting Started](./docs/Getting-Started.md)** | Step-by-step deployment guide (includes OpenShift and standard Kubernetes instructions) |
 | **[Configuration Reference](./docs/Configuration-Reference.md)** | Complete field-by-field reference for `kubex-automation-values.yaml` and OpenShift overrides |
 | **[Policy Configuration](./docs/Policy-Configuration.md)** | Define automation behaviors and safety rules |
-| **[Apply Updates](./docs/Getting-Started.md#step-7-install-kubex-automation-controller)** | Rerun the deploy script or `helm upgrade --install … -f kubex-automation-values.yaml` after configuration changes |
+| **[Apply Updates](./docs/Getting-Started.md#step-7-install-kubex-automation-controller)** | Rerun the deploy script or helm upgrade command after configuration changes |
+
 
 ## Advanced Topics
 
