@@ -113,7 +113,7 @@ fi
 
 echo "Installing ${RELEASE_NAME}"
 
-helm repo add densify https://densify-dev.github.io/helm-charts
+helm repo add kubex https://densify-dev.github.io/helm-charts
 helm repo add groundhog2k https://groundhog2k.github.io/helm-charts
 helm repo update
 
@@ -125,7 +125,7 @@ if [ "${OPENSHIFT_MODE}" = true ]; then
     -f kubex-automation-values.yaml \
     -f values-openshift.yaml
 else
-  helm upgrade --install "${RELEASE_NAME}" "densify/${RELEASE_NAME}" \
+  helm upgrade --install "${RELEASE_NAME}" "kubex/${RELEASE_NAME}" \
     --namespace "${NAMESPACE}" \
     --create-namespace \
     -f "./kubex-automation-values.yaml" \
