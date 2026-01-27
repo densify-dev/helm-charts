@@ -56,9 +56,9 @@ done
 RELEASE_NAME="kubex-automation-controller"
 
 if [ "${DELETE_MODE}" = true ]; then
-  echo "===== Uninstalling kubex-automation-controller helm package ====="
-  echo "Uninstalling kubex-automation-controller Helm release..."
-  helm uninstall "${RELEASE_NAME}" -n "${NAMESPACE}" || echo "kubex-automation-controller release not found."
+  echo "===== Uninstalling ${RELEASE_NAME} helm package ====="
+  echo "Uninstalling ${RELEASE_NAME} Helm release..."
+  helm uninstall "${RELEASE_NAME}" -n "${NAMESPACE}" || echo "${RELEASE_NAME} release not found."
   
   echo ""
   echo "Note: If the kubex-automation-tls secret was created outside of Helm"
@@ -120,7 +120,7 @@ helm repo update
 
 if [ "${OPENSHIFT_MODE}" = true ]; then
   echo "OpenShift mode enabled: using values-openshift.yaml for OpenShift compatibility."
-  helm upgrade --install kubex-automation-controller kubex/kubex-automation-controller \
+  helm upgrade --install "${RELEASE_NAME}" "kubex/${RELEASE_NAME}" \
     -n "${NAMESPACE}" --create-namespace \
     -f kubex-automation-values.yaml \
     -f values-openshift.yaml
