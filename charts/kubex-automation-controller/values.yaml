@@ -95,7 +95,7 @@ deployment:
   controllerEnv: # Environment variables for the controller pod
     podScanInitialInterval: "2m"  # Initial delay before first pod scan after startup
     podScanInterval: "1h"  # Default optimized for in-place resizing (Kubernetes 1.33+). See Pod-Scan-Configuration.md for pod eviction mode settings.
-    podScanTimeout: "30m"   # Default optimized for in-place resizing. Adjust based on cluster size - see Pod-Scan-Configuration.md
+    podScanTimeout: "55m"   # Default optimized for in-place resizing. Adjust based on cluster size - see Pod-Scan-Configuration.md
     podEvictionCooldownPeriod: "1m"  # Cooldown between pod evictions (only used when in-place resizing unavailable on Kubernetes < 1.33 or policy inPlaceResize.enabled: false)
   
     recommendationsFetchInitialDelay: "1m"

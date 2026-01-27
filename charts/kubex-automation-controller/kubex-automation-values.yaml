@@ -18,8 +18,8 @@ densify:
     host: <customerName>.kubex.ai # mandatory: <instance>.kubex.ai
 
 densifyCredentials:
-  # username: '<username>' # Username to access Kubex, mandatory if createSecrets is true
-  # epassword: '<epassword>' # Encrypted password to access Kubex, mandatory if createSecrets is true
+  username: '<username>' # Username to access Kubex, mandatory if createSecrets is true
+  epassword: '<epassword>' # Encrypted password to access Kubex, mandatory if createSecrets is true
   # userSecretName: # Kubex API secret name, mandatory if createSecrets is false
 
 # ================================================================
@@ -30,8 +30,8 @@ densifyCredentials:
 # ================================================================
 
 valkey:
-  # credentials:
-    # password: # valkey password, mandatory if createSecrets is true,
+  credentials:
+    password: '<password>' # valkey password, mandatory if createSecrets is true,
                 # quote if includes special characters, cannot include SPACES
   # extraSecretValkeyConfigs: # valkey server secret, mandatory if createSecrets is false
   # metrics:
