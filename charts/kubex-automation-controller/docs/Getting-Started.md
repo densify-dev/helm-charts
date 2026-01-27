@@ -197,7 +197,7 @@ helm upgrade --install kubex-automation-controller kubex/kubex-automation-contro
   -f values-openshift.yaml
 ```
 
-The `values-openshift.yaml` file will enable OpenShift SCC and service account settings
+The `values-openshift.yaml` file will enable OpenShift-specific settings and service account overrides.
 
 ---
 
