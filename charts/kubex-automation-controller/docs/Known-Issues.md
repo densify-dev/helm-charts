@@ -14,7 +14,6 @@ This document lists current known issues, limitations, and their status in the K
     - [Scope Selector Requirements Too Restrictive](#scope-selector-requirements-too-restrictive)
     - [Resource Optimization May Temporarily Exceed Quotas During Pod Replacement](#resource-optimization-may-temporarily-exceed-quotas-during-pod-replacement)
     - [LimitRange maxLimitRequestRatio Not Supported](#limitrange-maxlimitrequestratio-not-supported)
-  - [Storage and Deployment Issues](#storage-and-deployment-issues)
     - [Valkey Password Special Character Limitations](#valkey-password-special-character-limitations)
 
 ---
@@ -104,8 +103,6 @@ This document lists current known issues, limitations, and their status in the K
 
 **Planned Fix**: Enhanced LimitRange validation to include maxLimitRequestRatio constraint checking
 
-## Storage and Deployment Issues
-**Note:** On OpenShift, you can run Valkey with ephemeral (non-persistent) storage by using the provided `values-openshift.yaml` overrides. This disables PVC creation for Valkey. See the OpenShift section in the Getting Started guide for details.
 ### Valkey Password Special Character Limitations
 **Status**: Known Limitation  
 

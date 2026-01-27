@@ -197,11 +197,7 @@ helm upgrade --install kubex-automation-controller kubex/kubex-automation-contro
   -f values-openshift.yaml
 ```
 
-This will:
-- Enable OpenShift SCC and service account settings
-- Run Valkey with ephemeral (non-persistent) storage
-
-See the `values-openshift.yaml` file for further customization options.
+The `values-openshift.yaml` file will enable OpenShift SCC and service account settings
 
 ---
 

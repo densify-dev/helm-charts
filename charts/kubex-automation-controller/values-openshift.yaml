@@ -19,7 +19,3 @@ valkey:
   metrics:
     exporter:
       securityContext: null
-  storage:
-    requestedSize: ""
-    className: ""
-    keepPvc: false

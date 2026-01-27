@@ -77,7 +77,7 @@ If the value `createSecrets` is `false`, the helm chart does not create any secr
 | Resource Type | Name | Purpose |
 | --- | --- | --- |
 | **EmptyDir Volume** | `recommendations-volume` | Local storage for recommendations (ephemeral) |
-| **Deployment** | `kubex-automation-controller-valkey` | Valkey cache instance (from subchart). Persistent by default, but can be ephemeral on OpenShift (see below). |
+| **Deployment** | `kubex-automation-controller-valkey` | Valkey cache instance (from subchart). Persistent by default; both persistent and ephemeral storage are supported. |
 | **Service** | `kubex-automation-controller-valkey` | Service for Valkey cache (from subchart) |
 
 ---
@@ -338,7 +338,7 @@ If `createSecrets` is `true`:
 | `valkey.credentials.user`       | The username for accessing the Valkey instance. Defaults to `"kubexAutomation"` if not set.             |
 | `valkey.credentials.password`   | **Required.** The password for the Valkey instance. Must be quoted if it includes special characters, cannot include SPACES. |
 | `valkey.storage.className`      | **Optional.** The storage class to use for Valkey persistent storage (e.g., `gp2` for EKS, `azurefile` for AKS, `standard` for GKE). Define if your environment requires it. |
-| `valkey.storage.requestedSize`  | Storage capacity for Valkey persistent volume. Default: `10Gi`. Set to `""` for ephemeral (no PVC, e.g., on OpenShift). |
+| `valkey.storage.requestedSize`  | Storage capacity for Valkey persistent volume. Default: `10Gi`. Set to `""` for ephemeral (no PVC, if desired). |
 | `valkey.resources`             | Resource specifications for Valkey pod. Can be overridden based on Kubex recommendations.             |
 | `valkey.nodeSelector`           | **Optional.** Node labels for valkey scheduling. Define if your environment requires it. |
 | `valkey.affinity`               | **Optional.** Valkey pod affinity. Define if your environment requires it. |
@@ -355,11 +355,9 @@ valkey:
     user: "kubexAutomation"
     password: "{your-secret-password}"
   storage:
-    requestedSize: ""  # Use empty string for ephemeral storage (no PVC, e.g., on OpenShift)
+    requestedSize: ""  # Use empty string for ephemeral storage (no PVC)
   # ...
 ```
-
-> **Note:** On OpenShift, use the provided `values-openshift.yaml` to enable ephemeral Valkey (no persistent storage). See the OpenShift section in the Getting Started guide for more details.
 
 ## Valkey Configuration with External Secrets
 

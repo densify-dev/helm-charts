@@ -24,7 +24,7 @@ Common questions and answers about Kubex Automation Controller deployment, confi
 - At least 2 CPU cores and 4GB RAM available across nodes
 - Valid Kubex UI credentials and instance access
 - TLS certificates (automatically generated self-signed certificates by default, or optionally use cert-manager)
-- **Persistent storage**: Available StorageClass with at least 10Gi capacity for Valkey cache (unless using ephemeral Valkey on OpenShift; see below)
+- **Persistent storage**: Available StorageClass with at least 10Gi capacity for Valkey cache (unless using ephemeral Valkey; see below)
 
 ### Q: How long does initial deployment take?
 **A:** Typically 3-5 minutes:
@@ -41,7 +41,7 @@ Common questions and answers about Kubex Automation Controller deployment, confi
   - **Capacity**: Default 10Gi, configurable via `valkey.storage.requestedSize`
   - **CSI Drivers**: Most managed Kubernetes services include required drivers by default
   - **Verify availability**: `kubectl get storageclass` to see available options
-- **OpenShift:** If you are deploying on OpenShift and use the provided `values-openshift.yaml` overrides, Valkey will run with ephemeral (non-persistent) storage and no PVC will be created. See the OpenShift section in the Getting Started guide for details.
+- **OpenShift:** If you are deploying on OpenShift and use the provided `values-openshift.yaml` overrides. See the [OpenShift section](./Getting-Started.md#openshift-installation) in the Getting Started guide for details.
 
 ### Q: What's the recommended way to test this?
 **A:** We strongly recommend starting with a dev/test cluster first:
