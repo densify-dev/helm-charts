@@ -106,6 +106,27 @@ serviceAccount:
 
 ---
 
+## Image Pull Secrets
+
+Configure image pull secrets for the controller/webhook pods and the Valkey subchart.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `imagePullSecrets` | `list` | Secrets applied to the controller and webhook pod specs |
+| `valkey.imagePullSecrets` | `list` | Secrets applied to the Valkey subchart pod specs |
+
+**Example:**
+```yaml
+imagePullSecrets:
+  - name: my-registry-secret
+
+valkey:
+  imagePullSecrets:
+    - name: my-registry-secret
+```
+
+---
+
 ## Secret Management Configuration
 
 Use `createSecrets` to decide whether Helm renders all required secrets or you supply them externally. This flag covers the Kubex API secret, both Valkey secrets, and the webhook TLS secret.

@@ -28,6 +28,10 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       serviceAccountName: kubex-automation-controller-sa
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
         - name: kubex-automation-controller
           image: {{ .Values.deployment.controllerImage | quote }}
@@ -243,6 +247,10 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       serviceAccountName: kubex-webhook-sa
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
         - name: kubex-webhook
           image: {{ .Values.deployment.webhookImage | quote }}
