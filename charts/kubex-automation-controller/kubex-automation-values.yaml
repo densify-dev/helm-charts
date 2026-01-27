@@ -7,6 +7,15 @@
 createSecrets: true # Set to false if you provide your own secrets, created outside of this helm chart
 
 # ================================================================
+# SECTION: IMAGE PULL SECRETS
+# Instructions:
+# → Use to pull images from private registries
+# ================================================================
+
+# imagePullSecrets:
+#   - name: my-registry-secret
+
+# ================================================================
 # SECTION: CONNECTION PARAMETERS - COPY/PASTE FROM KUBEX UI
 # Instructions:
 # → Go to Kubex UI > Automation tab
@@ -34,6 +43,8 @@ valkey:
     password: '<password>' # valkey password, mandatory if createSecrets is true,
                 # quote if includes special characters, cannot include SPACES
   # extraSecretValkeyConfigs: # valkey server secret, mandatory if createSecrets is false
+  # imagePullSecrets:
+  #   - name: my-registry-secret
   # metrics:
   #   exporter:
   #     extraExporterEnvSecrets:

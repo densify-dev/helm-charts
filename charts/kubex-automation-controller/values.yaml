@@ -10,6 +10,10 @@ serviceAccount:
     # Example:
     # iam.gke.io/gcp-service-account: my-gcp-sa@project.iam.gserviceaccount.com
 
+imagePullSecrets: []
+  # Example:
+  # - name: my-registry-secret
+
 certmanager:
   enabled: false # Set to true to use cert-manager instead of self-signed certificates
   duration: 720h # Certificate validity duration (e.g., 30 days = 720h)
@@ -180,6 +184,9 @@ valkey:
     repository: valkey/valkey
     tag: "9.0"
     pullPolicy: Always
+  imagePullSecrets: []
+    # Example:
+    # - name: my-registry-secret
 
   # No TLS requested
 
