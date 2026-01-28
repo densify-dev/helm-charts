@@ -150,3 +150,7 @@ resources: {}
 tolerations: []
 
 topologySpreadConstraints: []
+
+# Optional: Additional labels and annotations to add to CronJob and Job resources
+extraLabels: {}
+extraAnnotations: {}

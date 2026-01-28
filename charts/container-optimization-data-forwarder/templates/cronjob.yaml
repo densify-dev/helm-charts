@@ -9,6 +9,13 @@ metadata:
     chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
+    {{- if .Values.extraLabels }}
+    {{- toYaml .Values.extraLabels | nindent 4 }}
+    {{- end }}
+  annotations:
+    {{- if .Values.extraAnnotations }}
+    {{- toYaml .Values.extraAnnotations | nindent 4 }}
+    {{- end }}
 spec:
   schedule: "{{ .Values.cronJob.schedule }}"
   {{- if and (hasKey .Values.cronJob "successfulJobsHistoryLimit") (not (empty (toString .Values.cronJob.successfulJobsHistoryLimit))) (ge (int64 .Values.cronJob.successfulJobsHistoryLimit) 0) }}
@@ -18,6 +25,19 @@ spec:
   failedJobsHistoryLimit: {{ .Values.cronJob.failedJobsHistoryLimit }}
   {{- end }}
   jobTemplate:
+    metadata:
+      labels:
+        app: {{ template "common.name" . }}
+        chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+        release: {{ .Release.Name }}
+        heritage: {{ .Release.Service }}
+        {{- if .Values.extraLabels }}
+        {{- toYaml .Values.extraLabels | nindent 8 }}
+        {{- end }}
+      {{- if .Values.extraAnnotations }}
+      annotations:
+        {{- toYaml .Values.extraAnnotations | nindent 8 }}
+      {{- end }}
     spec:
       backoffLimit: {{ template "common.jobBackoffLimit" . }}
       {{- if and (hasKey .Values.cronJob "ttlSecondsAfterFinished") (not (empty (toString .Values.cronJob.ttlSecondsAfterFinished))) (ge (int64 .Values.cronJob.ttlSecondsAfterFinished) 0) }}
@@ -28,6 +48,13 @@ spec:
           labels:
             app: {{ template "common.name" . }}
             release: {{ .Release.Name }}
+            {{- if .Values.extraLabels }}
+            {{- toYaml .Values.extraLabels | nindent 12 }}
+            {{- end }}
+          {{- if .Values.extraAnnotations }}
+          annotations:
+            {{- toYaml .Values.extraAnnotations | nindent 12 }}
+          {{- end }}
         spec:
           securityContext:
             {{- if not (.Values.assignedUIDs) }}
