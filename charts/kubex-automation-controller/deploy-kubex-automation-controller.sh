@@ -11,7 +11,7 @@ print_usage() {
   echo "                      NOTE: cert-manager must be pre-installed in your cluster."
   echo
   echo "  --openshift         Deploy using OpenShift-specific values (values-openshift.yaml)."
-  echo "                      This enables OpenShift SCC and service accounts"
+  echo "                      This enables OpenShift-specific service account settings."
   echo
   echo "  --uninstall         Uninstalls the kubex-automation-controller Helm release."
   echo
