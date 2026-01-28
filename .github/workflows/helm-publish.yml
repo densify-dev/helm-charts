@@ -54,7 +54,8 @@ jobs:
               if echo "${CHANGED_FILES}" | grep -q "charts/${chart_name}/Chart.yaml"; then
                 echo "Changes detected in ${chart_name}/Chart.yaml. Packaging..."
                 
-                # 5. Run helm package
+                # 5. Bring over the subcharts and package the chart
+                helm dependency build "${chart_dir}"
                 helm package "${chart_dir}"
                 
                 # 6. Move tgz to temp directory
