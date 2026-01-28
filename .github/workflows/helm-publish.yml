@@ -1,0 +1,99 @@
+name: Release Charts
+
+on:
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout master
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0 # Required to verify diffs
+          ref: master
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: latest
+        id: install
+
+      - name: Add Helm Repos
+        run: |
+          helm repo add kubex https://densify-dev.github.io/helm-charts
+          helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+          helm repo add jetstack https://charts.jetstack.io
+          helm repo add groundhog2k https://groundhog2k.github.io/helm-charts
+          helm repo update
+
+      - name: Create temp directory
+        run: |
+          mkdir -p /tmp/kubex-charts
+          rm -rf /tmp/kubex-charts/*.tgz
+
+      - name: Package changed charts
+        run: |
+          # 4. Check for changes in Chart.yaml and package
+          # Get the list of changed files between the previous commit and the current one
+          CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.event.after }})
+          
+          echo "Processing charts..."
+          
+          # Iterate over directories in the charts folder
+          for chart_dir in charts/*; do
+            if [ -d "${chart_dir}" ]; then
+              chart_name=$(basename "${chart_dir}")
+              
+              # Check if Chart.yaml for this specific chart is in the changed files list
+              if echo "${CHANGED_FILES}" | grep -q "charts/${chart_name}/Chart.yaml"; then
+                echo "Changes detected in ${chart_name}/Chart.yaml. Packaging..."
+                
+                # 5. Run helm package
+                helm package "${chart_dir}"
+                
+                # 6. Move tgz to temp directory
+                mv "${chart_name}"*.tgz /tmp/kubex-charts/
+              else
+                echo "No changes in ${chart_name}/Chart.yaml. Skipping."
+              fi
+            fi
+          done
+
+      - name: Checkout gh-pages
+        uses: actions/checkout@v5
+        with:
+          ref: gh-pages
+          path: gh-pages-branch # Checkout to a subdir to avoid overwriting current workspace context, or clean and switch.
+          fetch-depth: 0
+
+      - name: Publish Charts
+        working-directory: gh-pages-branch
+        run: |
+          # Check if there are any files to move (avoid failure if no charts changed)
+          if [ -z "$(ls -A /tmp/kubex-charts)" ]; then
+             echo "No charts were packaged. Exiting."
+             exit 0
+          fi
+
+          # 9. Move tgz files from temp to repo folder (gh-pages root)
+          mv /tmp/kubex-charts/*.tgz .
+
+          # 10. Run helm index
+          helm repo index . --url https://densify-dev.github.io/helm-charts/
+
+          # 11. Git add
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.yaml *.tgz
+
+          # 12. Git commit
+          git commit -m "Publish charts from commit ${{ github.sha }}"
+
+          # 13. Git push
+          git push
