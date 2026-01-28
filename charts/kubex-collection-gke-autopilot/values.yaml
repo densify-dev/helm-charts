@@ -9,11 +9,17 @@ stack:
 
 container-optimization-data-forwarder:
   nameOverride: kubex-collection
+  tolerations:
+    - key: "kubernetes.io/arch"
+      operator: "Exists"
+      effect: "NoSchedule"
   config:
     forwarder:
       densify:
         url:
           UserSecretName: densify-api-secret
+  extraLabels: {}
+  extraAnnotations: {}
 
 #################################################################
 # prometheus-community/kube-state-metrics parameters
@@ -22,6 +28,10 @@ container-optimization-data-forwarder:
 kube-state-metrics:
   rbac:
     create: true
+  tolerations:
+    - key: "kubernetes.io/arch"
+      operator: "Exists"
+      effect: "NoSchedule"
   metricAnnotationsAllowList:
     - 'namespaces=[*]'
   metricLabelsAllowlist:
@@ -49,3 +59,4 @@ kube-state-metrics:
     - replicationcontrollers
     - resourcequotas
     - statefulsets
+

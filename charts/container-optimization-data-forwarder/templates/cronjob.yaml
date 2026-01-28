@@ -9,6 +9,7 @@ metadata:
     chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
+    app.kubernetes.io/name: {{ template "common.fullname" . }}
     {{- if .Values.extraLabels }}
     {{- toYaml .Values.extraLabels | nindent 4 }}
     {{- end }}
@@ -24,6 +25,9 @@ spec:
   {{- if and (hasKey .Values.cronJob "failedJobsHistoryLimit") (not (empty (toString .Values.cronJob.failedJobsHistoryLimit))) (ge (int64 .Values.cronJob.failedJobsHistoryLimit) 0) }}
   failedJobsHistoryLimit: {{ .Values.cronJob.failedJobsHistoryLimit }}
   {{- end }}
+  {{- if .Values.cronJob.concurrencyPolicy }}
+  concurrencyPolicy: {{ .Values.cronJob.concurrencyPolicy }}
+  {{- end }}
   jobTemplate:
     metadata:
       labels:
@@ -31,6 +35,7 @@ spec:
         chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
         release: {{ .Release.Name }}
         heritage: {{ .Release.Service }}
+        app.kubernetes.io/name: {{ template "common.fullname" . }}
         {{- if .Values.extraLabels }}
         {{- toYaml .Values.extraLabels | nindent 8 }}
         {{- end }}
@@ -48,6 +53,7 @@ spec:
           labels:
             app: {{ template "common.name" . }}
             release: {{ .Release.Name }}
+            app.kubernetes.io/name: {{ template "common.fullname" . }}
             {{- if .Values.extraLabels }}
             {{- toYaml .Values.extraLabels | nindent 12 }}
             {{- end }}
@@ -69,9 +75,9 @@ spec:
           nodeSelector:
 {{ toYaml .Values.nodeSelector | indent 12 }}
           {{- end }}
-          {{- if .Values.tolerations }}
+          {{- with .Values.tolerations }}
           tolerations:
-{{ toYaml .Values.tolerations | indent 12 }}
+{{ toYaml . | indent 12 }}
           {{- end }}
           {{- if .Values.topologySpreadConstraints }}
           topologySpreadConstraints:

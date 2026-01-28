@@ -12,6 +12,13 @@ container-optimization-data-forwarder:
     clusters:
       - name: '<changeme-cluster-name>' # Mandatory, must be unique!
 
+  # Optional: Additional labels to add to CronJob and Job resources
+  # extraLabels:
+  #   my-custom-label: my-value
+  # Optional: Additional annotations to add to CronJob and Job resources
+  # extraAnnotations:
+  #   my-custom-annotation: my-value
+
 # The following values are optional, if job cleanup is required;
 # each one of these should be a non-negative integer (0 is allowed)
   # cronJob:

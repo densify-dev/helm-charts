@@ -1,6 +1,6 @@
 dependencies:
 - name: container-optimization-data-forwarder
   repository: https://densify-dev.github.io/helm-charts
-  version: 4.0.13
-digest: sha256:d71bc4bb79b044e459ee2af6ed6c7f3ee6a758a9eeb008907563b2869dece5ec
-generated: "2026-01-21T17:57:58.629158635-05:00"
+  version: 4.0.14
+digest: sha256:fa79c585c6a0d303c282845664bdbf6011fa7cd79fe4f5f0ef9faef10f9c82c8
+generated: "2026-01-28T15:51:09.975623058Z"

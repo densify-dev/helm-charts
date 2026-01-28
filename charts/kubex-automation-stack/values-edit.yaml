@@ -11,6 +11,14 @@ container-optimization-data-forwarder:
           host: '<changeme-densify-host>' # mandatory: <instance>.densify.com
     clusters:
       - name: '<changeme-cluster-name>' # mandatory
+
+  # Optional: Additional labels to add to CronJob and Job resources
+  extraLabels:
+    my-custom-label: my-value-1
+  # Optional: Additional annotations to add to CronJob and Job resources
+  extraAnnotations:
+    my-custom-annotation: my-value-2
+
 # The following values are optional, if job cleanup is required;
 # each one of these should be a non-negative integer (0 is allowed)
   # cronJob:

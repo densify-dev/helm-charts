@@ -115,6 +115,7 @@ cronJob:
 # The cronjob schedule. By default, data collection is triggered a few minutes after every hour.
 # This is in line with the default interval settings of collecting the last hour of data.
   schedule: 5 * * * *
+  concurrencyPolicy: Replace
 # The following values are optional, if job cleanup is required;
 # each one of these should be a non-negative integer (0 is allowed)
   # successfulJobsHistoryLimit: <value>
@@ -147,7 +148,10 @@ nodeSelector: {}
 
 resources: {}
 
-tolerations: []
+tolerations:
+  - key: "kubernetes.io/arch"
+    operator: "Exists"
+    effect: "NoSchedule"
 
 topologySpreadConstraints: []
 

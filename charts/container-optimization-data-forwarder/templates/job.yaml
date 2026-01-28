@@ -10,6 +10,7 @@ metadata:
     chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
+    app.kubernetes.io/name: {{ template "common.fullname" . }}
     {{- if .Values.extraLabels }}
     {{- toYaml .Values.extraLabels | nindent 4 }}
     {{- end }}
@@ -29,6 +30,7 @@ spec:
       labels:
         app: {{ template "common.name" . }}
         release: {{ .Release.Name }}
+        app.kubernetes.io/name: {{ template "common.fullname" . }}
         {{- if .Values.extraLabels }}
         {{- toYaml .Values.extraLabels | nindent 8 }}
         {{- end }}
