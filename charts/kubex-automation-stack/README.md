@@ -85,7 +85,7 @@ This chart consists of two subcharts:
 
 ## Documentation
 
-* [Kubex](https://www.kubex.ai/product/kubernetes-resource-optimization/)
+* [Kubex](https://www.docs.kubex.ai)
 
 ## License
 
