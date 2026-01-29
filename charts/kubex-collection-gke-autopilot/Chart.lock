@@ -1,9 +1,9 @@
 dependencies:
 - name: container-optimization-data-forwarder
   repository: https://densify-dev.github.io/helm-charts
-  version: 4.0.12
+  version: 4.0.13
 - name: kube-state-metrics
   repository: https://prometheus-community.github.io/helm-charts
   version: 6.4.2
-digest: sha256:f93de9d39b0c383912d757fbaadd111ee7cf4087483a01e2cbb592af85e01b1b
-generated: "2025-11-28T09:31:37.412601265-05:00"
+digest: sha256:46a4477cd86b68e69fe9da81116c21838b559ea72c2415fbd11fd835ae8a0e3c
+generated: "2026-01-29T20:27:02.105335526Z"
