@@ -2,6 +2,7 @@ apiVersion: v2
 description: Kubex Data Collector
 icon: https://www.kubex.ai/wp-content/uploads/kubex-by-densify-logo.png
 keywords:
+- kubex
 - densify
 - container
 - optimization
