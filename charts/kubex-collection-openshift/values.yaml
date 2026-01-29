@@ -7,6 +7,12 @@ container-optimization-data-forwarder:
   # required for OpenShift
   assignedUIDs: true
   nameOverride: kubex-collection
+  tolerations:
+    - key: "kubernetes.io/arch"
+      operator: "Exists"
+      effect: "NoSchedule"
+  extraLabels: {}
+  extraAnnotations: {}
   config:
     forwarder:
       densify:

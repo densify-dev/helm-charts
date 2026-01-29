@@ -9,6 +9,14 @@ metadata:
     chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
+    app.kubernetes.io/name: {{ template "common.fullname" . }}
+    {{- if .Values.extraLabels }}
+    {{- toYaml .Values.extraLabels | nindent 4 }}
+    {{- end }}
+  annotations:
+    {{- if .Values.extraAnnotations }}
+    {{- toYaml .Values.extraAnnotations | nindent 4 }}
+    {{- end }}
 spec:
   schedule: "{{ .Values.cronJob.schedule }}"
   {{- if and (hasKey .Values.cronJob "successfulJobsHistoryLimit") (not (empty (toString .Values.cronJob.successfulJobsHistoryLimit))) (ge (int64 .Values.cronJob.successfulJobsHistoryLimit) 0) }}
@@ -17,7 +25,24 @@ spec:
   {{- if and (hasKey .Values.cronJob "failedJobsHistoryLimit") (not (empty (toString .Values.cronJob.failedJobsHistoryLimit))) (ge (int64 .Values.cronJob.failedJobsHistoryLimit) 0) }}
   failedJobsHistoryLimit: {{ .Values.cronJob.failedJobsHistoryLimit }}
   {{- end }}
+  {{- if .Values.cronJob.concurrencyPolicy }}
+  concurrencyPolicy: {{ .Values.cronJob.concurrencyPolicy }}
+  {{- end }}
   jobTemplate:
+    metadata:
+      labels:
+        app: {{ template "common.name" . }}
+        chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+        release: {{ .Release.Name }}
+        heritage: {{ .Release.Service }}
+        app.kubernetes.io/name: {{ template "common.fullname" . }}
+        {{- if .Values.extraLabels }}
+        {{- toYaml .Values.extraLabels | nindent 8 }}
+        {{- end }}
+      {{- if .Values.extraAnnotations }}
+      annotations:
+        {{- toYaml .Values.extraAnnotations | nindent 8 }}
+      {{- end }}
     spec:
       backoffLimit: {{ template "common.jobBackoffLimit" . }}
       {{- if and (hasKey .Values.cronJob "ttlSecondsAfterFinished") (not (empty (toString .Values.cronJob.ttlSecondsAfterFinished))) (ge (int64 .Values.cronJob.ttlSecondsAfterFinished) 0) }}
@@ -28,6 +53,14 @@ spec:
           labels:
             app: {{ template "common.name" . }}
             release: {{ .Release.Name }}
+            app.kubernetes.io/name: {{ template "common.fullname" . }}
+            {{- if .Values.extraLabels }}
+            {{- toYaml .Values.extraLabels | nindent 12 }}
+            {{- end }}
+          {{- if .Values.extraAnnotations }}
+          annotations:
+            {{- toYaml .Values.extraAnnotations | nindent 12 }}
+          {{- end }}
         spec:
           securityContext:
             {{- if not (.Values.assignedUIDs) }}
@@ -42,9 +75,9 @@ spec:
           nodeSelector:
 {{ toYaml .Values.nodeSelector | indent 12 }}
           {{- end }}
-          {{- if .Values.tolerations }}
+          {{- with .Values.tolerations }}
           tolerations:
-{{ toYaml .Values.tolerations | indent 12 }}
+{{ toYaml . | indent 12 }}
           {{- end }}
           {{- if .Values.topologySpreadConstraints }}
           topologySpreadConstraints:

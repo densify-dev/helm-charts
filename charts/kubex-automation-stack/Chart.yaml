@@ -3,7 +3,7 @@ description: Kubex Collection Stack
 name: kubex-automation-stack
 version: 1.0.1
 type: application
-icon: https://www.densify.com/wp-content/uploads/kubex-by-densify-logo.png
+icon: https://www.kubex.ai/wp-content/uploads/kubex-by-densify-logo.png
 dependencies:
   - name: container-optimization-data-forwarder
     version: "4.*.*"
@@ -17,7 +17,7 @@ keywords:
 - container
 - optimization
 maintainers:
-- email: support@densify.com
+- email: support@kubex.ai
   name: support
 details:
   This Helm chart provides the entire stack required for container data collection and optimization

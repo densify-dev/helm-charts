@@ -1,13 +1,14 @@
 apiVersion: v2
-description: Densify Container Optimization Data Forwarder Utility
-icon: https://www.densify.com/wp-content/uploads/densify.png
+description: Kubex Data Collector
+icon: https://www.kubex.ai/wp-content/uploads/kubex-by-densify-logo.png
 keywords:
+- kubex
 - densify
 - container
 - optimization
 maintainers:
-- email: support@densify.com
+- email: support@kubex.ai
   name: support
 name: container-optimization-data-forwarder
 type: application
-version: 4.0.13
+version: 4.0.14

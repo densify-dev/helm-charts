@@ -8,7 +8,7 @@
 
 ## Introduction
 
-Densify's Kubex analyses Kubernetes clusters and produces recommendations for rightsizing resources to mitigate risk and reduce waste. 
+Kubex analyses Kubernetes clusters and produces recommendations for rightsizing resources to mitigate risk and reduce waste. 
 
 OpenShift clusters have restrictions which do not allow the usage of the general-purpose [Kubex automation stack helm chart](https://github.com/densify-dev/helm-charts/blob/master/charts/kubex-automation-stack). This chart replaces it.
 
@@ -85,7 +85,7 @@ This chart consists of one subchart:
 
 ## Documentation
 
-* [Kubex](https://www.kubex.ai/product/kubernetes-resource-optimization/)
+* [Kubex](https://www.docs.kubex.ai)
 
 ## License
 

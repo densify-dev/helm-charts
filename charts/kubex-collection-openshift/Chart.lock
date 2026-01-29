@@ -3,4 +3,4 @@ dependencies:
   repository: https://densify-dev.github.io/helm-charts
   version: 4.0.13
 digest: sha256:d71bc4bb79b044e459ee2af6ed6c7f3ee6a758a9eeb008907563b2869dece5ec
-generated: "2026-01-21T17:57:58.629158635-05:00"
+generated: "2026-01-29T20:33:08.256029939Z"

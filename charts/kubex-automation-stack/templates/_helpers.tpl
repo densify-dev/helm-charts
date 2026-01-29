@@ -7,11 +7,21 @@
 {{- $host1 := index .Values "container-optimization-data-forwarder" "config" "forwarder" "densify" "url" "host" -}}
 {{- $host2 := trim $host1 -}}
 {{- $host := required $hostValueErr $host2 -}}
-{{- $domain := ".densify.com" -}}
-{{- $hostValueErr = printf "%s is not of <instance>%s format" $hostValueName $domain -}}
+{{- /* Accept either .densify.com or .kubex.ai */ -}}
+{{- $domain := "" -}}
+{{- if hasSuffix ".densify.com" $host -}}
+  {{- $domain = ".densify.com" -}}
+{{- else if hasSuffix ".kubex.ai" $host -}}
+  {{- $domain = ".kubex.ai" -}}
+{{- end -}}
+
+{{- if eq $domain "" -}}
+  {{- fail (printf "%s must end with .kubex.ai or .densify.com (format: <instance>.<domain>)" $hostValueName) -}}
+{{- end -}}
+
 {{- $instance := trimSuffix $domain $host -}}
 {{- if or (not $instance) (eq $instance $host) -}}
-    {{- fail $hostValueErr -}}
+  {{- fail (printf "%s is not of <instance>%s format" $hostValueName $domain) -}}
 {{- end -}}
 {{- $clustersValueName := ".Values.container-optimization-data-forwarder.config.clusters" -}}
 {{- $clusterValueErr := printf "%s is required" $clustersValueName -}}
