@@ -3,7 +3,7 @@ description: Kubex Collection Stack for GKE Autopilot Clusters
 name: kubex-collection-gke-autopilot
 version: 1.0.2
 type: application
-icon: https://www.densify.com/wp-content/uploads/kubex-by-densify-logo.png
+icon: https://www.kubex.ai/wp-content/uploads/kubex-by-densify-logo.png
 dependencies:
   - name: container-optimization-data-forwarder
     version: "4.*.*"
@@ -21,7 +21,7 @@ keywords:
 - GKE
 - Autopilot
 maintainers:
-- email: support@densify.com
+- email: support@kubex.ai
   name: support
 details:
   This Helm chart provides the entire stack required for automation of the Kubex container data collection and optimization for GKE Autopilot clusters.

@@ -4,9 +4,9 @@
 nameOverride: kubex-forwarder
 
 # application image
-image: densify/container-optimization-data-forwarder:4
-imageAzureToken: densify/azure-rest-api-token:latest
-imageGCPOAuth2Token: densify/gcp-oauth2-token:latest
+image: kubex/container-optimization-data-forwarder:4
+imageAzureToken: kubex/azure-rest-api-token:latest
+imageGCPOAuth2Token: kubex/gcp-oauth2-token:latest
 imageCheckPrometheusReady: busybox:latest
 pullPolicy: Always
 
@@ -16,13 +16,12 @@ config:
     densify:
       url:
 #        scheme: https
-        host: # <instance>.densify.com
+        host: # <instance>.kubex.ai
 #        port: 443
-#        username: <Densify user>
-#        password: <plaintext Densify password, or:>
-#        encrypted_password: <encrypted Densify password>
+#        username: <Kubex user>
+#        encrypted_password: <encrypted Kubex password>
 #        # Set only the above username and (encrypted_)password settings, or this Secret - but not both.
-#        # Secret must contain 2 fields username and epassword that will be used to connect to Densify.
+#        # Secret must contain 2 fields username and epassword that will be used to connect to Kubex.
 #        UserSecretName: <name of secret to use>
 #      endpoint: /api/v2/
 #      retry:

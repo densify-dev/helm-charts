@@ -1,5 +1,6 @@
 #################################################################
-# densify/container-optimization-data-forwarder parameters
+# Kubex Data Collector
+# kubex/container-optimization-data-forwarder parameters
 #################################################################
 
 stack:

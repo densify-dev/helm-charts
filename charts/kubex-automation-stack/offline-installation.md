@@ -4,16 +4,16 @@ Follow these steps to install the `kubex-automation-stack` from the Densify Helm
 
 ---
 
-1. Add the Densify Helm repository on a machine with internet access:
+1. Add the Kubex Helm repository on a machine with internet access:
 
     ```sh
-    helm repo add densify https://densify-dev.github.io/helm-charts
+    helm repo add kubex https://densify-dev.github.io/helm-charts
     ```
 
 2. Pull the `kubex-automation-stack` chart on a machine with internet access:
 
     ```sh
-    helm pull densify/kubex-automation-stack
+    helm pull kubex/kubex-automation-stack
     ```
 
 3. Extract the downloaded chart `kubex-automation-stack-<version>.tgz`
@@ -28,14 +28,14 @@ Follow these steps to install the `kubex-automation-stack` from the Densify Helm
 
     ```sh
     cd kubex-automation-stack
-    helm install --create-namespace -n densify -f values-edit.yaml -f <sizing file> kubex .
+    helm install --create-namespace -n kubex -f values-edit.yaml -f <sizing file> kubex .
     ```
 
 8. If your cluster has arm64 architecture, install the Helm chart using the custom values file:
 
     ```sh
     cd kubex-automation-stack
-    helm install --create-namespace -n densify -f values-edit.yaml -f <sizing file> -f values-arm64.yaml kubex .
+    helm install --create-namespace -n kubex -f values-edit.yaml -f <sizing file> -f values-arm64.yaml kubex .
     ```
 
 ---

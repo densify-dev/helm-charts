@@ -1,16 +1,16 @@
 # Kubex Automation Stack Helm Chart
 
 <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://www.densify.com/wp-content/uploads/kubex-by-densify-logo-reverse.png">
-    <source media="(prefers-color-scheme: light)" srcset="https://www.densify.com/wp-content/uploads/kubex-by-densify-logo.png">
-    <img src="https://www.densify.com/wp-content/uploads/kubex-by-densify-logo.png" width="300">
+    <source media="(prefers-color-scheme: dark)" srcset="https://www.kubex.ai/wp-content/uploads/kubex-by-densify-logo-reverse.png">
+    <source media="(prefers-color-scheme: light)" srcset="https://www.kubex.ai/wp-content/uploads/kubex-by-densify-logo.png">
+    <img src="https://www.kubex.ai/wp-content/uploads/kubex-by-densify-logo.png" width="300">
 </picture>
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 ## Description
 
-Densify's Kubex analyses Kubernetes clusters and produces recommendations for rightsizing resources to mitigate risk and reduce waste.
+Kubex analyses Kubernetes clusters and produces recommendations for rightsizing resources to mitigate risk and reduce waste.
 Kubex automation stack helm chart is available [here](https://github.com/densify-dev/helm-charts/tree/master/charts/kubex-automation-stack). This chart bundles all of the components required for Kubex analysis and recommendations and is the recommended way to roll out this stack.
 
 ## Usage
