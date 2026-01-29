@@ -4,9 +4,9 @@
 nameOverride: kubex-forwarder
 
 # application image
-image: kubex/container-optimization-data-forwarder:4
-imageAzureToken: kubex/azure-rest-api-token:latest
-imageGCPOAuth2Token: kubex/gcp-oauth2-token:latest
+image: densify/container-optimization-data-forwarder:4
+imageAzureToken: densify/azure-rest-api-token:latest
+imageGCPOAuth2Token: densify/gcp-oauth2-token:latest
 imageCheckPrometheusReady: busybox:latest
 pullPolicy: Always
 
