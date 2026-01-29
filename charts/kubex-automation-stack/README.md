@@ -60,7 +60,7 @@ The following table lists configuration parameters in `values-edit.yaml`.
 
 | Parameter                                                                        | Mandatory          | Description                                            |
 | -------------------------------------------------------------------------------- | ------------------ | ------------------------------------------------------ |
-| `stack.densify.username`                                                         | :white_check_mark: | Densify user account                                   |
+| `stack.densify.username`                                                         | :white_check_mark: | Kubex user account                                   |
 | `stack.densify.encrypted_password`                                               | :white_check_mark: | Encrypted password for the Kubex User                |
 | `container-optimization-data-forwarder.`<br/>`config.forwarder.densify.url.host` | :white_check_mark: | Kubex instance hostname (`< instance >.kubex.ai`) |
 | `container-optimization-data-forwarder.`<br/>`config.clusters[0].name`           | :white_check_mark: | Cluster name **(must be unique, customer-wide; if not, specify an alternate name)** |
@@ -79,7 +79,7 @@ The following table lists configuration parameters in `values-edit.yaml`.
 
 This chart consists of two subcharts:
 
-* [Kubex Data Collector](../container-optimization-data-forwarder), which collects data and forwards it to a Densify instance for analysis
+* [Kubex Data Collector](../container-optimization-data-forwarder), which collects data and forwards it to a Kubex instance for analysis
 
 * [Prometheus Community Prometheus chart](https://github.com/prometheus-community/helm-charts/blob/main/charts/prometheus/) which contains the entire stack required for the Kubex Data Collector to collect data
 
