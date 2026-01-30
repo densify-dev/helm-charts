@@ -9,9 +9,9 @@
 {{- $host := required $hostValueErr $host2 -}}
 {{- /* Accept either .densify.com or .kubex.ai */ -}}
 {{- $domain := "" -}}
-{{- if hasSuffix $host ".densify.com" -}}
+{{- if hasSuffix ".densify.com" $host -}}
   {{- $domain = ".densify.com" -}}
-{{- else if hasSuffix $host ".kubex.ai" -}}
+{{- else if hasSuffix ".kubex.ai" $host -}}
   {{- $domain = ".kubex.ai" -}}
 {{- end -}}
 {{- if eq $domain "" -}}
