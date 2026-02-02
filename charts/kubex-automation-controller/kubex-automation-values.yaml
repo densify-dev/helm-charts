@@ -92,10 +92,10 @@ cluster:
 # scope:
 #   - name: production-scope
 #     policy: conservative-policy
-#     namespaces: { operator: In, values: ["prod-*"] }
+#     namespaces: { operator: In, values: ["prod-app1", "prod-app2", "prod-db"] }
 #   - name: development-scope  
 #     policy: aggressive-policy
-#     namespaces: { operator: In, values: ["dev-*"] }
+#     namespaces: { operator: In, values: ["dev-app1", "dev-app2", "dev-testing"] }
 # ================================================================
 scope:
   - name: base-optimization-scope # Unique scope name
@@ -104,6 +104,7 @@ scope:
       operator: NotIn     # Options: In | NotIn
       values:
         - kubex           # Kubex namespace (exclude automation components)
+
     podLabels: []         # Optional - defines which pods to include/exclude based on labels
       # Example - Exclude specific apps from automation:
       # - key: app
@@ -176,21 +177,20 @@ policy:
           request:
             downsize: true
             upsize: true
-            setFromUnspecified: false
+            setFromUnspecified: true
           limit:
             downsize: false
             upsize: true
             setFromUnspecified: false
-            unsetFromSpecified: false     # (Future release)
         memory:
           request:
             downsize: true
             upsize: true
-            setFromUnspecified: false
+            setFromUnspecified: true
           limit:
             downsize: false
             upsize: true
-            setFromUnspecified: false
+            setFromUnspecified: true
       inPlaceResize:                      
         enabled: true
       podEviction:
