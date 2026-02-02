@@ -51,6 +51,10 @@ curl -LO https://github.com/densify-dev/helm-charts/raw/master/charts/kubex-auto
 curl -LO https://github.com/densify-dev/helm-charts/raw/master/charts/kubex-automation-controller/deploy-kubex-automation-controller.sh
 chmod a+x ./deploy-kubex-automation-controller.sh
 ```
+If running on OpenShift, also download: 
+```bash
+curl -LO https://github.com/densify-dev/helm-charts/raw/master/charts/kubex-automation-controller/values-openshift.yaml
+```
 
 Open `kubex-automation-values.yaml` with your preferred editor. You'll be pasting values into it in steps 2-6 below. When done, save your changes.
 
