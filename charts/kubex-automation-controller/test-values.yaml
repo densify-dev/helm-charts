@@ -7,15 +7,6 @@
 createSecrets: true # Set to false if you provide your own secrets, created outside of this helm chart
 
 # ================================================================
-# SECTION: IMAGE PULL SECRETS
-# Instructions:
-# → Use to pull images from private registries
-# ================================================================
-
-# imagePullSecrets:
-#   - name: my-registry-secret
-
-# ================================================================
 # SECTION: CONNECTION PARAMETERS - COPY/PASTE FROM KUBEX UI
 # Instructions:
 # → Go to Kubex UI > Automation tab
@@ -24,11 +15,11 @@ createSecrets: true # Set to false if you provide your own secrets, created outs
 
 densify:
   url:
-    host: <customerName>.kubex.ai # mandatory: <instance>.kubex.ai
+    host: automationtest.kubex.ai # mandatory: <instance>.kubex.ai
 
 densifyCredentials:
-  username: '<username>' # Username to access Kubex, mandatory if createSecrets is true
-  epassword: '<epassword>' # Encrypted password to access Kubex, mandatory if createSecrets is true
+  username: 'forwarder3' # Username to access Kubex, mandatory if createSecrets is true
+  epassword: 'v15ed556c056008278e39b4230e3d71231e82b6cd3d1fe8b6f06105e0dac09b95f6b6e35e792e360d7227b78631b4580431852e27e544ab01426ed00afa16e88875e868fb4701c17124b7040a4711c7470dc7bfca82858fd5206f04d1fb3c5aa90' # Encrypted password to access Kubex, mandatory if createSecrets is true
   # userSecretName: # Kubex API secret name, mandatory if createSecrets is false
 
 # ================================================================
@@ -40,16 +31,16 @@ densifyCredentials:
 
 valkey:
   credentials:
-    password: '<password>' # valkey password, mandatory if createSecrets is true,
+    password: 'NiginsCajod5keph\Oxij9' # valkey password, mandatory if createSecrets is true,
                 # quote if includes special characters, cannot include SPACES
   # extraSecretValkeyConfigs: # valkey server secret, mandatory if createSecrets is false
-  # imagePullSecrets:
-  #   - name: my-registry-secret
   # metrics:
   #   exporter:
   #     extraExporterEnvSecrets:
   #       - # valkey client secret, mandatory if createSecrets is false
-  # storage:
+  storage:
+    requestedSize: ""
+  
   #   className: <storageClassName> # Optional. Define if your environment requires it. 
   # nodeSelector: {} # Optional. Define if your environment requires it.
   # affinity: {} # Optional. Define if your environment requires it.
@@ -72,7 +63,7 @@ valkey:
 # ================================================================
 
 cluster:
-  name: <clusterName>   # [REPLACE] Kubernetes cluster name
+  name: openshift-lab   # [REPLACE] Kubernetes cluster name
 
 # ================================================================
 # SCOPE CONFIGURATION
@@ -92,10 +83,10 @@ cluster:
 # scope:
 #   - name: production-scope
 #     policy: conservative-policy
-#     namespaces: { operator: In, values: ["prod-app1", "prod-app2", "prod-db"] }
+#     namespaces: { operator: In, values: ["prod-*"] }
 #   - name: development-scope  
 #     policy: aggressive-policy
-#     namespaces: { operator: In, values: ["dev-app1", "dev-app2", "dev-testing"] }
+#     namespaces: { operator: In, values: ["dev-*"] }
 # ================================================================
 scope:
   - name: base-optimization-scope # Unique scope name
@@ -104,7 +95,6 @@ scope:
       operator: NotIn     # Options: In | NotIn
       values:
         - kubex           # Kubex namespace (exclude automation components)
-
     podLabels: []         # Optional - defines which pods to include/exclude based on labels
       # Example - Exclude specific apps from automation:
       # - key: app
@@ -177,20 +167,21 @@ policy:
           request:
             downsize: true
             upsize: true
-            setFromUnspecified: true
+            setFromUnspecified: false
           limit:
             downsize: false
             upsize: true
             setFromUnspecified: false
+            unsetFromSpecified: false     # (Future release)
         memory:
           request:
             downsize: true
             upsize: true
-            setFromUnspecified: true
+            setFromUnspecified: false
           limit:
             downsize: false
             upsize: true
-            setFromUnspecified: true
+            setFromUnspecified: false
       inPlaceResize:                      
         enabled: true
       podEviction:

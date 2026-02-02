@@ -1,0 +1,33 @@
+stack:
+  densify:
+    username: 'forwarder39'
+    encrypted_password: 'v19da88a73e566e3af25a49f4d67a93bfe9022c4b9d598ef404abb1f8fb0e545730f121b5a095e5bc62d5f649765d2ec85'
+
+container-optimization-data-forwarder:
+  config:
+    forwarder:
+      densify:
+        url:
+          host: 'eksqademo.densify.com'
+          scheme: 'https'
+          port: 443
+    clusters:
+      - name: 'gke-arm64-test'
+    debug: true
+  extraLabels:
+    my-custom-label: my-value-1
+  extraAnnotations:
+    my-custom-annotation: my-value-2
+
+prometheus:
+  server:
+    nodeSelector:
+      cloud.google.com/gke-nodepool: "storage-pool"
+    service:
+      type: LoadBalancer
+    persistentVolume:
+      size: 20Gi
+      #storageClass: 'balanced-storage'
+      storageClass: 'hyperdisk-balanced-rwo'
+    retention: "4h"
+    retentionSize: "16GiB"

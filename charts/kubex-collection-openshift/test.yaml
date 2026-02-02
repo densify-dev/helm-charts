@@ -1,0 +1,27 @@
+stack:
+  densify:
+    username: 'forwarder3' # mandatory (unless createSecret = false)
+    encrypted_password: 'v15ed556c056008278e39b4230e3d71231e82b6cd3d1fe8b6f06105e0dac09b95f6b6e35e792e360d7227b78631b4580431852e27e544ab01426ed00afa16e88875e868fb4701c17124b7040a4711c7470dc7bfca82858fd5206f04d1fb3c5aa90' # mandatory (unless createSecret = false)
+
+container-optimization-data-forwarder:
+  config:
+    forwarder:
+      densify:
+        url:
+          host: 'automationtest.kubex.ai' # mandatory: <instance>.kubex.ai
+    clusters:
+      - name: 'openshift-lab' # Mandatory, must be unique!
+  # Optional: Additional labels to add to CronJob and Job resources
+  extraLabels:
+    custom-label: my-value
+  
+  extraAnnotations:
+    custom-annotation: my-2nd-value
+    
+# The following values are optional, if job cleanup is required;
+# each one of these should be a non-negative integer (0 is allowed)
+  # cronJob:
+    # successfulJobsHistoryLimit: <value>
+    # failedJobsHistoryLimit: <value>
+    # ttlSecondsAfterFinished: <value> # applies for both the cronjob and the job
+    # backoffLimit: <value> # applies for both the cronjob and the job, default: 4
