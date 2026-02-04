@@ -137,6 +137,9 @@ Create the name of the service account to use
   - apiGroups: [""]
     resources: ["pods/resize"]
     verbs: ["patch", "update"]
+  - apiGroups: ["autoscaling.k8s.io"]
+    resources: ["verticalpodautoscalers"]
+    verbs: ["get", "list", "watch"]
   - nonResourceURLs:
     - "/metrics"
     verbs:
