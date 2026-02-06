@@ -2,12 +2,44 @@ openshift:
   enabled: true
 
 # Valkey subchart overrides for OpenShift compatibility.
+# Omit fixed UID/GID and seccomp - let OpenShift assign them dynamically.
 valkey:
   serviceAccount:
     create: true
     name: kubex-valkey-sa
-  podSecurityContext: null
-  securityContext: null
+  # Resources for valkey-init initContainer (required by OpenShift)
+  initResources:
+    requests:
+      memory: "32Mi"
+      cpu: "50m"
+    limits:
+      memory: "64Mi"
+  podSecurityContext:
+    fsGroup: null
+    supplementalGroups: null
+    seccompProfile: null
+  securityContext:
+    allowPrivilegeEscalation: false
+    privileged: false
+    readOnlyRootFilesystem: true
+    runAsNonRoot: true
+    runAsUser: null
+    runAsGroup: null
+    seccompProfile: null
+    capabilities:
+      drop:
+        - ALL
   metrics:
     exporter:
-      securityContext: null
+      securityContext:
+        allowPrivilegeEscalation: false
+        privileged: false
+        readOnlyRootFilesystem: true
+        runAsNonRoot: true
+        runAsUser: null
+        runAsGroup: null
+        seccompProfile: null
+        capabilities:
+          drop:
+            - ALL
+
