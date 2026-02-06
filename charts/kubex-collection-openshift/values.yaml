@@ -21,7 +21,7 @@ container-optimization-data-forwarder:
     prometheus:
       url:
         scheme: https
-        host: prometheus-k8s.openshift-monitoring.svc
+        host: thanos-querier.openshift-monitoring.svc
         port: 9091
       # OpenShift Service CA Operator ca cert
       ca_cert: /var/run/secrets/kubernetes.io/serviceaccount/service-ca.crt
