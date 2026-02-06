@@ -135,6 +135,8 @@ spec:
           securityContext:
             {{- toYaml . | nindent 12 }}
           {{- end }}
+          resources:
+            {{- toYaml .Values.deployment.initContainerResources | nindent 12 }}
         - name: kubex-automation-gw
           image: {{ .Values.deployment.gatewayImage | quote }}
           imagePullPolicy: Always
@@ -307,6 +309,8 @@ spec:
           securityContext:
             {{- toYaml . | nindent 12 }}
           {{- end }}
+          resources:
+            {{- toYaml .Values.deployment.initContainerResources | nindent 12 }}
         - name: kubex-webhook-gw
           image: {{ .Values.deployment.gatewayImage | quote }}
           imagePullPolicy: Always

@@ -96,6 +96,13 @@ deployment:
     capabilities:
       drop:
         - ALL
+  # Resource specifications for init containers
+  initContainerResources:
+    requests:
+      memory: "32Mi"
+      cpu: "50m"
+    limits:
+      memory: "64Mi"
   controllerEnv: # Environment variables for the controller pod
     podScanInitialInterval: "2m"  # Initial delay before first pod scan after startup
     podScanInterval: "1h"  # Default optimized for in-place resizing (Kubernetes 1.33+). See Pod-Scan-Configuration.md for pod eviction mode settings.
@@ -193,13 +200,48 @@ valkey:
   # Add password to valkey.conf via a Secret file
   extraSecretValkeyConfigs: kubex-valkey-secret
 
+  # Resources for valkey-init initContainer
+  initResources:
+    requests:
+      memory: "32Mi"
+      cpu: "50m"
+    limits:
+      memory: "64Mi"
+
+  # Complete pod security context for valkey (default for non-OpenShift)
   podSecurityContext:
+    fsGroup: 999
+    supplementalGroups:
+      - 999
     seccompProfile:
       type: RuntimeDefault
 
+  # Complete container security context for valkey (default for non-OpenShift)
   securityContext:
+    allowPrivilegeEscalation: false
+    privileged: false
+    readOnlyRootFilesystem: true
+    runAsNonRoot: true
+    runAsUser: 999
+    runAsGroup: 999
+    capabilities:
+      drop:
+        - ALL
     seccompProfile:
       type: RuntimeDefault
+
+  # OpenShift-specific pod security context (omit fixed UID/GID and seccomp)
+  podSecurityContextOpenShift: {}
+
+  # OpenShift-specific container security context
+  securityContextOpenShift:
+    allowPrivilegeEscalation: false
+    privileged: false
+    readOnlyRootFilesystem: true
+    runAsNonRoot: true
+    capabilities:
+      drop:
+        - ALL
 
   # Storage for single-instance (non-HA)
   storage:
@@ -233,9 +275,28 @@ valkey:
   metrics:
     enabled: true
     exporter:
+      # Complete security context for metrics exporter (default for non-OpenShift)
       securityContext:
+        allowPrivilegeEscalation: false
+        privileged: false
+        readOnlyRootFilesystem: true
+        runAsNonRoot: true
+        runAsUser: 999
+        runAsGroup: 999
+        capabilities:
+          drop:
+            - ALL
         seccompProfile:
           type: RuntimeDefault
+      # OpenShift-specific security context for metrics exporter
+      securityContextOpenShift:
+        allowPrivilegeEscalation: false
+        privileged: false
+        readOnlyRootFilesystem: true
+        runAsNonRoot: true
+        capabilities:
+          drop:
+            - ALL
       image:
         registry: docker.io
         repository: oliver006/redis_exporter
