@@ -200,6 +200,7 @@ scope:
 ### Q: Can the controller damage my applications?
 **A:** Multiple safety mechanisms prevent damage:
 - **HPA awareness**: Won't resize if HPA is actively scaling on CPU and/or memory
+- **VPA exclusion**: Automatically detects and excludes workloads managed by VerticalPodAutoscaler to prevent conflicts
 - **PodDisruptionBudget**: Respects PDB constraints before eviction
 - **ResourceQuota checking**: Ensures changes don't violate quotas
 - **LimitRange validation**: Checks namespace limits before applying changes
@@ -229,6 +230,34 @@ scope:
 
 ### Q: Does this work with GitOps?
 **A:** Yes! Configure your GitOps tool to ignore resource request/limit changes. See [GitOps Integration Guide](./GitOps-Integration.md) for Argo CD, Flux, and OpenShift GitOps.
+
+### Q: Can I use this with VerticalPodAutoscaler (VPA)?
+**A:** Kubex Automation and VPA should not manage the same workloads simultaneously. The controller **automatically detects and excludes** any workload referenced by a VPA object to prevent conflicts.
+
+**How it works:**
+- Controller scans for VPA objects across all namespaces
+- Workloads with VPA are automatically excluded from Kubex automation
+- No manual configuration needed
+
+**Example:**
+```yaml
+# This deployment is automatically excluded from Kubex if a VPA targets it
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: my-app-vpa
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: my-app
+```
+
+**Choose the right tool:**
+- **VPA**: Best for workloads where you want Kubernetes to automatically adjust resources based on real-time usage
+- **Kubex Automation**: Best for policy-driven optimization with enterprise features like HPA awareness, PDB respect, and granular control over upsize/downsize behavior
+
+See [Advanced Configuration - Autoscaler Compatibility](./Advanced-Configuration.md#autoscaler-compatibility) for more details.
 
 ---
 
