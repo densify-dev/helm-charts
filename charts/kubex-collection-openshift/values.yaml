@@ -30,3 +30,28 @@ container-optimization-data-forwarder:
   serviceAccount:
     create: true
     name: kubex-collection
+
+# Ephemeral Storage Metrics Exporter for OpenShift
+# Prerequisites: User workload monitoring must be enabled (run configure-os-monitoring.sh first)
+kubex-ephemeral-storage-metrics:
+  enabled: true  # Set to false to disable ephemeral storage metrics collection
+  nameOverride: kubex-ephemeral-storage
+  tolerations:
+    - key: "kubernetes.io/arch"
+      operator: "Exists"
+      effect: "NoSchedule"
+  # OpenShift-compatible security context (no fixed UID/GID)
+  securityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+    readOnlyRootFilesystem: true
+    seccompProfile:
+      type: RuntimeDefault
+  podSecurityContext: {}
+  # ServiceMonitor for OpenShift user workload monitoring
+  serviceMonitor:
+    enabled: true
+    interval: 30s
+    scrapeTimeout: 10s

@@ -26,3 +26,9 @@ container-optimization-data-forwarder:
     # failedJobsHistoryLimit: <value>
     # ttlSecondsAfterFinished: <value> # applies for both the cronjob and the job
     # backoffLimit: <value> # applies for both the cronjob and the job, default: 4
+
+# Ephemeral Storage Metrics (optional)
+# Enables collection of ephemeral storage metrics for containers using containerd runtime
+# Prerequisites: User workload monitoring must be enabled - run configure-os-monitoring.sh first
+# kubex-ephemeral-storage-metrics:
+#   enabled: true  # Set to false to disable ephemeral storage metrics

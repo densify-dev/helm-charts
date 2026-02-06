@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ include "kubex-ephemeral-storage-metrics.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "kubex-ephemeral-storage-metrics.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "kubex-ephemeral-storage-metrics.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "kubex-ephemeral-storage-metrics.selectorLabels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "kubex-ephemeral-storage-metrics.fullname" . }}
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      hostPID: true
+      hostNetwork: true
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+      - name: ephemeral-storage-exporter
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        {{- with .Values.securityContext }}
+        securityContext:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        command:
+        - /bin/sh
+        - /chart-scripts/ephemeral-exporter.sh
+        env:
+        - name: METRICS_PORT
+          value: "9102"
+        - name: INTERVAL
+          value: "15"
+        ports:
+        - name: metrics
+          containerPort: 9102
+          protocol: TCP
+        {{- with .Values.resources }}
+        resources:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        volumeMounts:
+        - name: host-root
+          mountPath: /host
+          readOnly: true
+        - name: crio-sock
+          mountPath: /var/run/crio/crio.sock
+          readOnly: true
+        - name: chart-scripts
+          mountPath: /chart-scripts
+          readOnly: true
+        - name: tmp
+          mountPath: /tmp
+      volumes:
+      - name: host-root
+        hostPath:
+          path: /
+          type: Directory
+      - name: crio-sock
+        hostPath:
+          path: /var/run/crio/crio.sock
+          type: Socket
+      - name: chart-scripts
+        configMap:
+          name: {{ include "kubex-ephemeral-storage-metrics.fullname" . }}-scripts
+          defaultMode: 0755
+      - name: tmp
+        emptyDir: {}

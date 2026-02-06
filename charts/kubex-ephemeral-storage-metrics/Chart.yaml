@@ -1,0 +1,14 @@
+apiVersion: v2
+name: kubex-ephemeral-storage-metrics
+description: Ephemeral storage metrics exporter for Kubernetes containers using CRI-O runtime
+version: 1.0.0
+type: application
+keywords:
+- ephemeral
+- storage
+- metrics
+- containerd
+- prometheus
+maintainers:
+- email: support@kubex.ai
+  name: support

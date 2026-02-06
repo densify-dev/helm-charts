@@ -1,4 +1,4 @@
-# Kubex Automation Stack Helm Chart for OpenShift Clusters
+# Kubex Collection Stack Helm Chart for OpenShift Clusters
 
 <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://kubex.ai/wp-content/uploads/kubex-logo-reverse-landscape.svg">
@@ -21,6 +21,27 @@ This chart requires very minimal configuration in order to install the entire st
    - `kubectl`
    - `helm`
 
+## Optional Features
+
+### Ephemeral Storage Metrics
+
+**By default, this chart enables ephemeral storage metrics collection** for containers using the CRI-O container runtime (OpenShift's default runtime). These metrics help track ephemeral storage usage which is not available through standard Kubernetes metrics.
+
+**Before Installation:**
+
+If you want to use ephemeral storage metrics (**enabled by default**):
+- User workload monitoring must be enabled in OpenShift
+- Run `./configure-os-monitoring.sh` **before installing the chart**
+
+If you **don't want** ephemeral storage metrics:
+- Disable it in `values-edit.yaml` before installation:
+  ```yaml
+  kubex-ephemeral-storage-metrics:
+    enabled: false
+  ```
+
+The metrics are collected via a DaemonSet and exposed through a ServiceMonitor that integrates with OpenShift's user workload monitoring stack. Metrics are aggregated through the Thanos Querier for consumption by the Kubex data collector.
+
 ## Installation
 
 The installation on an OpenShift cluster is straight-forward.
@@ -29,11 +50,11 @@ The installation on an OpenShift cluster is straight-forward.
 
 To deploy the Kubex stack, follow these steps below:
 
-1. Download [values-edit.yaml](https://github.com/densify-dev/helm-charts/blob/master/charts/kubex-collection-openshift/values-edit.yaml).
+1. **(Optional but recommended)** If you want ephemeral storage metrics, run `./configure-os-monitoring.sh` to enable user workload monitoring. If you don't want this feature, disable it in `values-edit.yaml` as shown in [Optional Features](#optional-features).
 
-2. Edit `values-edit.yaml` with the relevant mandatory parameters as described in [Configuration](#configuration) and save it.
+2. Download [values-edit.yaml](https://github.com/densify-dev/helm-charts/blob/master/charts/kubex-collection-openshift/values-edit.yaml).
 
-3. If your cluster has arm64 architecture, download also [values-arm64.yaml](https://github.com/densify-dev/helm-charts/blob/master/charts/kubex-collection-openshift/values-arm64.yaml).
+3. Edit `values-edit.yaml` with the relevant mandatory parameters as described in [Configuration](#configuration) and save it.
 
 4. To add the helm repos, run:
 
@@ -42,19 +63,11 @@ helm repo add kubex https://densify-dev.github.io/helm-charts
 helm repo update
 ```
 
-5. To install the chart
+5. To install the chart, run:
 
-- On an amd64 cluster, run:
-
-    ```shell
-    helm upgrade --install -n kubex --create-namespace -f values-edit.yaml kubex kubex/kubex-collection-openshift
-    ```
-
-- On an arm64 cluster, run:
-
-    ```shell
-    helm upgrade --install -n kubex --create-namespace -f values-arm64.yaml -f values-edit.yaml kubex kubex/kubex-collection-openshift
-    ```
+```shell
+helm upgrade --install -n kubex --create-namespace -f values-edit.yaml kubex kubex/kubex-collection-openshift
+```
 
 ## Configuration
 
@@ -70,18 +83,20 @@ The following table lists configuration parameters in `values-edit.yaml`.
 | `container-optimization-data-forwarder.`<br/>`cronJob.failedJobsHistoryLimit` |                    | Number of failed jobs to keep |
 | `container-optimization-data-forwarder.`<br/>`cronJob.ttlSecondsAfterFinished` |                    | TTL to keep jobs after completion/failure |
 | `container-optimization-data-forwarder.`<br/>`cronJob.backoffLimit` |                    | Backoff limit for jobs |
-| `prometheus.server.persistentVolume.`<br/>`storageClass`                         |                    | Storage class for Prometheus persistent volume |
+| `kubex-ephemeral-storage-metrics.enabled`                                          |                    | Enable ephemeral storage metrics collection (default: `true`). See [Optional Features](#optional-features). |
 
 ## Limitations
 
 * Supported architectures: amd64 (x64), arm64
 * Release name: the helm chart release name **must** be set to `kubex` to ensure interdependencies are met
+* Ephemeral storage metrics require OpenShift user workload monitoring to be enabled
 
 ## Further Details
 
-This chart consists of one subchart:
+This chart consists of the following subcharts:
 
-* [Kubex Data Collector](../container-optimization-data-forwarder), which collects data and forwards it to a Kubex instance for analysis
+* [Kubex Data Collector](../container-optimization-data-forwarder) - Collects data and forwards it to a Kubex instance for analysis
+* **kubex-ephemeral-storage-metrics** - (Optional) Collects ephemeral storage metrics for containers using CRI-O runtime
 
 ## Documentation
 
