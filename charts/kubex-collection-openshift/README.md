@@ -21,21 +21,6 @@ This chart requires very minimal configuration in order to install the entire st
    - `kubectl`
    - `helm`
 
-## Optional Features
-
-### Ephemeral Storage Metrics
-
-**By default, this chart enables ephemeral storage metrics collection**. It deploys the [k8s-ephemeral-storage-metrics](https://github.com/jmcgrath207/k8s-ephemeral-storage-metrics) chart which collects ephemeral storage metrics for containers. These metrics help track ephemeral storage usage which is not available through standard Kubernetes metrics APIs.
-
-**To disable ephemeral storage metrics:**
-- Set `enabled: false` in `values-edit.yaml` before installation:
-  ```yaml
-  k8s-ephemeral-storage-metrics:
-    enabled: false
-  ```
-
-The chart deploys a DaemonSet that collects the metrics and exposes them via a ServiceMonitor for OpenShift's user workload monitoring.
-
 ## Installation
 
 The installation on an OpenShift cluster is straight-forward.
@@ -48,16 +33,14 @@ To deploy the Kubex stack, follow these steps below:
 
 2. Edit `values-edit.yaml` with the relevant mandatory parameters as described in [Configuration](#configuration) and save it.
 
-3. (Optional) If you want ephemeral storage metrics, set `k8s-ephemeral-storage-metrics.enabled: true` in `values-edit.yaml`. See [Optional Features](#optional-features) for details.
-
-4. To add the helm repos, run:
+3. To add the helm repos, run:
 
 ```shell
 helm repo add kubex https://densify-dev.github.io/helm-charts
 helm repo update
 ```
 
-5. To install the chart, run:
+4. To install the chart, run:
 
 ```shell
 helm upgrade --install -n kubex --create-namespace -f values-edit.yaml kubex kubex/kubex-collection-openshift
@@ -77,7 +60,7 @@ The following table lists configuration parameters in `values-edit.yaml`.
 | `container-optimization-data-forwarder.`<br/>`cronJob.failedJobsHistoryLimit` |                    | Number of failed jobs to keep |
 | `container-optimization-data-forwarder.`<br/>`cronJob.ttlSecondsAfterFinished` |                    | TTL to keep jobs after completion/failure |
 | `container-optimization-data-forwarder.`<br/>`cronJob.backoffLimit` |                    | Backoff limit for jobs |
-| `k8s-ephemeral-storage-metrics.enabled`                                          |                    | Enable ephemeral storage metrics collection (default: `true`). See [Optional Features](#optional-features). |
+| `k8s-ephemeral-storage-metrics.enabled`                                          |                    | Enable ephemeral storage metrics collection (default: `true`) |
 
 ## Limitations
 
@@ -89,7 +72,7 @@ The following table lists configuration parameters in `values-edit.yaml`.
 This chart consists of the following subcharts:
 
 * [Kubex Data Collector](../container-optimization-data-forwarder) - Collects data and forwards it to a Kubex instance for analysis
-* [k8s-ephemeral-storage-metrics](https://github.com/jmcgrath207/k8s-ephemeral-storage-metrics) - (Optional) Collects ephemeral storage metrics for containers using CRI-O runtime
+* [k8s-ephemeral-storage-metrics](https://github.com/jmcgrath207/k8s-ephemeral-storage-metrics) - Collects ephemeral storage metrics for containers using CRI-O runtime
 
 ## Documentation
 
