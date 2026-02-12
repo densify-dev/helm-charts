@@ -53,6 +53,6 @@ k8s-ephemeral-storage-metrics:
   podSecurityContext: {}
   # ServiceMonitor for OpenShift user workload monitoring
   serviceMonitor:
-    enabled: true
+    enable: true
     interval: 30s
     scrapeTimeout: 10s
