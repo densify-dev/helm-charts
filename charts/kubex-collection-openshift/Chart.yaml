@@ -8,10 +8,10 @@ dependencies:
   - name: container-optimization-data-forwarder
     version: "4.*.*"
     repository: https://densify-dev.github.io/helm-charts
-  - name: kubex-ephemeral-storage-metrics
+  - name: k8s-ephemeral-storage-metrics
     version: "1.*.*"
-    repository: https://densify-dev.github.io/helm-charts
-    condition: kubex-ephemeral-storage-metrics.enabled
+    repository: https://jmcgrath207.github.io/k8s-ephemeral-storage-metrics/chart
+    condition: k8s-ephemeral-storage-metrics.enabled
 keywords:
 - kubex
 - densify

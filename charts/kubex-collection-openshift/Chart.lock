@@ -3,7 +3,7 @@ dependencies:
   repository: https://densify-dev.github.io/helm-charts
   version: 4.0.14
 - name: k8s-ephemeral-storage-metrics
-  repository: ""
-  version: 1.*.*
-digest: sha256:1c3520328f2073a5cab2533fa7f763e3c168794daf1ccd9c3b471ccaa68089c8
-generated: "2026-02-06T11:18:41.118743885Z"
+  repository: https://jmcgrath207.github.io/k8s-ephemeral-storage-metrics/chart
+  version: 1.19.2
+digest: sha256:a1b8e2666a9f0f936ea60cfe3ff0342b44b12bfb8411a14470a44997c064be64
+generated: "2026-02-12T10:55:28.848052244Z"

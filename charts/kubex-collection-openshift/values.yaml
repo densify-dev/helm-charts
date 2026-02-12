@@ -32,10 +32,11 @@ container-optimization-data-forwarder:
     name: kubex-collection
 
 # Ephemeral Storage Metrics Exporter for OpenShift
-# Prerequisites: User workload monitoring must be enabled (run configure-os-monitoring.sh first)
-kubex-ephemeral-storage-metrics:
-  enabled: true  # Set to false to disable ephemeral storage metrics collection
-  nameOverride: kubex-ephemeral-storage
+# Collects and exposes ephemeral storage metrics via a DaemonSet
+# Prerequisites: OpenShift user workload monitoring must be enabled for metrics to be scraped
+k8s-ephemeral-storage-metrics:
+  enabled: false  # Set to false to disable ephemeral storage metrics collection
+  nameOverride: kubex-ephemeral-storage-collector
   tolerations:
     - key: "kubernetes.io/arch"
       operator: "Exists"
