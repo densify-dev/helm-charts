@@ -35,3 +35,8 @@ container-optimization-data-forwarder:
   # server:
     # persistentVolume:
     #   storageClass: <changeme-storage-class>
+
+# Ephemeral Storage Metrics (optional)
+# Deploys k8s-ephemeral-storage-metrics to collect ephemeral storage metrics for containers
+# k8s-ephemeral-storage-metrics:
+#   enabled: false  # Set to false to disable ephemeral storage metrics collection (default: true)
