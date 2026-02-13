@@ -21,6 +21,24 @@ This chart requires very minimal configuration in order to install the entire st
    - `kubectl`
    - `helm`
 
+3. User workload monitoring must be enabled in your OpenShift cluster to allow ephemeral storage data collection.
+
+Update the `cluster-monitoring-config` configmap as follows:
+
+```shell
+kubectl -n openshift-monitoring get configmap cluster-monitoring-config -oyaml
+```
+
+Ensure the config contains:
+
+```yaml
+apiVersion: v1
+data:
+        config.yaml: 'enableUserWorkload: true'
+```
+
+For more information, refer to the [RedHat documentation](https://docs.redhat.com/en/documentation/openshift_container_platform/4.8/html/monitoring/enabling-monitoring-for-user-defined-projects).
+
 ## Installation
 
 The installation on an OpenShift cluster is straight-forward.
@@ -39,6 +57,7 @@ To deploy the Kubex stack, follow these steps below:
 helm repo add kubex https://densify-dev.github.io/helm-charts
 helm repo update
 ```
+
 
 4. To install the chart, run:
 
@@ -60,7 +79,7 @@ The following table lists configuration parameters in `values-edit.yaml`.
 | `container-optimization-data-forwarder.`<br/>`cronJob.failedJobsHistoryLimit` |                    | Number of failed jobs to keep |
 | `container-optimization-data-forwarder.`<br/>`cronJob.ttlSecondsAfterFinished` |                    | TTL to keep jobs after completion/failure |
 | `container-optimization-data-forwarder.`<br/>`cronJob.backoffLimit` |                    | Backoff limit for jobs |
-| `k8s-ephemeral-storage-metrics.enabled`                                          |                    | Enable ephemeral storage metrics collection (default: `true`) |
+| `k8s-ephemeral-storage-metrics.enabled`                                          |                    | Enable ephemeral storage metrics collection (default: `false`) |
 
 ## Limitations
 
