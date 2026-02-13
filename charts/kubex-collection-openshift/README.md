@@ -23,10 +23,11 @@ This chart requires very minimal configuration in order to install the entire st
 
 3. User workload monitoring must be enabled in your OpenShift cluster to allow ephemeral storage data collection.
 
+
 Update the `cluster-monitoring-config` configmap as follows:
 
 ```shell
-kubectl -n openshift-monitoring get configmap cluster-monitoring-config -oyaml
+kubectl -n openshift-monitoring edit configmap cluster-monitoring-config
 ```
 
 Ensure the config contains:
@@ -34,7 +35,9 @@ Ensure the config contains:
 ```yaml
 apiVersion: v1
 data:
-        config.yaml: 'enableUserWorkload: true'
+  config.yaml: |
+    enableUserWorkload: true
+kind: ConfigMap
 ```
 
 For more information, refer to the [RedHat documentation](https://docs.redhat.com/en/documentation/openshift_container_platform/4.8/html/monitoring/enabling-monitoring-for-user-defined-projects).
