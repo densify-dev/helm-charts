@@ -43,7 +43,7 @@ The deployment consists of several key services:
 - **⏸️ Smart Pause Control**: Per-pod annotation-based pausing for learning periods after application changes or permanent exclusions
 - **📋 Policy-Driven**: Configurable automation rules for downsizing, upsizing, and constraint handling
 - **🎯 Flexible Targeting**: Multiple scope configurations for different automation behaviors across cluster regions
-- **📈 Enterprise Ready**: RBAC integration, audit trails, and GitOps compatibility
+- **📈 Enterprise Ready**: RBAC integration and audit trails
 
 ## Supported Resource Types
 
@@ -91,7 +91,6 @@ This guide covers:
 | **[Advanced Configuration](./docs/Advanced-Configuration.md)** | Node scheduling, performance tuning, enterprise features |
 | **[Pod Scan Configuration](./docs/Pod-Scan-Configuration.md)** | Optimize scanning performance for large clusters |
 | **[RBAC Permissions](./docs/RBAC-Guide.md)** | Security model and permission breakdown |
-| **[GitOps Integration](./docs/GitOps-Integration.md)** | Argo CD, Flux, and drift prevention |
 
 ## Reference
 
