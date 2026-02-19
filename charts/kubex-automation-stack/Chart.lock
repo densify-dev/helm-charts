@@ -5,5 +5,8 @@ dependencies:
 - name: prometheus
   repository: https://prometheus-community.github.io/helm-charts
   version: 27.52.0
-digest: sha256:93ff613a57857914ebde2219cd43b60ffeb0aa3f555fedaac29d9919b25efaf8
-generated: "2026-01-29T21:53:16.935264955Z"
+- name: node-labeler
+  repository: https://densify-dev.github.io/helm-charts
+  version: 0.1.0
+digest: sha256:4ea130ce287e78882c6c94c4ca2347bd8c7d5e46c42de02157e50b13edbc60ec
+generated: "2026-02-19T15:14:46.659633251Z"
