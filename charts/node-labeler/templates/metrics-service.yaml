@@ -1,0 +1,18 @@
+{{- if .Values.metrics.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "node-labeler.fullname" . }}-metrics
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "node-labeler.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - name: metrics
+      port: {{ include "node-labeler.metricsPort" . }}
+      targetPort: {{ include "node-labeler.metricsPort" . }}
+      protocol: TCP
+  selector:
+    {{- include "node-labeler.selectorLabels" . | nindent 4 }}
+{{- end }}
