@@ -12,6 +12,10 @@ dependencies:
     version: "1.*.*"
     repository: https://jmcgrath207.github.io/k8s-ephemeral-storage-metrics/chart
     condition: k8s-ephemeral-storage-metrics.enabled
+  - name: node-labeler
+    version: "0.1.0"
+    repository: https://densify-dev.github.io/helm-charts
+    condition: node-labeler.enabled
 keywords:
 - kubex
 - densify

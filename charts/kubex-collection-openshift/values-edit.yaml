@@ -26,3 +26,7 @@ container-optimization-data-forwarder:
     # failedJobsHistoryLimit: <value>
     # ttlSecondsAfterFinished: <value> # applies for both the cronjob and the job
     # backoffLimit: <value> # applies for both the cronjob and the job, default: 4
+
+# Optional: Enable node-labeler subchart (disabled by default)
+# node-labeler:
+#   enabled: true
