@@ -5,8 +5,5 @@ dependencies:
 - name: prometheus
   repository: https://prometheus-community.github.io/helm-charts
   version: 27.52.0
-- name: node-labeler
-  repository: file://../node-labeler
-  version: 0.1.0
-digest: sha256:a7b2bd99345993522765020ea94f060d68e0729eedaa8e04f841480f3fafbd41
-generated: "2026-02-19T13:58:16.643986372Z"
+digest: sha256:93ff613a57857914ebde2219cd43b60ffeb0aa3f555fedaac29d9919b25efaf8
+generated: "2026-01-29T21:53:16.935264955Z"

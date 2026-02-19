@@ -11,11 +11,6 @@ dependencies:
   - name: prometheus
     version: "27.*.*"
     repository: https://prometheus-community.github.io/helm-charts
-  #TODO: Change this once we have a published chart for node-labeler
-  - name: node-labeler
-    version: "0.*.*"
-    repository: file://../node-labeler
-    condition: node-labeler.enabled
 keywords:
 - kubex
 - densify
