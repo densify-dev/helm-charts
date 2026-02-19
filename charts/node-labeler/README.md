@@ -10,13 +10,13 @@ Helm chart to deploy the `node-labeler` Kubernetes controller.
 ## Install
 
 ```sh
-helm upgrade --install node-labeler ./charts/node-labeler -n kubex-system --create-namespace
+helm upgrade --install node-labeler ./charts/node-labeler -n kubex --create-namespace
 ```
 
 ## Upgrade
 
 ```sh
-helm upgrade node-labeler ./charts/node-labeler -n kubex-system
+helm upgrade node-labeler ./charts/node-labeler -n kubex
 ```
 
 ## Notes
