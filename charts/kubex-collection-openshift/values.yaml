@@ -2,6 +2,9 @@ stack:
   densify:
     createSecret: true
 
+node-labeler:
+  enabled: false
+
 container-optimization-data-forwarder:
   image: densify/container-optimization-data-forwarder:ubi10-4
   # required for OpenShift

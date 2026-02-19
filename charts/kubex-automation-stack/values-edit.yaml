@@ -35,3 +35,7 @@ container-optimization-data-forwarder:
   # server:
     # persistentVolume:
     #   storageClass: <changeme-storage-class>
+
+# Optional: Enable node-labeler subchart (disabled by default)
+# node-labeler:
+#   enabled: true

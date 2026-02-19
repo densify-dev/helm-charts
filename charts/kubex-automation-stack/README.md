@@ -69,6 +69,7 @@ The following table lists configuration parameters in `values-edit.yaml`.
 | `container-optimization-data-forwarder.`<br/>`cronJob.ttlSecondsAfterFinished` |                    | TTL to keep jobs after completion/failure |
 | `container-optimization-data-forwarder.`<br/>`cronJob.backoffLimit` |                    | Backoff limit for jobs |
 | `prometheus.server.persistentVolume.`<br/>`storageClass`                         |                    | Storage class for Prometheus persistent volume |
+| `node-labeler.enabled`                                                           |                    | Enable optional node-labeler subchart (`false` by default) |
 
 ## Limitations
 
@@ -77,11 +78,13 @@ The following table lists configuration parameters in `values-edit.yaml`.
 
 ## Further Details
 
-This chart consists of two subcharts:
+This chart consists of two required subcharts and one optional subchart:
 
 * [Kubex Data Collector](../container-optimization-data-forwarder), which collects data and forwards it to a Kubex instance for analysis
 
 * [Prometheus Community Prometheus chart](https://github.com/prometheus-community/helm-charts/blob/main/charts/prometheus/) which contains the entire stack required for the Kubex Data Collector to collect data
+
+* [Node Labeler](../node-labeler), optional and disabled by default; set `node-labeler.enabled=true` to install
 
 ## Documentation
 

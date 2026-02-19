@@ -7,6 +7,9 @@ stack:
   densify:
     createSecret: true
 
+node-labeler:
+  enabled: false
+
 container-optimization-data-forwarder:
   nameOverride: kubex-stack
   tolerations:

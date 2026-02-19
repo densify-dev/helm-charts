@@ -1,7 +1,7 @@
 apiVersion: v2
 description: Kubex Collection Stack
 name: kubex-automation-stack
-version: 1.0.2
+version: 1.0.3
 type: application
 icon: https://www.kubex.ai/wp-content/uploads/kubex-by-densify-logo.png
 dependencies:
@@ -11,6 +11,10 @@ dependencies:
   - name: prometheus
     version: "27.*.*"
     repository: https://prometheus-community.github.io/helm-charts
+  - name: node-labeler
+    version: "0.1.0"
+    repository: https://densify-dev.github.io/helm-charts
+    condition: node-labeler.enabled
 keywords:
 - kubex
 - densify

@@ -1,7 +1,7 @@
 apiVersion: v2
 description: Kubex Collection Stack for OpenShift Clusters
 name: kubex-collection-openshift
-version: 1.0.5
+version: 1.0.6
 type: application
 icon: https://kubex.ai/wp-content/uploads/kubex-logo-landscape.svg
 dependencies:
@@ -12,6 +12,10 @@ dependencies:
     version: "1.*.*"
     repository: https://jmcgrath207.github.io/k8s-ephemeral-storage-metrics/chart
     condition: k8s-ephemeral-storage-metrics.enabled
+  - name: node-labeler
+    version: "0.1.0"
+    repository: https://densify-dev.github.io/helm-charts
+    condition: node-labeler.enabled
 keywords:
 - kubex
 - densify
