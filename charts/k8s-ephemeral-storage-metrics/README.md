@@ -1,29 +1,10 @@
 ## Helm Install
 
 ```bash
-# Pull/install from GHCR OCI (when REGISTRY_TARGET=ghcr)
-helm upgrade --install my-deployment \
-  oci://ghcr.io/<github-owner>/charts/k8s-ephemeral-storage-metrics \
-  --version <version>
-
-# Pull/install from Docker Hub OCI (when REGISTRY_TARGET=dockerhub)
-helm upgrade --install my-deployment \
-  oci://registry-1.docker.io/<dockerhub-namespace>/charts/k8s-ephemeral-storage-metrics \
-  --version <version>
+helm repo add kubex https://densify-dev.github.io/helm-charts
+helm repo update
+helm install --create-namespace -n kubex k8s-ephemeral-storage-metrics kubex/k8s-ephemeral-storage-metrics
 ```
-
-## Automated Tag Release Configuration
-
-The workflow `.github/workflows/release-tag.yml` publishes on tag push using
-the repository variable `REGISTRY_TARGET`.
-
-- `REGISTRY_TARGET=ghcr` publishes the image/chart to GHCR.
-- `REGISTRY_TARGET=dockerhub` publishes the image/chart to Docker Hub.
-
-When using Docker Hub, configure these repository or organization secrets:
-
-- `DOCKERHUB_USERNAME`
-- `DOCKERHUB_TOKEN`
 
 ## Values
 
@@ -39,10 +20,10 @@ When using Docker Hub, configure these repository or organization secrets:
 | containerSecurityContext.runAsNonRoot | bool | `true` |  |
 | deploy_labels | object | `{}` | Set additional labels for the Deployment/Daemonset |
 | deploy_type | string | `"Deployment"` | Set as Deployment for single controller to query all nodes or Daemonset |
-| dev | object | `{"enabled":false,"grow":{"image":"ghcr.io/jmcgrath207/k8s-ephemeral-storage-grow-test:latest","imagePullPolicy":"IfNotPresent"},"shrink":{"image":"ghcr.io/jmcgrath207/k8s-ephemeral-storage-shrink-test:latest","imagePullPolicy":"IfNotPresent"}}` | For local development or testing that will deploy grow and shrink pods and debug service |
+| dev | object | `{"enabled":false,"grow":{"image":"docker.io/jmcgrath207/k8s-ephemeral-storage-grow-test:latest","imagePullPolicy":"IfNotPresent"},"shrink":{"image":"docker.io/jmcgrath207/k8s-ephemeral-storage-shrink-test:latest","imagePullPolicy":"IfNotPresent"}}` | For local development or testing that will deploy grow and shrink pods and debug service |
 | image.imagePullPolicy | string | `"IfNotPresent"` |  |
 | image.imagePullSecrets | list | `[]` |  |
-| image.repository | string | `"ghcr.io/jmcgrath207/k8s-ephemeral-storage-metrics"` |  |
+| image.repository | string | `"docker.io/jmcgrath207/k8s-ephemeral-storage-metrics"` |  |
 | image.tag | string | `"1.19.2"` |  |
 | interval | int | `15` | Polling node rate for exporter |
 | kubelet | object | `{"insecure":false,"readOnlyPort":0,"scrape":false}` | Scrape metrics through kubelet instead of kube api |
@@ -116,35 +97,6 @@ to your Alert Manager config:
     - pod_name
     - exported_container
 ```
-
-## Contribute
-
-### Start minikube
-```bash
-make new_minikube
-```
-
-### Run locally
-```bash
-make deploy_local
-```
-
-### Run locally with Delve Debug
-```bash
-make deploy_debug
-```
-Then connect to `localhost:30002` with [delve](https://github.com/go-delve/delve) or your IDE.
-
-### Run e2e Test
-```bash
-make deploy_e2e
-```
-
-### Debug e2e
-```bash
-make deploy_e2e_debug
-```
-Then run a debug against [deployment_test.go](tests/e2e/deployment_test.go)
 
 ## License
 
