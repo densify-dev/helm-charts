@@ -79,19 +79,15 @@ The following table lists configuration parameters in `values-edit.yaml`.
 
 ## Further Details
 
-<<<<<<< HEAD
 This chart consists of the following subcharts:
-=======
-This chart consists of two required subcharts and one optional subchart:
->>>>>>> origin/master
 
 * [Kubex Data Collector](../container-optimization-data-forwarder) - Collects data and forwards it to a Kubex instance for analysis
 
 * [Prometheus Community Prometheus chart](https://github.com/prometheus-community/helm-charts/blob/main/charts/prometheus/) - Contains the entire stack required for the Kubex Data Collector to collect data
 
-* [k8s-ephemeral-storage-metrics](https://github.com/jmcgrath207/k8s-ephemeral-storage-metrics) - Collects ephemeral storage metrics for containers
+* [k8s-ephemeral-storage-metrics](https://github.com/jmcgrath207/k8s-ephemeral-storage-metrics) - Collects ephemeral storage metrics for containers. This is currently disabled by default as the feature is in BETA.
 
-* [Node Labeler](../node-labeler), optional and disabled by default; set `node-labeler.enabled=true` to install
+* [Node Labeler](../node-labeler) - Adds labels to nodes to indicate which Kubex Node Group they belong to. This is an optional component that can be enabled if desired (disabled by default).
 
 ## Documentation
 
