@@ -100,7 +100,7 @@ The following table lists configuration parameters in `values-edit.yaml`.
 This chart consists of the following subcharts:
 
 * [Kubex Data Collector](../container-optimization-data-forwarder) - Collects data and forwards it to a Kubex instance for analysis
-* [k8s-ephemeral-storage-metrics](https://github.com/jmcgrath207/k8s-ephemeral-storage-metrics) - Collects ephemeral storage metrics for containers using CRI-O runtime
+* [k8s-ephemeral-storage-metrics](https://github.com/densify-dev/helm-charts/tree/master/charts/k8s-ephemeral-storage-metrics) - Collects ephemeral storage metrics for containers using CRI-O runtime
 * [Node Labeler](../node-labeler) - Optional and disabled by default; set `node-labeler.enabled=true` to install
 
 ## Documentation
