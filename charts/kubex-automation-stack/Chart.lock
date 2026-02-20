@@ -5,8 +5,11 @@ dependencies:
 - name: prometheus
   repository: https://prometheus-community.github.io/helm-charts
   version: 27.52.0
+- name: k8s-ephemeral-storage-metrics
+  repository: https://jmcgrath207.github.io/k8s-ephemeral-storage-metrics/chart
+  version: 1.19.2
 - name: node-labeler
   repository: https://densify-dev.github.io/helm-charts
   version: 0.1.0
-digest: sha256:4ea130ce287e78882c6c94c4ca2347bd8c7d5e46c42de02157e50b13edbc60ec
-generated: "2026-02-19T15:14:46.659633251Z"
+digest: sha256:e9419502412a24494d4befcf913113678f3a8b75da0dafb84567bf55281bd246
+generated: "2026-02-20T13:12:45.674822047Z"
