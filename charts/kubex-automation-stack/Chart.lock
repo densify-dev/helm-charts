@@ -8,5 +8,8 @@ dependencies:
 - name: k8s-ephemeral-storage-metrics
   repository: https://jmcgrath207.github.io/k8s-ephemeral-storage-metrics/chart
   version: 1.19.2
-digest: sha256:62886f34a0af79788e626b853b74cdb4d2fb9935ee48e75477544b8b771f4172
-generated: "2026-02-12T12:04:08.93139627Z"
+- name: node-labeler
+  repository: https://densify-dev.github.io/helm-charts
+  version: 0.1.0
+digest: sha256:e9419502412a24494d4befcf913113678f3a8b75da0dafb84567bf55281bd246
+generated: "2026-02-20T13:12:45.674822047Z"

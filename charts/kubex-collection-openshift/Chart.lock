@@ -2,5 +2,11 @@ dependencies:
 - name: container-optimization-data-forwarder
   repository: https://densify-dev.github.io/helm-charts
   version: 4.0.14
-digest: sha256:daa393be125338317f494f451e77441115ef455ebb955cd489ae37faeb43f36e
-generated: "2026-01-29T21:53:54.787740278Z"
+- name: k8s-ephemeral-storage-metrics
+  repository: https://jmcgrath207.github.io/k8s-ephemeral-storage-metrics/chart
+  version: 1.19.2
+- name: node-labeler
+  repository: https://densify-dev.github.io/helm-charts
+  version: 0.1.0
+digest: sha256:0dae141d70a50e264ebab186ab1767c93cbe4f092b405f9784ff596fd00d45b8
+generated: "2026-02-19T15:19:31.107539556Z"

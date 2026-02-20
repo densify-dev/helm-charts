@@ -1,4 +1,4 @@
-# Kubex Automation Stack Helm Chart for OpenShift Clusters
+# Kubex Collection Stack Helm Chart for OpenShift Clusters
 
 <picture>
     <source media="(prefers-color-scheme: dark)" srcset="https://kubex.ai/wp-content/uploads/kubex-logo-reverse-landscape.svg">
@@ -21,6 +21,32 @@ This chart requires very minimal configuration in order to install the entire st
    - `kubectl`
    - `helm`
 
+3. User workload monitoring must be enabled in your OpenShift cluster to allow ephemeral storage data collection.
+
+Update the `cluster-monitoring-config` configmap as follows:
+
+```shell
+kubectl -n openshift-monitoring edit configmap cluster-monitoring-config
+```
+
+Ensure the config contains:
+
+```yaml
+apiVersion: v1
+data:
+  config.yaml: |
+    enableUserWorkload: true
+kind: ConfigMap
+```
+
+> **Note:** If the `cluster-monitoring-config` configmap does not exist, you can create it with:
+> ```shell
+> kubectl -n openshift-monitoring create configmap cluster-monitoring-config --from-literal=config.yaml='enableUserWorkload: true'
+> ```
+
+
+For more information, refer to the [RedHat documentation](https://docs.redhat.com/en/documentation/openshift_container_platform/4.8/html/monitoring/enabling-monitoring-for-user-defined-projects).
+
 ## Installation
 
 The installation on an OpenShift cluster is straight-forward.
@@ -33,28 +59,19 @@ To deploy the Kubex stack, follow these steps below:
 
 2. Edit `values-edit.yaml` with the relevant mandatory parameters as described in [Configuration](#configuration) and save it.
 
-3. If your cluster has arm64 architecture, download also [values-arm64.yaml](https://github.com/densify-dev/helm-charts/blob/master/charts/kubex-collection-openshift/values-arm64.yaml).
-
-4. To add the helm repos, run:
+3. To add the helm repos, run:
 
 ```shell
 helm repo add kubex https://densify-dev.github.io/helm-charts
 helm repo update
 ```
 
-5. To install the chart
 
-- On an amd64 cluster, run:
+4. To install the chart, run:
 
-    ```shell
-    helm upgrade --install -n kubex --create-namespace -f values-edit.yaml kubex kubex/kubex-collection-openshift
-    ```
-
-- On an arm64 cluster, run:
-
-    ```shell
-    helm upgrade --install -n kubex --create-namespace -f values-arm64.yaml -f values-edit.yaml kubex kubex/kubex-collection-openshift
-    ```
+```shell
+helm upgrade --install -n kubex --create-namespace -f values-edit.yaml kubex kubex/kubex-collection-openshift
+```
 
 ## Configuration
 
@@ -70,7 +87,8 @@ The following table lists configuration parameters in `values-edit.yaml`.
 | `container-optimization-data-forwarder.`<br/>`cronJob.failedJobsHistoryLimit` |                    | Number of failed jobs to keep |
 | `container-optimization-data-forwarder.`<br/>`cronJob.ttlSecondsAfterFinished` |                    | TTL to keep jobs after completion/failure |
 | `container-optimization-data-forwarder.`<br/>`cronJob.backoffLimit` |                    | Backoff limit for jobs |
-| `prometheus.server.persistentVolume.`<br/>`storageClass`                         |                    | Storage class for Prometheus persistent volume |
+| `k8s-ephemeral-storage-metrics.enabled`                                          |                    | Enable ephemeral storage metrics collection (default: `false`) |
+| `node-labeler.enabled`                                                           |                    | Enable optional node-labeler subchart (`false` by default) |
 
 ## Limitations
 
@@ -79,9 +97,11 @@ The following table lists configuration parameters in `values-edit.yaml`.
 
 ## Further Details
 
-This chart consists of one subchart:
+This chart consists of the following subcharts:
 
-* [Kubex Data Collector](../container-optimization-data-forwarder), which collects data and forwards it to a Kubex instance for analysis
+* [Kubex Data Collector](../container-optimization-data-forwarder) - Collects data and forwards it to a Kubex instance for analysis
+* [k8s-ephemeral-storage-metrics](https://github.com/jmcgrath207/k8s-ephemeral-storage-metrics) - Collects ephemeral storage metrics for containers using CRI-O runtime
+* [Node Labeler](../node-labeler) - Optional and disabled by default; set `node-labeler.enabled=true` to install
 
 ## Documentation
 

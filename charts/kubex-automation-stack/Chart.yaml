@@ -1,7 +1,7 @@
 apiVersion: v2
 description: Kubex Collection Stack
 name: kubex-automation-stack
-version: 1.0.2
+version: 1.0.3
 type: application
 icon: https://www.kubex.ai/wp-content/uploads/kubex-by-densify-logo.png
 dependencies:
@@ -15,6 +15,10 @@ dependencies:
     version: "1.*.*"
     repository: https://jmcgrath207.github.io/k8s-ephemeral-storage-metrics/chart
     condition: k8s-ephemeral-storage-metrics.enabled
+  - name: node-labeler
+    version: "0.1.0"
+    repository: https://densify-dev.github.io/helm-charts
+    condition: node-labeler.enabled
 keywords:
 - kubex
 - densify

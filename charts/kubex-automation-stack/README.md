@@ -70,6 +70,7 @@ The following table lists configuration parameters in `values-edit.yaml`.
 | `container-optimization-data-forwarder.`<br/>`cronJob.backoffLimit` |                    | Backoff limit for jobs |
 | `prometheus.server.persistentVolume.`<br/>`storageClass`                         |                    | Storage class for Prometheus persistent volume |
 | `k8s-ephemeral-storage-metrics.enabled`                                          |                    | Enable ephemeral storage metrics collection (default: `true`) |
+| `node-labeler.enabled`                                                           |                    | Enable optional node-labeler subchart (`false` by default) |
 
 ## Limitations
 
@@ -78,13 +79,19 @@ The following table lists configuration parameters in `values-edit.yaml`.
 
 ## Further Details
 
+<<<<<<< HEAD
 This chart consists of the following subcharts:
+=======
+This chart consists of two required subcharts and one optional subchart:
+>>>>>>> origin/master
 
 * [Kubex Data Collector](../container-optimization-data-forwarder) - Collects data and forwards it to a Kubex instance for analysis
 
 * [Prometheus Community Prometheus chart](https://github.com/prometheus-community/helm-charts/blob/main/charts/prometheus/) - Contains the entire stack required for the Kubex Data Collector to collect data
 
 * [k8s-ephemeral-storage-metrics](https://github.com/jmcgrath207/k8s-ephemeral-storage-metrics) - Collects ephemeral storage metrics for containers
+
+* [Node Labeler](../node-labeler), optional and disabled by default; set `node-labeler.enabled=true` to install
 
 ## Documentation
 
