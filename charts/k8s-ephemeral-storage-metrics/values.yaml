@@ -1,6 +1,6 @@
 image:
-  repository: ghcr.io/jmcgrath207/k8s-ephemeral-storage-exporter
-  tag: 1.19.2
+  repository: docker.io/densify/k8s-ephemeral-storage-metrics
+  tag: 1.20.0
   imagePullPolicy: IfNotPresent
   imagePullSecrets: []
 
@@ -92,16 +92,6 @@ prometheus:
 
 # -- Enable Pprof
 pprof: false
-
-# -- For local development or testing that will deploy grow and shrink pods and debug service
-dev:
-  enabled: false
-  shrink:
-    image: ghcr.io/jmcgrath207/k8s-ephemeral-storage-shrink-test:latest
-    imagePullPolicy: IfNotPresent
-  grow:
-    image: ghcr.io/jmcgrath207/k8s-ephemeral-storage-grow-test:latest
-    imagePullPolicy: IfNotPresent
 
 # -- Resource requests and limits for the container
 resources: {}
