@@ -128,6 +128,10 @@ prometheus:
             - source_labels: [__name__]
               regex: '^prometheus_(build_info|tsdb.*)$'
               action: keep
+        - job_name: 'k8s-ephemeral-storage-metrics'
+          static_configs:
+            - targets:
+              - k8s-ephemeral-storage-metrics:9100
         - job_name: 'kubernetes-apiservers'
           kubernetes_sd_configs:
             - role: endpointslice
