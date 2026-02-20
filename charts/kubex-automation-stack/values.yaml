@@ -128,10 +128,6 @@ prometheus:
             - source_labels: [__name__]
               regex: '^prometheus_(build_info|tsdb.*)$'
               action: keep
-        - job_name: 'k8s-ephemeral-storage-metrics'
-          static_configs:
-            - targets:
-              - k8s-ephemeral-storage-metrics:9100
         - job_name: 'kubernetes-apiservers'
           kubernetes_sd_configs:
             - role: endpointslice
@@ -215,7 +211,7 @@ prometheus:
               target_label: namespace
             - source_labels: [__meta_kubernetes_endpointslice_name]
               action: keep
-              regex: '((kubex|densify)-(kube-state-metrics|prometheus-node-exporter|ephemeral-storage-collector)|.*dcgm).*'
+              regex: '((kubex|densify)-(kube-state-metrics|prometheus-node-exporter|ephemeral-storage-collector)|.*dcgm|k8s-ephemeral-storage-metrics).*'
             - source_labels: [__meta_kubernetes_service_name]
               action: replace
               target_label: service
@@ -224,7 +220,7 @@ prometheus:
               target_label: node
           metric_relabel_configs:
             - source_labels: [__name__]
-              regex: '^(DCGM_FI_(DEV_(FB_(FREE|USED)|GPU_UTIL|POWER_USAGE)|PROF_(DRAM_ACTIVE|GR_ENGINE_ACTIVE|PIPE_TENSOR_ACTIVE))|ephemeral_storage_(adjusted_polling_rate|container_(limit_percentage|volume_(limit_percentage|usage))|inodes|node_(available|capacity|percentage)|pod_usage)|kube_(cronjob_(created|info|labels|next_schedule_time|status_(active|last_schedule_time))|daemonset_(created|labels|status_number_available)|deployment_(created|labels|metadata_generation|spec_strategy_rollingupdate_max_(surge|unavailable))|horizontalpodautoscaler_(info|labels|spec_(max_replicas|min_replicas|target_metric)|status_(condition|current_replicas|target_metric))|job_(created|info|labels|owner|spec_(completions|parallelism)|status_(active|completion_time|start_time))|namespace_(annotations|labels)|node_(info|labels|role|spec_taint|status_(allocatable|capacity))|pod_(container_(info|resource_(limits|requests)|status_(last_terminated_(exitcode|timestamp)|restarts_total|terminated(?:_reason)?))|created|info|labels|owner|status_(phase|qos_class))|replicaset_(created|labels|owner|spec_replicas)|replicationcontroller_(created|spec_replicas)|resourcequota(?:_created)?|statefulset_(created|labels|replicas))|node_(cpu_(core_throttles_total|seconds_total)|disk_(read_bytes_total|reads_completed_total|writes_completed_total|written_bytes_total)|memory_(Buffers_bytes|Cached_bytes|MemFree_bytes|MemTotal_bytes|SReclaimable_bytes)|network_(receive_(bytes_total|packets_total)|speed_bytes|transmit_(bytes_total|packets_total))|vmstat_oom_kill)|openshift_clusterresourcequota_(created|labels|namespace_usage|selector|usage))$'
+              regex: '^(DCGM_FI_(DEV_(FB_(FREE|USED)|GPU_UTIL|POWER_USAGE)|PROF_(DRAM_ACTIVE|GR_ENGINE_ACTIVE|PIPE_TENSOR_ACTIVE))|ephemeral_storage_.*|kube_(cronjob_(created|info|labels|next_schedule_time|status_(active|last_schedule_time))|daemonset_(created|labels|status_number_available)|deployment_(created|labels|metadata_generation|spec_strategy_rollingupdate_max_(surge|unavailable))|horizontalpodautoscaler_(info|labels|spec_(max_replicas|min_replicas|target_metric)|status_(condition|current_replicas|target_metric))|job_(created|info|labels|owner|spec_(completions|parallelism)|status_(active|completion_time|start_time))|namespace_(annotations|labels)|node_(info|labels|role|spec_taint|status_(allocatable|capacity))|pod_(container_(info|resource_(limits|requests)|status_(last_terminated_(exitcode|timestamp)|restarts_total|terminated(?:_reason)?))|created|info|labels|owner|status_(phase|qos_class))|replicaset_(created|labels|owner|spec_replicas)|replicationcontroller_(created|spec_replicas)|resourcequota(?:_created)?|statefulset_(created|labels|replicas))|node_(cpu_(core_throttles_total|seconds_total)|disk_(read_bytes_total|reads_completed_total|writes_completed_total|written_bytes_total)|memory_(Buffers_bytes|Cached_bytes|MemFree_bytes|MemTotal_bytes|SReclaimable_bytes)|network_(receive_(bytes_total|packets_total)|speed_bytes|transmit_(bytes_total|packets_total))|vmstat_oom_kill)|openshift_clusterresourcequota_(created|labels|namespace_usage|selector|usage))$'
               action: keep
 
 #################################################################
