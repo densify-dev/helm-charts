@@ -20,7 +20,6 @@ helm install --create-namespace -n kubex k8s-ephemeral-storage-metrics kubex/k8s
 | containerSecurityContext.runAsNonRoot | bool | `true` |  |
 | deploy_labels | object | `{}` | Set additional labels for the Deployment/Daemonset |
 | deploy_type | string | `"Deployment"` | Set as Deployment for single controller to query all nodes or Daemonset |
-| dev | object | `{"enabled":false,"grow":{"image":"docker.io/jmcgrath207/k8s-ephemeral-storage-grow-test:latest","imagePullPolicy":"IfNotPresent"},"shrink":{"image":"docker.io/jmcgrath207/k8s-ephemeral-storage-shrink-test:latest","imagePullPolicy":"IfNotPresent"}}` | For local development or testing that will deploy grow and shrink pods and debug service |
 | image.imagePullPolicy | string | `"IfNotPresent"` |  |
 | image.imagePullSecrets | list | `[]` |  |
 | image.repository | string | `"docker.io/jmcgrath207/k8s-ephemeral-storage-metrics"` |  |
