@@ -1,0 +1,40 @@
+{{- if .Values.serviceAccount.create }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  labels:
+    k8s-app: {{ .Release.Name }}
+  {{- include "chart.labels" . | nindent 4 }}
+  name: {{ include "chart.serviceAccountName" . }}
+  namespace: {{ .Release.Namespace }}
+{{- end }}
+
+{{- if .Values.rbac.create }}
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: k8s-ephemeral-storage-metrics
+  labels:
+  {{- include "chart.labels" . | nindent 4 }}
+rules:
+  - apiGroups: [""]
+    resources: ["nodes","nodes/proxy", "nodes/stats", "pods"]
+    verbs: ["get","list", "watch"]
+
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: k8s-ephemeral-storage-metrics
+  labels:
+  {{- include "chart.labels" . | nindent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "chart.serviceAccountName" . }}
+    namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: ClusterRole
+  name: k8s-ephemeral-storage-metrics
+  apiGroup: rbac.authorization.k8s.io
+{{- end }}

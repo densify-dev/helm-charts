@@ -1,0 +1,179 @@
+apiVersion: apps/v1
+kind: {{ .Values.deploy_type  }}
+metadata:
+  name: k8s-ephemeral-storage-metrics
+  namespace: {{ .Release.Namespace }}
+  labels:
+  {{- include "chart.labels" . | nindent 4 }}
+  {{- if .Values.deploy_labels }}
+  {{- toYaml .Values.deploy_labels | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if eq .Values.deploy_type "Deployment" }}
+  replicas: 1
+  revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
+  {{- end }}
+  selector:
+    matchLabels:
+  {{- include "chart.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+      {{- include "chart.labels" . | nindent 8 }}
+      {{- if .Values.pod_labels }}
+      {{- toYaml .Values.pod_labels | nindent 8 }}
+      {{- end }}
+      annotations:
+      {{- toYaml .Values.podAnnotations | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "chart.serviceAccountName" . }}
+      nodeSelector:
+      {{- toYaml .Values.nodeSelector | nindent 8 }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.priorityClassName }}
+      priorityClassName: {{ .Values.priorityClassName }}
+      {{- end }}
+      {{- with .Values.image.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: metrics
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.imagePullPolicy }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          ports:
+            - name: metrics
+              containerPort: {{ .Values.metrics.port  }}
+              protocol: TCP
+            {{ if .Values.pprof }}
+            - name: pprof
+              containerPort: 6060
+              protocol: TCP
+              {{ end }}
+          livenessProbe:
+            failureThreshold: 10
+            httpGet:
+              path: /metrics
+              port: {{ .Values.metrics.port  }}
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 30
+          readinessProbe:
+            failureThreshold: 10
+            httpGet:
+              path: /metrics
+              port: {{ .Values.metrics.port  }}
+              scheme: HTTP
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          {{- with .Values.containerSecurityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          env:
+            - name: DEPLOY_TYPE
+              value: "{{ .Values.deploy_type }}"
+            - name: SCRAPE_INTERVAL
+              value: "{{ .Values.interval }}"
+            - name: MAX_NODE_CONCURRENCY
+              value: "{{ .Values.max_node_concurrency }}"
+            - name: CLIENT_GO_QPS
+              value: "{{ .Values.client_go_qps }}"
+            - name: CLIENT_GO_BURST
+              value: "{{ .Values.client_go_burst }}"
+            - name: LOG_LEVEL
+              value: "{{ .Values.log_level }}"
+              {{- if .Values.metrics.ephemeral_storage_pod_usage }}
+            - name: EPHEMERAL_STORAGE_POD_USAGE
+              value: "{{ .Values.metrics.ephemeral_storage_pod_usage }}"
+              {{- end }}
+              {{- if .Values.metrics.ephemeral_storage_node_available }}
+            - name: EPHEMERAL_STORAGE_NODE_AVAILABLE
+              value: "{{ .Values.metrics.ephemeral_storage_node_available }}"
+              {{- end }}
+              {{- if .Values.metrics.ephemeral_storage_node_capacity }}
+            - name: EPHEMERAL_STORAGE_NODE_CAPACITY
+              value: "{{ .Values.metrics.ephemeral_storage_node_capacity }}"
+              {{- end }}
+              {{- if .Values.metrics.ephemeral_storage_node_percentage }}
+            - name: EPHEMERAL_STORAGE_NODE_PERCENTAGE
+              value: "{{ .Values.metrics.ephemeral_storage_node_percentage }}"
+              {{- end }}
+              {{- if .Values.metrics.ephemeral_storage_container_limit_percentage }}
+            - name: EPHEMERAL_STORAGE_CONTAINER_LIMIT_PERCENTAGE
+              value: "{{ .Values.metrics.ephemeral_storage_container_limit_percentage }}"
+              {{- end }}
+              {{- if .Values.metrics.ephemeral_storage_container_rootfs_usage }}
+            - name: EPHEMERAL_STORAGE_CONTAINER_ROOTFS_USAGE
+              value: "{{ .Values.metrics.ephemeral_storage_container_rootfs_usage }}"
+              {{- end }}
+              {{- if .Values.metrics.ephemeral_storage_container_logs_usage }}
+            - name: EPHEMERAL_STORAGE_CONTAINER_LOGS_USAGE
+              value: "{{ .Values.metrics.ephemeral_storage_container_logs_usage }}"
+              {{- end }}
+              {{- if .Values.metrics.ephemeral_storage_container_volume_usage }}
+            - name: EPHEMERAL_STORAGE_CONTAINER_VOLUME_USAGE
+              value: "{{ .Values.metrics.ephemeral_storage_container_volume_usage }}"
+              {{- end }}
+              {{- if .Values.metrics.ephemeral_storage_container_volume_limit_percentage }}
+            - name: EPHEMERAL_STORAGE_CONTAINER_VOLUME_LIMITS_PERCENTAGE
+              value: "{{ .Values.metrics.ephemeral_storage_container_volume_limit_percentage }}"
+              {{- end }}
+              {{- if .Values.metrics.ephemeral_storage_inodes }}
+            - name: EPHEMERAL_STORAGE_INODES
+              value: "{{ .Values.metrics.ephemeral_storage_inodes }}"
+              {{- end }}
+              {{- if .Values.kubelet.scrape }}
+            - name: SCRAPE_FROM_KUBELET
+              value: "{{ .Values.kubelet.scrape }}"
+              {{- end }}
+              {{- if .Values.kubelet.readOnlyPort }}
+            - name: KUBELET_READONLY_PORT
+              value: "{{ .Values.kubelet.readOnlyPort }}"
+              {{- end }}
+              {{- if .Values.kubelet.insecure }}
+            - name: SCRAPE_FROM_KUBELET_TLS_INSECURE_SKIP_VERIFY
+              value: "{{ .Values.kubelet.insecure }}"
+              {{- end }}
+              {{- if .Values.metrics.adjusted_polling_rate }}
+            - name: ADJUSTED_POLLING_RATE
+              value: "{{ .Values.metrics.adjusted_polling_rate }}"
+              {{- end }}
+              {{- if .Values.pprof }}
+            - name: PPROF
+              value: "{{ .Values.pprof }}"
+              {{- end }}
+              {{- if .Values.metrics.gc_enabled }}
+            - name: GC_ENABLED
+              value: "{{ .Values.metrics.gc_enabled }}"
+              {{- end }}
+              {{- if .Values.metrics.gc_interval }}
+            - name: GC_INTERVAL
+              value: "{{ .Values.metrics.gc_interval }}"
+              {{- end }}
+              {{- if .Values.metrics.gc_batch_size }}
+            - name: GC_BATCH_SIZE
+              value: "{{ .Values.metrics.gc_batch_size }}"
+              {{- end }}
+              {{- if eq .Values.deploy_type  "DaemonSet" }}
+            - name: CURRENT_NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+              {{- end }}
