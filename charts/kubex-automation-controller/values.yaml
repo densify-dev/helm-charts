@@ -42,22 +42,28 @@ deployment:
     controller: 1
   webhookResources: # Resource Specs for the webhook server pod
     requests:
-      memory: "64Mi" # Reduced from 128Mi for better scheduling
-      cpu: "100m"
+      cpu: "15m"
+      memory: "30Mi"
     limits:
-      memory: "512Mi" # Maximum memory the pod can use before being throttled or killed
-  gatewayResources: # CPU and memory resource requests and limits for the pod
+      memory: "200Mi"
+  controllerGatewayResources: # CPU and memory resource requests and limits for the kubex-automation-gw pod
     requests:
-      memory: "64Mi" # Minimum guaranteed memory allocated to the pod
-      cpu: "100m" # Minimum guaranteed CPU
+      cpu: "15m"
+      memory: "40Mi"
     limits:
-      memory: "512Mi" # Maximum memory the pod can use before being throttled or killed
+      memory: "250Mi"
+  webhookGatewayResources: # CPU and memory resource requests and limits for the kubex-webhook-gw pod
+    requests:
+      cpu: "10m"
+      memory: "20Mi"
+    limits:
+      memory: "150Mi"
   controllerResources: # Resource Specs for the controller pod
     requests:
-      memory: "128Mi" # Minimum guaranteed memory allocated to the pod
-      cpu: "250m" # Minimum guaranteed CPU
+      cpu: "25m"
+      memory: "500Mi"
     limits:
-      memory: "512Mi" # Maximum memory the pod can use before being throttled or killed
+      memory: "1Gi"
   # Pod and container security contexts.
   podSecurityContext:
     fsGroup: 3000
@@ -256,10 +262,10 @@ valkey:
   # Resource sizing (tune for your cluster/workload)
   resources:
     requests:
-      cpu: "250m"
-      memory: "256Mi"
+      cpu: "10m"
+      memory: "40Mi"
     limits:
-      memory: "512Mi"
+      memory: "200Mi"
 
   # Use a Deployment in non-HA mode (default)
   useDeploymentWhenNonHA: true
@@ -306,10 +312,10 @@ valkey:
         - kubex-valkey-client-auth
       resources:
         requests:
-          cpu: "50m"
-          memory: "64Mi"
+          cpu: "10m"
+          memory: "20Mi"
         limits:
-          memory: "128Mi"
+          memory: "100Mi"
     service:
       enabled: true
       type: ClusterIP
