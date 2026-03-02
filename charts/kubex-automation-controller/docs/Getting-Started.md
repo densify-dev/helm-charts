@@ -1,23 +1,9 @@
 
 # Getting Started with Kubex Automation Controller
 
-This guide walks you through deploying **Kubex Automation Controller** in your Kubernetes cluster using the default, auto-generated self-signed certificates. Advanced certificate options are covered [here](]11._Advanced:_Custom_Certificate_Options).
+This guide walks you through deploying **Kubex Automation Controller** in your Kubernetes cluster using the default, auto-generated self-signed certificates. Advanced certificate options are covered [here](#advanced-custom-certificate-options).
 
 # Quick Links
-
-1.  [Prerequisites](#prerequisites)
-2.  [Download Configuration Files](#step-1-download-configuration-files)
-3.  Configure Connection Parameters\
-4.  Configure Valkey\
-5.  Configure Cluster Identification\
-6.  Define Automation Scope\
-7.  Configure Automation Policy\
-8.  Container Resource Sizing Guidance\
-9.  Install Kubex Automation Controller\
-10. Verify Installation\
-11. Advanced: Custom Certificate Options\
-12. Next Steps
-
 - [Getting Started with Kubex Automation Controller](#getting-started-with-kubex-automation-controller)
 - [Quick Links](#quick-links)
   - [Prerequisites](#prerequisites)
