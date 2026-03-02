@@ -220,8 +220,6 @@ policy:
 #    recommendationDataFormat: "json"             # Storage format in Valkey: "json" (readable) or "protobuf" (compact)
 #    nodeCpuHeadroom: "10%"                       # CPU headroom to reserve on each node (Can be in absolute value i.e. "100m" or in Percentage format i.e. "10%")
 #    nodeMemoryHeadroom: "200Mi"                  # Memory headroom to reserve on each node (Can be in absolute value i.e. "200Mi" or in Percentage format i.e. "10%")
-#    evictionThrottlingWindow: "6h"               # Time window for throttling pod evictions 
-#    evictionThrottlingMax: "1000"                # Max number of pod evictions allowed within the time window 
 #
 #  # Add custom environment variables for containers
 #  # Use this to add NEW custom variables that don't exist in controllerEnv defaults
@@ -244,13 +242,21 @@ policy:
 #    limits:
 #      memory: "512Mi"                            # Update based on Kubex recommendations
   
-  # Override gateway resources based on Kubex recommendations
-#  gatewayResources: # CPU and memory resource requests and limits for the pod
+  # Override controller gateway resources based on Kubex recommendations
+#  controllerGatewayResources: # CPU and memory resource requests and limits for the kubex-automation-gw pod
 #    requests:
-#      memory: "64Mi"                            # Update based on Kubex recommendations
-#      cpu: "100m"                                # Update based on Kubex recommendations
+#      memory: "40Mi"                            # Update based on Kubex recommendations
+#      cpu: "15m"                                 # Update based on Kubex recommendations
 #    limits:
-#      memory: "512Mi"                            # Update based on Kubex recommendations
+#      memory: "250Mi"                           # Update based on Kubex recommendations
+
+  # Override webhook gateway resources based on Kubex recommendations
+#  webhookGatewayResources: # CPU and memory resource requests and limits for the kubex-webhook-gw pod
+#    requests:
+#      memory: "20Mi"                            # Update based on Kubex recommendations
+#      cpu: "10m"                                 # Update based on Kubex recommendations
+#    limits:
+#      memory: "150Mi"                           # Update based on Kubex recommendations
   
   # Override controller resources based on Kubex recommendations
 #  controllerResources: # Resource Specs for the controller pod
