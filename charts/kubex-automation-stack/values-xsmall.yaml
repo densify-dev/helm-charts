@@ -1,4 +1,4 @@
-# Use this file for a small k8s cluster (0-5000 containers):
+# Use this file for a small k8s cluster (0-500 containers):
 prometheus:
   server:
     resources:
