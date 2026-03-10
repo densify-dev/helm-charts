@@ -50,7 +50,8 @@ The following table indicates - depending on the cluster size - which sizing fil
 
 | Cluster Size    | No. of Containers | Sizing File to Use |
 | --------------- | ----------------- | ------------------ |
-| Small           | 0-5000            | [values-small.yaml](https://github.com/densify-dev/helm-charts/blob/master/charts/kubex-automation-stack/values-small.yaml) |
+| Extra Small     | 0-500             | [values-xsmall.yaml](https://github.com/densify-dev/helm-charts/blob/master/charts/kubex-automation-stack/values-xsmall.yaml) |
+| Small           | 500-5000          | [values-small.yaml](https://github.com/densify-dev/helm-charts/blob/master/charts/kubex-automation-stack/values-small.yaml) |
 | Medium          | 5001-10000        | [values-medium.yaml](https://github.com/densify-dev/helm-charts/blob/master/charts/kubex-automation-stack/values-medium.yaml) |
 | Large           | 10001+            | [values-large.yaml](https://github.com/densify-dev/helm-charts/blob/master/charts/kubex-automation-stack/values-large.yaml) |
 
