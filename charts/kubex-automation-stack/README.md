@@ -10,7 +10,9 @@
 
 Kubex analyses Kubernetes clusters and produces recommendations for rightsizing resources to mitigate risk and reduce waste. This chart includes all components required for that.
 
-This chart requires very minimal configuration in order to install the entire stack. All of it is in `values-edit.yaml`.
+This chart supports both Kubernetes clusters and OpenShift clusters.
+
+This chart requires very minimal configuration in order to install the entire stack. All required user-specific configuration is in `values-edit.yaml`.
 
 ## Installation
 
@@ -20,9 +22,33 @@ To deploy the Kubex Collection Stack, follow these steps below:
 
 2. Download [values-edit.yaml](https://github.com/densify-dev/helm-charts/blob/master/charts/kubex-automation-stack/values-edit.yaml).
 
-3. Edit `values-edit.yaml` with the relevant mandatory parameters as described in [Configuration](#configuration).
+3. If deploying on OpenShift, download [values-openshift.yaml](https://github.com/densify-dev/helm-charts/blob/master/charts/kubex-automation-stack/values-openshift.yaml).
 
-4. If your cluster has arm64 architecture, download also [values-arm64.yaml](https://github.com/densify-dev/helm-charts/blob/master/charts/kubex-automation-stack/values-arm64.yaml).
+   User workload monitoring must be enabled in your OpenShift cluster to allow ephemeral storage data collection.
+
+   Update the `cluster-monitoring-config` ConfigMap:
+
+   ```shell
+   kubectl -n openshift-monitoring edit configmap cluster-monitoring-config
+   ```
+
+   Ensure the config contains:
+
+   ```yaml
+   apiVersion: v1
+   data:
+     config.yaml: |
+       enableUserWorkload: true
+   kind: ConfigMap
+   ```
+
+   If the `cluster-monitoring-config` ConfigMap does not exist, create it with:
+
+   ```shell
+   kubectl -n openshift-monitoring create configmap cluster-monitoring-config --from-literal=config.yaml='enableUserWorkload: true'
+   ```
+
+4. Edit `values-edit.yaml` with the relevant mandatory parameters as described in [Configuration](#configuration).
 
 5. To add the helm repos, run:
 
@@ -32,16 +58,16 @@ helm repo add kubex https://densify-dev.github.io/helm-charts
 helm repo update
 ```
 
-6. If your cluster has amd64 architecture, run this command:
+6. If your cluster is not OpenShift, run this command:
 
 ```shell
 helm install --create-namespace -n kubex -f values-edit.yaml -f <sizing file> kubex kubex/kubex-automation-stack
 ```
 
-7. If your cluster has arm64 architecture, run this command:
+7. If your cluster is OpenShift, run this command:
 
 ```shell
-helm install --create-namespace -n kubex -f values-edit.yaml -f <sizing file> -f values-arm64.yaml kubex kubex/kubex-automation-stack
+helm install --create-namespace -n kubex -f values-edit.yaml -f <sizing file> -f values-openshift.yaml kubex kubex/kubex-automation-stack
 ```
 
 ## Sizing
@@ -63,6 +89,8 @@ The following table lists configuration parameters in `values-edit.yaml`.
 | -------------------------------------------------------------------------------- | ------------------ | ------------------------------------------------------ |
 | `stack.densify.username`                                                         | :white_check_mark: | Kubex user account                                   |
 | `stack.densify.encrypted_password`                                               | :white_check_mark: | Encrypted password for the Kubex User                |
+| `openshift.enabled`                                                              |                    | Enables OpenShift-specific templates and validations |
+| `stack.prometheus.deploy`                                                        |                    | Deploy the bundled Prometheus chart (`true` by default, `false` on OpenShift) |
 | `container-optimization-data-forwarder.`<br/>`config.forwarder.densify.url.host` | :white_check_mark: | Kubex instance hostname (`< instance >.kubex.ai`) |
 | `container-optimization-data-forwarder.`<br/>`config.clusters[0].name`           | :white_check_mark: | Cluster name **(must be unique, customer-wide; if not, specify an alternate name)** |
 | `container-optimization-data-forwarder.`<br/>`cronJob.successfulJobsHistoryLimit` |                    | Number of successful jobs to keep |
@@ -84,7 +112,7 @@ This chart consists of the following subcharts:
 
 * [Kubex Data Collector](../container-optimization-data-forwarder) - Collects data and forwards it to a Kubex instance for analysis
 
-* [Prometheus Community Prometheus chart](https://github.com/prometheus-community/helm-charts/blob/main/charts/prometheus/) - Contains the entire stack required for the Kubex Data Collector to collect data
+* [Prometheus Community Prometheus chart](https://github.com/prometheus-community/helm-charts/blob/main/charts/prometheus/) - Used on Kubernetes clusters; disabled for OpenShift installs via `values-openshift.yaml`
 
 * [k8s-ephemeral-storage-metrics](https://github.com/jmcgrath207/k8s-ephemeral-storage-metrics) - Collects ephemeral storage metrics for containers. This is currently disabled by default as the feature is in BETA.
 

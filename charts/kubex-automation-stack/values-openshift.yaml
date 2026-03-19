@@ -1,0 +1,38 @@
+openshift:
+  enabled: true
+
+stack:
+  prometheus:
+    deploy: false
+
+container-optimization-data-forwarder:
+  assignedUIDs: true
+  job:
+    checkPrometheusReady: false
+  config:
+    prometheus:
+      url:
+        scheme: https
+        host: thanos-querier.openshift-monitoring.svc
+        port: 9091
+      ca_cert: /var/run/secrets/kubernetes.io/serviceaccount/service-ca.crt
+  rbac:
+    create: true
+  serviceAccount:
+    create: true
+    name: kubex-stack
+
+k8s-ephemeral-storage-metrics:
+  containerSecurityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+    readOnlyRootFilesystem: true
+    seccompProfile:
+      type: RuntimeDefault
+  podSecurityContext: {}
+  serviceMonitor:
+    enable: true
+    interval: 30s
+    scrapeTimeout: 10s

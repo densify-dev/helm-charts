@@ -2,6 +2,11 @@
   {{- default .Release.Namespace .Values.nsPrefix -}}
 {{- end -}}
 {{- define "common.checkValues" -}}
+{{- $openshiftEnabled := .Values.openshift.enabled -}}
+{{- $deployPrometheus := .Values.stack.prometheus.deploy -}}
+{{- if and $openshiftEnabled $deployPrometheus -}}
+  {{- fail "OpenShift mode requires stack.prometheus.deploy=false. Use kubex-automation-stack/values-openshift.yaml for OpenShift installs." -}}
+{{- end -}}
 {{- $hostValueName := ".Values.container-optimization-data-forwarder.config.forwarder.densify.url.host" -}}
 {{- $hostValueErr := printf "%s is required" $hostValueName -}}
 {{- $host1 := index .Values "container-optimization-data-forwarder" "config" "forwarder" "densify" "url" "host" -}}

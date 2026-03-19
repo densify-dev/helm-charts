@@ -24,18 +24,11 @@ Follow these steps to install the `kubex-automation-stack` from the Densify Helm
 
 6. Transfer the `kubex-automation-stack` directory to the target Kubernetes cluster where you want to install the chart.
 
-7. If your cluster has amd64 architecture, install the Helm chart using the custom values file:
+7. Install the Helm chart using the custom values file:
 
     ```sh
     cd kubex-automation-stack
     helm install --create-namespace -n kubex -f values-edit.yaml -f <sizing file> kubex .
-    ```
-
-8. If your cluster has arm64 architecture, install the Helm chart using the custom values file:
-
-    ```sh
-    cd kubex-automation-stack
-    helm install --create-namespace -n kubex -f values-edit.yaml -f <sizing file> -f values-arm64.yaml kubex .
     ```
 
 ---

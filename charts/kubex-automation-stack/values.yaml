@@ -3,9 +3,14 @@
 # kubex/container-optimization-data-forwarder parameters
 #################################################################
 
+openshift:
+  enabled: false
+
 stack:
   densify:
     createSecret: true
+  prometheus:
+    deploy: true
 
 node-labeler:
   enabled: false
