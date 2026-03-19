@@ -24,7 +24,29 @@ To deploy the Kubex Collection Stack, follow these steps below:
 
 3. If deploying on OpenShift, download [values-openshift.yaml](https://github.com/densify-dev/helm-charts/blob/master/charts/kubex-automation-stack/values-openshift.yaml).
 
-   User workload monitoring must be enabled in your OpenShift cluster to allow ephemeral storage data collection. Refer to step 3 in the [kubex-collection-openshift README](https://github.com/densify-dev/helm-charts/blob/master/charts/kubex-collection-openshift/README.md#prerequisites) to update the `cluster-monitoring-config` ConfigMap.
+   User workload monitoring must be enabled in your OpenShift cluster to allow ephemeral storage data collection.
+
+   Update the `cluster-monitoring-config` ConfigMap:
+
+   ```shell
+   kubectl -n openshift-monitoring edit configmap cluster-monitoring-config
+   ```
+
+   Ensure the config contains:
+
+   ```yaml
+   apiVersion: v1
+   data:
+     config.yaml: |
+       enableUserWorkload: true
+   kind: ConfigMap
+   ```
+
+   If the `cluster-monitoring-config` ConfigMap does not exist, create it with:
+
+   ```shell
+   kubectl -n openshift-monitoring create configmap cluster-monitoring-config --from-literal=config.yaml='enableUserWorkload: true'
+   ```
 
 4. Edit `values-edit.yaml` with the relevant mandatory parameters as described in [Configuration](#configuration).
 
