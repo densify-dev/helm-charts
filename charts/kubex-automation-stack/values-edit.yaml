@@ -3,6 +3,11 @@ stack:
     username: '<changeme-username>' # mandatory (unless createSecret = false)
     encrypted_password: '<changeme-encrypted-password>' # mandatory (unless createSecret = false)
 
+# Optional: Enable OpenShift mode. When enabled, also install with values-openshift.yaml.
+# platform:
+#   openshift:
+#     enabled: true
+
 # Kubex Data Collector
 container-optimization-data-forwarder:
   config:
@@ -35,6 +40,12 @@ container-optimization-data-forwarder:
   # server:
     # persistentVolume:
     #   storageClass: <changeme-storage-class>
+
+# Optional: Disable the bundled Prometheus deployment.
+# Required when deploying on OpenShift; values-openshift.yaml already sets this.
+# stack:
+#   prometheus:
+#     deploy: false
 
 # Ephemeral Storage Metrics (optional)
 # Deploys k8s-ephemeral-storage-metrics to collect ephemeral storage metrics for containers
