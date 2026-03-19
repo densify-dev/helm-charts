@@ -6,7 +6,6 @@ stack:
     deploy: false
 
 container-optimization-data-forwarder:
-  image: densify/container-optimization-data-forwarder:ubi10-4
   assignedUIDs: true
   job:
     checkPrometheusReady: false
