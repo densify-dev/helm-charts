@@ -1,5 +1,5 @@
 {{- $forwarder := index .Values "container-optimization-data-forwarder" -}}
-{{- if and .Values.platform.openshift.enabled $forwarder.rbac.create }}
+{{- if and .Values.openshift.enabled $forwarder.rbac.create }}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:

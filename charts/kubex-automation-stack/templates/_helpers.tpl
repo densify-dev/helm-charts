@@ -2,7 +2,7 @@
   {{- default .Release.Namespace .Values.nsPrefix -}}
 {{- end -}}
 {{- define "common.checkValues" -}}
-{{- $openshiftEnabled := .Values.platform.openshift.enabled -}}
+{{- $openshiftEnabled := .Values.openshift.enabled -}}
 {{- $deployPrometheus := .Values.stack.prometheus.deploy -}}
 {{- if and $openshiftEnabled $deployPrometheus -}}
   {{- fail "OpenShift mode requires stack.prometheus.deploy=false. Use kubex-automation-stack/values-openshift.yaml for OpenShift installs." -}}

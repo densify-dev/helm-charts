@@ -1,6 +1,5 @@
-platform:
-  openshift:
-    enabled: true
+openshift:
+  enabled: true
 
 stack:
   prometheus:

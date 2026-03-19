@@ -3,9 +3,8 @@
 # kubex/container-optimization-data-forwarder parameters
 #################################################################
 
-platform:
-  openshift:
-    enabled: false
+openshift:
+  enabled: false
 
 stack:
   densify:
