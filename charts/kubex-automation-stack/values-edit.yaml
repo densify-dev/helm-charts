@@ -3,7 +3,7 @@ stack:
     username: '<changeme-username>' # mandatory (unless createSecret = false)
     encrypted_password: '<changeme-encrypted-password>' # mandatory (unless createSecret = false)
 
-# Optional: Enable OpenShift mode. When enabled, also install with values-openshift.yaml.
+# Optional: Enable OpenShift mode. When enabled, also install with the OpenShift overlay values file.
 # openshift:
 #   enabled: true
 
@@ -41,7 +41,7 @@ container-optimization-data-forwarder:
     #   storageClass: <changeme-storage-class>
 
 # Optional: Disable the bundled Prometheus deployment.
-# Required when deploying on OpenShift; values-openshift.yaml already sets this.
+# Required when deploying on OpenShift; the OpenShift overlay values file already sets this.
 # stack:
 #   prometheus:
 #     deploy: false
