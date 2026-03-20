@@ -22,7 +22,7 @@ To deploy the Kubex Collection Stack, follow these steps below:
 
 2. Download [values-edit.yaml](https://github.com/densify-dev/helm-charts/blob/master/charts/kubex-automation-stack/values-edit.yaml).
 
-3. If deploying on OpenShift, download [values-openshift.yaml](https://github.com/densify-dev/helm-charts/blob/master/charts/kubex-automation-stack/values-openshift.yaml).
+3. If deploying on OpenShift, use the OpenShift overlay file: [values-openshift.yaml](https://raw.githubusercontent.com/densify-dev/helm-charts/master/charts/kubex-automation-stack/values-openshift.yaml).
 
    User workload monitoring must be enabled in your OpenShift cluster to allow ephemeral storage data collection.
 
@@ -67,8 +67,10 @@ helm install --create-namespace -n kubex -f values-edit.yaml -f <sizing file> ku
 7. If your cluster is OpenShift, run this command:
 
 ```shell
-helm install --create-namespace -n kubex -f values-edit.yaml -f <sizing file> -f values-openshift.yaml kubex kubex/kubex-automation-stack
+helm install --create-namespace -n kubex -f values-edit.yaml -f <sizing file> -f https://raw.githubusercontent.com/densify-dev/helm-charts/master/charts/kubex-automation-stack/values-openshift.yaml kubex kubex/kubex-automation-stack
 ```
+
+To override any OpenShift defaults, add another values file or `--set` options after the OpenShift overlay.
 
 ## Sizing
 
@@ -112,7 +114,7 @@ This chart consists of the following subcharts:
 
 * [Kubex Data Collector](../container-optimization-data-forwarder) - Collects data and forwards it to a Kubex instance for analysis
 
-* [Prometheus Community Prometheus chart](https://github.com/prometheus-community/helm-charts/blob/main/charts/prometheus/) - Used on Kubernetes clusters; disabled for OpenShift installs via `values-openshift.yaml`
+* [Prometheus Community Prometheus chart](https://github.com/prometheus-community/helm-charts/blob/main/charts/prometheus/) - Used on Kubernetes clusters; disabled for OpenShift installs via the OpenShift overlay values file
 
 * [k8s-ephemeral-storage-metrics](https://github.com/jmcgrath207/k8s-ephemeral-storage-metrics) - Collects ephemeral storage metrics for containers. This is currently disabled by default as the feature is in BETA.
 
