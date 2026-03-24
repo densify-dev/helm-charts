@@ -1,0 +1,17 @@
+apiVersion: v2
+name: kubex-automation-engine
+description: A Helm chart for deploying kubex-automation-engine for automated workload rightsizing and resource optimization
+type: application
+version: 0.1.0
+appVersion: "latest"
+icon: https://www.kubex.ai/wp-content/uploads/kubex-by-densify-logo.png
+keywords:
+  - kubex
+  - automation
+  - rightsizing
+  - optimization
+  - kubernetes
+  - resource-management
+maintainers:
+  - email: support@kubex.ai
+    name: support

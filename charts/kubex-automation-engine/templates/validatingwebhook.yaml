@@ -1,0 +1,37 @@
+{{- if not .Values.webhook.certManager.enabled -}}
+{{- $_ := include "kubex-automation-engine.gen-certs-data" . -}}
+{{- end }}
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingWebhookConfiguration
+metadata:
+  name: {{ include "kubex-automation-engine.fullname" . }}-validating-webhook-configuration
+  labels:
+    {{- include "kubex-automation-engine.labels" . | nindent 4 }}
+  {{- if .Values.webhook.certManager.enabled }}
+  annotations:
+    cert-manager.io/inject-ca-from: {{ include "kubex-automation-engine.namespace" . }}/{{ include "kubex-automation-engine.fullname" . }}-serving-cert
+  {{- end }}
+webhooks:
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    {{- if not .Values.webhook.certManager.enabled }}
+    caBundle: {{ .caCert }}
+    {{- end }}
+    service:
+      name: {{ include "kubex-automation-engine.fullname" . }}-webhook-service
+      namespace: {{ include "kubex-automation-engine.namespace" . }}
+      path: /validate-rightsizing-kubex-ai-v1alpha1-policyevaluation
+  failurePolicy: {{ .Values.webhook.failurePolicy }}
+  name: vpolicyevaluation-v1alpha1.kb.io
+  rules:
+  - apiGroups:
+    - rightsizing.kubex.ai
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - policyevaluations
+  sideEffects: None

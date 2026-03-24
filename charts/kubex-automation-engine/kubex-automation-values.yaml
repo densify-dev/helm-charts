@@ -1,0 +1,34 @@
+# ================================================================
+# SECTION: SECRET MANAGEMENT CONFIGURATION
+# Instructions:
+# → Configure how secrets are managed in your deployment
+# ================================================================
+
+createSecrets: true # Set to false if you provide your own secrets, created outside of this helm chart
+
+# ================================================================
+# SECTION: CONNECTION PARAMETERS - COPY/PASTE FROM KUBEX UI
+# Instructions:
+# → Go to Kubex UI > Automation tab
+# → Copy "Secure Connection Parameters" and paste below
+# ================================================================
+
+densify:
+  url:
+    host: <customerName>.kubex.ai # mandatory: <instance>.kubex.ai
+
+densifyCredentials:
+  username: '<username>' # Username to access Kubex, mandatory if createSecrets is true
+  epassword: '<epassword>' # Encrypted password to access Kubex, mandatory if createSecrets is true
+  # userSecretName: # Kubex API secret name, mandatory if createSecrets is false
+
+kubex:
+  # REQUIRED: Your cluster identifier in Kubex
+  clusterName: "<clusterName>" # mandatory: <clusterName>
+
+# Optional platform setting:
+# Uncomment when deploying on OpenShift to enable restricted-friendly defaults.
+# openshift:
+#   enabled: true
+
+

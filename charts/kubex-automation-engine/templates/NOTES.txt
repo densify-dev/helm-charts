@@ -1,0 +1,43 @@
+Thank you for installing {{ .Chart.Name }}!
+
+Your release is named {{ .Release.Name }}.
+
+To learn more about the release, try:
+
+  $ helm status {{ .Release.Name }} -n {{ .Release.Namespace }}
+  $ helm get all {{ .Release.Name }} -n {{ .Release.Namespace }}
+
+The automation-controller controller manager has been deployed to namespace: {{ include "kubex-automation-engine.namespace" . }}
+
+Webhook Configuration:
+  - Mutating webhook for Pod rightsizing recommendations is enabled
+  - Validating webhook for PolicyEvaluation resources is enabled
+{{- if .Values.webhook.certManager.enabled }}
+  - Using cert-manager for webhook certificates
+{{- else }}
+  - Using self-signed certificates for webhook
+{{- end }}
+
+{{- if .Values.metrics.enabled }}
+
+Metrics Service:
+  The metrics service is available at:
+  {{ include "kubex-automation-engine.fullname" . }}-metrics-service.{{ include "kubex-automation-engine.namespace" . }}.svc:{{ .Values.metrics.port }}
+{{- end }}
+
+To check the status of the deployment:
+
+  $ kubectl get deployment {{ include "kubex-automation-engine.fullname" . }} -n {{ include "kubex-automation-engine.namespace" . }}
+  $ kubectl get pods -n {{ include "kubex-automation-engine.namespace" . }} -l control-plane=controller-manager
+
+{{- if .Values.globalConfiguration.enabled }}
+
+A default GlobalConfiguration resource will be created.
+{{- end }}
+
+{{- if .Values.policyEvaluation.enabled }}
+
+A default PolicyEvaluation resource will be created.
+{{- end }}
+
+For more information about using the kubex-automation-engine, please refer to the documentation.

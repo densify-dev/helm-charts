@@ -1,0 +1,190 @@
+{{- $localRecommendationsEnabled := .Values.localRecommendations.enabled | default false -}}
+{{- $localRecommendationsMountPath := .Values.localRecommendations.mountPath | default "/etc/automation-controller/recommendations" -}}
+{{- $localRecommendationsFileName := .Values.localRecommendations.fileName | default "recommendations.json" -}}
+{{- $localRecommendationsPath := printf "%s/%s" $localRecommendationsMountPath $localRecommendationsFileName -}}
+{{- $openshiftFsGroupConfigured := and .Values.openshift.enabled (not (empty .Values.openshift.fsGroup)) -}}
+{{- $hasPodFsGroup := hasKey .Values.podSecurityContext "fsGroup" -}}
+{{- $hasEffectiveFsGroup := or $hasPodFsGroup $openshiftFsGroupConfigured -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "kubex-automation-engine.fullname" . }}
+  namespace: {{ include "kubex-automation-engine.namespace" . }}
+  labels:
+    {{- include "kubex-automation-engine.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "kubex-automation-engine.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        # This annotation is set by default so that the automation doesn't attempt to automate itself
+        rightsizing.kubex.ai/pause-until: infinite
+        {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "kubex-automation-engine.selectorLabels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      serviceAccountName: {{ include "kubex-automation-engine.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+        {{- if and $openshiftFsGroupConfigured (not $hasPodFsGroup) }}
+        fsGroup: {{ .Values.openshift.fsGroup }}
+        {{- end }}
+        {{- if and $hasEffectiveFsGroup .Values.openshift.enabled (not (hasKey .Values.podSecurityContext "fsGroupChangePolicy")) (not (empty .Values.openshift.fsGroupChangePolicy)) }}
+        fsGroupChangePolicy: {{ .Values.openshift.fsGroupChangePolicy }}
+        {{- end }}
+        {{- if and .Values.openshift.enabled .Values.openshift.supplementalGroups }}
+        supplementalGroups:
+          {{- toYaml .Values.openshift.supplementalGroups | nindent 10 }}
+        {{- end }}
+      containers:
+      - name: manager
+        image: {{ include "kubex-automation-engine.image" . }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        command:
+        - /manager
+        args:
+        {{- include "kubex-automation-engine.managerArgs" . | nindent 8 }}
+        securityContext:
+          {{- toYaml .Values.securityContext | nindent 10 }}
+        ports:
+        {{- if .Values.metrics.enabled }}
+        - containerPort: {{ trimPrefix ":" .Values.controllerManager.metricsBindAddress }}
+          name: metrics
+          protocol: TCP
+        {{- end }}
+        - containerPort: {{ trimPrefix ":" .Values.controllerManager.healthProbeBindAddress }}
+          name: health
+          protocol: TCP
+        - containerPort: {{ .Values.webhook.port }}
+          name: webhook
+          protocol: TCP
+        livenessProbe:
+          {{- toYaml .Values.livenessProbe | nindent 10 }}
+        readinessProbe:
+          {{- toYaml .Values.readinessProbe | nindent 10 }}
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
+        env:
+        {{- if .Values.kubex.clusterName }}
+        - name: CLUSTER_NAME
+          value: {{ .Values.kubex.clusterName | quote }}
+        {{- end }}
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: GATEWAY_URL
+          value: "http://localhost:8181"
+        {{- if $localRecommendationsEnabled }}
+        - name: RECOMMENDATIONS_PATH
+          value: {{ $localRecommendationsPath | quote }}
+        {{- else if .Values.kubex.recommendationsPath }}
+        - name: RECOMMENDATIONS_PATH
+          value: {{ .Values.kubex.recommendationsPath | quote }}
+        {{- end }}
+        {{- if .Values.kubex.requestTimeout }}
+        - name: REQUEST_TIMEOUT
+          value: {{ .Values.kubex.requestTimeout | quote }}
+        {{- end }}
+        - name: GLOBAL_CONFIG_RECONCILE_INTERVAL
+          value: {{ .Values.controllerManager.globalConfigReconcileInterval | quote }}
+        {{- with .Values.controllerManager.extraEnv }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+        volumeMounts:
+        - mountPath: /tmp/k8s-webhook-server/serving-certs
+          name: cert
+          readOnly: true
+        - name: densify-data
+          mountPath: /densify/data
+        {{- if $localRecommendationsEnabled }}
+        - name: local-recommendations
+          mountPath: {{ $localRecommendationsMountPath | quote }}
+          readOnly: true
+        {{- end }}
+      - name: automation-gateway
+        image: {{ .Values.gateway.image.repository }}:{{ .Values.gateway.image.tag | default .Chart.AppVersion }}
+        imagePullPolicy: {{ .Values.gateway.image.pullPolicy | default "IfNotPresent" }}
+        lifecycle:
+          preStop:
+            exec:
+              command:
+              - /bin/sh
+              - -c
+              - sleep 5
+        env:
+        - name: CFG_VOLUME
+          value: /densify/config/api
+        - name: SPOOL
+          value: /densify/data/spool
+        - name: DENSIFY_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.gateway.configSecretName | default "kubex-gateway-config" }}
+              key: username
+        - name: DENSIFY_EPASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.gateway.configSecretName | default "kubex-gateway-config" }}
+              key: epassword
+        - name: DENSIFY_URL
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.gateway.configSecretName | default "kubex-gateway-config" }}
+              key: url
+        ports:
+        - containerPort: 8181
+          name: gateway
+          protocol: TCP
+        securityContext:
+          {{- toYaml .Values.gateway.securityContext | nindent 10 }}
+        resources:
+          {{- toYaml .Values.gateway.resources | nindent 10 }}
+        volumeMounts:
+        - name: densify-config
+          mountPath: /densify/config/api
+        - name: densify-data
+          mountPath: /densify/data
+      volumes:
+      - name: cert
+        secret:
+          defaultMode: 420
+          secretName: {{ include "kubex-automation-engine.fullname" . }}-webhook-server-cert
+      - name: densify-config
+        secret:
+          secretName: {{ .Values.gateway.configSecretName | default "kubex-gateway-config" }}
+      - name: densify-data
+        emptyDir: {}
+      {{- if $localRecommendationsEnabled }}
+      - name: local-recommendations
+        configMap:
+          name: {{ .Values.localRecommendations.configMapName | default "recommendations" }}
+          items:
+          - key: {{ $localRecommendationsFileName | quote }}
+            path: {{ $localRecommendationsFileName | quote }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.topologySpreadConstraints }}
+      topologySpreadConstraints:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      terminationGracePeriodSeconds: 10

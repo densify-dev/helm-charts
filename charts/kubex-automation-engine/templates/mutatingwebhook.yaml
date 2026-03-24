@@ -1,0 +1,36 @@
+{{- if not .Values.webhook.certManager.enabled -}}
+{{- $_ := include "kubex-automation-engine.gen-certs-data" . -}}
+{{- end }}
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingWebhookConfiguration
+metadata:
+  name: zzz-kubex-mutating-webhook-configuration
+  labels:
+    {{- include "kubex-automation-engine.labels" . | nindent 4 }}
+  {{- if .Values.webhook.certManager.enabled }}
+  annotations:
+    cert-manager.io/inject-ca-from: {{ include "kubex-automation-engine.namespace" . }}/{{ include "kubex-automation-engine.fullname" . }}-serving-cert
+  {{- end }}
+webhooks:
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    {{- if not .Values.webhook.certManager.enabled }}
+    caBundle: {{ .caCert }}
+    {{- end }}
+    service:
+      name: {{ include "kubex-automation-engine.fullname" . }}-webhook-service
+      namespace: {{ include "kubex-automation-engine.namespace" . }}
+      path: /mutate--v1-pod
+  failurePolicy: Ignore
+  name: zzz-mpod-rightsizing-recommendations.kubex.ai
+  rules:
+  - apiGroups:
+    - ""
+    apiVersions:
+    - v1
+    operations:
+    - CREATE
+    resources:
+    - pods
+  sideEffects: None

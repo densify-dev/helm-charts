@@ -1,0 +1,165 @@
+{{- if .Values.rbac.create -}}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "kubex-automation-engine.fullname" . }}-manager-role
+  labels:
+    {{- include "kubex-automation-engine.labels" . | nindent 4 }}
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - limitranges
+  - namespaces
+  - nodes
+  - resourcequotas
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  verbs:
+  - get
+  - list
+  - patch
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - pods/eviction
+  verbs:
+  - create
+- apiGroups:
+  - ""
+  resources:
+  - pods/resize
+  verbs:
+  - patch
+- apiGroups:
+  - ""
+  - events.k8s.io
+  resources:
+  - events
+  verbs:
+  - create
+  - patch
+- apiGroups:
+  - apps
+  resources:
+  - daemonsets
+  - deployments
+  - statefulsets
+  verbs:
+  - get
+  - list
+  - patch
+  - watch
+- apiGroups:
+  - apps
+  resources:
+  - replicasets
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - argoproj.io
+  resources:
+  - analysisruns
+  - rollouts
+  verbs:
+  - get
+  - list
+  - patch
+  - watch
+- apiGroups:
+  - autoscaling
+  resources:
+  - horizontalpodautoscalers
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - autoscaling.k8s.io
+  resources:
+  - verticalpodautoscalers
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - batch
+  resources:
+  - cronjobs
+  - jobs
+  verbs:
+  - get
+  - list
+  - patch
+  - watch
+- apiGroups:
+  - coordination.k8s.io
+  resources:
+  - leases
+  verbs:
+  - create
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - rightsizing.kubex.ai
+  resources:
+  - automationstrategies
+  - clusterautomationstrategies
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - rightsizing.kubex.ai
+  resources:
+  - clusterproactivepolicies
+  - clusterstaticpolicies
+  - globalconfigurations
+  - policyevaluations
+  - proactivepolicies
+  - staticpolicies
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - rightsizing.kubex.ai
+  resources:
+  - clusterproactivepolicies/finalizers
+  - clusterstaticpolicies/finalizers
+  - globalconfigurations/finalizers
+  - policyevaluations/finalizers
+  - proactivepolicies/finalizers
+  - staticpolicies/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - rightsizing.kubex.ai
+  resources:
+  - clusterproactivepolicies/status
+  - clusterstaticpolicies/status
+  - globalconfigurations/status
+  - policyevaluations/status
+  - proactivepolicies/status
+  - staticpolicies/status
+  verbs:
+  - get
+  - patch
+  - update
+{{- end }}

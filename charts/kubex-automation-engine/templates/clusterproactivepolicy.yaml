@@ -1,0 +1,74 @@
+{{- include "kubex-automation-engine.validateAllowedPodOwners" . -}}
+{{- if and .Values.scope (gt (len .Values.scope) 0) -}}
+{{- range $scopeIndex, $scopeConfig := .Values.scope }}
+{{- $policyName := $scopeConfig.policy | default $.Values.policy.defaultPolicy }}
+{{- $policySettings := index $.Values.policy.policies $policyName }}
+---
+apiVersion: rightsizing.kubex.ai/v1alpha1
+kind: ClusterProactivePolicy
+metadata:
+  name: {{ $scopeConfig.name }}
+  labels:
+    {{- include "kubex-automation-engine.labels" $ | nindent 4 }}
+spec:
+  scope:
+    {{- if $scopeConfig.namespaces }}
+    namespaceSelector:
+      operator: {{ $scopeConfig.namespaces.operator }}
+      values:
+        {{- range $scopeConfig.namespaces.values }}
+        - {{ . | quote }}
+        {{- end }}
+    {{- end }}
+    {{- if $scopeConfig.podLabels }}
+    labelSelector:
+      {{- if eq (len $scopeConfig.podLabels) 1 }}
+      {{- $label := index $scopeConfig.podLabels 0 }}
+      {{- if and (eq $label.operator "In") (eq (len $label.values) 1) }}
+      matchLabels:
+        {{ $label.key }}: {{ index $label.values 0 | quote }}
+      {{- else }}
+      matchExpressions:
+        - key: {{ $label.key }}
+          operator: {{ $label.operator }}
+          values:
+            {{- range $label.values }}
+            - {{ . | quote }}
+            {{- end }}
+      {{- end }}
+      {{- else if gt (len $scopeConfig.podLabels) 1 }}
+      matchExpressions:
+        {{- range $scopeConfig.podLabels }}
+        - key: {{ .key }}
+          operator: {{ .operator }}
+          values:
+            {{- range .values }}
+            - {{ . | quote }}
+            {{- end }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+    {{- if $policySettings.allowedPodOwners }}
+    workloadTypes:
+      {{- $owners := splitList "," $policySettings.allowedPodOwners }}
+      {{- range $owners }}
+      - {{ . | trim }}
+      {{- end }}
+    {{- end }}
+  automationStrategyRef:
+    name: {{ $policyName }}
+  {{- /* Resolve maxAnalysisAgeDays: per-policy config (new) takes precedence over top-level policy (old) */}}
+  {{- $maxAgeDays := 0 }}
+  {{- if and $.Values.policy $.Values.policy.safetyChecks $.Values.policy.safetyChecks.maxAnalysisAgeDays }}
+  {{- $maxAgeDays = $.Values.policy.safetyChecks.maxAnalysisAgeDays }}
+  {{- end }}
+  {{- if and $policySettings $policySettings.safetyChecks $policySettings.safetyChecks.maxAnalysisAgeDays }}
+  {{- $maxAgeDays = $policySettings.safetyChecks.maxAnalysisAgeDays }}
+  {{- end }}
+  {{- if $maxAgeDays }}
+  safetyChecks:
+    maxAnalysisAgeDays: {{ $maxAgeDays }}
+  {{- end }}
+  weight: {{ $scopeConfig.weight | default 0 }}
+{{- end }}
+{{- end }}

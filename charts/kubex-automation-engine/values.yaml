@@ -1,0 +1,447 @@
+# CRD version check settings
+crdCheck:
+  # Set to true to skip the CRD version check job and RBACs (not recommended)
+  skip: false
+  # Minimum version of the kubex-crds chart required before this chart can be installed/upgraded.
+  # Bump this whenever a new CRD field or schema change is required.
+  minCRDsHelmVersion: "0.1.0"
+# -- Whether to create the kubex-gateway-config Secret automatically
+createSecrets: true
+
+# Densify/Kubex API credentials (required when createSecrets is true)
+densify:
+  url:
+    # -- Kubex instance hostname (e.g., <customerName>.kubex.ai)
+    host: ""
+
+densifyCredentials:
+  # -- Username to access Kubex API
+  username: ""
+  # -- Encrypted password to access Kubex API
+  epassword: ""
+  # -- Name of existing secret containing Kubex credentials (used when createSecrets is false)
+  userSecretName: ""
+
+# Default values for kubex-automation-engine.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# -- Number of replicas for the controller manager
+replicaCount: 1
+
+image:
+  # -- Image repository
+  repository: densify/automation-controller
+  # -- Image pull policy
+  pullPolicy: IfNotPresent
+  # -- Image tag (overrides the image tag whose default is the chart appVersion)
+  tag: "0.1-beta19"
+
+cleanup:
+  image:
+    # -- Image repository for the pre-delete cleanup job.
+    repository: "densify/kubex-automation-cleanup"
+    # -- Image tag for the pre-delete cleanup job.
+    tag: "0.1-beta19"
+    # -- Image pull policy for the pre-delete cleanup job.
+    pullPolicy: "IfNotPresent"
+  # -- Optional pod security context for the pre-delete cleanup job
+  podSecurityContext: {}
+  # -- Container security context for the pre-delete cleanup job
+  securityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - "ALL"
+
+# -- Override the name of the chart
+nameOverride: ""
+
+# -- Override the full name of the release
+fullnameOverride: ""
+
+serviceAccount:
+  # -- Specifies whether a service account should be created
+  create: true
+  # -- Automatically mount a ServiceAccount's API credentials
+  automount: true
+  # -- Annotations to add to the service account
+  annotations: {}
+  # -- The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+# -- Annotations to add to the controller manager pod
+podAnnotations:
+  kubectl.kubernetes.io/default-container: manager
+
+# -- Labels to add to the controller manager pod
+podLabels:
+  control-plane: controller-manager
+
+# Platform-specific compatibility settings
+openshift:
+  # -- Enable OpenShift-oriented security context defaults without changing the default Kubernetes installation path
+  enabled: false
+  # -- Optional fsGroup applied when openshift.enabled=true and podSecurityContext.fsGroup is not already set
+  fsGroup: null
+  # -- Optional fsGroupChangePolicy applied when an fsGroup is set and podSecurityContext.fsGroupChangePolicy is not already set
+  fsGroupChangePolicy: OnRootMismatch
+  # -- Supplemental groups applied when openshift.enabled=true
+  supplementalGroups: []
+
+podSecurityContext:
+  runAsNonRoot: true
+  seccompProfile:
+    type: RuntimeDefault
+
+securityContext:
+  readOnlyRootFilesystem: true
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+    - "ALL"
+
+# Controller manager configuration
+controllerManager:
+  # -- Enable leader election for controller manager
+  leaderElection:
+    enabled: true
+  
+  # -- Health probe bind address
+  healthProbeBindAddress: ":8081"
+  
+  # -- Metrics bind address
+  metricsBindAddress: ":8443"
+  
+  # -- Additional arguments for the controller manager
+  extraArgs:
+    - --zap-log-level=info
+
+  # -- GlobalConfiguration controller reconcile interval (maps to GLOBAL_CONFIG_RECONCILE_INTERVAL)
+  globalConfigReconcileInterval: "1m"
+  
+  # -- Additional environment variables
+  extraEnv: []
+
+# Kubex configuration
+kubex:
+  # -- Cluster name to identify this cluster in Kubex (required)
+  clusterName: ""
+  
+  # -- Path to local recommendations file (optional, for testing only - overrides gateway)
+  recommendationsPath: "/densify/data/recommendations/recommendations.json"
+  
+  # -- Request timeout for Kubex API calls
+  requestTimeout: "30s"
+
+# Local recommendations injection (for local/dev testing)
+localRecommendations:
+  # -- Mount recommendations from a ConfigMap and use it as RECOMMENDATIONS_PATH
+  enabled: false
+  # -- ConfigMap name containing recommendations JSON
+  configMapName: recommendations
+  # -- Mount path for local recommendations
+  mountPath: /etc/automation-controller/recommendations
+  # -- File name inside the ConfigMap
+  fileName: recommendations.json
+
+# Gateway sidecar configuration
+gateway:
+  image:
+    repository: "densify/automation-gateway"
+    tag: "1.2"
+    pullPolicy: "IfNotPresent"
+  # Name of the secret containing gateway config (mounted at /densify/config/api)
+  configSecretName: "kubex-gateway-config"
+  # -- Security context for the gateway sidecar
+  securityContext:
+    readOnlyRootFilesystem: true
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - "ALL"
+  # -- Resource limits and requests for the gateway sidecar
+  resources:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+    requests:
+      cpu: 10m
+      memory: 64Mi
+
+# Metrics service configuration
+metrics:
+  # -- Enable metrics service
+  enabled: true
+  # -- Service type for metrics
+  type: ClusterIP
+  # -- Service port for metrics
+  port: 8443
+  # -- Service annotations
+  annotations: {}
+
+
+# Webhook configuration
+webhook:
+  # -- Enable or disable the webhook
+  enabled: true
+  # -- Webhook service port
+  port: 9443
+  # -- Failure policy for validating webhook (Ignore allows installation to proceed if webhook is unavailable)
+  failurePolicy: Ignore
+  # -- Certificate manager configuration
+  certManager:
+    # -- Enable cert-manager for webhook certificates (if false, uses self-signed)
+    enabled: false
+
+# Self-signed certificate configuration (used when webhook.certManager.enabled=false)
+selfSignedCert:
+  # -- Validity period in days for self-signed certificates
+  validity: 3650
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 2Gi
+  requests:
+    cpu: 10m
+    memory: 64Mi
+
+livenessProbe:
+  httpGet:
+    path: /healthz
+    port: 8081
+  initialDelaySeconds: 15
+  periodSeconds: 20
+
+readinessProbe:
+  httpGet:
+    path: /readyz
+    port: 8081
+  initialDelaySeconds: 5
+  periodSeconds: 10
+
+# -- Node selector for pod assignment
+nodeSelector: {}
+
+# -- Tolerations for pod assignment
+tolerations:
+  # Tolerate arch taints (works on both amd64 and arm64 clusters)
+  - key: "kubernetes.io/arch"
+    operator: "Exists"
+    effect: "NoSchedule"
+
+# -- Affinity for pod assignment
+affinity: {}
+
+# -- Topology spread constraints for pod assignment
+# Helps distribute pods across zones, nodes, or other topology domains
+# Example:
+# topologySpreadConstraints:
+#   - maxSkew: 1
+#     topologyKey: topology.kubernetes.io/zone
+#     whenUnsatisfiable: DoNotSchedule
+#     labelSelector:
+#       matchLabels:
+#         control-plane: controller-manager
+topologySpreadConstraints: []
+
+# RBAC configuration
+rbac:
+  # -- Create RBAC resources
+  create: true
+
+# CRD installation
+crds: {}
+
+# Global configuration defaults
+# These will be used to create the default GlobalConfiguration CR
+globalConfiguration:
+  # -- Enable creation of default GlobalConfiguration
+  enabled: true
+  # -- Name of the GlobalConfiguration resource
+  name: global-config
+  # -- Recommendation reload interval (how often to fetch from Kubex)
+  # Can also use deployment.controllerEnv.recommendationsFetchInterval for backward compatibility
+  recommendationReloadInterval: "1h"
+  # -- Rescan interval (how often to scan pods for recommendations)
+  # Can also use deployment.controllerEnv.podScanInterval for backward compatibility
+  rescanInterval: "6h"
+  # -- Kubex API request timeout
+  # Can also use deployment.controllerEnv.apiRequestTimeout for backward compatibility
+  kubexAPIRequestTimeout: "30s"
+  # -- Mutation log send interval
+  mutationLogInterval: "5m"
+  # -- Whether automation is globally enabled
+  automationEnabled: true
+  # -- Suppress fetching recommendations from gateway (testing only)
+  suppressFetchRecommendations: false
+  # -- Respect KubexAutomation flag in recommendations
+  respectKubexAutomation: true
+  # -- Namespace patterns protected from automation (supports "*" wildcard)
+  protectedNamespacePatterns:
+    - "kube-*"
+    - "openshift-*"
+  # -- Webhook probe health transition settings
+  webhookHealth:
+    # -- Consecutive failed probes required before webhook is considered unhealthy
+    failureThreshold: 2
+    # -- Consecutive successful probes required before webhook is considered healthy
+    successThreshold: 3
+    # -- Probe interval used while transitioning between healthy/unhealthy states
+    transitionCheckInterval: "10s"
+
+# ================================================================
+# BACKWARD COMPATIBILITY: Legacy environment variable configuration
+# These values are OPTIONAL and customize the default CRDs.
+# If not provided, sensible defaults will be used.
+#
+# Usage:
+# - If you have old deployment.controllerEnv: Keep it, values will be used
+# - If you're a new user: Omit this section, good defaults will be applied
+# - To customize: Set only the values you want to override
+# ================================================================
+deployment:
+  controllerEnv:
+    # Timing configuration → Maps to GlobalConfiguration
+    recommendationsFetchInterval: "1h"       # → globalConfiguration.recommendationReloadInterval
+    podScanInterval: "6h"                    # → globalConfiguration.rescanInterval
+    apiRequestTimeout: "30s"                 # → globalConfiguration.kubexAPIRequestTimeout
+    
+    # Resize method configuration → Maps to AutomationStrategy.inPlaceResize
+    suppressInPlaceResizing: "false"         # → automationStrategy.inPlaceResize.enabled (inverted)
+    
+    # Node capacity configuration → Maps to AutomationStrategy.safetyChecks
+    nodeCpuHeadroom: "10%"                   # → automationStrategy.safetyChecks.nodeCpuHeadroom
+    nodeMemoryHeadroom: "200Mi"              # → automationStrategy.safetyChecks.nodeMemoryHeadroom
+    
+    # Retry configuration → Maps to AutomationStrategy.safetyChecks
+    podEvictionCooldownPeriod: "30s"         # → automationStrategy.safetyChecks.resizeRetryInterval
+
+# Policy evaluation configuration
+policyEvaluation:
+  # -- Enable creation of default PolicyEvaluation
+  enabled: true
+  # -- Name of the PolicyEvaluation resource
+  name: policy-evaluation
+
+# ================================================================
+# SECTION: AUTOMATION SCOPE - Define where automation applies
+# Instructions:
+# → Define one or more scopes to control which namespaces and workloads are automated
+# → Each scope references a policy that defines HOW automation behaves
+#
+# IMPORTANT: You have TWO OPTIONS:
+# Option A (Helm-Managed): Define scope/policy here, and Helm creates ClusterAutomationStrategy and ClusterProactivePolicy CRs automatically
+# Option B (Manual CRs): Leave this empty and create strategy and policy CRs manually with kubectl
+# Both approaches can coexist - use Helm for baseline config and manual CRs for advanced cases
+# ================================================================
+scope: []
+  # Example scope configuration:
+  # - name: base-optimization-scope    # Unique scope name
+  #   policy: base-optimization         # Policy name (optional - uses defaultPolicy if omitted)
+  #   weight: 0                         # Policy weight (higher = higher priority)
+  #   namespaces:                       # Mandatory - defines which namespaces to include/exclude
+  #     operator: NotIn                 # Options: In | NotIn
+  #     values:
+  #       - kube-system                 # System namespaces to exclude
+  #       - kubex                       # Kubex namespace (exclude automation components)
+  #   podLabels: []                     # Optional - defines which pods to include/exclude based on labels
+  #     # Example - Exclude specific apps:
+  #     # - key: app
+  #     #   operator: NotIn
+  #     #   values:
+  #     #     - legacy-app
+  #     #     - manual-sizing
+  #     # Example - Only automate specific environments:
+  #     # - key: environment
+  #     #   operator: In
+  #     #   values:
+  #     #     - development
+  #     #     - staging
+
+# ================================================================
+# SECTION: AUTOMATION POLICY - Define HOW automation behaves
+# Instructions:
+# → Adjust automation and resizing behavior as needed
+# → You can define multiple policies by adding entries under 'policies'
+# → Reference the desired policy by name in the 'scope[].policy' field above
+#
+# IMPORTANT: You have TWO OPTIONS:
+# Option A (Helm-Managed): Define policies here, and Helm creates ClusterAutomationStrategy CRs automatically
+# Option B (Manual CRs): Leave policies empty and create strategy CRs manually with kubectl
+# Both approaches can coexist - use Helm for baseline config and manual CRs for advanced cases
+# ================================================================
+policy:
+  # -- Global switch to enable/disable automation for the cluster
+  automationEnabled: true
+  
+  # -- Default policy used when scope[].policy is not specified
+  defaultPolicy: ""
+  
+  # -- Control where automation inclusion/exclusion rules are defined
+  # false: Automation scope controlled ONLY by Helm configuration (recommended for GitOps)
+  # true: Automation scope controlled by BOTH Helm configuration AND Kubex UI
+  remoteEnablement: false
+  
+  # -- Policy definitions
+  # Each policy defines specific automation behaviors
+  # ⚠️ IMPORTANT: Policy names MUST follow RFC 1123 subdomain rules:
+  #    ✅ Use: lowercase letters, numbers, hyphens, dots only
+  #    ✅ Examples: base-optimization, dev-env, production.cpu
+  #    ❌ Avoid: camelCase, snake_case, UPPERCASE, special characters
+  policies: {}
+    # Example policy configuration:
+    # base-optimization:
+    #   # Allowed workload types (comma-separated string)
+    #   allowedPodOwners: "Deployment,StatefulSet,CronJob,Rollout,Job,AnalysisRun"
+    #   
+    #   # Enablement controls which resource changes are allowed
+    #   enablement:
+    #     cpu:
+    #       request:
+    #         downsize: true
+    #         upsize: true
+    #         setFromUnspecified: true
+    #         # floor: "10m"        # Optional minimum CPU request
+    #         # ceiling: "4"        # Optional maximum CPU request
+    #       limit:
+    #         downsize: false
+    #         upsize: true
+    #         setFromUnspecified: false
+    #         # floor: "10m"        # Optional minimum CPU limit
+    #         # ceiling: "8"        # Optional maximum CPU limit
+    #     memory:
+    #       request:
+    #         downsize: true
+    #         upsize: true
+    #         setFromUnspecified: true
+    #         # floor: "32Mi"       # Optional minimum memory request
+    #         # ceiling: "16Gi"     # Optional maximum memory request
+    #       limit:
+    #         downsize: false
+    #         upsize: true
+    #         setFromUnspecified: true
+    #         # floor: "32Mi"       # Optional minimum memory limit
+    #         # ceiling: "32Gi"     # Optional maximum memory limit
+    #   
+    #   # In-place resize configuration
+    #   inPlaceResize:
+    #     enabled: true
+    #     containerRestart: false  # Allow container restarts during resize
+    #   
+    #   # Pod eviction configuration
+    #   podEviction:
+    #     enabled: true
+    #     retryPodDisruptionBudget: true  # Retry if PDB blocks eviction
+    #   
+    #   # Safety checks for proactive policies (NEW: per-policy, takes precedence)
+    #   safetyChecks:
+    #     maxAnalysisAgeDays: 5  # Reject recommendations older than 5 days
+
+  # -- BACKWARD COMPAT: Global safetyChecks applied to all scopes when not set per-policy.
+  # Setting safetyChecks here (under policy:) is the OLD format and is still supported.
+  # Per-policy safetyChecks (under policy.policies.<name>.safetyChecks) take precedence.
+  # safetyChecks:
+  #   maxAnalysisAgeDays: 5
