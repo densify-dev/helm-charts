@@ -100,7 +100,7 @@ Create the name of the service account to use
 Create the image path
 */}}
 {{- define "kubex-automation-engine.image" -}}
-{{- $tag := .Values.image.tag | default .Chart.AppVersion -}}
+{{- $tag := required "image.tag must be set to an immutable controller image tag" .Values.image.tag -}}
 {{- printf "%s:%s" .Values.image.repository $tag }}
 {{- end }}
 

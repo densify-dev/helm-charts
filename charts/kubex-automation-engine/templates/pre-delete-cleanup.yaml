@@ -102,7 +102,7 @@ spec:
       {{- end }}
       containers:
       - name: cleanup
-        image: {{ .Values.cleanup.image.repository }}:{{ .Values.cleanup.image.tag | default .Chart.AppVersion }}
+        image: {{ .Values.cleanup.image.repository }}:{{ required "cleanup.image.tag must be set to an immutable cleanup image tag" .Values.cleanup.image.tag }}
         imagePullPolicy: {{ .Values.cleanup.image.pullPolicy | default "IfNotPresent" }}
         securityContext:
           {{- toYaml .Values.cleanup.securityContext | nindent 10 }}

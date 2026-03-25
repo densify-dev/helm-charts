@@ -85,7 +85,7 @@ Keep `densify.url.host` set in your values file so the release configuration sti
 | --- | --- | --- |
 | `replicaCount` | `1` | Controller replica count |
 | `image.repository` | `densify/automation-controller` | Controller image |
-| `image.tag` | chart appVersion override | Controller image tag |
+| `image.tag` | `0.1-beta20` | Controller image tag |
 | `gateway.image.repository` | `densify/automation-gateway` | Gateway sidecar image |
 | `createSecrets` | `true` | Create required gateway and TLS secrets |
 | `webhook.enabled` | `true` | Enable webhook components |
