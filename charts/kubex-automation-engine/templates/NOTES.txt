@@ -7,7 +7,7 @@ To learn more about the release, try:
   $ helm status {{ .Release.Name }} -n {{ .Release.Namespace }}
   $ helm get all {{ .Release.Name }} -n {{ .Release.Namespace }}
 
-The automation-controller controller manager has been deployed to namespace: {{ include "kubex-automation-engine.namespace" . }}
+kubex-automation-engine has been deployed to namespace: {{ include "kubex-automation-engine.namespace" . }}
 
 Webhook Configuration:
   - Mutating webhook for Pod rightsizing recommendations is enabled
