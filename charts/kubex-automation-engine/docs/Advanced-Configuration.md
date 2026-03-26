@@ -52,7 +52,7 @@ spec:
 
 ## Pause Controls
 
-Use the `rightsizing.kubex.ai/pause-until` annotation to temporarily or permanently block automation for a pod template.
+Use the `rightsizing.kubex.ai/pause-until` annotation to temporarily or permanently block automation for a workload and its pods.
 
 Supported values:
 
@@ -71,9 +71,17 @@ spec:
 
 Behavior:
 
+- new pods inherit `rightsizing.kubex.ai/pause-until` and `rightsizing.kubex.ai/pause-reason` from supported workload owners during admission
+- existing owned pods are reconciled to inherit the same pause annotations from the workload owner
 - webhook mutation skips paused pods
 - controller-side proactive execution skips paused pods
 - time-based pauses automatically resume after expiration
+
+Notes:
+
+- pod-local pause annotations are still supported
+- when a pause annotation was inherited from the workload owner, the controller tracks that internal inheritance state so it can safely remove the inherited value later
+- if a pause annotation exists only on the pod and was not inherited, the controller treats it as pod-local and does not remove it during workload reconciliation
 
 ## Safety Controls
 

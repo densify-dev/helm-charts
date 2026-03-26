@@ -1,6 +1,6 @@
 # Frequently Asked Questions
 
-Common questions about the current Kubex Automation Engine architecture and chart behavior.
+Common questions about the current Kubex Automation Controller architecture and chart behavior.
 
 # Quick Links
 
@@ -52,7 +52,7 @@ Set `globalConfiguration.automationEnabled: false` and run `helm upgrade`, or sc
 
 ### What prevents unsafe resizes?
 
-The controller filters or blocks actions based on webhook health, protected namespaces, pause annotations, HPA/VPA detection, quota and LimitRange checks, node headroom, and workload readiness checks.
+The controller filters or blocks actions based on webhook health, protected namespaces, pause annotations, HPA/VPA detection, quota and LimitRange checks, node headroom, and workload readiness checks. Pause annotations can be set directly on a pod or on a supported workload owner, in which case new pods inherit them during admission and existing owned pods are reconciled to the same pause state.
 
 For the complete safety model and where each control is configured, see [Safety Controls](./Safety-Controls.md).
 
