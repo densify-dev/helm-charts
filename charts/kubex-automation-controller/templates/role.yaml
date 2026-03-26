@@ -3,5 +3,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: kubex-automation-controller-cluster-role
+  labels:
+    {{- include "kubex-automation-controller.metadataLabels" . | nindent 4 }}
 rules:
 {{ include "kubex-automation-controller.kubex-automation-controller-clusterrole-rules" . }}

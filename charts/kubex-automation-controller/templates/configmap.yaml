@@ -3,6 +3,8 @@ kind: ConfigMap
 metadata:
   name: kubex-config
   namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "kubex-automation-controller.metadataLabels" . | nindent 4 }}
 data:
   CLUSTER_NAME: {{ .Values.cluster.name | required ".Values.cluster.name is required." | quote }}
   KUBEX_BASE_URL: >-
@@ -21,6 +23,8 @@ kind: ConfigMap
 metadata:
   name: kubex-automation-controller-clusterrole
   namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "kubex-automation-controller.metadataLabels" . | nindent 4 }}
 data:
   kubex-automation-controller-clusterrole-rules: |-
 {{ include "kubex-automation-controller.kubex-automation-controller-clusterrole-rules" . | nindent 4 }}
@@ -31,6 +35,8 @@ kind: ConfigMap
 metadata:
   name: kubex-automation-scope
   namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "kubex-automation-controller.metadataLabels" . | nindent 4 }}
 data:
   kubex-automation-scope: |-
   {{- range .Values.scope }}
@@ -51,6 +57,8 @@ kind: ConfigMap
 metadata:
   name: kubex-automation-policy
   namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "kubex-automation-controller.metadataLabels" . | nindent 4 }}
 data:
   kubex-automation-policy: |-
     automationEnabled: {{ .Values.policy.automationEnabled }}

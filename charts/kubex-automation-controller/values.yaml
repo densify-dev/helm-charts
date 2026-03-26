@@ -1,3 +1,10 @@
+global:
+  # Additional labels to apply to chart-managed resources and controller/webhook pods
+  labels: {}
+    # Example:
+    # compliance.example/owner: platform
+    # compliance.example/tier: regulated
+
 serviceAccount:
   # Additional labels to apply to all kubex service accounts
   labels: {}

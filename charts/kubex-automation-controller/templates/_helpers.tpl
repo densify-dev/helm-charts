@@ -90,6 +90,25 @@ app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
 {{/*
+Optional global labels from values.
+*/}}
+{{- define "kubex-automation-controller.globalLabels" -}}
+{{- with .Values.global.labels }}
+{{ toYaml . }}
+{{- end }}
+{{- end }}
+
+{{/*
+Common metadata labels merged with optional global labels.
+*/}}
+{{- define "kubex-automation-controller.metadataLabels" -}}
+{{ include "kubex-automation-controller.labels" . }}
+{{- with .Values.global.labels }}
+{{ toYaml . }}
+{{- end }}
+{{- end }}
+
+{{/*
 Selector labels
 */}}
 {{- define "kubex-automation-controller.selectorLabels" -}}

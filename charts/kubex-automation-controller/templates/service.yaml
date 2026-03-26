@@ -3,6 +3,8 @@ kind: Service
 metadata:
   name: kubex-webhook-service
   namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "kubex-automation-controller.metadataLabels" . | nindent 4 }}
 spec:
   type: ClusterIP
   ports:

@@ -4,6 +4,8 @@ kind: Deployment
 metadata:
   name: kubex-automation-controller
   namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "kubex-automation-controller.metadataLabels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.deployment.replicas.controller | default 1 }}
   strategy:
@@ -16,6 +18,7 @@ spec:
     metadata:
       labels:
         app: kubex-controller
+        {{- include "kubex-automation-controller.globalLabels" . | nindent 8 }}
       annotations:
         checksum/configmap: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
         checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
@@ -225,6 +228,8 @@ kind: Deployment
 metadata:
   name: kubex-webhook-server
   namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "kubex-automation-controller.metadataLabels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.deployment.replicas.webhookServer | default 1 }}
   strategy:
@@ -237,6 +242,7 @@ spec:
     metadata:
       labels:
         app: kubex-webhook
+        {{- include "kubex-automation-controller.globalLabels" . | nindent 8 }}
       annotations:
         checksum/configmap: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
         checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
