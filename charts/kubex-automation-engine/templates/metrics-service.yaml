@@ -1,0 +1,22 @@
+{{- if .Values.metrics.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "kubex-automation-engine.fullname" . }}-metrics-service
+  namespace: {{ include "kubex-automation-engine.namespace" . }}
+  labels:
+    {{- include "kubex-automation-engine.labels" . | nindent 4 }}
+  {{- with .Values.metrics.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.metrics.type }}
+  ports:
+  - name: metrics
+    port: {{ .Values.metrics.port }}
+    protocol: TCP
+    targetPort: metrics
+  selector:
+    {{- include "kubex-automation-engine.selectorLabels" . | nindent 4 }}
+{{- end }}

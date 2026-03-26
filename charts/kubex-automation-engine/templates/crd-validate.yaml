@@ -1,0 +1,24 @@
+{{/*
+Validate that the kubex-crds chart is installed at the required minimum version
+before rendering any resources. This runs at template render time, before Helm
+tries to map resources to the cluster API, so the user gets a clear actionable
+error instead of Helm's generic "no matches for kind" or "field not declared in
+schema" messages.
+
+Checks performed:
+  1. The kubex-crds-version ConfigMap exists (i.e. kubex-crds chart is installed)
+  2. The recorded version meets the minimum required version
+*/}}
+{{- if not .Values.crdCheck.skip -}}
+{{- $cm := lookup "v1" "ConfigMap" .Release.Namespace "kubex-crds-version" -}}
+{{- if not $cm -}}
+{{- fail (printf "\n\nERROR: The 'kubex-crds' chart is not installed in namespace '%s'.\nThis chart requires kubex-crds >= %s.\n\nRun:\n  helm upgrade --install kubex-crds kubex/kubex-crds -n %s\n\nThen retry:\n  helm upgrade --install %s kubex/kubex-automation-engine -n %s\n\nTo skip this check (not recommended): --set crdCheck.skip=true" .Release.Namespace .Values.crdCheck.minCRDsHelmVersion .Release.Namespace .Release.Name .Release.Namespace) -}}
+{{- else -}}
+{{- $installedVersion := index $cm.data "version" | default "" -}}
+{{- if not $installedVersion -}}
+{{- fail (printf "\n\nERROR: The 'kubex-crds-version' ConfigMap in namespace '%s' is missing the 'version' key.\nPlease reinstall the kubex-crds chart:\n  helm upgrade --install kubex-crds kubex/kubex-crds -n %s" .Release.Namespace .Release.Namespace) -}}
+{{- else if semverCompare (printf "< %s" .Values.crdCheck.minCRDsHelmVersion) $installedVersion -}}
+{{- fail (printf "\n\nERROR: Installed 'kubex-crds' version (%s) is too old.\nThis chart requires kubex-crds >= %s.\n\nRun:\n  helm upgrade kubex-crds kubex/kubex-crds -n %s\n\nThen retry:\n  helm upgrade --install %s kubex/kubex-automation-engine -n %s\n\nTo skip this check (not recommended): --set crdCheck.skip=true" $installedVersion .Values.crdCheck.minCRDsHelmVersion .Release.Namespace .Release.Name .Release.Namespace) -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}

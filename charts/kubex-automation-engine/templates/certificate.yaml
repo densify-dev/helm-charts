@@ -1,0 +1,43 @@
+{{- if .Values.webhook.certManager.enabled -}}
+{{/* Use cert-manager for certificate generation */}}
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ include "kubex-automation-engine.fullname" . }}-serving-cert
+  namespace: {{ include "kubex-automation-engine.namespace" . }}
+  labels:
+    {{- include "kubex-automation-engine.labels" . | nindent 4 }}
+spec:
+  dnsNames:
+  - {{ include "kubex-automation-engine.fullname" . }}-webhook-service.{{ include "kubex-automation-engine.namespace" . }}.svc
+  - {{ include "kubex-automation-engine.fullname" . }}-webhook-service.{{ include "kubex-automation-engine.namespace" . }}.svc.cluster.local
+  issuerRef:
+    kind: Issuer
+    name: {{ include "kubex-automation-engine.fullname" . }}-selfsigned-issuer
+  secretName: {{ include "kubex-automation-engine.fullname" . }}-webhook-server-cert
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: {{ include "kubex-automation-engine.fullname" . }}-selfsigned-issuer
+  namespace: {{ include "kubex-automation-engine.namespace" . }}
+  labels:
+    {{- include "kubex-automation-engine.labels" . | nindent 4 }}
+spec:
+  selfSigned: {}
+{{- else -}}
+{{/* Generate self-signed certificate using Helm */}}
+{{- $_ := include "kubex-automation-engine.gen-certs-data" . -}}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ include "kubex-automation-engine.fullname" . }}-webhook-server-cert
+  namespace: {{ include "kubex-automation-engine.namespace" . }}
+  labels:
+    {{- include "kubex-automation-engine.labels" . | nindent 4 }}
+type: kubernetes.io/tls
+data:
+  ca.crt: {{ .caCert }}
+  tls.crt: {{ .tlsCert }}
+  tls.key: {{ .tlsKey }}
+{{- end -}}

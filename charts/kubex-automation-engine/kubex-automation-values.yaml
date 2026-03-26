@@ -1,0 +1,35 @@
+# ================================================================
+# SECTION: SECRET MANAGEMENT CONFIGURATION
+# Instructions:
+# → Configure how secrets are managed in your deployment
+# ================================================================
+
+createSecrets: true # Set to false if you provide your own secrets, created outside of this helm chart
+
+# ================================================================
+# SECTION: CONNECTION PARAMETERS - COPY/PASTE FROM KUBEX UI
+# Instructions:
+# → Go to Kubex UI > Automation tab
+# → Copy "Secure Connection Parameters" and paste below
+# ================================================================
+
+kubexCredentials:
+  username: '<username>' # Username to access Kubex, mandatory if createSecrets is true
+  epassword: '<epassword>' # Encrypted password to access Kubex, mandatory if createSecrets is true
+  # userSecretName: # Not used by this chart. When createSecrets is false, set gateway.configSecretName instead.
+
+# Example for externally managed secrets:
+# createSecrets: false
+# gateway:
+#   configSecretName: kubex-gateway-config
+
+kubex:
+  url:
+    host: <customerName>.kubex.ai # mandatory: <instance>.kubex.ai
+  # REQUIRED: Your cluster identifier in Kubex
+  clusterName: "<clusterName>" # mandatory: <clusterName>
+
+# Optional platform setting:
+# Uncomment when deploying on OpenShift to enable restricted-friendly defaults.
+# openshift:
+#   enabled: true

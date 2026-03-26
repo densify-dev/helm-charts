@@ -1,0 +1,32 @@
+{{- if .Values.globalConfiguration.enabled -}}
+{{- $recommendationReloadInterval := .Values.globalConfiguration.recommendationReloadInterval | default .Values.deployment.controllerEnv.recommendationsFetchInterval | default "1h" -}}
+{{- $rescanInterval := .Values.globalConfiguration.rescanInterval | default .Values.deployment.controllerEnv.podScanInterval | default "6h" -}}
+{{- $kubexAPIRequestTimeout := .Values.globalConfiguration.kubexAPIRequestTimeout | default .Values.deployment.controllerEnv.apiRequestTimeout | default "30s" -}}
+apiVersion: rightsizing.kubex.ai/v1alpha1
+kind: GlobalConfiguration
+metadata:
+  name: {{ .Values.globalConfiguration.name }}
+  labels:
+    {{- include "kubex-automation-engine.labels" . | nindent 4 }}
+spec:
+  # Timing configuration (backward compatible with deployment.controllerEnv)
+  recommendationReloadInterval: {{ $recommendationReloadInterval }}
+  rescanInterval: {{ $rescanInterval }}
+  mutationLogInterval: {{ .Values.globalConfiguration.mutationLogInterval }}
+  kubexAPIRequestTimeout: {{ $kubexAPIRequestTimeout }}
+  
+  # Behavior configuration
+  automationEnabled: {{ .Values.globalConfiguration.automationEnabled }}
+  suppressFetchRecommendations: {{ .Values.globalConfiguration.suppressFetchRecommendations }}
+  respectKubexAutomation: {{ .Values.globalConfiguration.respectKubexAutomation }}
+  {{- with .Values.globalConfiguration.protectedNamespacePatterns }}
+  protectedNamespacePatterns:
+    {{- range . }}
+    - {{ . | quote }}
+    {{- end }}
+  {{- end }}
+  webhookHealth:
+    failureThreshold: {{ .Values.globalConfiguration.webhookHealth.failureThreshold }}
+    successThreshold: {{ .Values.globalConfiguration.webhookHealth.successThreshold }}
+    transitionCheckInterval: {{ .Values.globalConfiguration.webhookHealth.transitionCheckInterval | quote }}
+{{- end }}

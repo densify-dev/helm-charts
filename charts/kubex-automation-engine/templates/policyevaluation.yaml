@@ -1,0 +1,19 @@
+{{- if .Values.policyEvaluation.enabled -}}
+apiVersion: rightsizing.kubex.ai/v1alpha1
+kind: PolicyEvaluation
+metadata:
+  name: {{ .Values.policyEvaluation.name }}
+  namespace: {{ include "kubex-automation-engine.namespace" . }}
+  labels:
+    {{- include "kubex-automation-engine.labels" . | nindent 4 }}
+spec:
+  precedence:
+  - type: StaticPolicy
+    priority: 90
+  - type: ClusterStaticPolicy
+    priority: 90
+  - type: ProactivePolicy
+    priority: 70
+  - type: ClusterProactivePolicy
+    priority: 70
+{{- end }}

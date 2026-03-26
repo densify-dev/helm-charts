@@ -1,0 +1,118 @@
+{{- /*
+pre-delete-cleanup.yaml
+
+Helm pre-delete hook that removes the finalizer from every ClusterProactivePolicy
+that was created by this chart (identified by the app.kubernetes.io/instance label).
+
+Removing the finalizer allows Helm to delete those CRs immediately as part of the
+normal "helm delete" resource teardown without waiting for the now-shutting-down
+controller to process them.
+
+Note: because the finalizer is removed before the controller runs its cleanup logic,
+any Kubex annotations placed on workloads by these policies will NOT be removed.
+This is an acceptable trade-off for a clean uninstall. If annotation cleanup is
+required, delete the policy CRs manually before running "helm delete" so the
+running controller can clean up first.
+*/}}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ include "kubex-automation-engine.cleanupHookName" . }}
+  namespace: {{ include "kubex-automation-engine.namespace" . }}
+  labels:
+    {{- include "kubex-automation-engine.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": pre-delete
+    "helm.sh/hook-weight": "-10"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded,hook-failed
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "kubex-automation-engine.cleanupHookName" . }}
+  labels:
+    {{- include "kubex-automation-engine.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": pre-delete
+    "helm.sh/hook-weight": "-10"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded,hook-failed
+rules:
+- apiGroups:
+  - rightsizing.kubex.ai
+  resources:
+  - clusterproactivepolicies
+  - clusterautomationstrategies
+  verbs:
+  - get
+  - list
+  - patch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "kubex-automation-engine.cleanupHookName" . }}
+  labels:
+    {{- include "kubex-automation-engine.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": pre-delete
+    "helm.sh/hook-weight": "-10"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded,hook-failed
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ include "kubex-automation-engine.cleanupHookName" . }}
+subjects:
+- kind: ServiceAccount
+  name: {{ include "kubex-automation-engine.cleanupHookName" . }}
+  namespace: {{ include "kubex-automation-engine.namespace" . }}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "kubex-automation-engine.cleanupHookName" . }}
+  namespace: {{ include "kubex-automation-engine.namespace" . }}
+  labels:
+    {{- include "kubex-automation-engine.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": pre-delete
+    "helm.sh/hook-weight": "0"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded,hook-failed
+spec:
+  ttlSecondsAfterFinished: 300
+  template:
+    metadata:
+      labels:
+        {{- include "kubex-automation-engine.labels" . | nindent 8 }}
+    spec:
+      restartPolicy: OnFailure
+      serviceAccountName: {{ include "kubex-automation-engine.cleanupHookName" . }}
+      {{- if or .Values.openshift.enabled .Values.cleanup.podSecurityContext }}
+      securityContext:
+        {{- if .Values.cleanup.podSecurityContext }}
+        {{- toYaml .Values.cleanup.podSecurityContext | nindent 8 }}
+        {{- end }}
+        {{- if and .Values.openshift.enabled (not (hasKey .Values.cleanup.podSecurityContext "runAsNonRoot")) }}
+        runAsNonRoot: true
+        {{- end }}
+        {{- if and .Values.openshift.enabled (not (hasKey .Values.cleanup.podSecurityContext "seccompProfile")) }}
+        seccompProfile:
+          type: RuntimeDefault
+        {{- end }}
+      {{- end }}
+      containers:
+      - name: cleanup
+        image: {{ .Values.cleanup.image.repository }}:{{ required "cleanup.image.tag must be set to an immutable cleanup image tag" .Values.cleanup.image.tag }}
+        imagePullPolicy: {{ .Values.cleanup.image.pullPolicy | default "IfNotPresent" }}
+        securityContext:
+          {{- toYaml .Values.cleanup.securityContext | nindent 10 }}
+        env:
+        - name: HELM_RELEASE_NAME
+          value: {{ .Release.Name }}
+        resources:
+          requests:
+            cpu: 10m
+            memory: 32Mi
+          limits:
+            cpu: 100m
+            memory: 64Mi

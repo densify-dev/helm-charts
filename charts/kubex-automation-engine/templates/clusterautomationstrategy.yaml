@@ -1,0 +1,110 @@
+{{- if and .Values.policy .Values.policy.policies -}}
+{{- range $policyName, $policyConfig := .Values.policy.policies }}
+---
+apiVersion: rightsizing.kubex.ai/v1alpha1
+kind: ClusterAutomationStrategy
+metadata:
+  name: {{ $policyName }}
+  labels:
+    {{- include "kubex-automation-engine.labels" $ | nindent 4 }}
+spec:
+  {{- if $policyConfig.enablement }}
+  enablement:
+    {{- if $policyConfig.enablement.cpu }}
+    {{- $cpuReq := default $policyConfig.enablement.cpu.request $policyConfig.enablement.cpu.requests }}
+    {{- $cpuLim := default $policyConfig.enablement.cpu.limit $policyConfig.enablement.cpu.limits }}
+    cpu:
+      {{- if $cpuReq }}
+      requests:
+        {{- if hasKey $cpuReq "downsize" }}
+        downsize: {{ $cpuReq.downsize }}
+        {{- end }}
+        {{- if hasKey $cpuReq "upsize" }}
+        upsize: {{ $cpuReq.upsize }}
+        {{- end }}
+        {{- if hasKey $cpuReq "setFromUnspecified" }}
+        setFromUnspecified: {{ $cpuReq.setFromUnspecified }}
+        {{- end }}
+        {{- if $cpuReq.floor }}
+        floor: {{ $cpuReq.floor | quote }}
+        {{- end }}
+        {{- if $cpuReq.ceiling }}
+        ceiling: {{ $cpuReq.ceiling | quote }}
+        {{- end }}
+      {{- end }}
+      {{- if $cpuLim }}
+      limits:
+        {{- if hasKey $cpuLim "downsize" }}
+        downsize: {{ $cpuLim.downsize }}
+        {{- end }}
+        {{- if hasKey $cpuLim "upsize" }}
+        upsize: {{ $cpuLim.upsize }}
+        {{- end }}
+        {{- if hasKey $cpuLim "setFromUnspecified" }}
+        setFromUnspecified: {{ $cpuLim.setFromUnspecified }}
+        {{- end }}
+        {{- if $cpuLim.floor }}
+        floor: {{ $cpuLim.floor | quote }}
+        {{- end }}
+        {{- if $cpuLim.ceiling }}
+        ceiling: {{ $cpuLim.ceiling | quote }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+    {{- if $policyConfig.enablement.memory }}
+    {{- $memReq := default $policyConfig.enablement.memory.request $policyConfig.enablement.memory.requests }}
+    {{- $memLim := default $policyConfig.enablement.memory.limit $policyConfig.enablement.memory.limits }}
+    memory:
+      {{- if $memReq }}
+      requests:
+        {{- if hasKey $memReq "downsize" }}
+        downsize: {{ $memReq.downsize }}
+        {{- end }}
+        {{- if hasKey $memReq "upsize" }}
+        upsize: {{ $memReq.upsize }}
+        {{- end }}
+        {{- if hasKey $memReq "setFromUnspecified" }}
+        setFromUnspecified: {{ $memReq.setFromUnspecified }}
+        {{- end }}
+        {{- if $memReq.floor }}
+        floor: {{ $memReq.floor | quote }}
+        {{- end }}
+        {{- if $memReq.ceiling }}
+        ceiling: {{ $memReq.ceiling | quote }}
+        {{- end }}
+      {{- end }}
+      {{- if $memLim }}
+      limits:
+        {{- if hasKey $memLim "downsize" }}
+        downsize: {{ $memLim.downsize }}
+        {{- end }}
+        {{- if hasKey $memLim "upsize" }}
+        upsize: {{ $memLim.upsize }}
+        {{- end }}
+        {{- if hasKey $memLim "setFromUnspecified" }}
+        setFromUnspecified: {{ $memLim.setFromUnspecified }}
+        {{- end }}
+        {{- if $memLim.floor }}
+        floor: {{ $memLim.floor | quote }}
+        {{- end }}
+        {{- if $memLim.ceiling }}
+        ceiling: {{ $memLim.ceiling | quote }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+  {{- if $policyConfig.inPlaceResize }}
+  inPlaceResize:
+    {{- $policyConfig.inPlaceResize | toYaml | nindent 4 }}
+  {{- end }}
+  {{- if $policyConfig.podEviction }}
+  podEviction:
+    {{- $policyConfig.podEviction | toYaml | nindent 4 }}
+  {{- end }}
+  {{- $strategySafetyChecks := omit ($policyConfig.safetyChecks | default dict) "maxAnalysisAgeDays" }}
+  {{- if $strategySafetyChecks }}
+  safetyChecks:
+    {{- $strategySafetyChecks | toYaml | nindent 4 }}
+  {{- end }}
+{{- end }}
+{{- end }}
