@@ -33,7 +33,7 @@ Before you begin, ensure you have:
 - Kubernetes 1.28+
 - Helm 3+
 - `kubectl` access to the target cluster
-- The `kubex-crds` chart installed in the target cluster before installing `kubex-automation-engine`
+- The [`kubex-crds` chart](https://github.com/densify-dev/helm-charts/tree/master/charts/kubex-crds) installed in the target cluster before installing `kubex-automation-engine`
 - Kubex connection details from the Automation tab in the Kubex UI
 - A target workload that already has valid Kubex recommendations
 
@@ -127,6 +127,13 @@ gateway:
 ```
 
 ## Step 3: Install the Helm Chart
+
+Add the Kubex Helm repository on the machine where you run Helm:
+
+```bash
+helm repo add kubex https://densify-dev.github.io/helm-charts
+helm repo update
+```
 
 Install the CRDs first:
 

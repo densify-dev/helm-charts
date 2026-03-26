@@ -1,6 +1,6 @@
 # Kubex Automation Engine
 
-Enterprise-grade Kubernetes resource optimization with policy-driven rightsizing, admission-time mutation, and proactive resize execution.
+Kubernetes resource optimization with policy-driven rightsizing, admission-time mutation, and proactive resize execution.
 
 > [!IMPORTANT]
 > `kubex-automation-engine` is still in pre-release status. For production-grade automation, use the [`kubex-automation-engine`](../kubex-automation-engine/README.md) chart.
