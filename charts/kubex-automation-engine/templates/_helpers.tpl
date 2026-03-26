@@ -1,27 +1,27 @@
 {{/*
-Validate densifyCredentials.epassword is provided if createSecrets is true
+Validate kubexCredentials.epassword is provided if createSecrets is true
 */}}
-{{- define "kubex-automation-engine.densifyEpassword" -}}
+{{- define "kubex-automation-engine.kubexEpassword" -}}
 {{- if .Values.createSecrets }}
-{{- .Values.densifyCredentials.epassword | required "An epassword must be provided in values.yaml under densifyCredentials.epassword" -}}
+{{- .Values.kubexCredentials.epassword | required "An epassword must be provided in values.yaml under kubexCredentials.epassword" -}}
 {{- end }}
 {{- end }}
 
 {{/*
-Validate densifyCredentials.username is provided if createSecrets is true
+Validate kubexCredentials.username is provided if createSecrets is true
 */}}
-{{- define "kubex-automation-engine.densifyUsername" -}}
+{{- define "kubex-automation-engine.kubexUsername" -}}
 {{- if .Values.createSecrets }}
-{{- .Values.densifyCredentials.username | required "A username must be provided in values.yaml under densifyCredentials.username" -}}
+{{- .Values.kubexCredentials.username | required "A username must be provided in values.yaml under kubexCredentials.username" -}}
 {{- end }}
 {{- end }}
 
 {{/*
-Validate densify.url.host is provided if createSecrets is true
+Validate kubex.url.host is provided if createSecrets is true
 */}}
-{{- define "kubex-automation-engine.densifyUrl" -}}
+{{- define "kubex-automation-engine.kubexUrl" -}}
 {{- if .Values.createSecrets }}
-{{- .Values.densify.url.host | required "A densify URL host must be provided in values.yaml under densify.url.host" -}}
+{{- .Values.kubex.url.host | required "A Kubex URL host must be provided in values.yaml under kubex.url.host" -}}
 {{- end }}
 {{- end }}
 {{/*

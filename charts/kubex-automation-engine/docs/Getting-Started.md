@@ -48,11 +48,11 @@ Important:
 Use the provided [kubex-automation-values.yaml](../kubex-automation-values.yaml) template as your starting point and update it with your environment-specific settings. At minimum, make sure these required fields are set:
 
 ```yaml
-densify:
+kubex:
   url:
     host: your-instance.kubex.ai
 
-densifyCredentials:
+kubexCredentials:
   username: your-username
   epassword: your-encrypted-password
 
@@ -60,7 +60,21 @@ kubex:
   clusterName: my-cluster
 ```
 
-If you already manage the Kubex credential secret externally, set `createSecrets: false` and point `gateway.configSecretName` at that Secret. For the required Secret format and values, see [External Credential Secret](./Configuration-Reference.md#external-credential-secret).
+If you already manage the Kubex credential secret externally, use this minimal configuration:
+
+```yaml
+createSecrets: false
+
+gateway:
+  configSecretName: kubex-gateway-config
+
+kubex:
+  url:
+    host: your-instance.kubex.ai
+  clusterName: my-cluster
+```
+
+Then create the referenced Secret in the same namespace as the Helm release using the exact keys `username`, `epassword`, `url`, and `DENSIFY_BASE_URL`. For the full Secret format, see [External Credential Secret](./Configuration-Reference.md#external-credential-secret).
 
 If you are deploying on OpenShift, also set `openshift.enabled: true` in your values file to apply the chart's restricted-friendly OpenShift defaults.
 

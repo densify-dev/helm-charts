@@ -13,16 +13,19 @@ createSecrets: true # Set to false if you provide your own secrets, created outs
 # → Copy "Secure Connection Parameters" and paste below
 # ================================================================
 
-densify:
-  url:
-    host: <customerName>.kubex.ai # mandatory: <instance>.kubex.ai
-
-densifyCredentials:
+kubexCredentials:
   username: '<username>' # Username to access Kubex, mandatory if createSecrets is true
   epassword: '<epassword>' # Encrypted password to access Kubex, mandatory if createSecrets is true
-  # userSecretName: # Kubex API secret name, mandatory if createSecrets is false
+  # userSecretName: # Not used by this chart. When createSecrets is false, set gateway.configSecretName instead.
+
+# Example for externally managed secrets:
+# createSecrets: false
+# gateway:
+#   configSecretName: kubex-gateway-config
 
 kubex:
+  url:
+    host: <customerName>.kubex.ai # mandatory: <instance>.kubex.ai
   # REQUIRED: Your cluster identifier in Kubex
   clusterName: "<clusterName>" # mandatory: <clusterName>
 
@@ -30,5 +33,3 @@ kubex:
 # Uncomment when deploying on OpenShift to enable restricted-friendly defaults.
 # openshift:
 #   enabled: true
-
-

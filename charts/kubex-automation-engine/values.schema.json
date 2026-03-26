@@ -2,6 +2,45 @@
   "$schema": "https://json-schema.org/draft-07/schema#",
   "type": "object",
   "properties": {
+    "createSecrets": {
+      "type": "boolean"
+    },
+    "kubex": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "object",
+          "properties": {
+            "host": {
+              "type": "string"
+            }
+          }
+        },
+        "clusterName": {
+          "type": "string"
+        },
+        "recommendationsPath": {
+          "type": "string"
+        },
+        "requestTimeout": {
+          "type": "string"
+        }
+      }
+    },
+    "kubexCredentials": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string"
+        },
+        "epassword": {
+          "type": "string"
+        },
+        "userSecretName": {
+          "type": "string"
+        }
+      }
+    },
     "podSecurityContext": {
       "type": "object"
     },
@@ -112,5 +151,55 @@
         }
       }
     }
-  }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "createSecrets": {
+            "const": true
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "kubex",
+          "kubexCredentials"
+        ],
+        "properties": {
+          "kubex": {
+            "required": [
+              "url"
+            ],
+            "properties": {
+              "url": {
+                "required": [
+                  "host"
+                ],
+                "properties": {
+                  "host": {
+                    "minLength": 1
+                  }
+                }
+              }
+            }
+          },
+          "kubexCredentials": {
+            "required": [
+              "username",
+              "epassword"
+            ],
+            "properties": {
+              "username": {
+                "minLength": 1
+              },
+              "epassword": {
+                "minLength": 1
+              }
+            }
+          }
+        }
+      }
+    }
+  ]
 }

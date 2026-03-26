@@ -8,18 +8,27 @@ crdCheck:
 # -- Whether to create the kubex-gateway-config Secret automatically
 createSecrets: true
 
-# Densify/Kubex API credentials (required when createSecrets is true)
-densify:
+# Kubex API credentials (required when createSecrets is true)
+kubex:
   url:
     # -- Kubex instance hostname (e.g., <customerName>.kubex.ai)
     host: ""
+  
+  # -- Cluster name to identify this cluster in Kubex (required)
+  clusterName: ""
+  
+  # -- Path to local recommendations file (optional, for testing only - overrides gateway)
+  recommendationsPath: "/densify/data/recommendations/recommendations.json"
+  
+  # -- Request timeout for Kubex API calls
+  requestTimeout: "30s"
 
-densifyCredentials:
+kubexCredentials:
   # -- Username to access Kubex API
   username: ""
   # -- Encrypted password to access Kubex API
   epassword: ""
-  # -- Name of existing secret containing Kubex credentials (used when createSecrets is false)
+  # -- Not used by this chart. When createSecrets is false, set gateway.configSecretName instead.
   userSecretName: ""
 
 # Default values for kubex-automation-engine.
@@ -124,16 +133,6 @@ controllerManager:
   # -- Additional environment variables
   extraEnv: []
 
-# Kubex configuration
-kubex:
-  # -- Cluster name to identify this cluster in Kubex (required)
-  clusterName: ""
-  
-  # -- Path to local recommendations file (optional, for testing only - overrides gateway)
-  recommendationsPath: "/densify/data/recommendations/recommendations.json"
-  
-  # -- Request timeout for Kubex API calls
-  requestTimeout: "30s"
 
 # Local recommendations injection (for local/dev testing)
 localRecommendations:

@@ -44,10 +44,10 @@ This document maps the current Helm chart values to the resources created by the
 
 | Key | Description |
 | --- | --- |
-| `densify.url.host` | Kubex hostname, for example `example.kubex.ai` |
+| `kubex.url.host` | Kubex hostname, for example `example.kubex.ai` |
 | `kubex.clusterName` | Cluster identifier presented to Kubex |
-| `densifyCredentials.username` | Required when `createSecrets=true` |
-| `densifyCredentials.epassword` | Required when `createSecrets=true` |
+| `kubexCredentials.username` | Required when `createSecrets=true` |
+| `kubexCredentials.epassword` | Required when `createSecrets=true` |
 | `gateway.configSecretName` | Required when `createSecrets=false` |
 
 ## External Credential Secret
@@ -61,7 +61,15 @@ gateway:
   configSecretName: kubex-gateway-config
 ```
 
-Use `gateway.configSecretName` to reference the Secret name. The Secret must exist in the same namespace as the Helm release and include the same keys the chart would normally create:
+Use `gateway.configSecretName` to reference the Secret name. This is the only chart value used to locate an externally managed gateway secret when `createSecrets=false`.
+
+The Secret must:
+
+- exist in the same namespace as the Helm release
+- use the exact key names shown below
+- keep the legacy `DENSIFY_BASE_URL` key because the current gateway image still expects it
+
+Example:
 
 ```yaml
 apiVersion: v1
@@ -77,7 +85,9 @@ stringData:
   DENSIFY_BASE_URL: "https://<instance>.kubex.ai"
 ```
 
-Keep `densify.url.host` set in your values file so the release configuration still documents the target Kubex instance.
+Keep `kubex.url.host` set in your values file so the release configuration still documents the target Kubex instance, even when the secret is managed outside Helm.
+
+Note: `kubexCredentials.userSecretName` is currently not consumed by this chart. When `createSecrets=false`, set `gateway.configSecretName` instead.
 
 ## Core Operational Values
 
