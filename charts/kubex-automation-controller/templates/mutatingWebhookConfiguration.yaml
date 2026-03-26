@@ -2,6 +2,8 @@ apiVersion: admissionregistration.k8s.io/v1
 kind: MutatingWebhookConfiguration
 metadata:
   name: {{ .Values.webhook.metadataName }}
+  labels:
+    {{- include "kubex-automation-controller.metadataLabels" . | nindent 4 }}
   {{- if .Values.certmanager.enabled }}
   annotations:
     cert-manager.io/inject-ca-from: "{{ $.Release.Namespace }}/kubex-automation-cert"

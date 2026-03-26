@@ -4,6 +4,8 @@ kind: Certificate
 metadata:
   name: kubex-automation-cert
   namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "kubex-automation-controller.metadataLabels" . | nindent 4 }}
 spec:
   secretName: kubex-automation-tls
   duration: {{ .Values.certmanager.duration | default "720h" }} # Certificate validity duration
