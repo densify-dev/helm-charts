@@ -3,7 +3,7 @@
 This guide walks through installing the chart and validating the current CRD-based automation flow.
 
 > [!IMPORTANT]
-> `kubex-automation-engine` is still in pre-release status. For production-grade automation, use the [`kubex-automation-engine`](../../kubex-automation-engine/README.md) chart instead.
+> `kubex-automation-engine` is still in pre-release status. For production-grade automation, use the [`kubex-automation-controller`](https://github.com/densify-dev/helm-charts/tree/master/charts/kubex-automation-controller) chart instead.
 
 # Quick Links
 
@@ -22,6 +22,9 @@ This guide walks through installing the chart and validating the current CRD-bas
   - [Step 6: Validate Recommendation Application](#step-6-validate-recommendation-application)
   - [Apply Configuration Updates](#apply-configuration-updates)
   - [Uninstall](#uninstall)
+    - [Remove externally managed CRs first](#remove-externally-managed-crs-first)
+    - [Manually remove finalizers from external CRs only if deletion is stuck](#manually-remove-finalizers-from-external-crs-only-if-deletion-is-stuck)
+    - [Uninstall the Helm releases](#uninstall-the-helm-releases)
   - [Next Steps](#next-steps)
 
 ---
