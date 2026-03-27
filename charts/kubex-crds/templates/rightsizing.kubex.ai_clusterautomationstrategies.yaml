@@ -137,7 +137,7 @@ spec:
                               for this usage.
                             type: string
                           setFromUnspecified:
-                            default: false
+                            default: true
                             description: setFromUnspecified controls whether an unspecified
                               resource value may be set.
                             type: boolean
