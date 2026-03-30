@@ -54,13 +54,12 @@ Use the provided [kubex-automation-values.yaml](../kubex-automation-values.yaml)
 kubex:
   url:
     host: your-instance.kubex.ai
+  clusterName: my-cluster
+
 
 kubexCredentials:
   username: your-username
   epassword: your-encrypted-password
-
-kubex:
-  clusterName: my-cluster
 ```
 
 If you already manage the Kubex credential secret externally, use this minimal configuration:
@@ -146,13 +145,13 @@ helm install kubex-crds kubex/kubex-crds \
   --create-namespace
 ```
 
-Then install the kubex-automation-engine and its default `GlobalConfiguration`:
+Then install the kubex-automation-engine:
 
 ```bash
 helm install kubex-automation-engine kubex/kubex-automation-engine \
   --namespace kubex \
   --create-namespace \
-  -f charts/kubex-automation-engine/kubex-automation-values.yaml
+  -f kubex-automation-values.yaml
 ```
 
 Optional:
