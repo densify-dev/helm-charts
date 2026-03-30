@@ -44,7 +44,7 @@ image:
   # -- Image pull policy
   pullPolicy: IfNotPresent
   # -- Image tag (overrides the image tag whose default is the chart appVersion)
-  tag: "0.1"
+  tag: "0.1.1"
 
 cleanup:
   image:
