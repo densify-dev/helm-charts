@@ -16,6 +16,8 @@ For the namespaced variant, see [Automation Strategies](./Automation-Strategies.
 
 `ClusterAutomationStrategy.spec` uses the same field structure and defaults as the namespaced `AutomationStrategy`:
 
+Usage-level `floor` and `ceiling` values apply to all containers by default. Add `containers.<name>` under the same requests or limits block when a multi-container pod needs different bounds for specific containers.
+
 | Field | Default | Description |
 | --- | --- | --- |
 | `spec.enablement` | `{}` | Parent object for enablement rules. |
@@ -24,21 +26,29 @@ For the namespaced variant, see [Automation Strategies](./Automation-Strategies.
 | `spec.enablement.cpu.requests.setFromUnspecified` | `true` | Allows setting CPU requests when currently unset. |
 | `spec.enablement.cpu.requests.floor` | none | Minimum CPU request target. |
 | `spec.enablement.cpu.requests.ceiling` | none | Maximum CPU request target. |
+| `spec.enablement.cpu.requests.containers.<name>.floor` | none | Container-specific CPU request minimum that overrides the usage-level floor for that container only. |
+| `spec.enablement.cpu.requests.containers.<name>.ceiling` | none | Container-specific CPU request maximum that overrides the usage-level ceiling for that container only. |
 | `spec.enablement.cpu.limits.downsize` | `true` | Allows reducing CPU limits. |
 | `spec.enablement.cpu.limits.upsize` | `true` | Allows increasing CPU limits. |
 | `spec.enablement.cpu.limits.setFromUnspecified` | `false` | Allows setting CPU limits when currently unset. |
 | `spec.enablement.cpu.limits.floor` | none | Minimum CPU limit target. |
 | `spec.enablement.cpu.limits.ceiling` | none | Maximum CPU limit target. |
+| `spec.enablement.cpu.limits.containers.<name>.floor` | none | Container-specific CPU limit minimum that overrides the usage-level floor for that container only. |
+| `spec.enablement.cpu.limits.containers.<name>.ceiling` | none | Container-specific CPU limit maximum that overrides the usage-level ceiling for that container only. |
 | `spec.enablement.memory.requests.downsize` | `true` | Allows reducing memory requests. |
 | `spec.enablement.memory.requests.upsize` | `true` | Allows increasing memory requests. |
 | `spec.enablement.memory.requests.setFromUnspecified` | `true` | Allows setting memory requests when currently unset. |
 | `spec.enablement.memory.requests.floor` | none | Minimum memory request target. |
 | `spec.enablement.memory.requests.ceiling` | none | Maximum memory request target. |
+| `spec.enablement.memory.requests.containers.<name>.floor` | none | Container-specific memory request minimum that overrides the usage-level floor for that container only. |
+| `spec.enablement.memory.requests.containers.<name>.ceiling` | none | Container-specific memory request maximum that overrides the usage-level ceiling for that container only. |
 | `spec.enablement.memory.limits.downsize` | `true` | Allows reducing memory limits. |
 | `spec.enablement.memory.limits.upsize` | `true` | Allows increasing memory limits. |
 | `spec.enablement.memory.limits.setFromUnspecified` | `true` | Allows setting memory limits when currently unset. |
 | `spec.enablement.memory.limits.floor` | none | Minimum memory limit target. |
 | `spec.enablement.memory.limits.ceiling` | none | Maximum memory limit target. |
+| `spec.enablement.memory.limits.containers.<name>.floor` | none | Container-specific memory limit minimum that overrides the usage-level floor for that container only. |
+| `spec.enablement.memory.limits.containers.<name>.ceiling` | none | Container-specific memory limit maximum that overrides the usage-level ceiling for that container only. |
 | `spec.inPlaceResize.enabled` | `true` | Enables the in-place resize execution path. |
 | `spec.inPlaceResize.containerRestart` | `false` | Allows in-place resize operations that require container restart. |
 | `spec.podEviction.enabled` | `true` | Enables eviction-based fallback. |
@@ -82,6 +92,11 @@ spec:
         setFromUnspecified: true
         floor: 512Mi
         ceiling: 16Gi
+        containers:
+          api:
+            floor: 1Gi
+          worker:
+            ceiling: 8Gi
       limits:
         downsize: false
         upsize: true

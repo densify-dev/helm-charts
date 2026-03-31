@@ -67,6 +67,7 @@ Those resources remain fully supported by the controller and can be managed outs
 | `scope[].policy` or `policy.defaultPolicy` | `ClusterProactivePolicy.spec.automationStrategyRef.name` | References the generated or externally managed `ClusterAutomationStrategy` with that name. |
 | `scope[].namespaces` | `ClusterProactivePolicy.spec.scope.namespaceSelector` | Namespace include or exclude rules. |
 | `scope[].podLabels` | `ClusterProactivePolicy.spec.scope.labelSelector` | Converted into `matchLabels` or `matchExpressions`. |
+| `scope[].containerSelector` | `ClusterProactivePolicy.spec.scope.containerSelector` | Narrows recommendation-driven automation to matching container names. |
 | `scope[].weight` | `ClusterProactivePolicy.spec.weight` | Higher weight wins within the same policy type. |
 | `policy.policies.<name>.allowedPodOwners` | `ClusterProactivePolicy.spec.scope.workloadTypes` | Supported values: `Deployment`, `StatefulSet`, `DaemonSet`, `CronJob`, `Rollout`, `Job`, `AnalysisRun`. |
 | `policy.policies.<name>.safetyChecks.maxAnalysisAgeDays` | `ClusterProactivePolicy.spec.safetyChecks.maxAnalysisAgeDays` | Per-policy value wins over top-level `policy.safetyChecks.maxAnalysisAgeDays`. |
