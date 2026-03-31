@@ -44,14 +44,14 @@ image:
   # -- Image pull policy
   pullPolicy: IfNotPresent
   # -- Image tag
-  tag: "0.1.1"
+  tag: "0.1.2"
 
 cleanup:
   image:
     # -- Image repository for the pre-delete cleanup job.
     repository: "densify/kubex-automation-cleanup"
     # -- Image tag for the pre-delete cleanup job.
-    tag: "0.1"
+    tag: "0.1.2"
     # -- Image pull policy for the pre-delete cleanup job.
     pullPolicy: "IfNotPresent"
   # -- Optional pod security context for the pre-delete cleanup job
