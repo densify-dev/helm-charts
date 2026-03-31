@@ -70,9 +70,7 @@ Common labels
 {{- define "kubex-automation-engine.labels" -}}
 helm.sh/chart: {{ include "kubex-automation-engine.chart" . }}
 {{ include "kubex-automation-engine.selectorLabels" . }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-{{- end }}
+app.kubernetes.io/version: {{ .Chart.Version | quote }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
