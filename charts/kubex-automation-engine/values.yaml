@@ -43,7 +43,7 @@ image:
   repository: densify/automation-controller
   # -- Image pull policy
   pullPolicy: IfNotPresent
-  # -- Image tag (overrides the image tag whose default is the chart appVersion)
+  # -- Image tag
   tag: "0.1.1"
 
 cleanup:
