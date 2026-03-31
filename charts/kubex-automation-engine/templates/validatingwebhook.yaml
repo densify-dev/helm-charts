@@ -21,6 +21,96 @@ webhooks:
     service:
       name: {{ include "kubex-automation-engine.fullname" . }}-webhook-service
       namespace: {{ include "kubex-automation-engine.namespace" . }}
+      path: /validate-rightsizing-kubex-ai-v1alpha1-automationstrategy
+  failurePolicy: {{ .Values.webhook.failurePolicy }}
+  name: vautomationstrategydelete-v1alpha1.kb.io
+  rules:
+  - apiGroups:
+    - rightsizing.kubex.ai
+    apiVersions:
+    - v1alpha1
+    operations:
+    - DELETE
+    resources:
+    - automationstrategies
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    {{- if not .Values.webhook.certManager.enabled }}
+    caBundle: {{ .caCert }}
+    {{- end }}
+    service:
+      name: {{ include "kubex-automation-engine.fullname" . }}-webhook-service
+      namespace: {{ include "kubex-automation-engine.namespace" . }}
+      path: /validate-rightsizing-kubex-ai-v1alpha1-clusterautomationstrategy
+  failurePolicy: {{ .Values.webhook.failurePolicy }}
+  name: vclusterautomationstrategydelete-v1alpha1.kb.io
+  rules:
+  - apiGroups:
+    - rightsizing.kubex.ai
+    apiVersions:
+    - v1alpha1
+    operations:
+    - DELETE
+    resources:
+    - clusterautomationstrategies
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    {{- if not .Values.webhook.certManager.enabled }}
+    caBundle: {{ .caCert }}
+    {{- end }}
+    service:
+      name: {{ include "kubex-automation-engine.fullname" . }}-webhook-service
+      namespace: {{ include "kubex-automation-engine.namespace" . }}
+      path: /validate-rightsizing-kubex-ai-v1alpha1-clusterproactivepolicy
+  failurePolicy: {{ .Values.webhook.failurePolicy }}
+  name: vclusterproactivepolicy-v1alpha1.kb.io
+  rules:
+  - apiGroups:
+    - rightsizing.kubex.ai
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - clusterproactivepolicies
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    {{- if not .Values.webhook.certManager.enabled }}
+    caBundle: {{ .caCert }}
+    {{- end }}
+    service:
+      name: {{ include "kubex-automation-engine.fullname" . }}-webhook-service
+      namespace: {{ include "kubex-automation-engine.namespace" . }}
+      path: /validate-rightsizing-kubex-ai-v1alpha1-clusterstaticpolicy
+  failurePolicy: {{ .Values.webhook.failurePolicy }}
+  name: vclusterstaticpolicy-v1alpha1.kb.io
+  rules:
+  - apiGroups:
+    - rightsizing.kubex.ai
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - clusterstaticpolicies
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    {{- if not .Values.webhook.certManager.enabled }}
+    caBundle: {{ .caCert }}
+    {{- end }}
+    service:
+      name: {{ include "kubex-automation-engine.fullname" . }}-webhook-service
+      namespace: {{ include "kubex-automation-engine.namespace" . }}
       path: /validate-rightsizing-kubex-ai-v1alpha1-policyevaluation
   failurePolicy: {{ .Values.webhook.failurePolicy }}
   name: vpolicyevaluation-v1alpha1.kb.io
@@ -34,4 +124,50 @@ webhooks:
     - UPDATE
     resources:
     - policyevaluations
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    {{- if not .Values.webhook.certManager.enabled }}
+    caBundle: {{ .caCert }}
+    {{- end }}
+    service:
+      name: {{ include "kubex-automation-engine.fullname" . }}-webhook-service
+      namespace: {{ include "kubex-automation-engine.namespace" . }}
+      path: /validate-rightsizing-kubex-ai-v1alpha1-proactivepolicy
+  failurePolicy: {{ .Values.webhook.failurePolicy }}
+  name: vproactivepolicy-v1alpha1.kb.io
+  rules:
+  - apiGroups:
+    - rightsizing.kubex.ai
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - proactivepolicies
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    {{- if not .Values.webhook.certManager.enabled }}
+    caBundle: {{ .caCert }}
+    {{- end }}
+    service:
+      name: {{ include "kubex-automation-engine.fullname" . }}-webhook-service
+      namespace: {{ include "kubex-automation-engine.namespace" . }}
+      path: /validate-rightsizing-kubex-ai-v1alpha1-staticpolicy
+  failurePolicy: {{ .Values.webhook.failurePolicy }}
+  name: vstaticpolicy-v1alpha1.kb.io
+  rules:
+  - apiGroups:
+    - rightsizing.kubex.ai
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - staticpolicies
   sideEffects: None
