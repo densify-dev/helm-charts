@@ -32,6 +32,10 @@ spec:
         {{- end }}
     spec:
       serviceAccountName: {{ include "kubex-automation-engine.serviceAccountName" . }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
         {{- if and $openshiftFsGroupConfigured (not $hasPodFsGroup) }}
@@ -110,6 +114,7 @@ spec:
           mountPath: {{ $localRecommendationsMountPath | quote }}
           readOnly: true
         {{- end }}
+      {{ if .Values.gateway.enabled }}
       - name: automation-gateway
         image: {{ .Values.gateway.image.repository }}:{{ required "gateway.image.tag must be set to an immutable gateway image tag" .Values.gateway.image.tag }}
         imagePullPolicy: {{ .Values.gateway.image.pullPolicy | default "IfNotPresent" }}
@@ -153,6 +158,7 @@ spec:
           mountPath: /densify/config/api
         - name: densify-data
           mountPath: /densify/data
+        {{- end }}
       volumes:
       - name: cert
         secret:

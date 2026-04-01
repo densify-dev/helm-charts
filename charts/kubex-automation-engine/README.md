@@ -39,8 +39,8 @@ The Helm chart supports both Helm-managed configuration and manually managed cus
 
 Important:
 
-- The Helm-managed `scope` and `policy.policies` values preserve the existing values-driven flow from `values-edit.yaml` by generating `AutomationStrategy` and `ClusterProactivePolicy`, but those CRs can also be created and managed independently of Helm
-- `ProactivePolicy`, `StaticPolicy`, `ClusterStaticPolicy`, and `ClusterAutomationStrategy` are supported by the controller but are managed as separate CR manifests today
+- The Helm-managed `scope` and `policy.policies` values preserve the existing values-driven flow from `values-edit.yaml` by generating `ClusterAutomationStrategy` and `ClusterProactivePolicy`, but those CRs can also be created and managed independently of Helm
+- `ProactivePolicy`, `StaticPolicy`, `ClusterStaticPolicy`, and namespaced `AutomationStrategy` are supported by the controller but are managed as separate CR manifests today
 
 ## Core Components
 

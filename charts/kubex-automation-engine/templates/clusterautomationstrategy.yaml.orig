@@ -140,28 +140,6 @@ spec:
         {{- end }}
       {{- end }}
     {{- end }}
-    {{- if $policyConfig.enablement.gpu }}
-    {{- $gpuReq := default $policyConfig.enablement.gpu.request $policyConfig.enablement.gpu.requests }}
-    gpu:
-      {{- if $gpuReq }}
-      requests:
-        {{- if hasKey $gpuReq "downsize" }}
-        downsize: {{ $gpuReq.downsize }}
-        {{- end }}
-        {{- if hasKey $gpuReq "upsize" }}
-        upsize: {{ $gpuReq.upsize }}
-        {{- end }}
-        {{- if hasKey $gpuReq "setFromUnspecified" }}
-        setFromUnspecified: {{ $gpuReq.setFromUnspecified }}
-        {{- end }}
-        {{- if $gpuReq.floor }}
-        floor: {{ $gpuReq.floor | quote }}
-        {{- end }}
-        {{- if $gpuReq.ceiling }}
-        ceiling: {{ $gpuReq.ceiling | quote }}
-        {{- end }}
-      {{- end }}
-    {{- end }}
   {{- end }}
   {{- if $policyConfig.inPlaceResize }}
   inPlaceResize:

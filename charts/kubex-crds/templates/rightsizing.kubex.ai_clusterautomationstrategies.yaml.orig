@@ -4,20 +4,20 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.19.0
-  name: automationstrategies.rightsizing.kubex.ai
+  name: clusterautomationstrategies.rightsizing.kubex.ai
 spec:
   group: rightsizing.kubex.ai
   names:
-    kind: AutomationStrategy
-    listKind: AutomationStrategyList
-    plural: automationstrategies
-    singular: automationstrategy
-  scope: Namespaced
+    kind: ClusterAutomationStrategy
+    listKind: ClusterAutomationStrategyList
+    plural: clusterautomationstrategies
+    singular: clusterautomationstrategy
+  scope: Cluster
   versions:
   - name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: AutomationStrategy is the Schema for the automationstrategies
+        description: ClusterAutomationStrategy is the Schema for the clusterautomationstrategies
           API
         properties:
           apiVersion:
@@ -38,7 +38,7 @@ spec:
           metadata:
             type: object
           spec:
-            description: spec defines the desired state of AutomationStrategy
+            description: spec defines the desired state of ClusterAutomationStrategy
             properties:
               enablement:
                 default: {}
@@ -122,54 +122,6 @@ spec:
                               containers maps exact container names to floor/ceiling overrides for this usage.
                               Any bound omitted for a specific container falls back to the usage-level floor/ceiling.
                             type: object
-                          downsize:
-                            default: true
-                            description: downsize controls whether resource downsizing
-                              actions are permitted.
-                            type: boolean
-                          floor:
-                            description: floor is the minimum allowed resource quantity
-                              for this usage.
-                            type: string
-                          setFromUnspecified:
-                            default: true
-                            description: setFromUnspecified controls whether an unspecified
-                              resource value may be set.
-                            type: boolean
-                          upsize:
-                            default: true
-                            description: upsize controls whether resource upsizing
-                              actions are permitted.
-                            type: boolean
-                        type: object
-                        x-kubernetes-validations:
-                        - message: floor must be less than or equal to ceiling
-                          rule: '!has(self.floor) || !has(self.ceiling) || quantity(self.floor).compareTo(quantity(self.ceiling))
-                            <= 0'
-                    type: object
-                  gpu:
-                    default: {}
-                    description: gpu controls enablement rules for GPU request resources.
-                    properties:
-                      overrideScheduler:
-                        allOf:
-                        - enum:
-                          - none
-                          - kai
-                        - enum:
-                          - none
-                          - kai
-                        default: none
-                        description: overrideScheduler selects the GPU mutation mode.
-                        type: string
-                      requests:
-                        default: {}
-                        description: requests controls enablement for GPU requests.
-                        properties:
-                          ceiling:
-                            description: ceiling is the maximum allowed resource quantity
-                              for this usage.
-                            type: string
                           downsize:
                             default: true
                             description: downsize controls whether resource downsizing
@@ -311,24 +263,6 @@ spec:
                     description: enabled controls whether in-place resize is allowed.
                     type: boolean
                 type: object
-              kai:
-                default: {}
-                description: kai configures Kai scheduler-specific admission behavior
-                  for GPU actions.
-                properties:
-                  queue:
-                    default: kubex-unlimited-gpu-queue
-                    description: |-
-                      queue sets the Kai scheduler queue label value for GPU admission mutation when
-                      the pod does not already define kai.scheduler/queue.
-                    type: string
-                  setQueueWhenSpecified:
-                    default: false
-                    description: |-
-                      setQueueWhenSpecified controls whether Kai GPU admission mutation overwrites
-                      an existing kai.scheduler/queue label when queue is specified.
-                    type: boolean
-                type: object
               podEviction:
                 default: {}
                 description: podEviction configures eviction based resizing behavior.
@@ -428,11 +362,11 @@ spec:
                 type: object
             type: object
           status:
-            description: status defines the observed state of AutomationStrategy
+            description: status defines the observed state of ClusterAutomationStrategy
             properties:
               conditions:
                 description: |-
-                  conditions represent the current state of the AutomationStrategy resource.
+                  conditions represent the current state of the ClusterAutomationStrategy resource.
                   Each condition has a unique type and reflects the status of a specific aspect of the resource.
 
                   Standard condition types include:

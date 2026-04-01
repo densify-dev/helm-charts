@@ -45,6 +45,24 @@ spec:
                 description: automationEnabled controls whether automation is globally
                   enabled.
                 type: boolean
+              gpuRebalancingCheckInterval:
+                default: 1m
+                description: gpuRebalancingCheckInterval controls how often GPU rebalancing
+                  policies reevaluate workloads.
+                type: string
+                x-kubernetes-validations:
+                - message: must be at least 1 minute
+                  rule: duration(self) >= duration('1m')
+              kai:
+                default: {}
+                description: kai configures Kai scheduler admission behavior.
+                properties:
+                  schedulerName:
+                    default: kai-scheduler
+                    description: schedulerName sets pod.spec.schedulerName when Kai
+                      GPU mutation is applied.
+                    type: string
+                type: object
               kubexAPIRequestTimeout:
                 default: 30s
                 description: kubexAPIRequestTimeout controls timeout for outbound
@@ -58,6 +76,22 @@ spec:
                 x-kubernetes-validations:
                 - message: must be at least 1 minute
                   rule: duration(self) >= duration('1m')
+              prometheus:
+                default: {}
+                description: prometheus configures Prometheus query behavior for GPU
+                  rebalancing policies.
+                properties:
+                  requestTimeout:
+                    default: 30s
+                    description: requestTimeout controls timeout for each Prometheus
+                      query request.
+                    type: string
+                  url:
+                    default: http://prometheus.monitoring.svc:9090
+                    description: url sets the Prometheus base URL used for policy
+                      queries.
+                    type: string
+                type: object
               protectedNamespacePatterns:
                 default:
                 - kube-*

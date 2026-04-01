@@ -13,6 +13,7 @@ spec:
   recommendationReloadInterval: {{ $recommendationReloadInterval }}
   rescanInterval: {{ $rescanInterval }}
   mutationLogInterval: {{ .Values.globalConfiguration.mutationLogInterval }}
+  gpuRebalancingCheckInterval: {{ .Values.globalConfiguration.gpuRebalancingCheckInterval }}
   kubexAPIRequestTimeout: {{ $kubexAPIRequestTimeout }}
   
   # Behavior configuration
@@ -29,4 +30,8 @@ spec:
     failureThreshold: {{ .Values.globalConfiguration.webhookHealth.failureThreshold }}
     successThreshold: {{ .Values.globalConfiguration.webhookHealth.successThreshold }}
     transitionCheckInterval: {{ .Values.globalConfiguration.webhookHealth.transitionCheckInterval | quote }}
+  kai:
+    schedulerName: {{ .Values.globalConfiguration.kai.schedulerName | quote }}
+  prometheus:
+    url: {{ .Values.globalConfiguration.prometheus.url | quote }}
 {{- end }}
