@@ -55,6 +55,14 @@ spec:
       - {{ . | trim }}
       {{- end }}
     {{- end }}
+    {{- with $scopeConfig.containerSelector }}
+    containerSelector:
+      field: {{ .field | quote }}
+      patterns:
+        {{- range .patterns }}
+        - {{ . | quote }}
+        {{- end }}
+    {{- end }}
   automationStrategyRef:
     name: {{ $policyName }}
   {{- /* Resolve maxAnalysisAgeDays: per-policy config (new) takes precedence over top-level policy (old) */}}

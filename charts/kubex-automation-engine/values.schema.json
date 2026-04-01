@@ -126,6 +126,59 @@
           "type": "array"
         }
       }
+    },
+    "scope": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "policy": {
+            "type": "string"
+          },
+          "weight": {
+            "type": "integer"
+          },
+          "namespaces": {
+            "type": "object",
+            "properties": {
+              "operator": {
+                "type": "string"
+              },
+              "values": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "podLabels": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "containerSelector": {
+            "type": "object",
+            "properties": {
+              "field": {
+                "type": "string"
+              },
+              "patterns": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "minItems": 1
+              }
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {

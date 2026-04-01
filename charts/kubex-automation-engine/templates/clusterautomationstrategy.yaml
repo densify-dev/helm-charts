@@ -31,6 +31,18 @@ spec:
         {{- if $cpuReq.ceiling }}
         ceiling: {{ $cpuReq.ceiling | quote }}
         {{- end }}
+        {{- if $cpuReq.containers }}
+        containers:
+          {{- range $containerName, $bounds := $cpuReq.containers }}
+          {{ $containerName }}:
+            {{- if $bounds.floor }}
+            floor: {{ $bounds.floor | quote }}
+            {{- end }}
+            {{- if $bounds.ceiling }}
+            ceiling: {{ $bounds.ceiling | quote }}
+            {{- end }}
+          {{- end }}
+        {{- end }}
       {{- end }}
       {{- if $cpuLim }}
       limits:
@@ -48,6 +60,18 @@ spec:
         {{- end }}
         {{- if $cpuLim.ceiling }}
         ceiling: {{ $cpuLim.ceiling | quote }}
+        {{- end }}
+        {{- if $cpuLim.containers }}
+        containers:
+          {{- range $containerName, $bounds := $cpuLim.containers }}
+          {{ $containerName }}:
+            {{- if $bounds.floor }}
+            floor: {{ $bounds.floor | quote }}
+            {{- end }}
+            {{- if $bounds.ceiling }}
+            ceiling: {{ $bounds.ceiling | quote }}
+            {{- end }}
+          {{- end }}
         {{- end }}
       {{- end }}
     {{- end }}
@@ -72,6 +96,18 @@ spec:
         {{- if $memReq.ceiling }}
         ceiling: {{ $memReq.ceiling | quote }}
         {{- end }}
+        {{- if $memReq.containers }}
+        containers:
+          {{- range $containerName, $bounds := $memReq.containers }}
+          {{ $containerName }}:
+            {{- if $bounds.floor }}
+            floor: {{ $bounds.floor | quote }}
+            {{- end }}
+            {{- if $bounds.ceiling }}
+            ceiling: {{ $bounds.ceiling | quote }}
+            {{- end }}
+          {{- end }}
+        {{- end }}
       {{- end }}
       {{- if $memLim }}
       limits:
@@ -89,6 +125,18 @@ spec:
         {{- end }}
         {{- if $memLim.ceiling }}
         ceiling: {{ $memLim.ceiling | quote }}
+        {{- end }}
+        {{- if $memLim.containers }}
+        containers:
+          {{- range $containerName, $bounds := $memLim.containers }}
+          {{ $containerName }}:
+            {{- if $bounds.floor }}
+            floor: {{ $bounds.floor | quote }}
+            {{- end }}
+            {{- if $bounds.ceiling }}
+            ceiling: {{ $bounds.ceiling | quote }}
+            {{- end }}
+          {{- end }}
         {{- end }}
       {{- end }}
     {{- end }}

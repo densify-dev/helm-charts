@@ -58,6 +58,22 @@ spec:
                             description: ceiling is the maximum allowed resource quantity
                               for this usage.
                             type: string
+                          containers:
+                            additionalProperties:
+                              properties:
+                                ceiling:
+                                  description: ceiling is the maximum allowed resource
+                                    quantity for this usage.
+                                  type: string
+                                floor:
+                                  description: floor is the minimum allowed resource
+                                    quantity for this usage.
+                                  type: string
+                              type: object
+                            description: |-
+                              containers maps exact container names to floor/ceiling overrides for this usage.
+                              Any bound omitted for a specific container falls back to the usage-level floor/ceiling.
+                            type: object
                           downsize:
                             default: true
                             description: downsize controls whether resource downsizing
@@ -90,6 +106,22 @@ spec:
                             description: ceiling is the maximum allowed resource quantity
                               for this usage.
                             type: string
+                          containers:
+                            additionalProperties:
+                              properties:
+                                ceiling:
+                                  description: ceiling is the maximum allowed resource
+                                    quantity for this usage.
+                                  type: string
+                                floor:
+                                  description: floor is the minimum allowed resource
+                                    quantity for this usage.
+                                  type: string
+                              type: object
+                            description: |-
+                              containers maps exact container names to floor/ceiling overrides for this usage.
+                              Any bound omitted for a specific container falls back to the usage-level floor/ceiling.
+                            type: object
                           downsize:
                             default: true
                             description: downsize controls whether resource downsizing
@@ -127,6 +159,22 @@ spec:
                             description: ceiling is the maximum allowed resource quantity
                               for this usage.
                             type: string
+                          containers:
+                            additionalProperties:
+                              properties:
+                                ceiling:
+                                  description: ceiling is the maximum allowed resource
+                                    quantity for this usage.
+                                  type: string
+                                floor:
+                                  description: floor is the minimum allowed resource
+                                    quantity for this usage.
+                                  type: string
+                              type: object
+                            description: |-
+                              containers maps exact container names to floor/ceiling overrides for this usage.
+                              Any bound omitted for a specific container falls back to the usage-level floor/ceiling.
+                            type: object
                           downsize:
                             default: true
                             description: downsize controls whether resource downsizing
@@ -159,6 +207,22 @@ spec:
                             description: ceiling is the maximum allowed resource quantity
                               for this usage.
                             type: string
+                          containers:
+                            additionalProperties:
+                              properties:
+                                ceiling:
+                                  description: ceiling is the maximum allowed resource
+                                    quantity for this usage.
+                                  type: string
+                                floor:
+                                  description: floor is the minimum allowed resource
+                                    quantity for this usage.
+                                  type: string
+                              type: object
+                            description: |-
+                              containers maps exact container names to floor/ceiling overrides for this usage.
+                              Any bound omitted for a specific container falls back to the usage-level floor/ceiling.
+                            type: object
                           downsize:
                             default: true
                             description: downsize controls whether resource downsizing

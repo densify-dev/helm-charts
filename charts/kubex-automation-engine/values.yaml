@@ -359,6 +359,11 @@ scope: []
   #     #   values:
   #     #     - development
   #     #     - staging
+  #   containerSelector:               # Optional - narrows matching containers within the selected workloads
+  #     field: Name                    # Currently only Name is supported
+  #     patterns:
+  #       - api*
+  #       - worker
 
 # ================================================================
 # SECTION: AUTOMATION POLICY - Define HOW automation behaves
