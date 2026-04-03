@@ -4,7 +4,7 @@ crdCheck:
   skip: false
   # Minimum version of the kubex-crds chart required before this chart can be installed/upgraded.
   # Bump this whenever a new CRD field or schema change is required.
-  minCRDsHelmVersion: "0.1.0"
+  minCRDsHelmVersion: "0.1.1"
 # -- Whether to create the kubex-gateway-config Secret automatically
 createSecrets: true
 
@@ -44,7 +44,7 @@ image:
   # -- Image pull policy
   pullPolicy: IfNotPresent
   # -- Image tag
-  tag: "0.1.2"
+  tag: "0.1.3"
 
 cleanup:
   image:
