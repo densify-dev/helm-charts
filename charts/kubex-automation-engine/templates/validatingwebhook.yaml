@@ -1,3 +1,4 @@
+{{- if .Values.webhook.enabled -}}
 {{- if not .Values.webhook.certManager.enabled -}}
 {{- $_ := include "kubex-automation-engine.gen-certs-data" . -}}
 {{- end }}
@@ -175,3 +176,4 @@ webhooks:
     resources:
     - staticpolicies
   sideEffects: None
+{{- end }}
