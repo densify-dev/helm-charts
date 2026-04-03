@@ -161,8 +161,6 @@ These values apply to Helm-managed recommendation-driven automation only. If you
 | `scope[].namespaces.operator` | `In` or `NotIn` |
 | `scope[].namespaces.values` | Namespace selection values |
 | `scope[].podLabels` | Label selector rules converted to `matchLabels` or `matchExpressions` |
-| `scope[].containerSelector.field` | Container field written to `ClusterProactivePolicy.spec.scope.containerSelector.field`; only `Name` is supported |
-| `scope[].containerSelector.patterns` | Container name glob patterns written to `ClusterProactivePolicy.spec.scope.containerSelector.patterns` |
 | `scope[].weight` | Policy weight for precedence resolution |
 
 For the generated resource fields behind these values, see [Cluster Automation Strategies](./Cluster-Automation-Strategies.md) and [Cluster Proactive Policies](./Cluster-Proactive-Policies.md).

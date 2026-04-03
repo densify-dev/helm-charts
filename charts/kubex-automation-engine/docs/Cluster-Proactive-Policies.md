@@ -18,8 +18,6 @@ For the namespaced variant, see [Proactive Policies](./Proactive-Policies.md). F
 | --- | --- | --- |
 | `spec.scope.labelSelector` | none | Kubernetes label selector for matching workloads. |
 | `spec.scope.workloadTypes` | `[Deployment, StatefulSet, CronJob, Rollout, Job, AnalysisRun, DaemonSet]` | Workload kinds this policy applies to. |
-| `spec.scope.containerSelector.field` | none | Container field to match. Only `Name` is supported. |
-| `spec.scope.containerSelector.patterns` | none | Shell-style `*` glob patterns for in-scope container names. |
 | `spec.scope.namespaceSelector.operator` | none | Namespace selector operator: `In` or `NotIn`. |
 | `spec.scope.namespaceSelector.values` | none | Namespace patterns to include or exclude. |
 | `spec.automationStrategyRef.name` | none | Required cluster strategy name. |
@@ -35,11 +33,6 @@ metadata:
   name: platform-prod-proactive
 spec:
   scope:
-    containerSelector:
-      field: Name
-      patterns:
-        - api*
-        - worker
     labelSelector:
       matchLabels:
         team: platform
@@ -68,6 +61,5 @@ spec:
 ## Notes
 
 - Use cluster proactive policies when a platform team needs one recommendation-driven policy across many namespaces.
-- `scope.containerSelector` filters Kubex recommendations after workload and namespace scope are resolved.
 - Start with narrow namespace and label selectors, then widen scope after verifying the selected-policy behavior in events and controller logs.
 - If you need per-namespace ownership instead, use namespaced `ProactivePolicy`.
