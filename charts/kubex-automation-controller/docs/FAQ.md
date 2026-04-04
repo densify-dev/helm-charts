@@ -199,7 +199,7 @@ scope:
 
 ### Q: Can the controller damage my applications?
 **A:** Multiple safety mechanisms prevent damage:
-- **HPA awareness**: Won't resize if HPA is actively scaling on CPU and/or memory
+- **HPA/KEDA awareness**: Won't resize if HPA or KEDA is actively scaling on CPU and/or memory
 - **VPA exclusion**: Automatically detects and excludes workloads managed by VerticalPodAutoscaler to prevent conflicts
 - **PodDisruptionBudget**: Respects PDB constraints before eviction
 - **ResourceQuota checking**: Ensures changes don't violate quotas
@@ -255,7 +255,7 @@ spec:
 
 **Choose the right tool:**
 - **VPA**: Best for workloads where you want Kubernetes to automatically adjust resources based on real-time usage
-- **Kubex Automation**: Best for policy-driven optimization with enterprise features like HPA awareness, PDB respect, and granular control over upsize/downsize behavior
+- **Kubex Automation**: Best for policy-driven optimization with enterprise features like HPA/KEDA awareness, PDB respect, and granular control over upsize/downsize behavior
 
 See [Advanced Configuration - Autoscaler Compatibility](./Advanced-Configuration.md#autoscaler-compatibility) for more details.
 

@@ -14,7 +14,7 @@ This guide covers advanced configuration options for the Kubex Automation Contro
     - [Use Cases](#use-cases)
   - [Autoscaler Compatibility](#autoscaler-compatibility)
     - [Vertical Pod Autoscaler (VPA) Exclusion](#vertical-pod-autoscaler-vpa-exclusion)
-    - [Horizontal Pod Autoscaler (HPA) Awareness](#horizontal-pod-autoscaler-hpa-awareness)
+    - [Horizontal Pod Autoscaler (HPA/KEDA) Awareness](#horizontal-pod-autoscaler-hpakeda-awareness)
   - [Node Scheduling Configuration](#node-scheduling-configuration)
     - [Configuring Node Affinity](#configuring-node-affinity)
     - [Common Scheduling Patterns](#common-scheduling-patterns)
@@ -218,14 +218,16 @@ kubectl get vpa -A
 kubectl logs -n kubex deployment/kubex-automation-controller -c kubex-automation-controller | grep -i vpa
 ```
 
-### Horizontal Pod Autoscaler (HPA) Awareness
 
-The controller is HPA-aware and skips workloads with active HPAs that scale on CPU and/or memory metrics to avoid interference.
+### Horizontal Pod Autoscaler (HPA/KEDA) Awareness
+
+
+The controller is HPA- and KEDA-aware and skips workloads with active HPAs or KEDA ScaledObjects that scale on CPU and/or memory metrics to avoid interference.
 
 **Best practices:**
 - VPA and Kubex automation are mutually exclusive - choose one per workload
-- HPA and Kubex can coexist - Kubex will not resize pods when HPA is actively scaling on CPU/memory
-- Use VPA for vertical scaling, HPA for horizontal scaling, or Kubex for policy-driven right-sizing
+- HPA/KEDA and Kubex can coexist - Kubex will not resize pods when HPA or KEDA is actively scaling on CPU/memory
+- Use VPA for vertical scaling, HPA/KEDA for horizontal scaling on CPU/memory, or Kubex for policy-driven right-sizing
 
 ---
 
