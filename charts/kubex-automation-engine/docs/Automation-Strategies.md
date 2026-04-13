@@ -65,6 +65,7 @@ Usage-level `floor` and `ceiling` values apply to all containers by default. Add
 | `spec.safetyChecks.enableVpaFilter` | `true` | Filters actions for VPA-managed resources. |
 | `spec.safetyChecks.enableLimitRangeFilter` | `true` | Filters actions that violate `LimitRange` container rules. |
 | `spec.safetyChecks.enablePodLimitRangeFilter` | `true` | Filters actions that violate pod-level `LimitRange` rules. |
+| `spec.safetyChecks.retainGuaranteedQOS` | `false` | Keeps Guaranteed QoS pods at request=limit by treating limits as the source of truth for CPU and memory when enabled. |
 | `spec.safetyChecks.minCpuChangePercent` | `5` | Ignores CPU changes below this threshold. |
 | `spec.safetyChecks.minMemoryChangePercent` | `5` | Ignores memory changes below this threshold. |
 | `spec.safetyChecks.minReadyDuration` | `10s` | Requires pods to be Ready for at least this duration. |
@@ -74,6 +75,17 @@ Usage-level `floor` and `ceiling` values apply to all containers by default. Add
 | `spec.safetyChecks.requireNodeAllocatable` | `true` | Filters request increases that exceed node allocatable capacity. |
 | `spec.safetyChecks.nodeCpuHeadroom` | `10%` | CPU headroom reserved before node allocatable checks. |
 | `spec.safetyChecks.nodeMemoryHeadroom` | `200Mi` | Memory headroom reserved before node allocatable checks. |
+
+## Guaranteed QoS Behavior
+
+When `spec.safetyChecks.retainGuaranteedQOS` is enabled:
+
+- The behavior applies only to pods that are currently in the Kubernetes `Guaranteed` QoS class.
+- For CPU and memory, desired limits are treated as the source of truth.
+- Matching request actions are aligned to the same desired value as limits so `requests == limits` remains true.
+- If a limit action exists but no request action exists, the controller can add a matching request action to preserve `Guaranteed` QoS.
+
+When this toggle is disabled (default), requests and limits are handled independently by recommendation and enablement logic, and a pod can move away from `Guaranteed` QoS.
 
 ## Example: Namespaced Strategy
 
