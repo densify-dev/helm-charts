@@ -4,11 +4,33 @@
 nameOverride: kubex-forwarder
 
 # application image
-image: densify/container-optimization-data-forwarder:4
-imageAzureToken: densify/azure-rest-api-token:latest
-imageGCPOAuth2Token: densify/gcp-oauth2-token:latest
-imageCheckPrometheusReady: busybox:latest
-pullPolicy: Always
+image: ""
+imageAzureToken: ""
+imageGCPOAuth2Token: ""
+imageCheckPrometheusReady: ""
+# Backward-compatible image configuration:
+# - Legacy full image keys above stay supported.
+# - New keys below allow setting repository, tag, and pullPolicy separately.
+# - If a legacy key is set (non-empty), it takes precedence over these new keys.
+images:
+  dataCollection:
+    repository: densify/container-optimization-data-forwarder
+    tag: "4"
+    pullPolicy: Always
+  azureToken:
+    repository: densify/azure-rest-api-token
+    tag: "latest"
+    pullPolicy: Always
+  gcpOAuth2Token:
+    repository: densify/gcp-oauth2-token
+    tag: "latest"
+    pullPolicy: Always
+  checkPrometheusReady:
+    repository: busybox
+    tag: "latest"
+    pullPolicy: Always
+# Legacy global pull policy fallback (applies to all images only when set).
+pullPolicy: ""
 
 # application configuration
 config:
