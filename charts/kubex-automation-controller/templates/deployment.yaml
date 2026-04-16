@@ -37,8 +37,8 @@ spec:
       {{- end }}
       containers:
         - name: kubex-automation-controller
-          image: {{ .Values.deployment.controllerImage | quote }}
-          imagePullPolicy: Always
+          image: {{ include "kubex-automation-controller.resolveDeploymentImage" (dict "root" . "role" "controller" "legacyKey" "controllerImage") | quote }}
+          imagePullPolicy: {{ include "kubex-automation-controller.resolveDeploymentImagePullPolicy" (dict "root" . "role" "controller") }}
           ports:
             - containerPort: 8443
           {{- $containerSecurityContext := ternary .Values.deployment.containerSecurityContextOpenShift .Values.deployment.containerSecurityContext .Values.openshift.enabled }}
@@ -131,7 +131,8 @@ spec:
               readOnly: true
       initContainers:
         - name: wait-for-valkey
-          image: {{ .Values.deployment.waitForValkeyImage | quote }}
+          image: {{ include "kubex-automation-controller.resolveDeploymentImage" (dict "root" . "role" "waitForValkey" "legacyKey" "waitForValkeyImage") | quote }}
+          imagePullPolicy: {{ include "kubex-automation-controller.resolveDeploymentImagePullPolicy" (dict "root" . "role" "waitForValkey") }}
           command: ['sh', '-c', "until nc -vz {{ .Release.Name }}-valkey 6379; do echo 'Waiting for Valkey'; sleep 2; done"]
           {{- $initContainerSecurityContext := ternary .Values.deployment.initContainerSecurityContextOpenShift .Values.deployment.initContainerSecurityContext .Values.openshift.enabled }}
           {{- with $initContainerSecurityContext }}
@@ -141,8 +142,8 @@ spec:
           resources:
             {{- toYaml .Values.deployment.initContainerResources | nindent 12 }}
         - name: kubex-automation-gw
-          image: {{ .Values.deployment.gatewayImage | quote }}
-          imagePullPolicy: Always
+          image: {{ include "kubex-automation-controller.resolveDeploymentImage" (dict "root" . "role" "gateway" "legacyKey" "gatewayImage") | quote }}
+          imagePullPolicy: {{ include "kubex-automation-controller.resolveDeploymentImagePullPolicy" (dict "root" . "role" "gateway") }}
           restartPolicy: Always
           ports:
             - containerPort: 8181
@@ -261,8 +262,8 @@ spec:
       {{- end }}
       containers:
         - name: kubex-webhook
-          image: {{ .Values.deployment.webhookImage | quote }}
-          imagePullPolicy: Always
+          image: {{ include "kubex-automation-controller.resolveDeploymentImage" (dict "root" . "role" "webhook" "legacyKey" "webhookImage") | quote }}
+          imagePullPolicy: {{ include "kubex-automation-controller.resolveDeploymentImagePullPolicy" (dict "root" . "role" "webhook") }}
           ports:
             - containerPort: 8443
           {{- $containerSecurityContext := ternary .Values.deployment.containerSecurityContextOpenShift .Values.deployment.containerSecurityContext .Values.openshift.enabled }}
@@ -308,7 +309,8 @@ spec:
               readOnly: true
       initContainers:
         - name: wait-for-valkey
-          image: {{ .Values.deployment.waitForValkeyImage | quote }}
+          image: {{ include "kubex-automation-controller.resolveDeploymentImage" (dict "root" . "role" "waitForValkey" "legacyKey" "waitForValkeyImage") | quote }}
+          imagePullPolicy: {{ include "kubex-automation-controller.resolveDeploymentImagePullPolicy" (dict "root" . "role" "waitForValkey") }}
           command: ['sh', '-c', "until nc -vz {{ .Release.Name }}-valkey 6379; do echo 'Waiting for Valkey'; sleep 2; done"]
           {{- $initContainerSecurityContext := ternary .Values.deployment.initContainerSecurityContextOpenShift .Values.deployment.initContainerSecurityContext .Values.openshift.enabled }}
           {{- with $initContainerSecurityContext }}
@@ -318,8 +320,8 @@ spec:
           resources:
             {{- toYaml .Values.deployment.initContainerResources | nindent 12 }}
         - name: kubex-webhook-gw
-          image: {{ .Values.deployment.gatewayImage | quote }}
-          imagePullPolicy: Always
+          image: {{ include "kubex-automation-controller.resolveDeploymentImage" (dict "root" . "role" "gateway" "legacyKey" "gatewayImage") | quote }}
+          imagePullPolicy: {{ include "kubex-automation-controller.resolveDeploymentImagePullPolicy" (dict "root" . "role" "gateway") }}
           restartPolicy: Always
           ports:
             - containerPort: 8181
