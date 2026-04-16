@@ -60,6 +60,8 @@ metrics:
 log_level: info
 # -- Set as Deployment for single controller to query all nodes or Daemonset
 deploy_type: Deployment
+# -- Number of pod replicas when deploy_type is Deployment
+replicaCount: 1
 # -- Set additional labels for the Deployment/Daemonset
 deploy_labels: {}
 # -- Set additional labels for the Pods
@@ -92,9 +94,40 @@ prometheus:
 
 # -- Enable Pprof
 pprof: false
+# -- Port used for pprof endpoint when pprof is enabled
+pprofPort: 6060
 
 # -- Resource requests and limits for the container
 resources: {}
+
+# -- Liveness probe configuration for the metrics container
+livenessProbe:
+  failureThreshold: 10
+  httpGet:
+    path: /metrics
+    port: metrics
+    scheme: HTTP
+  initialDelaySeconds: 10
+  periodSeconds: 10
+  successThreshold: 1
+  timeoutSeconds: 30
+
+# -- Readiness probe configuration for the metrics container
+readinessProbe:
+  failureThreshold: 10
+  httpGet:
+    path: /metrics
+    port: metrics
+    scheme: HTTP
+  periodSeconds: 10
+  successThreshold: 1
+  timeoutSeconds: 30
+
+# -- Additional environment variables for the metrics container
+extraEnv: []
+
+# -- Sources for injecting environment variables (e.g. ConfigMapRef, SecretRef)
+envFrom: []
 
 podAnnotations: {}
 
@@ -104,10 +137,22 @@ affinity: {}
 
 tolerations: []
 
+# -- Topology spread constraints for pod assignment
+topologySpreadConstraints: []
+
+# -- Grace period (seconds) before forcefully terminating the pod
+terminationGracePeriodSeconds: 30
+
 priorityClassName:
 
 # -- Revision history limit for the Deployment
 revisionHistoryLimit: 10
+
+# -- Deployment strategy when deploy_type is Deployment
+deploymentStrategy: {}
+
+# -- DaemonSet update strategy when deploy_type is DaemonSet
+daemonSetUpdateStrategy: {}
 
 # -- Service Account configuration
 serviceAccount:
