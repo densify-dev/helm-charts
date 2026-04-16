@@ -18,14 +18,19 @@ helm install --create-namespace -n kubex k8s-ephemeral-storage-metrics kubex/k8s
 | containerSecurityContext.privileged | bool | `false` |  |
 | containerSecurityContext.readOnlyRootFilesystem | bool | `false` |  |
 | containerSecurityContext.runAsNonRoot | bool | `true` |  |
+| daemonSetUpdateStrategy | object | `{}` | DaemonSet update strategy when deploy_type is DaemonSet |
 | deploy_labels | object | `{}` | Set additional labels for the Deployment/Daemonset |
 | deploy_type | string | `"Deployment"` | Set as Deployment for single controller to query all nodes or Daemonset |
+| deploymentStrategy | object | `{}` | Deployment strategy when deploy_type is Deployment |
+| envFrom | list | `[]` | Sources for injecting environment variables (e.g. ConfigMapRef, SecretRef) |
+| extraEnv | list | `[]` | Additional environment variables for the metrics container |
 | image.imagePullPolicy | string | `"IfNotPresent"` |  |
 | image.imagePullSecrets | list | `[]` |  |
 | image.repository | string | `"docker.io/densify/k8s-ephemeral-storage-metrics"` |  |
 | image.tag | string | `"1.20.0"` |  |
 | interval | int | `15` | Polling node rate for exporter |
 | kubelet | object | `{"insecure":false,"readOnlyPort":0,"scrape":false}` | Scrape metrics through kubelet instead of kube api |
+| livenessProbe | object | `{"failureThreshold":10,"httpGet":{"path":"/metrics","port":"metrics","scheme":"HTTP"},"initialDelaySeconds":10,"periodSeconds":10,"successThreshold":1,"timeoutSeconds":30}` | Liveness probe configuration for the metrics container |
 | log_level | string | `"info"` |  |
 | max_node_concurrency | int | `10` | Max number of concurrent query requests to the kubernetes API. |
 | metrics | object | `{"adjusted_polling_rate":false,"ephemeral_storage_container_limit_percentage":true,"ephemeral_storage_container_logs_usage":true,"ephemeral_storage_container_rootfs_usage":true,"ephemeral_storage_container_volume_limit_percentage":true,"ephemeral_storage_container_volume_usage":true,"ephemeral_storage_inodes":true,"ephemeral_storage_node_available":true,"ephemeral_storage_node_capacity":true,"ephemeral_storage_node_percentage":true,"ephemeral_storage_pod_usage":true,"gc_batch_size":500,"gc_enabled":false,"gc_interval":5,"port":9100}` | Set metrics you want to enable |
@@ -50,6 +55,7 @@ helm install --create-namespace -n kubex k8s-ephemeral-storage-metrics kubex/k8s
 | podSecurityContext.seccompProfile.type | string | `"RuntimeDefault"` |  |
 | pod_labels | object | `{}` | Set additional labels for the Pods |
 | pprof | bool | `false` | Enable Pprof |
+| pprofPort | int | `6060` | Port used for pprof endpoint when pprof is enabled |
 | priorityClassName | string | `nil` |  |
 | prometheus.additionalLabels | object | `{}` | Add labels to the PrometheusRule.Spec |
 | prometheus.enable | bool | `true` |  |
@@ -59,6 +65,8 @@ helm install --create-namespace -n kubex k8s-ephemeral-storage-metrics kubex/k8s
 | prometheus.rules.predictFilledHours | int | `12` | How many hours in the future to predict filling up of a volume |
 | prometheus.rules.predictMinCurrentUsage | float | `33.3` | What percentage of limit must be used right now to predict filling up of a volume |
 | rbac | object | `{"create":true}` | RBAC configuration |
+| readinessProbe | object | `{"failureThreshold":10,"httpGet":{"path":"/metrics","port":"metrics","scheme":"HTTP"},"periodSeconds":10,"successThreshold":1,"timeoutSeconds":1}` | Readiness probe configuration for the metrics container |
+| replicaCount | int | `1` | Number of pod replicas when deploy_type is Deployment |
 | resources | object | `{}` | Resource requests and limits for the container |
 | revisionHistoryLimit | int | `10` | Revision history limit for the Deployment |
 | serviceAccount | object | `{"create":true,"name":null}` | Service Account configuration |
@@ -68,6 +76,8 @@ helm install --create-namespace -n kubex k8s-ephemeral-storage-metrics kubex/k8s
 | serviceMonitor.podTargetLabels | list | `[]` | Set podTargetLabels as per https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api.md#monitoring.coreos.com/v1.ServiceMonitorSpec |
 | serviceMonitor.relabelings | list | `[]` | Set relabelings as per https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api.md#monitoring.coreos.com/v1.RelabelConfig |
 | serviceMonitor.targetLabels | list | `[]` | Set targetLabels as per https://github.com/prometheus-operator/prometheus-operator/blob/main/Documentation/api.md#monitoring.coreos.com/v1.ServiceMonitorSpec |
+| terminationGracePeriodSeconds | int | `30` | Grace period (seconds) before forcefully terminating the pod |
+| topologySpreadConstraints | list | `[]` | Topology spread constraints for pod assignment |
 | tolerations | list | `[]` |  |
 
 ## Prometheus alert rules
