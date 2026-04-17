@@ -89,8 +89,8 @@ spec:
           {{- if .Values.config.prometheus.AzureMonitorSecretName }}
           initContainers:
           - name: azure-token
-            image: "{{ .Values.imageAzureToken }}"
-            imagePullPolicy: {{ .Values.pullPolicy }}
+            image: {{ include "common.resolveImage" (dict "root" . "role" "azureToken" "legacyKey" "imageAzureToken") | quote }}
+            imagePullPolicy: {{ include "common.resolveImagePullPolicy" (dict "root" . "role" "azureToken") }}
             securityContext:
               readOnlyRootFilesystem: true
               allowPrivilegeEscalation: false
@@ -116,8 +116,8 @@ spec:
           {{- if or (.Values.config.prometheus.GoogleMonitoringSecretName) (.Values.serviceAccount.isGKE) }}
           initContainers:
           - name: gcp-token
-            image: "{{ .Values.imageGCPOAuth2Token }}"
-            imagePullPolicy: {{ .Values.pullPolicy }}
+            image: {{ include "common.resolveImage" (dict "root" . "role" "gcpOAuth2Token" "legacyKey" "imageGCPOAuth2Token") | quote }}
+            imagePullPolicy: {{ include "common.resolveImagePullPolicy" (dict "root" . "role" "gcpOAuth2Token") }}
             securityContext:
               readOnlyRootFilesystem: true
               allowPrivilegeEscalation: false
@@ -144,8 +144,8 @@ spec:
           {{- end }}
           containers:
           - name: {{ template "common.name" . }}
-            image: "{{ .Values.image }}"
-            imagePullPolicy: {{ .Values.pullPolicy }}
+            image: {{ include "common.resolveImage" (dict "root" . "role" "dataCollection" "legacyKey" "image") | quote }}
+            imagePullPolicy: {{ include "common.resolveImagePullPolicy" (dict "root" . "role" "dataCollection") }}
             securityContext:
               readOnlyRootFilesystem: true
               allowPrivilegeEscalation: false

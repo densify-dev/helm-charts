@@ -201,3 +201,51 @@ Generate Valkey username - defaults to kubexAutomation but can be overridden
 {{- define "kubex-automation-controller.densifyUserSecretName" -}}
 {{- .Values.densifyCredentials.userSecretName | default "kubex-api-secret-container-automation" -}}
 {{- end }}
+
+{{/*
+Build an image reference from repository and tag.
+*/}}
+{{- define "kubex-automation-controller.imageFromParts" -}}
+{{- $repository := .repository | default "" -}}
+{{- $tag := .tag | default "" -}}
+{{- if and $repository $tag -}}
+{{- printf "%s:%s" $repository $tag -}}
+{{- else -}}
+{{- $repository -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Resolve deployment image with backward compatibility.
+Precedence:
+1) legacy deployment.<...>Image when set (non-empty)
+2) deployment.images.<role>.repository/tag
+*/}}
+{{- define "kubex-automation-controller.resolveDeploymentImage" -}}
+{{- $root := .root -}}
+{{- $role := .role -}}
+{{- $legacyKey := .legacyKey -}}
+{{- $legacyImage := get $root.Values.deployment $legacyKey | default "" -}}
+{{- $images := $root.Values.deployment.images | default dict -}}
+{{- $parts := get $images $role | default dict -}}
+{{- $partsImage := include "kubex-automation-controller.imageFromParts" (dict "repository" (get $parts "repository") "tag" (get $parts "tag")) | trim -}}
+{{- if $legacyImage -}}
+{{- $legacyImage -}}
+{{- else if $partsImage -}}
+{{- $partsImage -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Resolve deployment image pull policy.
+Precedence:
+1) deployment.images.<role>.pullPolicy
+2) Always
+*/}}
+{{- define "kubex-automation-controller.resolveDeploymentImagePullPolicy" -}}
+{{- $root := .root -}}
+{{- $role := .role -}}
+{{- $images := $root.Values.deployment.images | default dict -}}
+{{- $parts := get $images $role | default dict -}}
+{{- get $parts "pullPolicy" | default "Always" -}}
+{{- end -}}
