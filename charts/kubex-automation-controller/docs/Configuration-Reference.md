@@ -144,16 +144,16 @@ The chart supports both legacy full-image fields and new split repository/tag fi
 | `deployment.waitForValkeyImage` | `string` | Legacy full image for the wait-for-valkey init container |
 | `deployment.images.controller.repository` | `string` | Controller image repository (can include registry path) |
 | `deployment.images.controller.tag` | `string` | Controller image tag |
-| `deployment.images.controller.pullPolicy` | `string` | Controller image pull policy (default: `Always`) |
+| `deployment.images.controller.pullPolicy` | `string` | Controller image pull policy (default: `IfNotPresent`) |
 | `deployment.images.gateway.repository` | `string` | Gateway image repository (can include registry path) |
 | `deployment.images.gateway.tag` | `string` | Gateway image tag |
-| `deployment.images.gateway.pullPolicy` | `string` | Gateway image pull policy (default: `Always`) |
+| `deployment.images.gateway.pullPolicy` | `string` | Gateway image pull policy (default: `IfNotPresent`) |
 | `deployment.images.webhook.repository` | `string` | Webhook image repository (can include registry path) |
 | `deployment.images.webhook.tag` | `string` | Webhook image tag |
-| `deployment.images.webhook.pullPolicy` | `string` | Webhook image pull policy (default: `Always`) |
+| `deployment.images.webhook.pullPolicy` | `string` | Webhook image pull policy (default: `IfNotPresent`) |
 | `deployment.images.waitForValkey.repository` | `string` | Wait-for-valkey image repository (can include registry path) |
 | `deployment.images.waitForValkey.tag` | `string` | Wait-for-valkey image tag |
-| `deployment.images.waitForValkey.pullPolicy` | `string` | Wait-for-valkey image pull policy (default: `Always`) |
+| `deployment.images.waitForValkey.pullPolicy` | `string` | Wait-for-valkey image pull policy (default: `IfNotPresent`) |
 
 **Example (new split fields):**
 ```yaml
@@ -162,19 +162,19 @@ deployment:
     controller:
       repository: registry.example.com/kubex/automation-director
       tag: "1.4"
-      pullPolicy: Always
+      pullPolicy: IfNotPresent
     gateway:
       repository: registry.example.com/kubex/automation-gateway
       tag: "1.2"
-      pullPolicy: Always
+      pullPolicy: IfNotPresent
     webhook:
       repository: registry.example.com/kubex/container-automation
       tag: "1.5"
-      pullPolicy: Always
+      pullPolicy: IfNotPresent
     waitForValkey:
       repository: registry.example.com/base/busybox
       tag: "latest"
-      pullPolicy: Always
+      pullPolicy: IfNotPresent
 ```
 
 ---

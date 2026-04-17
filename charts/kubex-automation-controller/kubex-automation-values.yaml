@@ -215,19 +215,19 @@ policy:
 #    controller:
 #      repository: registry.example.com/kubex/automation-director
 #      tag: "1.4"
-#      pullPolicy: Always
+#      pullPolicy: IfNotPresent
 #    gateway:
 #      repository: registry.example.com/kubex/automation-gateway
 #      tag: "1.2"
-#      pullPolicy: Always
+#      pullPolicy: IfNotPresent
 #    webhook:
 #      repository: registry.example.com/kubex/container-automation
 #      tag: "1.5"
-#      pullPolicy: Always
+#      pullPolicy: IfNotPresent
 #    waitForValkey:
 #      repository: registry.example.com/base/busybox
 #      tag: "latest"
-#      pullPolicy: Always
+#      pullPolicy: IfNotPresent
 #
 #  controllerEnv:  # Override controller environment variables (defaults in values.yaml)
 #    debug: true                                  # Uncomment to enable debug mode for troubleshooting
