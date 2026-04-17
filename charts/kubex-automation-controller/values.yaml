@@ -51,19 +51,19 @@ deployment:
     webhook:
       repository: densify/container-automation
       tag: "1.5"
-      pullPolicy: Always
+      pullPolicy: IfNotPresent
     gateway:
       repository: densify/automation-gateway
       tag: "1.2"
-      pullPolicy: Always
+      pullPolicy: IfNotPresent
     controller:
       repository: densify/automation-director
       tag: "1.4"
-      pullPolicy: Always
+      pullPolicy: IfNotPresent
     waitForValkey:
       repository: busybox
       tag: "latest"
-      pullPolicy: Always
+      pullPolicy: IfNotPresent
 
   replicas: # Number of pod replicas to run ([set >1 for high availability).
     webhookServer: 1

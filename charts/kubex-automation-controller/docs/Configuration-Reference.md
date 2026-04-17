@@ -134,6 +134,7 @@ The chart supports both legacy full-image fields and new split repository/tag fi
 - Legacy fields remain supported: `deployment.controllerImage`, `deployment.gatewayImage`, `deployment.webhookImage`, `deployment.waitForValkeyImage`.
 - New fields: `deployment.images.<component>.repository`, `deployment.images.<component>.tag`, and `deployment.images.<component>.pullPolicy`.
 - Precedence: if a legacy full-image field is set (non-empty), it wins. Otherwise, the chart uses the new repository/tag fields.
+- Legacy behavior note for wait-for-valkey: when `deployment.waitForValkeyImage` is set, the chart omits `imagePullPolicy` for that init container so Kubernetes defaulting is preserved.
 
 | Field | Type | Description |
 |-------|------|-------------|

@@ -132,7 +132,9 @@ spec:
       initContainers:
         - name: wait-for-valkey
           image: {{ include "kubex-automation-controller.resolveDeploymentImage" (dict "root" . "role" "waitForValkey" "legacyKey" "waitForValkeyImage") | quote }}
+          {{- if not .Values.deployment.waitForValkeyImage }}
           imagePullPolicy: {{ include "kubex-automation-controller.resolveDeploymentImagePullPolicy" (dict "root" . "role" "waitForValkey") }}
+          {{- end }}
           command: ['sh', '-c', "until nc -vz {{ .Release.Name }}-valkey 6379; do echo 'Waiting for Valkey'; sleep 2; done"]
           {{- $initContainerSecurityContext := ternary .Values.deployment.initContainerSecurityContextOpenShift .Values.deployment.initContainerSecurityContext .Values.openshift.enabled }}
           {{- with $initContainerSecurityContext }}
@@ -310,7 +312,9 @@ spec:
       initContainers:
         - name: wait-for-valkey
           image: {{ include "kubex-automation-controller.resolveDeploymentImage" (dict "root" . "role" "waitForValkey" "legacyKey" "waitForValkeyImage") | quote }}
+          {{- if not .Values.deployment.waitForValkeyImage }}
           imagePullPolicy: {{ include "kubex-automation-controller.resolveDeploymentImagePullPolicy" (dict "root" . "role" "waitForValkey") }}
+          {{- end }}
           command: ['sh', '-c', "until nc -vz {{ .Release.Name }}-valkey 6379; do echo 'Waiting for Valkey'; sleep 2; done"]
           {{- $initContainerSecurityContext := ternary .Values.deployment.initContainerSecurityContextOpenShift .Values.deployment.initContainerSecurityContext .Values.openshift.enabled }}
           {{- with $initContainerSecurityContext }}

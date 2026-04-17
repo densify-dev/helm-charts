@@ -20,15 +20,15 @@ images:
   azureToken:
     repository: densify/azure-rest-api-token
     tag: "latest"
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
   gcpOAuth2Token:
     repository: densify/gcp-oauth2-token
     tag: "latest"
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
   checkPrometheusReady:
     repository: busybox
     tag: "latest"
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
 # Legacy global pull policy fallback (applies to all images only when set).
 pullPolicy: ""
 
