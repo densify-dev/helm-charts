@@ -259,8 +259,6 @@ crds: {}
 globalConfiguration:
   # -- Enable creation of default GlobalConfiguration
   enabled: true
-  # -- Name of the GlobalConfiguration resource
-  name: global-config
   # -- Recommendation reload interval (how often to fetch from Kubex)
   # Can also use deployment.controllerEnv.recommendationsFetchInterval for backward compatibility
   recommendationReloadInterval: "1h"

@@ -65,7 +65,6 @@ The chart creates a default `GlobalConfiguration` when `globalConfiguration.enab
 | Helm value | Renders to | Notes |
 | --- | --- | --- |
 | `globalConfiguration.enabled` | resource creation toggle | Helm-only switch, not a CR field |
-| `globalConfiguration.name` | `metadata.name` | Default `global-config` |
 | `globalConfiguration.recommendationReloadInterval` | `spec.recommendationReloadInterval` | Falls back to legacy value if unset |
 | `globalConfiguration.rescanInterval` | `spec.rescanInterval` | Falls back to legacy value if unset |
 | `globalConfiguration.mutationLogInterval` | `spec.mutationLogInterval` | Direct mapping |
