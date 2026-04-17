@@ -108,7 +108,7 @@ kubectl get configmap kubex-automation-policy -n kubex -o yaml
 - **No pods in scope**: Verify namespace and label selectors match target pods
 - **Policy restrictions**: Check if automation is globally enabled
 - **Resource quota limits**: Controller may skip optimizations if quota headroom is insufficient
-- **HPA conflicts**: Controller skips pods with active HPAs on CPU/memory metrics
+- **HPA/KEDA conflicts**: Controller skips pods with active HPAs or KEDA ScaledObjects on CPU and/or memory
 - **VPA conflicts**: Controller automatically excludes workloads managed by VerticalPodAutoscaler
 - **RBAC permission denied**: Verify ClusterRole and ClusterRoleBinding are properly configured
 - **Cross-namespace access issues**: Controller requires cluster-wide permissions to validate resources
@@ -136,8 +136,10 @@ kubectl get configmap kubex-automation-policy -n kubex -o yaml
 
 3. **Look for safety blocks:**
    ```bash
-   # Check for active HPAs on CPU/memory
-   kubectl get hpa -A
+  # Check for active HPAs on CPU/memory
+  kubectl get hpa -A
+  # Check for active KEDA ScaledObjects (CPU/memory only)
+  kubectl get scaledobject -A
    
    # Check for VPA objects (workloads with VPA are automatically excluded)
    kubectl get vpa -A
