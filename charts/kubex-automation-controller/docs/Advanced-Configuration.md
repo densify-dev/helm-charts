@@ -45,7 +45,7 @@ You can temporarily or permanently pause automation for individual pods using th
 rightsizing.kubex.ai/pause-until: "<RFC3339 timestamp | infinite>"
 ```
 
-This annotation is only supported on Pod objects. Adding it to a workload owner such as a `Deployment`, `StatefulSet`, or `DaemonSet` does not affect controller or webhook behavior.
+This annotation is evaluated on Pod objects. If you want every pod created by a workload owner such as a `Deployment`, `StatefulSet`, or `DaemonSet` to receive it, add the annotation to the workload's pod template at `spec.template.metadata.annotations` so it is propagated to each Pod. Adding it only to the workload owner's own `metadata.annotations` does not affect controller or webhook behavior.
 
 ### Permanent Pause
 

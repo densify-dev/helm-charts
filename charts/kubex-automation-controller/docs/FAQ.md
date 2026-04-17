@@ -85,7 +85,7 @@ A scope references a policy by name, allowing you to apply different automation 
 
 **Pausing automation for individual pods:**
 
-Add the annotation directly to the Pod. Annotations on a workload owner or its pod template, such as a `Deployment`, `StatefulSet`, or `DaemonSet`, are not supported for this feature and have no effect.
+Add the annotation to the Pod itself, because the controller and webhook read it from Pod objects. If you want all pods created by a workload such as a `Deployment`, `StatefulSet`, or `DaemonSet` to have this annotation, add it to the workload's pod template (`spec.template.metadata.annotations`) so it is copied onto every Pod. Adding the annotation only to the workload object's own `metadata.annotations` does not affect pod behavior.
 
 ```yaml
 # Permanent pause
