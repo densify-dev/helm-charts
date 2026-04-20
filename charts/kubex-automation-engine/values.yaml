@@ -259,8 +259,6 @@ crds: {}
 globalConfiguration:
   # -- Enable creation of default GlobalConfiguration
   enabled: true
-  # -- Name of the GlobalConfiguration resource
-  name: global-config
   # -- Recommendation reload interval (how often to fetch from Kubex)
   # Can also use deployment.controllerEnv.recommendationsFetchInterval for backward compatibility
   recommendationReloadInterval: "1h"
@@ -272,6 +270,8 @@ globalConfiguration:
   kubexAPIRequestTimeout: "30s"
   # -- Mutation log send interval
   mutationLogInterval: "5m"
+  # -- Policy snapshot upload interval
+  snapshotInterval: "30m"
   # -- Whether automation is globally enabled
   automationEnabled: true
   # -- Suppress fetching recommendations from gateway (testing only)
