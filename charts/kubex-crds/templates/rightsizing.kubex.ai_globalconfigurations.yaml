@@ -90,6 +90,14 @@ spec:
                 description: respectKubexAutomation controls whether external recommendations
                   with KubexAutomation=false are ignored.
                 type: boolean
+              snapshotInterval:
+                default: 30m
+                description: snapshotInterval controls how often policy snapshots
+                  are sent.
+                type: string
+                x-kubernetes-validations:
+                - message: must be at least 1 minute
+                  rule: duration(self) >= duration('1m')
               suppressFetchRecommendations:
                 default: false
                 description: suppressFetchRecommendations forces recommendations to

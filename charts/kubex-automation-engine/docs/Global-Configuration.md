@@ -11,6 +11,7 @@ Use it to control recommendation refresh timing, proactive rescans, global autom
 | `spec.recommendationReloadInterval` | `1h` | How often recommendations are reloaded from Kubex. |
 | `spec.rescanInterval` | `6h` | How often workloads are rescanned for proactive evaluation. |
 | `spec.mutationLogInterval` | `5m` | How often mutation logs are sent. |
+| `spec.snapshotInterval` | `30m` | How often policy snapshots are sent. |
 | `spec.kubexAPIRequestTimeout` | `30s` | Timeout for Kubex API requests. |
 | `spec.automationEnabled` | `true` | Global on or off switch for automation behavior. |
 | `spec.suppressFetchRecommendations` | `false` | Testing-oriented switch to suppress recommendation fetches. |
@@ -44,6 +45,7 @@ spec:
   recommendationReloadInterval: 1h
   rescanInterval: 6h
   mutationLogInterval: 5m
+  snapshotInterval: 30m
   kubexAPIRequestTimeout: 30s
   automationEnabled: true
   suppressFetchRecommendations: false
@@ -65,10 +67,10 @@ The chart creates a default `GlobalConfiguration` when `globalConfiguration.enab
 | Helm value | Renders to | Notes |
 | --- | --- | --- |
 | `globalConfiguration.enabled` | resource creation toggle | Helm-only switch, not a CR field |
-| `globalConfiguration.name` | `metadata.name` | Default `global-config` |
 | `globalConfiguration.recommendationReloadInterval` | `spec.recommendationReloadInterval` | Falls back to legacy value if unset |
 | `globalConfiguration.rescanInterval` | `spec.rescanInterval` | Falls back to legacy value if unset |
 | `globalConfiguration.mutationLogInterval` | `spec.mutationLogInterval` | Direct mapping |
+| `globalConfiguration.snapshotInterval` | `spec.snapshotInterval` | Direct mapping |
 | `globalConfiguration.kubexAPIRequestTimeout` | `spec.kubexAPIRequestTimeout` | Falls back to legacy value if unset |
 | `globalConfiguration.automationEnabled` | `spec.automationEnabled` | Direct mapping |
 | `globalConfiguration.suppressFetchRecommendations` | `spec.suppressFetchRecommendations` | Direct mapping |
@@ -87,6 +89,16 @@ Legacy `deployment.controllerEnv` values still act as fallbacks for the default 
 | `deployment.controllerEnv.apiRequestTimeout` | `spec.kubexAPIRequestTimeout` |
 
 If both the new `globalConfiguration.*` value and the legacy value are set, the `globalConfiguration.*` value wins.
+
+## Webhook Probe Image Runtime Setting
+
+The pod admission webhook health probe creates a dry-run Pod. The container image used for that probe is configured at deployment runtime, not in `GlobalConfiguration.spec`:
+
+- Helm value: `controllerManager.webhookProbeImage`
+- Container env var: `WEBHOOK_PROBE_IMAGE`
+- Default behavior: when unset or empty, the probe image inherits the controller image (`image.repository:image.tag`)
+
+This allows airgapped environments to mirror only the controller image and have probe admissions use that same image by default.
 
 ## Verification
 
