@@ -77,6 +77,8 @@ kubectl get events -A --field-selector reason=PolicyEvaluationEvictResize
 - node allocatable headroom gate
 - pod readiness or workload availability protection
 - webhook health probe failure
+- webhook probe dry-run pod denied by admission image policy (set `controllerManager.webhookProbeImage` to an allowed mirrored image)
+- on EKS, verify your version includes probe pod label `eks.amazonaws.com/skip-pod-identity-webhook: "true"` to bypass the AWS pod identity webhook for this dry-run probe
 
 ## 6. Verify Webhook Registration
 

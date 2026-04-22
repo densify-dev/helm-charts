@@ -102,6 +102,7 @@ Note: `kubexCredentials.userSecretName` is currently not consumed by this chart.
 | `webhook.certManager.enabled` | `false` | Use cert-manager instead of self-signed TLS |
 | `selfSignedCert.validity` | `3650` | Self-signed certificate validity in days |
 | `controllerManager.globalConfigReconcileInterval` | `1m` | Base reconcile cadence for global config controller |
+| `controllerManager.webhookProbeImage` | `""` (inherits controller image) | Optional webhook probe pod image override used by admission health checks |
 | `kubex.requestTimeout` | `30s` | Kubex API request timeout |
 | `openshift.enabled` | `false` | Enable OpenShift-oriented pod security context defaults and cleanup job settings without changing the default Kubernetes installation path |
 | `openshift.fsGroup` | `null` | Optional `fsGroup` applied when `openshift.enabled=true` unless already set in `podSecurityContext` |
@@ -123,10 +124,10 @@ Use [Global Configuration Reference](./Global-Configuration.md) for the CR field
 
 | Key | Default | Description |
 | --- | --- | --- |
-| `globalConfiguration.name` | `global-config` | Singleton resource name |
 | `globalConfiguration.recommendationReloadInterval` | `1h` | Recommendation refresh cadence |
 | `globalConfiguration.rescanInterval` | `6h` | Pod rescan cadence |
 | `globalConfiguration.mutationLogInterval` | `5m` | Mutation log send cadence |
+| `globalConfiguration.snapshotInterval` | `30m` | Policy snapshot upload cadence |
 | `globalConfiguration.kubexAPIRequestTimeout` | `30s` | Timeout for Kubex requests |
 | `globalConfiguration.automationEnabled` | `true` | Global enable/disable switch |
 | `globalConfiguration.suppressFetchRecommendations` | `false` | Testing-only fetch suppression |

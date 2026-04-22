@@ -5,7 +5,7 @@
 apiVersion: rightsizing.kubex.ai/v1alpha1
 kind: GlobalConfiguration
 metadata:
-  name: {{ .Values.globalConfiguration.name }}
+  name: global-config
   labels:
     {{- include "kubex-automation-engine.labels" . | nindent 4 }}
 spec:
@@ -13,6 +13,7 @@ spec:
   recommendationReloadInterval: {{ $recommendationReloadInterval }}
   rescanInterval: {{ $rescanInterval }}
   mutationLogInterval: {{ .Values.globalConfiguration.mutationLogInterval }}
+  snapshotInterval: {{ .Values.globalConfiguration.snapshotInterval }}
   kubexAPIRequestTimeout: {{ $kubexAPIRequestTimeout }}
   
   # Behavior configuration
