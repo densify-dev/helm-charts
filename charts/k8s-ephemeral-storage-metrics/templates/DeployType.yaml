@@ -10,8 +10,17 @@ metadata:
   {{- end }}
 spec:
   {{- if eq .Values.deploy_type "Deployment" }}
-  replicas: 1
+  replicas: {{ .Values.replicaCount }}
   revisionHistoryLimit: {{ .Values.revisionHistoryLimit }}
+  {{- with .Values.deploymentStrategy }}
+  strategy:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- else if eq .Values.deploy_type "DaemonSet" }}
+  {{- with .Values.daemonSetUpdateStrategy }}
+  updateStrategy:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   {{- end }}
   selector:
     matchLabels:
@@ -37,6 +46,11 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      {{- with .Values.topologySpreadConstraints }}
+      topologySpreadConstraints:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
       {{- if .Values.priorityClassName }}
       priorityClassName: {{ .Values.priorityClassName }}
       {{- end }}
@@ -60,30 +74,19 @@ spec:
               protocol: TCP
             {{ if .Values.pprof }}
             - name: pprof
-              containerPort: 6060
+              containerPort: {{ .Values.pprofPort }}
               protocol: TCP
               {{ end }}
           livenessProbe:
-            failureThreshold: 10
-            httpGet:
-              path: /metrics
-              port: {{ .Values.metrics.port  }}
-              scheme: HTTP
-            initialDelaySeconds: 10
-            periodSeconds: 10
-            successThreshold: 1
-            timeoutSeconds: 30
+            {{- toYaml .Values.livenessProbe | nindent 12 }}
           readinessProbe:
-            failureThreshold: 10
-            httpGet:
-              path: /metrics
-              port: {{ .Values.metrics.port  }}
-              scheme: HTTP
-            periodSeconds: 10
-            successThreshold: 1
-            timeoutSeconds: 1
+            {{- toYaml .Values.readinessProbe | nindent 12 }}
           {{- with .Values.containerSecurityContext }}
           securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.envFrom }}
+          envFrom:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           env:
@@ -176,4 +179,7 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: spec.nodeName
+              {{- end }}
+              {{- with .Values.extraEnv }}
+              {{- toYaml . | nindent 12 }}
               {{- end }}

@@ -79,3 +79,57 @@
 {{- define "common.jobBackoffLimit" -}}
   {{- default 4 .Values.cronJob.backoffLimit -}}
 {{- end -}}
+
+{{/*
+  Build an image reference from repository and tag.
+*/}}
+{{- define "common.imageFromParts" -}}
+{{- $repository := .repository | default "" -}}
+{{- $tag := .tag | default "" -}}
+{{- if and $repository $tag -}}
+{{- printf "%s:%s" $repository $tag -}}
+{{- else -}}
+{{- $repository -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+  Resolve image with backward compatibility.
+  Precedence:
+  1) legacy key when set (non-empty)
+  2) new images.<role>.repository/tag
+*/}}
+{{- define "common.resolveImage" -}}
+{{- $root := .root -}}
+{{- $role := .role -}}
+{{- $legacyKey := .legacyKey -}}
+{{- $legacyImage := index $root.Values $legacyKey | default "" -}}
+{{- $images := $root.Values.images | default dict -}}
+{{- $parts := get $images $role | default dict -}}
+{{- $partsImage := include "common.imageFromParts" (dict "repository" (get $parts "repository") "tag" (get $parts "tag")) | trim -}}
+{{- if $legacyImage -}}
+{{- $legacyImage -}}
+{{- else if $partsImage -}}
+{{- $partsImage -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+  Resolve image pull policy with backward compatibility.
+  Precedence:
+  1) legacy global pullPolicy when set (non-empty)
+  2) images.<role>.pullPolicy
+  3) Always
+*/}}
+{{- define "common.resolveImagePullPolicy" -}}
+{{- $root := .root -}}
+{{- $role := .role -}}
+{{- $legacyPullPolicy := $root.Values.pullPolicy | default "" -}}
+{{- if $legacyPullPolicy -}}
+{{- $legacyPullPolicy -}}
+{{- else -}}
+{{- $images := $root.Values.images | default dict -}}
+{{- $parts := get $images $role | default dict -}}
+{{- get $parts "pullPolicy" | default "Always" -}}
+{{- end -}}
+{{- end -}}

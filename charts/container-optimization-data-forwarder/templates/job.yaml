@@ -66,8 +66,8 @@ spec:
       initContainers:
       {{- if .Values.job.checkPrometheusReady }}
       - name: check-prometheus-ready
-        image: {{ .Values.imageCheckPrometheusReady }}
-        imagePullPolicy: {{ .Values.pullPolicy }}
+        image: {{ include "common.resolveImage" (dict "root" . "role" "checkPrometheusReady" "legacyKey" "imageCheckPrometheusReady") | quote }}
+        imagePullPolicy: {{ include "common.resolveImagePullPolicy" (dict "root" . "role" "checkPrometheusReady") }}
         securityContext:
           readOnlyRootFilesystem: true
           allowPrivilegeEscalation: false
@@ -91,8 +91,8 @@ spec:
       {{- end }}
       {{- if .Values.config.prometheus.AzureMonitorSecretName }}
       - name: azure-token
-        image: "{{ .Values.imageAzureToken }}"
-        imagePullPolicy: {{ .Values.pullPolicy }}
+        image: {{ include "common.resolveImage" (dict "root" . "role" "azureToken" "legacyKey" "imageAzureToken") | quote }}
+        imagePullPolicy: {{ include "common.resolveImagePullPolicy" (dict "root" . "role" "azureToken") }}
         securityContext:
           readOnlyRootFilesystem: true
           allowPrivilegeEscalation: false
@@ -117,8 +117,8 @@ spec:
       {{- end }}
       {{- if or (.Values.config.prometheus.GoogleMonitoringSecretName) (.Values.serviceAccount.isGKE) }}
       - name: gcp-token
-        image: "{{ .Values.imageGCPOAuth2Token }}"
-        imagePullPolicy: {{ .Values.pullPolicy }}
+        image: {{ include "common.resolveImage" (dict "root" . "role" "gcpOAuth2Token" "legacyKey" "imageGCPOAuth2Token") | quote }}
+        imagePullPolicy: {{ include "common.resolveImagePullPolicy" (dict "root" . "role" "gcpOAuth2Token") }}
         securityContext:
           readOnlyRootFilesystem: true
           allowPrivilegeEscalation: false
@@ -145,8 +145,8 @@ spec:
       {{- end }}
       containers:
         - name: {{ template "common.name" . }}
-          image: "{{ .Values.image }}"
-          imagePullPolicy: {{ .Values.pullPolicy }}
+          image: {{ include "common.resolveImage" (dict "root" . "role" "dataCollection" "legacyKey" "image") | quote }}
+          imagePullPolicy: {{ include "common.resolveImagePullPolicy" (dict "root" . "role" "dataCollection") }}
           securityContext:
             readOnlyRootFilesystem: true
             allowPrivilegeEscalation: false
@@ -187,7 +187,7 @@ spec:
               value: "/home/densify/.prometheus/username"
             - name: PROMETHEUS_PASSWORD
               value: "/home/densify/.prometheus/password"
-            {{- end }}              
+            {{- end }}
             {{- if or (.Values.config.prometheus.AzureMonitorSecretName) (.Values.config.prometheus.GoogleMonitoringSecretName) (.Values.serviceAccount.isGKE) }}
             - name: PROMETHEUS_OAUTH_TOKEN
               value: "/home/densify/.tokens/token"

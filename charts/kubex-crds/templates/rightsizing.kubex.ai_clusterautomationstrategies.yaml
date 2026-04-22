@@ -441,6 +441,12 @@ spec:
                     description: respectWorkloadMaxUnavailable blocks resizing if
                       it would exceed maxUnavailable.
                     type: boolean
+                  retainGuaranteedQOS:
+                    default: false
+                    description: |-
+                      retainGuaranteedQOS controls whether requests are kept equal to limits for Guaranteed QoS pods during resizing.
+                      When enabled, limits are treated as the source of truth for cpu/memory and matching request actions are aligned.
+                    type: boolean
                 type: object
             type: object
           status:

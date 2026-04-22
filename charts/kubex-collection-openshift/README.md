@@ -1,3 +1,5 @@
+# :no_entry: [DEPRECATED] Please see [active chart](https://github.com/densify-dev/helm-charts/tree/master/charts/kubex-automation-stack)
+
 # Kubex Collection Stack Helm Chart for OpenShift Clusters
 
 <picture>
@@ -5,6 +7,10 @@
     <source media="(prefers-color-scheme: light)" srcset="https://kubex.ai/wp-content/uploads/kubex-logo-landscape.svg">
     <img src="https://kubex.ai/wp-content/uploads/kubex-logo-landscape.svg" width="300">
 </picture>
+
+## Deprecation Notice
+
+This Helm Chart is being deprecated as OpenShift data collection is now supported within standard (Kubex Automation Stack chart)[https://github.com/densify-dev/helm-charts/tree/master/charts/kubex-automation-stack] 
 
 ## Introduction
 

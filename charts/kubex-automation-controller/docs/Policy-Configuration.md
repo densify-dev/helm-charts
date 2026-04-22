@@ -49,7 +49,7 @@ policy:
   # ================================================================
   remoteEnablement: false
     # false: Automation scope controlled ONLY by this Helm configuration
-    #        - Recommended for strict GitOps workflows and production environments
+    #        - Recommended for strict workflows and production environments
     # true:  Automation scope controlled by BOTH Helm configuration AND Kubex UI
     #        - Provides flexibility for ad-hoc automation control without Helm updates
     #        - Useful for development environments and testing scenarios
@@ -104,7 +104,7 @@ policy:
 - **`false`** (Recommended for production):
   - Automation scope controlled **ONLY** by Helm configuration
   - Kubex UI cannot override automation decisions
-  - Best for strict GitOps workflows and production environments
+  - Best for strict workflows and production environments
   
 - **`true`** (Useful for development):
   - Automation scope controlled by **BOTH** Helm configuration AND Kubex UI

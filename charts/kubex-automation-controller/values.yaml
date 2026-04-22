@@ -39,10 +39,31 @@ webhook:
   metadataName: kubex-resource-optimization-webhook # Name of the webhook configuration.
 
 deployment:
-  webhookImage: densify/container-automation:1.5 # Container image for the Kubex automation webhook server.
-  gatewayImage: densify/automation-gateway:1.2 # Container image for the Kubex automation gateway.
-  controllerImage: densify/automation-director:1.4 # Container image for the Kubex automation controller.
-  waitForValkeyImage: busybox:latest
+  webhookImage: ""
+  gatewayImage: ""
+  controllerImage: ""
+  waitForValkeyImage: ""
+  # Backward-compatible image configuration:
+  # - Legacy full image keys above stay supported.
+  # - New keys below allow setting repository, tag, and pullPolicy separately.
+  # - If a legacy key is set (non-empty), it takes precedence over these new keys.
+  images:
+    webhook:
+      repository: densify/container-automation
+      tag: "1.5"
+      pullPolicy: IfNotPresent
+    gateway:
+      repository: densify/automation-gateway
+      tag: "1.2"
+      pullPolicy: IfNotPresent
+    controller:
+      repository: densify/automation-director
+      tag: "1.4"
+      pullPolicy: IfNotPresent
+    waitForValkey:
+      repository: busybox
+      tag: "latest"
+      pullPolicy: IfNotPresent
 
   replicas: # Number of pod replicas to run ([set >1 for high availability).
     webhookServer: 1
