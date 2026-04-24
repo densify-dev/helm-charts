@@ -2,7 +2,7 @@ apiVersion: v2
 name: kubex-automation-engine
 description: A Helm chart for deploying kubex-automation-engine for automated workload rightsizing and resource optimization
 type: application
-version: 0.1.4
+version: 0.1.5
 icon: https://www.kubex.ai/wp-content/uploads/kubex-by-densify-logo.png
 keywords:
   - kubex
