@@ -123,10 +123,10 @@ Use [Global Configuration Reference](./Global-Configuration.md) for the CR field
 
 | Key | Default | Description |
 | --- | --- | --- |
-| `globalConfiguration.name` | `global-config` | Singleton resource name |
 | `globalConfiguration.recommendationReloadInterval` | `1h` | Recommendation refresh cadence |
 | `globalConfiguration.rescanInterval` | `6h` | Pod rescan cadence |
 | `globalConfiguration.mutationLogInterval` | `5m` | Mutation log send cadence |
+| `globalConfiguration.snapshotInterval` | `30m` | Policy snapshot upload cadence |
 | `globalConfiguration.kubexAPIRequestTimeout` | `30s` | Timeout for Kubex requests |
 | `globalConfiguration.automationEnabled` | `true` | Global enable/disable switch |
 | `globalConfiguration.suppressFetchRecommendations` | `false` | Testing-only fetch suppression |
@@ -135,6 +135,12 @@ Use [Global Configuration Reference](./Global-Configuration.md) for the CR field
 | `globalConfiguration.webhookHealth.failureThreshold` | `2` | Failures before webhook is marked unhealthy |
 | `globalConfiguration.webhookHealth.successThreshold` | `3` | Successes before webhook is marked healthy |
 | `globalConfiguration.webhookHealth.transitionCheckInterval` | `10s` | Probe interval during state transitions |
+| `globalConfiguration.webhookProbe.image` | `""` (inherits controller image) | Container image used by the dry-run webhook probe Pod |
+| `globalConfiguration.webhookProbe.labels` | `{}` | Additional labels applied to the dry-run webhook probe Pod |
+| `globalConfiguration.webhookProbe.annotations` | `{}` | Additional annotations applied to the dry-run webhook probe Pod |
+| `globalConfiguration.webhookProbe.resources` | `{}` | Resource requests and limits for the dry-run webhook probe container |
+| `globalConfiguration.webhookProbe.podSecurityContext` | `{}` | Pod security context for the dry-run webhook probe Pod |
+| `globalConfiguration.webhookProbe.securityContext` | `{}` | Container security context for the dry-run webhook probe container |
 
 ## Helm-Managed Policy Values
 
