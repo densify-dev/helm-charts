@@ -96,6 +96,7 @@ Note: `kubexCredentials.userSecretName` is currently not consumed by this chart.
 | `replicaCount` | `1` | Controller replica count |
 | `image.repository` | `densify/automation-controller` | Controller image |
 | `image.tag` | `0.1-beta20` | Controller image tag |
+| `imagePullSecrets` | `[]` | Secrets applied to the controller Deployment and cleanup Job pod specs |
 | `gateway.image.repository` | `densify/automation-gateway` | Gateway sidecar image |
 | `createSecrets` | `true` | Create required gateway and TLS secrets |
 | `webhook.enabled` | `true` | Enable webhook components |
@@ -103,6 +104,7 @@ Note: `kubexCredentials.userSecretName` is currently not consumed by this chart.
 | `selfSignedCert.validity` | `3650` | Self-signed certificate validity in days |
 | `controllerManager.globalConfigReconcileInterval` | `1m` | Base reconcile cadence for global config controller |
 | `kubex.requestTimeout` | `30s` | Kubex API request timeout |
+| `podSecurityContext` | chart default | Pod-level security context for the controller Deployment; defaults to `65534` for `runAsUser`, `runAsGroup`, and `fsGroup`, plus `runAsNonRoot=true` and `seccompProfile.type=RuntimeDefault` |
 | `openshift.enabled` | `false` | Enable OpenShift-oriented pod security context defaults and cleanup job settings without changing the default Kubernetes installation path |
 | `openshift.fsGroup` | `null` | Optional `fsGroup` applied when `openshift.enabled=true` unless already set in `podSecurityContext` |
 | `gateway.securityContext` | chart default | Gateway sidecar container security context |
@@ -123,10 +125,10 @@ Use [Global Configuration Reference](./Global-Configuration.md) for the CR field
 
 | Key | Default | Description |
 | --- | --- | --- |
-| `globalConfiguration.name` | `global-config` | Singleton resource name |
 | `globalConfiguration.recommendationReloadInterval` | `1h` | Recommendation refresh cadence |
 | `globalConfiguration.rescanInterval` | `6h` | Pod rescan cadence |
 | `globalConfiguration.mutationLogInterval` | `5m` | Mutation log send cadence |
+| `globalConfiguration.snapshotInterval` | `30m` | Policy snapshot upload cadence |
 | `globalConfiguration.kubexAPIRequestTimeout` | `30s` | Timeout for Kubex requests |
 | `globalConfiguration.automationEnabled` | `true` | Global enable/disable switch |
 | `globalConfiguration.suppressFetchRecommendations` | `false` | Testing-only fetch suppression |
@@ -135,6 +137,12 @@ Use [Global Configuration Reference](./Global-Configuration.md) for the CR field
 | `globalConfiguration.webhookHealth.failureThreshold` | `2` | Failures before webhook is marked unhealthy |
 | `globalConfiguration.webhookHealth.successThreshold` | `3` | Successes before webhook is marked healthy |
 | `globalConfiguration.webhookHealth.transitionCheckInterval` | `10s` | Probe interval during state transitions |
+| `globalConfiguration.webhookProbe.image` | `""` (inherits controller image) | Container image used by the dry-run webhook probe Pod |
+| `globalConfiguration.webhookProbe.labels` | `{}` | Additional labels applied to the dry-run webhook probe Pod |
+| `globalConfiguration.webhookProbe.annotations` | `{}` | Additional annotations applied to the dry-run webhook probe Pod |
+| `globalConfiguration.webhookProbe.resources` | `{}` | Resource requests and limits for the dry-run webhook probe container |
+| `globalConfiguration.webhookProbe.podSecurityContext` | `{}` | Pod security context for the dry-run webhook probe Pod |
+| `globalConfiguration.webhookProbe.securityContext` | `{}` | Container security context for the dry-run webhook probe container |
 
 ## Helm-Managed Policy Values
 

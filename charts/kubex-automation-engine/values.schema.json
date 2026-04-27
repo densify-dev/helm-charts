@@ -41,8 +41,31 @@
         }
       }
     },
+    "imagePullSecrets": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
     "podSecurityContext": {
-      "type": "object"
+      "type": "object",
+      "properties": {
+        "fsGroup": {
+          "type": "integer"
+        },
+        "runAsGroup": {
+          "type": "integer"
+        },
+        "runAsUser": {
+          "type": "integer"
+        },
+        "runAsNonRoot": {
+          "type": "boolean"
+        },
+        "seccompProfile": {
+          "type": "object"
+        }
+      }
     },
     "securityContext": {
       "type": "object"
@@ -124,6 +147,54 @@
         },
         "extraEnv": {
           "type": "array"
+        }
+      }
+    },
+    "globalConfiguration": {
+      "type": "object",
+      "properties": {
+        "webhookHealth": {
+          "type": "object",
+          "properties": {
+            "failureThreshold": {
+              "type": "integer"
+            },
+            "successThreshold": {
+              "type": "integer"
+            },
+            "transitionCheckInterval": {
+              "type": "string"
+            }
+          }
+        },
+        "webhookProbe": {
+          "type": "object",
+          "properties": {
+            "image": {
+              "type": "string"
+            },
+            "labels": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "annotations": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "resources": {
+              "$ref": "#/definitions/resources"
+            },
+            "podSecurityContext": {
+              "type": "object"
+            },
+            "securityContext": {
+              "type": "object"
+            }
+          }
         }
       }
     },

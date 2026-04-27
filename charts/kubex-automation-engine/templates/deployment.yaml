@@ -32,6 +32,10 @@ spec:
         {{- end }}
     spec:
       serviceAccountName: {{ include "kubex-automation-engine.serviceAccountName" . }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
         {{- if and $openshiftFsGroupConfigured (not $hasPodFsGroup) }}

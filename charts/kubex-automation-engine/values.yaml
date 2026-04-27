@@ -46,6 +46,9 @@ image:
   # -- Image tag
   tag: "0.1.3"
 
+# -- Image pull secrets applied to the controller deployment and cleanup job
+imagePullSecrets: []
+
 cleanup:
   image:
     # -- Image repository for the pre-delete cleanup job.
@@ -85,8 +88,7 @@ podAnnotations:
   kubectl.kubernetes.io/default-container: manager
 
 # -- Labels to add to the controller manager pod
-podLabels:
-  control-plane: controller-manager
+podLabels: {}
 
 # Platform-specific compatibility settings
 openshift:
@@ -100,6 +102,9 @@ openshift:
   supplementalGroups: []
 
 podSecurityContext:
+  fsGroup: 65534
+  runAsGroup: 65534
+  runAsUser: 65534
   runAsNonRoot: true
   seccompProfile:
     type: RuntimeDefault
@@ -259,8 +264,6 @@ crds: {}
 globalConfiguration:
   # -- Enable creation of default GlobalConfiguration
   enabled: true
-  # -- Name of the GlobalConfiguration resource
-  name: global-config
   # -- Recommendation reload interval (how often to fetch from Kubex)
   # Can also use deployment.controllerEnv.recommendationsFetchInterval for backward compatibility
   recommendationReloadInterval: "1h"
@@ -272,6 +275,8 @@ globalConfiguration:
   kubexAPIRequestTimeout: "30s"
   # -- Mutation log send interval
   mutationLogInterval: "5m"
+  # -- Policy snapshot upload interval
+  snapshotInterval: "30m"
   # -- Whether automation is globally enabled
   automationEnabled: true
   # -- Suppress fetching recommendations from gateway (testing only)
@@ -290,6 +295,20 @@ globalConfiguration:
     successThreshold: 3
     # -- Probe interval used while transitioning between healthy/unhealthy states
     transitionCheckInterval: "10s"
+  # -- Dry-run pod configuration used for webhook health checks
+  webhookProbe:
+    # -- Container image used by the webhook probe pod. Defaults to the controller image.
+    image: ""
+    # -- Additional labels applied to the webhook probe pod.
+    labels: {}
+    # -- Additional annotations applied to the webhook probe pod.
+    annotations: {}
+    # -- Resource requests and limits for the webhook probe container.
+    resources: {}
+    # -- Pod security context for the webhook probe pod.
+    podSecurityContext: {}
+    # -- Container security context for the webhook probe container.
+    securityContext: {}
 
 # ================================================================
 # BACKWARD COMPATIBILITY: Legacy environment variable configuration

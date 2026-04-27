@@ -87,6 +87,10 @@ spec:
     spec:
       restartPolicy: OnFailure
       serviceAccountName: {{ include "kubex-automation-engine.cleanupHookName" . }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       {{- if or .Values.openshift.enabled .Values.cleanup.podSecurityContext }}
       securityContext:
         {{- if .Values.cleanup.podSecurityContext }}
