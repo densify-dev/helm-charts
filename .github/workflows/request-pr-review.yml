@@ -15,6 +15,7 @@ jobs:
   request-review:
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Request central PR review
         uses: densify-dev/auto-pr-reviews@02bc371c840b10f9d56738dcdcf8871d231ffd0f
