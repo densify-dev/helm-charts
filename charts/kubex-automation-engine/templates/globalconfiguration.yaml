@@ -30,4 +30,26 @@ spec:
     failureThreshold: {{ .Values.globalConfiguration.webhookHealth.failureThreshold }}
     successThreshold: {{ .Values.globalConfiguration.webhookHealth.successThreshold }}
     transitionCheckInterval: {{ .Values.globalConfiguration.webhookHealth.transitionCheckInterval | quote }}
+  webhookProbe:
+    image: {{ .Values.globalConfiguration.webhookProbe.image | default (include "kubex-automation-engine.image" .) | quote }}
+    {{- with .Values.globalConfiguration.webhookProbe.labels }}
+    labels:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+    {{- with .Values.globalConfiguration.webhookProbe.annotations }}
+    annotations:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+    {{- with .Values.globalConfiguration.webhookProbe.resources }}
+    resources:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+    {{- with .Values.globalConfiguration.webhookProbe.podSecurityContext }}
+    podSecurityContext:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+    {{- with .Values.globalConfiguration.webhookProbe.securityContext }}
+    securityContext:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
 {{- end }}

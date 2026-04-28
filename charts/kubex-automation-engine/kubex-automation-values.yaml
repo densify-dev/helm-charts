@@ -29,6 +29,19 @@ kubex:
   # REQUIRED: Your cluster identifier in Kubex
   clusterName: "<clusterName>" # mandatory: <clusterName>
 
+# Optional image pull secrets for private registries:
+# imagePullSecrets:
+#   - name: my-registry-secret
+#
+# Default pod security context:
+# podSecurityContext:
+#   runAsUser: 65534
+#   runAsGroup: 65534
+#   fsGroup: 65534
+#   runAsNonRoot: true
+#   seccompProfile:
+#     type: RuntimeDefault
+#
 # Optional platform setting:
 # Uncomment when deploying on OpenShift to enable restricted-friendly defaults.
 # openshift:

@@ -20,6 +20,12 @@ Use it to control recommendation refresh timing, proactive rescans, global autom
 | `spec.webhookHealth.failureThreshold` | `2` | Failed probes required before webhook health becomes unhealthy. |
 | `spec.webhookHealth.successThreshold` | `3` | Successful probes required before webhook health becomes healthy. |
 | `spec.webhookHealth.transitionCheckInterval` | `10s` | Probe interval used during webhook health transitions. |
+| `spec.webhookProbe.image` | controller image | Container image used by the dry-run webhook probe Pod. |
+| `spec.webhookProbe.labels` | `{}` | Additional labels applied to the dry-run webhook probe Pod. |
+| `spec.webhookProbe.annotations` | `{}` | Additional annotations applied to the dry-run webhook probe Pod. |
+| `spec.webhookProbe.resources` | `{}` | Resource requests and limits for the dry-run webhook probe container. |
+| `spec.webhookProbe.podSecurityContext` | `{}` | Pod security context for the dry-run webhook probe Pod. |
+| `spec.webhookProbe.securityContext` | `{}` | Container security context for the dry-run webhook probe container. |
 
 ## Status Reference
 
@@ -58,6 +64,20 @@ spec:
     failureThreshold: 2
     successThreshold: 3
     transitionCheckInterval: 10s
+  webhookProbe:
+    image: densify/automation-controller:0.1.3
+    labels:
+      team: platform
+    annotations:
+      example.com/custom: "true"
+    resources:
+      requests:
+        cpu: 5m
+        memory: 16Mi
+    podSecurityContext:
+      runAsNonRoot: true
+    securityContext:
+      allowPrivilegeEscalation: false
 ```
 
 ## Helm-Managed Mapping
@@ -79,6 +99,12 @@ The chart creates a default `GlobalConfiguration` when `globalConfiguration.enab
 | `globalConfiguration.webhookHealth.failureThreshold` | `spec.webhookHealth.failureThreshold` | Direct mapping |
 | `globalConfiguration.webhookHealth.successThreshold` | `spec.webhookHealth.successThreshold` | Direct mapping |
 | `globalConfiguration.webhookHealth.transitionCheckInterval` | `spec.webhookHealth.transitionCheckInterval` | Direct mapping |
+| `globalConfiguration.webhookProbe.image` | `spec.webhookProbe.image` | Defaults to the controller image when empty |
+| `globalConfiguration.webhookProbe.labels` | `spec.webhookProbe.labels` | Direct mapping |
+| `globalConfiguration.webhookProbe.annotations` | `spec.webhookProbe.annotations` | Direct mapping |
+| `globalConfiguration.webhookProbe.resources` | `spec.webhookProbe.resources` | Direct mapping |
+| `globalConfiguration.webhookProbe.podSecurityContext` | `spec.webhookProbe.podSecurityContext` | Direct mapping |
+| `globalConfiguration.webhookProbe.securityContext` | `spec.webhookProbe.securityContext` | Direct mapping |
 
 Legacy `deployment.controllerEnv` values still act as fallbacks for the default `GlobalConfiguration`:
 
@@ -90,15 +116,17 @@ Legacy `deployment.controllerEnv` values still act as fallbacks for the default 
 
 If both the new `globalConfiguration.*` value and the legacy value are set, the `globalConfiguration.*` value wins.
 
-## Webhook Probe Image Runtime Setting
+## Webhook Probe Pod Settings
 
-The pod admission webhook health probe creates a dry-run Pod. The container image used for that probe is configured at deployment runtime, not in `GlobalConfiguration.spec`:
+The pod admission webhook health probe creates a dry-run Pod using `spec.webhookProbe`.
 
-- Helm value: `controllerManager.webhookProbeImage`
-- Container env var: `WEBHOOK_PROBE_IMAGE`
-- Default behavior: when unset or empty, the probe image inherits the controller image (`image.repository:image.tag`)
+- `spec.webhookProbe.image` controls the probe Pod container image
+- `spec.webhookProbe.labels` and `spec.webhookProbe.annotations` allow cluster-specific admission labels and annotations
+- `spec.webhookProbe.resources`, `spec.webhookProbe.podSecurityContext`, and `spec.webhookProbe.securityContext` help satisfy admission policies that require explicit resource or security settings
 
-This allows airgapped environments to mirror only the controller image and have probe admissions use that same image by default.
+When `spec.webhookProbe.image` is unset, the Helm chart defaults it to the controller image (`image.repository:image.tag`). This allows airgapped environments to mirror only the controller image and have probe admissions use that same image by default.
+
+On EKS clusters, the probe pod is labeled with `eks.amazonaws.com/skip-pod-identity-webhook: "true"` so the AWS-managed pod identity webhook skips this dry-run probe admission.
 
 ## Verification
 
