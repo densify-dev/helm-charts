@@ -123,7 +123,6 @@ Use [Global Configuration Reference](./Global-Configuration.md) for the CR field
 
 | Key | Default | Description |
 | --- | --- | --- |
-| `globalConfiguration.name` | `global-config` | Singleton resource name |
 | `globalConfiguration.recommendationReloadInterval` | `1h` | Recommendation refresh cadence |
 | `globalConfiguration.rescanInterval` | `6h` | Pod rescan cadence |
 | `globalConfiguration.mutationLogInterval` | `5m` | Mutation log send cadence |
