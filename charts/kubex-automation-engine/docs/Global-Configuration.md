@@ -99,9 +99,7 @@ The pod admission webhook health probe creates a dry-run Pod. The container imag
 - Default behavior: when unset or empty, the probe image inherits the controller image (`image.repository:image.tag`)
 
 This allows airgapped environments to mirror only the controller image and have probe admissions use that same image by default.
-
 On EKS clusters, the probe pod is labeled with `eks.amazonaws.com/skip-pod-identity-webhook: "true"` so the AWS-managed pod identity webhook skips this dry-run probe admission.
-
 ## Verification
 
 Use these commands to inspect the rendered and live resource:
