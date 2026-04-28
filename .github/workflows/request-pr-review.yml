@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Request central PR review
-        uses: densify-dev/auto-pr-reviews@main
+        uses: densify-dev/auto-pr-reviews@02bc371c840b10f9d56738dcdcf8871d231ffd0f
         with:
           app-client-id: ${{ vars.PR_REVIEW_DISPATCH_APP_CLIENT_ID }}
           app-private-key: ${{ secrets.PR_REVIEW_DISPATCH_APP_PRIVATE_KEY }}
