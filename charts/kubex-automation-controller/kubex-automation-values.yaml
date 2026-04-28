@@ -208,6 +208,27 @@ policy:
 #    based on your cluster size and deployment phase.
 # ================================================================
 #deployment:
+#  # Backward-compatible image settings:
+#  # - Legacy full-image fields in values.yaml remain supported.
+#  # - New split fields below allow independent repository and tag overrides.
+#  images:
+#    controller:
+#      repository: registry.example.com/kubex/automation-director
+#      tag: "1.4"
+#      pullPolicy: IfNotPresent
+#    gateway:
+#      repository: registry.example.com/kubex/automation-gateway
+#      tag: "1.2"
+#      pullPolicy: IfNotPresent
+#    webhook:
+#      repository: registry.example.com/kubex/container-automation
+#      tag: "1.5"
+#      pullPolicy: IfNotPresent
+#    waitForValkey:
+#      repository: registry.example.com/base/busybox
+#      tag: "latest"
+#      pullPolicy: IfNotPresent
+#
 #  controllerEnv:  # Override controller environment variables (defaults in values.yaml)
 #    debug: true                                  # Uncomment to enable debug mode for troubleshooting
 #    podScanInterval: "1h"                        # Default optimized for in-place resizing (Kubernetes 1.33+)

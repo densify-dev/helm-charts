@@ -1,0 +1,28 @@
+name: Request PR Review
+
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - ready_for_review
+
+permissions:
+  contents: read
+
+jobs:
+  request-review:
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Request central PR review
+        uses: densify-dev/auto-pr-reviews@02bc371c840b10f9d56738dcdcf8871d231ffd0f
+        with:
+          app-client-id: ${{ vars.PR_REVIEW_DISPATCH_APP_CLIENT_ID }}
+          app-private-key: ${{ secrets.PR_REVIEW_DISPATCH_APP_PRIVATE_KEY }}
+          central-repo: densify-dev/auto-pr-reviews
+          provider: github
+          repo: ${{ github.repository }}
+          pr-number: ${{ github.event.pull_request.number }}

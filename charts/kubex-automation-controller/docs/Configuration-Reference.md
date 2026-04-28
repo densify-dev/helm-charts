@@ -127,6 +127,58 @@ valkey:
 
 ---
 
+## Controller And Webhook Images
+
+The chart supports both legacy full-image fields and new split repository/tag fields.
+
+- Legacy fields remain supported: `deployment.controllerImage`, `deployment.gatewayImage`, `deployment.webhookImage`, `deployment.waitForValkeyImage`.
+- New fields: `deployment.images.<component>.repository`, `deployment.images.<component>.tag`, and `deployment.images.<component>.pullPolicy`.
+- Precedence: if a legacy full-image field is set (non-empty), it wins. Otherwise, the chart uses the new repository/tag fields.
+- Legacy behavior note for wait-for-valkey: when `deployment.waitForValkeyImage` is set, the chart omits `imagePullPolicy` for that init container so Kubernetes defaulting is preserved.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `deployment.controllerImage` | `string` | Legacy full image for the controller container |
+| `deployment.gatewayImage` | `string` | Legacy full image for both gateway init containers |
+| `deployment.webhookImage` | `string` | Legacy full image for the webhook container |
+| `deployment.waitForValkeyImage` | `string` | Legacy full image for the wait-for-valkey init container |
+| `deployment.images.controller.repository` | `string` | Controller image repository (can include registry path) |
+| `deployment.images.controller.tag` | `string` | Controller image tag |
+| `deployment.images.controller.pullPolicy` | `string` | Controller image pull policy (default: `IfNotPresent`) |
+| `deployment.images.gateway.repository` | `string` | Gateway image repository (can include registry path) |
+| `deployment.images.gateway.tag` | `string` | Gateway image tag |
+| `deployment.images.gateway.pullPolicy` | `string` | Gateway image pull policy (default: `IfNotPresent`) |
+| `deployment.images.webhook.repository` | `string` | Webhook image repository (can include registry path) |
+| `deployment.images.webhook.tag` | `string` | Webhook image tag |
+| `deployment.images.webhook.pullPolicy` | `string` | Webhook image pull policy (default: `IfNotPresent`) |
+| `deployment.images.waitForValkey.repository` | `string` | Wait-for-valkey image repository (can include registry path) |
+| `deployment.images.waitForValkey.tag` | `string` | Wait-for-valkey image tag |
+| `deployment.images.waitForValkey.pullPolicy` | `string` | Wait-for-valkey image pull policy (default: `IfNotPresent`) |
+
+**Example (new split fields):**
+```yaml
+deployment:
+  images:
+    controller:
+      repository: registry.example.com/kubex/automation-director
+      tag: "1.4"
+      pullPolicy: IfNotPresent
+    gateway:
+      repository: registry.example.com/kubex/automation-gateway
+      tag: "1.2"
+      pullPolicy: IfNotPresent
+    webhook:
+      repository: registry.example.com/kubex/container-automation
+      tag: "1.5"
+      pullPolicy: IfNotPresent
+    waitForValkey:
+      repository: registry.example.com/base/busybox
+      tag: "latest"
+      pullPolicy: IfNotPresent
+```
+
+---
+
 ## Secret Management Configuration
 
 Use `createSecrets` to decide whether Helm renders all required secrets or you supply them externally. This flag covers the Kubex API secret, both Valkey secrets, and the webhook TLS secret.
@@ -313,7 +365,7 @@ The `policy` section of your `kubex-automation-values.yaml` file configures auto
 **📖 For complete policy configuration details**, see the [Policy Configuration Guide](Policy-Configuration.md), which covers:
 
 - Policy naming requirements (RFC 1123 rules)
-- Field reference for all policy settings  
+- Field reference for all policy settings
 - Adding multiple policies
 - Common policy examples (`base-optimization`, `full-optimization`)
 
