@@ -129,6 +129,9 @@ controllerManager:
 
   # -- GlobalConfiguration controller reconcile interval (maps to GLOBAL_CONFIG_RECONCILE_INTERVAL)
   globalConfigReconcileInterval: "1m"
+
+  # -- Optional override for webhook probe pod image (maps to WEBHOOK_PROBE_IMAGE). When empty, defaults to the controller image.
+  webhookProbeImage: ""
   
   # -- Additional environment variables
   extraEnv: []

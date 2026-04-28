@@ -90,6 +90,16 @@ Legacy `deployment.controllerEnv` values still act as fallbacks for the default 
 
 If both the new `globalConfiguration.*` value and the legacy value are set, the `globalConfiguration.*` value wins.
 
+## Webhook Probe Image Runtime Setting
+
+The pod admission webhook health probe creates a dry-run Pod. The container image used for that probe is configured at deployment runtime, not in `GlobalConfiguration.spec`:
+
+- Helm value: `controllerManager.webhookProbeImage`
+- Container env var: `WEBHOOK_PROBE_IMAGE`
+- Default behavior: when unset or empty, the probe image inherits the controller image (`image.repository:image.tag`)
+
+This allows airgapped environments to mirror only the controller image and have probe admissions use that same image by default.
+
 ## Verification
 
 Use these commands to inspect the rendered and live resource:

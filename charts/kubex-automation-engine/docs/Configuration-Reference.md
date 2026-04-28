@@ -102,6 +102,7 @@ Note: `kubexCredentials.userSecretName` is currently not consumed by this chart.
 | `webhook.certManager.enabled` | `false` | Use cert-manager instead of self-signed TLS |
 | `selfSignedCert.validity` | `3650` | Self-signed certificate validity in days |
 | `controllerManager.globalConfigReconcileInterval` | `1m` | Base reconcile cadence for global config controller |
+| `controllerManager.webhookProbeImage` | `""` (inherits controller image) | Optional webhook probe pod image override used by admission health checks |
 | `kubex.requestTimeout` | `30s` | Kubex API request timeout |
 | `openshift.enabled` | `false` | Enable OpenShift-oriented pod security context defaults and cleanup job settings without changing the default Kubernetes installation path |
 | `openshift.fsGroup` | `null` | Optional `fsGroup` applied when `openshift.enabled=true` unless already set in `podSecurityContext` |
