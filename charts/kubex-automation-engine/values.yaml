@@ -270,6 +270,8 @@ globalConfiguration:
   kubexAPIRequestTimeout: "30s"
   # -- Mutation log send interval
   mutationLogInterval: "5m"
+  # -- Policy snapshot upload interval
+  snapshotInterval: "30m"
   # -- Whether automation is globally enabled
   automationEnabled: true
   # -- Suppress fetching recommendations from gateway (testing only)

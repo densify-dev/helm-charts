@@ -126,6 +126,7 @@ Use [Global Configuration Reference](./Global-Configuration.md) for the CR field
 | `globalConfiguration.recommendationReloadInterval` | `1h` | Recommendation refresh cadence |
 | `globalConfiguration.rescanInterval` | `6h` | Pod rescan cadence |
 | `globalConfiguration.mutationLogInterval` | `5m` | Mutation log send cadence |
+| `globalConfiguration.snapshotInterval` | `30m` | Policy snapshot upload cadence |
 | `globalConfiguration.kubexAPIRequestTimeout` | `30s` | Timeout for Kubex requests |
 | `globalConfiguration.automationEnabled` | `true` | Global enable/disable switch |
 | `globalConfiguration.suppressFetchRecommendations` | `false` | Testing-only fetch suppression |

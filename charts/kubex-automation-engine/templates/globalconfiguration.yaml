@@ -13,6 +13,7 @@ spec:
   recommendationReloadInterval: {{ $recommendationReloadInterval }}
   rescanInterval: {{ $rescanInterval }}
   mutationLogInterval: {{ .Values.globalConfiguration.mutationLogInterval }}
+  snapshotInterval: {{ .Values.globalConfiguration.snapshotInterval }}
   kubexAPIRequestTimeout: {{ $kubexAPIRequestTimeout }}
   
   # Behavior configuration
