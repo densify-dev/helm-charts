@@ -366,6 +366,148 @@ spec:
                       When enabled, limits are treated as the source of truth for cpu/memory and matching request actions are aligned.
                     type: boolean
                 type: object
+              scheduling:
+                default: {}
+                description: |-
+                  scheduling configures inclusion and exclusion windows for resize actions.
+                  The schedule applies to controller-driven in-place resize and pod eviction.
+                  Admission-time pod creation ignores these windows and may still apply the desired resources immediately.
+                properties:
+                  exclusionWindows:
+                    description: |-
+                      exclusionWindows define when resizing is blocked.
+                      Exclusion windows always take precedence over inclusion windows.
+                    items:
+                      properties:
+                        end:
+                          description: |-
+                            end is the exclusive local time when the window ends, in 24-hour HH:MM format.
+                            Defaults to 24:00 (end of day). 24:00 is only valid for end and represents the end of the current day.
+                            When start is greater than end, the window is treated as spanning midnight.
+                          maxLength: 5
+                          pattern: ^$|^([01][0-9]|2[0-3]):[0-5][0-9]$|^24:00$
+                          type: string
+                        name:
+                          description: name identifies the scheduling window in logs
+                            and summaries.
+                          maxLength: 128
+                          type: string
+                        start:
+                          description: |-
+                            start is the inclusive local time when the window begins, in 24-hour HH:MM format.
+                            Defaults to 00:00 (start of day).
+                          maxLength: 5
+                          pattern: ^$|^([01][0-9]|2[0-3]):[0-5][0-9]$
+                          type: string
+                        timezone:
+                          default: UTC
+                          description: timezone is the IANA timezone used to interpret
+                            weekdays, start, and end.
+                          maxLength: 64
+                          type: string
+                        weekdays:
+                          description: |-
+                            weekdays restricts the window to specific days of the week.
+                            Supported values are full or short weekday names such as Monday or Mon.
+                            When omitted, the window applies every day.
+                          items:
+                            enum:
+                            - Sunday
+                            - Sun
+                            - Monday
+                            - Mon
+                            - Tuesday
+                            - Tue
+                            - Tues
+                            - Wednesday
+                            - Wed
+                            - Thursday
+                            - Thu
+                            - Thur
+                            - Thurs
+                            - Friday
+                            - Fri
+                            - Saturday
+                            - Sat
+                            type: string
+                          maxItems: 7
+                          type: array
+                          x-kubernetes-list-type: set
+                      type: object
+                      x-kubernetes-validations:
+                      - message: start and end must not be the same
+                        rule: '!has(self.start) || !has(self.end) || self.start !=
+                          self.end'
+                    maxItems: 32
+                    type: array
+                  inclusionWindows:
+                    description: |-
+                      inclusionWindows define when resizing is allowed.
+                      When at least one inclusion window is present, resizing is allowed only while inside any inclusion window.
+                    items:
+                      properties:
+                        end:
+                          description: |-
+                            end is the exclusive local time when the window ends, in 24-hour HH:MM format.
+                            Defaults to 24:00 (end of day). 24:00 is only valid for end and represents the end of the current day.
+                            When start is greater than end, the window is treated as spanning midnight.
+                          maxLength: 5
+                          pattern: ^$|^([01][0-9]|2[0-3]):[0-5][0-9]$|^24:00$
+                          type: string
+                        name:
+                          description: name identifies the scheduling window in logs
+                            and summaries.
+                          maxLength: 128
+                          type: string
+                        start:
+                          description: |-
+                            start is the inclusive local time when the window begins, in 24-hour HH:MM format.
+                            Defaults to 00:00 (start of day).
+                          maxLength: 5
+                          pattern: ^$|^([01][0-9]|2[0-3]):[0-5][0-9]$
+                          type: string
+                        timezone:
+                          default: UTC
+                          description: timezone is the IANA timezone used to interpret
+                            weekdays, start, and end.
+                          maxLength: 64
+                          type: string
+                        weekdays:
+                          description: |-
+                            weekdays restricts the window to specific days of the week.
+                            Supported values are full or short weekday names such as Monday or Mon.
+                            When omitted, the window applies every day.
+                          items:
+                            enum:
+                            - Sunday
+                            - Sun
+                            - Monday
+                            - Mon
+                            - Tuesday
+                            - Tue
+                            - Tues
+                            - Wednesday
+                            - Wed
+                            - Thursday
+                            - Thu
+                            - Thur
+                            - Thurs
+                            - Friday
+                            - Fri
+                            - Saturday
+                            - Sat
+                            type: string
+                          maxItems: 7
+                          type: array
+                          x-kubernetes-list-type: set
+                      type: object
+                      x-kubernetes-validations:
+                      - message: start and end must not be the same
+                        rule: '!has(self.start) || !has(self.end) || self.start !=
+                          self.end'
+                    maxItems: 32
+                    type: array
+                type: object
             type: object
           status:
             description: status defines the observed state of AutomationStrategy

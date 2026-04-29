@@ -88,8 +88,11 @@ For each `policy.policies.<name>` entry, Helm can populate these `ClusterAutomat
 - `enablement.memory.limits.*`
 - `inPlaceResize.*`
 - `podEviction.*`
+- `safetyChecks.*` except `maxAnalysisAgeDays`, which is written to `ClusterProactivePolicy`
 
-For the full strategy CRD surface, manage `ClusterAutomationStrategy` directly with manifests.
+Helm does not currently expose strategy scheduling windows such as `spec.scheduling.inclusionWindows` and `spec.scheduling.exclusionWindows`.
+
+For the full strategy CRD surface, including scheduling, manage `ClusterAutomationStrategy` directly with manifests.
 
 See [Cluster Automation Strategies](./Cluster-Automation-Strategies.md) and [Cluster Proactive Policies](./Cluster-Proactive-Policies.md) for the cluster-scoped CRD field references and examples.
 
@@ -102,6 +105,7 @@ Manage CRs outside Helm when you need:
 - cluster proactive policies that are not tied to chart values
 - cluster automation strategies that are shared, versioned, or promoted independently of Helm releases
 - advanced strategy safety checks beyond the Helm-managed subset
+- scheduling windows that restrict when automation can run
 
 This external-CR pattern applies equally to cluster-scoped and namespaced resources. `ClusterAutomationStrategy` and `ClusterProactivePolicy` are not Helm-only resource types.
 
