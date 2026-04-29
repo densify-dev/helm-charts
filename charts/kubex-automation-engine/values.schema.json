@@ -171,7 +171,7 @@
           "type": "object",
           "properties": {
             "image": {
-              "type": "string"
+              "type": ["string", "null"]
             },
             "labels": {
               "type": "object",
