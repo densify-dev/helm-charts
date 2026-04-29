@@ -298,7 +298,8 @@ globalConfiguration:
   # -- Dry-run pod configuration used for webhook health checks
   webhookProbe:
     # -- Container image used by the webhook probe pod. Defaults to the controller image.
-    image: ""
+    # Leave unset (null) to automatically use the controller image
+    image:
     # -- Additional labels applied to the webhook probe pod.
     labels: {}
     # -- Additional annotations applied to the webhook probe pod.

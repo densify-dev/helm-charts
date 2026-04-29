@@ -53,6 +53,19 @@ Usage-level `floor` and `ceiling` values apply to all containers by default. Add
 | `spec.inPlaceResize.containerRestart` | `false` | Allows in-place resize operations that require container restart. |
 | `spec.podEviction.enabled` | `true` | Enables eviction-based fallback. |
 | `spec.podEviction.retryPodDisruptionBudget` | `true` | Retries eviction when blocked by PDB. |
+| `spec.scheduling` | `{}` | Parent object for scheduling-based allow and block windows. |
+| `spec.scheduling.inclusionWindows[]` | none | Windows when resizing is allowed. When at least one inclusion window exists, resizing is allowed only inside one of them. |
+| `spec.scheduling.inclusionWindows[].name` | none | Optional label used in logs and summaries. |
+| `spec.scheduling.inclusionWindows[].timezone` | `UTC` | IANA timezone used for weekday and time evaluation. |
+| `spec.scheduling.inclusionWindows[].weekdays[]` | all days | Restricts the window to specific weekdays such as `Monday` or `Mon`. |
+| `spec.scheduling.inclusionWindows[].start` | `00:00` | Inclusive local start time in `HH:MM` 24-hour format. If omitted, the window begins at the start of the day. |
+| `spec.scheduling.inclusionWindows[].end` | `24:00` | Exclusive local end time in `HH:MM` 24-hour format. If omitted, the window ends at the end of the day. Supports `24:00` to represent the end of the day. |
+| `spec.scheduling.exclusionWindows[]` | none | Windows when resizing is blocked. Exclusion windows always take precedence over inclusion windows. |
+| `spec.scheduling.exclusionWindows[].name` | none | Optional label used in logs and summaries. |
+| `spec.scheduling.exclusionWindows[].timezone` | `UTC` | IANA timezone used for weekday and time evaluation. |
+| `spec.scheduling.exclusionWindows[].weekdays[]` | all days | Restricts the window to specific weekdays such as `Friday` or `Fri`. |
+| `spec.scheduling.exclusionWindows[].start` | `00:00` | Inclusive local start time in `HH:MM` 24-hour format. If omitted, the window begins at the start of the day. |
+| `spec.scheduling.exclusionWindows[].end` | `24:00` | Exclusive local end time in `HH:MM` 24-hour format. If omitted, the window ends at the end of the day. Supports `24:00` to represent the end of the day. |
 | `spec.safetyChecks.enablePauseUntilAnnotationCheck` | `true` | Blocks actions when pause annotations are present. |
 | `spec.safetyChecks.enableResourceQuotaFilter` | `true` | Filters actions that would violate `ResourceQuota`. |
 | `spec.safetyChecks.enableHpaFilter` | `true` | Filters actions for HPA-managed resources. |
@@ -69,6 +82,30 @@ Usage-level `floor` and `ceiling` values apply to all containers by default. Add
 | `spec.safetyChecks.requireNodeAllocatable` | `true` | Filters request increases that exceed node allocatable capacity. |
 | `spec.safetyChecks.nodeCpuHeadroom` | `10%` | CPU headroom reserved before node allocatable checks. |
 | `spec.safetyChecks.nodeMemoryHeadroom` | `200Mi` | Memory headroom reserved before node allocatable checks. |
+
+## Scheduling Windows
+
+`spec.scheduling` lets platform teams constrain when cluster-scoped proactive automation is allowed to execute.
+
+- `inclusionWindows` define allowed times. If multiple inclusion windows are defined, they are evaluated with OR logic (automation is allowed if it matches ANY inclusion window). Inclusion windows may overlap.
+- `exclusionWindows` define blocked times and always override inclusion windows.
+- If neither list is set, scheduling does not restrict automation.
+- If any inclusion window is defined, automation is allowed only while the current time matches at least one inclusion window.
+- `start` is inclusive and `end` is exclusive.
+- If `start` or `end` are omitted, they default to `00:00` and `24:00` respectively, allowing for easy "all day" configuration.
+- Windows are evaluated in the window's local IANA timezone specified in the `timezone` field.
+- Overnight windows are supported. For example, `22:00` to `06:00` spans midnight. `24:00` is supported for exclusive end times.
+
+When scheduling blocks a proactive resize, the controller keeps the recommendation pending and retries when the next allowed window opens.
+
+## Helm Mapping
+
+The current chart can generate `ClusterAutomationStrategy` resources from `policy.policies`, but it does not render scheduling fields from Helm values.
+
+For scheduling-controlled cluster automation:
+
+- Create or manage the `ClusterAutomationStrategy` manifest directly.
+- Reference that strategy name from a Helm-managed or manually managed `ClusterProactivePolicy`.
 
 ## Guaranteed QoS Behavior
 
@@ -118,6 +155,25 @@ spec:
     containerRestart: false
   podEviction:
     enabled: false
+  scheduling:
+    inclusionWindows:
+      - name: overnight-maintenance
+        timezone: America/New_York
+        weekdays:
+          - Mon
+          - Tue
+          - Wed
+          - Thu
+          - Fri
+        start: "22:00"
+        end: "06:00"
+    exclusionWindows:
+      - name: monday-freeze
+        timezone: America/New_York
+        weekdays:
+          - Mon
+        start: "00:00"
+        end: "02:00"
   safetyChecks:
     enableResourceQuotaFilter: true
     enableHpaFilter: true
