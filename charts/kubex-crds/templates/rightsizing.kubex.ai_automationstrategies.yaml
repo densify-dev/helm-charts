@@ -310,7 +310,7 @@ spec:
                   enableVpaFilter:
                     default: true
                     description: enableVpaFilter filters out resize actions for resources
-                      constrained by a VPA.
+                      actively managed by a VPA.
                     type: boolean
                   minCpuChangePercent:
                     default: 5
