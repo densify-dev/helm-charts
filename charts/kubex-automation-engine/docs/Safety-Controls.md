@@ -37,7 +37,7 @@ How to interpret `retry` in the context of this document:
 | --- | --- | --- | --- | --- | --- |
 | `pod-terminating` | controller pod pre-check | always on (controller path) | Blocks if pod has `deletionTimestamp` | no retry from check itself | `pod is terminating` |
 | `namespace-protected` | pre-check | `GlobalConfiguration.spec.protectedNamespacePatterns` | Blocks if pod namespace matches a protected namespace pattern | no retry from check itself | `namespace "<namespace>" is protected` |
-| `pause-active` | pre-check | `spec.safetyChecks.enablePauseUntilAnnotationCheck` | Blocks when `rightsizing.kubex.ai/pause-until` is active (`infinite` or future RFC3339 time) on the pod. New pods can inherit pause annotations from supported workload owners, and existing owned pods are reconciled to the same inherited pause state. Pod-local pause annotations remain valid and are not removed unless they were previously inherited from the owner. | no retry from check itself | `automation paused by annotation` or `automation paused: <pause-reason>` |
+| `pause-active` | pre-check | `spec.safetyChecks.enablePauseUntilAnnotationCheck` | Blocks when `rightsizing.kubex.ai/pause-until` is active (`infinite` or future RFC3339 time) on the pod or on the pod namespace. New pods can inherit pause annotations from supported workload owners, and existing owned pods are reconciled to the same inherited pause state. Namespace pause annotations are evaluated at runtime only and are not copied onto pods. Pod-local pause annotations remain valid and take precedence over namespace pauses. | no retry from check itself | `automation paused by annotation` or `automation paused: <pause-reason>` |
 | `resource-quota-exceeded` | pre-check | `spec.safetyChecks.enableResourceQuotaFilter` | Blocks if projected pod resources would exceed applicable `ResourceQuota` | no retry from check itself | `resource quota exceeded (ResourceQuota/<name>)` |
 | `requests-exceed-limits` | final plan consistency pre-check | always on | Blocks when the filtered resize plan would leave a desired request above the effective desired/current limit | no retry from check itself | `desired request <x> exceeds limit <y> (container=<name>, resource=<resource>)` |
 | `min-ready-duration-not-met` | final health pre-check | `spec.safetyChecks.minReadyDuration` | Blocks until pod has been Ready for at least `minReadyDuration` | retryable: uses remaining ready time when pod is Ready but elapsed Ready time is below `spec.safetyChecks.minReadyDuration`; uses `spec.safetyChecks.resizeRetryInterval` when pod is not Ready or ready transition time is unknown | `pod not ready` or `pod ready for ... (<...)` |
@@ -80,6 +80,7 @@ Notes:
 
 - `failedChecks` contains check failures with `name`, optional `message`, and optional `metadata`.
 - `appliedFilters` contains pruned actions with `name`, optional filter `metadata`, and `targets` with `container`, `usage`, and `resource`.
+- `pause-active` sets `failedChecks[].metadata.scope` to `pod` or `namespace`; namespace pauses also include `failedChecks[].metadata.namespace`.
 
 Example interpretation:
 
