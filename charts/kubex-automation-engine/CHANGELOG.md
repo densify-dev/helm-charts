@@ -6,6 +6,13 @@ All notable changes to the Kubex Automation Engine Helm chart will be documented
 
 ---
 
+## [0.4.0] - 2026-05-05
+
+### Added
+- Namespace-level pause controls using the `rightsizing.kubex.ai/pause-until` annotation so automation can be paused across an entire namespace without annotating each pod individually
+
+---
+
 ## [0.3.0] - 2026-05-01
 
 ### Added
@@ -75,3 +82,5 @@ All notable changes to the Kubex Automation Engine Helm chart will be documented
 
 ### Fixed
 - Workload-to-policy namespace matching to ensure policies are applied to correct workloads
+
+---
