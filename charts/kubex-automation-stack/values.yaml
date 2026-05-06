@@ -239,6 +239,7 @@ prometheus:
         - job_name: 'kubex-automation-engine-metrics-endpointslice'
           honor_labels: true
           # The controller chart exposes unauthenticated metrics on port 8080 over plain HTTP.
+          # No bearer token is required for this /metrics endpoint.
           scheme: http
           kubernetes_sd_configs:
             - role: endpointslice
@@ -250,11 +251,14 @@ prometheus:
             - *kubexEndpointsliceNamespace
             - *kubexEndpointsliceServiceName
             - *kubexEndpointsliceNodeName
-            # Matches any Helm release name prefix (for example 'controller-' or 'prod-').
+            # Matches any Helm release name prefix (for example 'controller-' or 'prod-')
+            # and the EndpointSlice-generated suffix appended after the service name.
             - source_labels: [__meta_kubernetes_endpointslice_name]
               action: keep
               regex: '.+-kubex-automation-engine-metrics-service'
-          # Store controller_runtime_*, go_*, process_*, workqueue_*, rest_client_*, and automation_controller_* metrics as-is.
+          # Stores all scraped metrics as-is (no metric_relabel_configs filter).
+          # Expected families: controller_runtime_*, go_*, process_*, workqueue_*, rest_client_*, automation_controller_*
+          # Add a metric_relabel_configs allowlist here if cardinality becomes a concern.
 
 #################################################################
 # Ephemeral Storage Metrics Exporter
