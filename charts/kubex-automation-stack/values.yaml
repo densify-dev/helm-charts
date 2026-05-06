@@ -216,7 +216,7 @@ prometheus:
               target_label: namespace
             - source_labels: [__meta_kubernetes_endpointslice_name]
               action: keep
-              regex: '((kubex|densify)-(kube-state-metrics|prometheus-node-exporter|ephemeral-storage-collector)|.*dcgm|k8s-ephemeral-storage-metrics|kubex-webhook-service.*|.*kubex-automation-engine.*metrics-service.*).*'
+              regex: '((kubex|densify)-(kube-state-metrics|prometheus-node-exporter|ephemeral-storage-collector)|.*dcgm|k8s-ephemeral-storage-metrics|.*kubex-automation-engine.*metrics-service.*).*'
             - source_labels: [__meta_kubernetes_service_name]
               action: replace
               target_label: service
