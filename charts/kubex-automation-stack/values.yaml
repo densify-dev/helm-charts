@@ -230,13 +230,11 @@ prometheus:
 
         - job_name: 'kubex-automation-engine-metrics-endpointslice'
           honor_labels: true
+          scheme: http
           kubernetes_sd_configs:
             - role: endpointslice
           relabel_configs:
-            - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_scheme]
-              action: replace
-              target_label: __scheme__
-              regex: (https?)
+            # The controller chart exposes metrics over HTTP on port 8080.
             - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_path]
               action: replace
               target_label: __metrics_path__
