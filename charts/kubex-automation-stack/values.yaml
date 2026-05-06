@@ -193,6 +193,11 @@ prometheus:
           kubernetes_sd_configs:
             - role: endpointslice
           relabel_configs:
+            # Scheme annotation overrides the job's default scrape protocol when a target serves HTTPS.
+            - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_scheme]
+              action: replace
+              target_label: __scheme__
+              regex: (https?)
             - &kubexEndpointsliceMetricsPath
               source_labels: [__meta_kubernetes_service_annotation_prometheus_io_path]
               action: replace
@@ -215,10 +220,14 @@ prometheus:
               source_labels: [__meta_kubernetes_namespace]
               action: replace
               target_label: namespace
-            - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_scheme]
+            - &kubexEndpointsliceServiceName
+              source_labels: [__meta_kubernetes_service_name]
               action: replace
-              target_label: __scheme__
-              regex: (https?)
+              target_label: service
+            - &kubexEndpointsliceNodeName
+              source_labels: [__meta_kubernetes_pod_node_name]
+              action: replace
+              target_label: node
             - source_labels: [__meta_kubernetes_endpointslice_name]
               action: keep
               regex: '((kubex|densify)-(kube-state-metrics|prometheus-node-exporter|ephemeral-storage-collector)|.*dcgm|k8s-ephemeral-storage-metrics).*'
@@ -229,6 +238,7 @@ prometheus:
 
         - job_name: 'kubex-automation-engine-metrics-endpointslice'
           honor_labels: true
+          # The controller chart exposes metrics on port 8080 over plain HTTP.
           scheme: http
           kubernetes_sd_configs:
             - role: endpointslice
@@ -238,6 +248,9 @@ prometheus:
             - *kubexEndpointsliceParamLabels
             - *kubexEndpointsliceServiceLabels
             - *kubexEndpointsliceNamespace
+            - *kubexEndpointsliceServiceName
+            - *kubexEndpointsliceNodeName
+            # Matches any Helm release name prefix (for example 'controller-' or 'prod-').
             - source_labels: [__meta_kubernetes_endpointslice_name]
               action: keep
               regex: '.+-kubex-automation-engine-metrics-service'
