@@ -238,7 +238,7 @@ prometheus:
 
         - job_name: 'kubex-automation-engine-metrics-endpointslice'
           honor_labels: true
-          # The controller chart exposes metrics on port 8080 over plain HTTP.
+          # The controller chart exposes unauthenticated metrics on port 8080 over plain HTTP.
           scheme: http
           kubernetes_sd_configs:
             - role: endpointslice
@@ -254,7 +254,7 @@ prometheus:
             - source_labels: [__meta_kubernetes_endpointslice_name]
               action: keep
               regex: '.+-kubex-automation-engine-metrics-service'
-          # Store the controller-runtime, Go, process, and workqueue metrics as-is.
+          # Store controller_runtime_*, go_*, process_*, workqueue_*, rest_client_*, and automation_controller_* metrics as-is.
 
 #################################################################
 # Ephemeral Storage Metrics Exporter
