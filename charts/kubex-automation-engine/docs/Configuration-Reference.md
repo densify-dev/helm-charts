@@ -95,7 +95,7 @@ Note: `kubexCredentials.userSecretName` is currently not consumed by this chart.
 | --- | --- | --- |
 | `replicaCount` | `1` | Controller replica count |
 | `image.repository` | `densify/automation-controller` | Controller image |
-| `image.tag` | `0.1-beta20` | Controller image tag |
+| `image.tag` | `0.1-beta20` | Controller image tag; also injected as `IMAGE_TAG` for heartbeat payloads |
 | `imagePullSecrets` | `[]` | Secrets applied to the controller Deployment and cleanup Job pod specs |
 | `gateway.image.repository` | `densify/automation-gateway` | Gateway sidecar image |
 | `createSecrets` | `true` | Create required gateway and TLS secrets |
@@ -129,6 +129,7 @@ Use [Global Configuration Reference](./Global-Configuration.md) for the CR field
 | `globalConfiguration.rescanInterval` | `6h` | Pod rescan cadence |
 | `globalConfiguration.mutationLogInterval` | `5m` | Mutation log send cadence |
 | `globalConfiguration.snapshotInterval` | `30m` | Policy snapshot upload cadence |
+| `globalConfiguration.heartbeatInterval` | `5m` | Controller heartbeat upload cadence |
 | `globalConfiguration.kubexAPIRequestTimeout` | `30s` | Timeout for Kubex requests |
 | `globalConfiguration.automationEnabled` | `true` | Global enable/disable switch |
 | `globalConfiguration.suppressFetchRecommendations` | `false` | Testing-only fetch suppression |

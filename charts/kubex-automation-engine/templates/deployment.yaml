@@ -81,6 +81,8 @@ spec:
         - name: CLUSTER_NAME
           value: {{ .Values.kubex.clusterName | quote }}
         {{- end }}
+        - name: IMAGE_TAG
+          value: {{ .Values.image.tag | quote }}
         - name: POD_NAMESPACE
           valueFrom:
             fieldRef:
