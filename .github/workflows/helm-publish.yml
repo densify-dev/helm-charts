@@ -6,96 +6,257 @@ on:
       - master
 
 permissions:
-  contents: write
+  contents: read
+
+env:
+  CHECKOUT_ACTION: &checkout-action actions/checkout@v6.0.2
+  SETUP_HELM_ACTION: &setup-helm-action azure/setup-helm@v5.0.0
+  UPLOAD_ARTIFACT_ACTION: &upload-artifact-action actions/upload-artifact@v7.0.1
+  DOWNLOAD_ARTIFACT_ACTION: &download-artifact-action actions/download-artifact@v8.0.1
+  COSIGN_INSTALLER_ACTION: &cosign-installer-action sigstore/cosign-installer@v4.1.2
+  # Keep Helm 3 unless you have validated Helm 4 with your charts/customers
+  HELM_VERSION: v3.20.2
+  COSIGN_VERSION: v3.0.6
 
 jobs:
-  release:
+  publish-pages:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      chart_count: ${{ steps.package.outputs.chart_count }}
     steps:
-      - name: Checkout master
-        uses: actions/checkout@v5
+      - name: Checkout
+        uses: *checkout-action
         with:
           fetch-depth: 0 # Required to verify diffs
           ref: master
 
-      - name: Install Helm
-        uses: azure/setup-helm@v4
+      - name: Set up Helm
+        uses: *setup-helm-action
         with:
-          version: latest
-        id: install
+          version: ${{ env.HELM_VERSION }}
 
       - name: Add Helm Repos
         run: |
           helm repo add kubex https://densify-dev.github.io/helm-charts
           helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-          helm repo add jetstack https://charts.jetstack.io
           helm repo add groundhog2k https://groundhog2k.github.io/helm-charts
-          helm repo add k8s-ephemeral-storage-metrics https://jmcgrath207.github.io/k8s-ephemeral-storage-metrics/chart
           helm repo update
 
-      - name: Create temp directory
+      - name: Create temp directories
         run: |
           mkdir -p /tmp/kubex-charts
           rm -rf /tmp/kubex-charts/*.tgz
 
       - name: Package changed charts
+        id: package
         run: |
-          # 4. Check for changes in Chart.yaml and package
+          set -euo pipefail
+          shopt -s nullglob # required: makes packages=() empty instead of ('*.tgz') when no files exist
+
+          # Check for changes in Chart.yaml and package
           # Get the list of changed files between the previous commit and the current one
-          CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.event.after }})
-          
+          NULL_SHA="0000000000000000000000000000000000000000"
+          if [ "${{ github.event.before }}" = "${NULL_SHA}" ]; then
+            CHANGED_FILES=$(git ls-files 'charts/*/Chart.yaml')
+          else
+            CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.event.after }})
+          fi
+
           echo "Processing charts..."
-          
+
           # Iterate over directories in the charts folder
           for chart_dir in charts/*; do
             if [ -d "${chart_dir}" ]; then
               chart_name=$(basename "${chart_dir}")
-              
+
               # Check if Chart.yaml for this specific chart is in the changed files list
-              if echo "${CHANGED_FILES}" | grep -q "charts/${chart_name}/Chart.yaml"; then
+              if printf '%s\n' "${CHANGED_FILES}" | grep -Fxq "${chart_dir}/Chart.yaml"; then
                 echo "Changes detected in ${chart_name}/Chart.yaml. Packaging..."
-                
-                # 5. Bring over the subcharts and package the chart
-                helm dependency build "${chart_dir}"
-                helm package "${chart_dir}"
-                
-                # 6. Move tgz to temp directory
-                mv "${chart_name}"*.tgz /tmp/kubex-charts/
+                if grep -Eq '^[[:space:]]*dependencies:' "${chart_dir}/Chart.yaml"; then
+                  if [ -f "${chart_dir}/Chart.lock" ]; then
+                    helm dependency build "${chart_dir}"
+                  else
+                    helm dependency update "${chart_dir}"
+                  fi
+                fi
+                helm lint "${chart_dir}"
+                helm package "${chart_dir}" --destination /tmp/kubex-charts
               else
                 echo "No changes in ${chart_name}/Chart.yaml. Skipping."
               fi
             fi
           done
 
+          packages=(/tmp/kubex-charts/*.tgz)
+          echo "chart_count=${#packages[@]}" >> "${GITHUB_OUTPUT}"
+
       - name: Checkout gh-pages
-        uses: actions/checkout@v5
+        uses: *checkout-action
         with:
           ref: gh-pages
           path: gh-pages-branch # Checkout to a subdir to avoid overwriting current workspace context, or clean and switch.
           fetch-depth: 0
 
       - name: Publish Charts
+        if: steps.package.outputs.chart_count > 0
         working-directory: gh-pages-branch
         run: |
-          # Check if there are any files to move (avoid failure if no charts changed)
-          if [ -z "$(ls -A /tmp/kubex-charts)" ]; then
-             echo "No charts were packaged. Exiting."
-             exit 0
-          fi
+          set -euo pipefail
 
-          # 9. Move tgz files from temp to repo folder (gh-pages root)
-          mv /tmp/kubex-charts/*.tgz .
+          # Copy tgz files from temp to repo folder (gh-pages root)
+          cp /tmp/kubex-charts/*.tgz .
 
-          # 10. Run helm index
+          # Run helm index
           helm repo index . --url https://densify-dev.github.io/helm-charts/
 
-          # 11. Git add
+          # Git add
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.yaml *.tgz
 
-          # 12. Git commit
+          # Git commit
+          if git diff --cached --quiet; then
+            echo "No gh-pages changes to commit. Exiting."
+            exit 0
+          fi
+
           git commit -m "Publish charts from commit ${{ github.sha }}"
 
-          # 13. Git push
+          # Git push
           git push
+
+      - name: Upload packaged charts
+        if: steps.package.outputs.chart_count > 0
+        uses: *upload-artifact-action
+        with:
+          name: kubex-charts
+          path: /tmp/kubex-charts/*.tgz
+          if-no-files-found: error
+
+  push-ghcr:
+    runs-on: ubuntu-latest
+    needs: publish-pages
+    if: needs.publish-pages.outputs.chart_count > 0
+    permissions:
+      packages: write
+    outputs:
+      ref_count: ${{ steps.push.outputs.ref_count }}
+    steps:
+      - name: Set up Helm
+        uses: *setup-helm-action
+        with:
+          version: ${{ env.HELM_VERSION }}
+
+      - name: Download packaged charts
+        uses: *download-artifact-action
+        with:
+          name: kubex-charts
+          path: /tmp/kubex-charts
+
+      - name: Login to GHCR for Helm
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | \
+            helm registry login ghcr.io \
+              --username "${{ github.actor }}" \
+              --password-stdin
+
+      - name: Push charts to GHCR
+        id: push
+        run: |
+          set -euo pipefail
+          shopt -s nullglob # required: makes packages=() empty instead of ('*.tgz') when no files exist
+
+          owner_lc="$(echo "${GITHUB_REPOSITORY_OWNER}" | tr '[:upper:]' '[:lower:]')"
+          oci_base="oci://ghcr.io/${owner_lc}/helm-charts"
+          ref_base="ghcr.io/${owner_lc}/helm-charts"
+          refs_file="/tmp/kubex-chart-refs.txt"
+          : > "${refs_file}"
+
+          packages=(/tmp/kubex-charts/*.tgz)
+
+          for pkg in "${packages[@]}"; do
+
+            chart_meta="$(helm show chart "${pkg}")"
+            chart_name="$(printf '%s\n' "${chart_meta}" | awk -F': ' '$1 == "name" { print $2; exit }')"
+            chart_version="$(printf '%s\n' "${chart_meta}" | awk -F': ' '$1 == "version" { print $2; exit }')"
+
+            if [ -z "${chart_name}" ] || [ -z "${chart_version}" ]; then
+              echo "Could not read chart name/version from ${pkg}"
+              exit 1
+            fi
+
+            echo "Pushing ${chart_name}:${chart_version}"
+
+            push_output="$(helm push "${pkg}" "${oci_base}" 2>&1)"
+            printf '%s\n' "${push_output}"
+
+            digest="$(printf '%s\n' "${push_output}" | awk '/^Digest:/ { print $2; exit }')"
+
+            if [ -z "${digest}" ]; then
+              echo "Could not parse digest from helm push output for ${pkg}"
+              exit 1
+            fi
+
+            ref="${ref_base}/${chart_name}@${digest}"
+            echo "${ref}" >> "${refs_file}"
+          done
+
+          ref_count="$(wc -l < "${refs_file}")"
+          echo "ref_count=${ref_count}" >> "${GITHUB_OUTPUT}"
+
+      - name: Upload GHCR chart refs
+        if: steps.push.outputs.ref_count > 0
+        uses: *upload-artifact-action
+        with:
+          name: kubex-chart-refs
+          path: /tmp/kubex-chart-refs.txt
+          if-no-files-found: error
+
+  sign-ghcr:
+    runs-on: ubuntu-latest
+    needs: push-ghcr
+    if: needs.push-ghcr.outputs.ref_count > 0
+    permissions:
+      id-token: write # Required for Cosign keyless signing via OIDC
+      packages: write
+    steps:
+      - name: Install Cosign
+        uses: *cosign-installer-action
+        with:
+          cosign-release: ${{ env.COSIGN_VERSION }}
+
+      - name: Login to GHCR for Cosign
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | \
+            cosign login ghcr.io \
+              --username "${{ github.actor }}" \
+              --password-stdin
+
+      - name: Download GHCR chart refs
+        uses: *download-artifact-action
+        with:
+          name: kubex-chart-refs
+          path: /tmp
+
+      - name: Sign GHCR chart refs
+        env:
+          COSIGN_YES: "true" # bypass interactive prompt for transparency log
+        run: |
+          set -euo pipefail
+
+          cert_identity="https://github.com/${GITHUB_REPOSITORY}/.github/workflows/helm-publish.yml@${GITHUB_REF}"
+
+          while IFS= read -r ref; do
+            [ -n "${ref}" ] || continue
+
+            echo "Signing ${ref}"
+            cosign sign --yes "${ref}"
+
+            echo "Verifying ${ref}"
+            cosign verify \
+              --certificate-identity "${cert_identity}" \
+              --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
+              "${ref}"
+          done < /tmp/kubex-chart-refs.txt
