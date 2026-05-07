@@ -193,40 +193,80 @@ prometheus:
           kubernetes_sd_configs:
             - role: endpointslice
           relabel_configs:
+            # Scheme annotation overrides the job's default scrape protocol when a target serves HTTPS.
             - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_scheme]
               action: replace
               target_label: __scheme__
               regex: (https?)
-            - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_path]
+            - &kubexEndpointsliceMetricsPath
+              source_labels: [__meta_kubernetes_service_annotation_prometheus_io_path]
               action: replace
               target_label: __metrics_path__
               regex: (.+)
-            - source_labels: [__address__, __meta_kubernetes_service_annotation_prometheus_io_port]
+            - &kubexEndpointsliceAddress
+              source_labels: [__address__, __meta_kubernetes_service_annotation_prometheus_io_port]
               action: replace
               target_label: __address__
               regex: (.+?)(?::\d+)?;(\d+)
               replacement: $1:$2
-            - action: labelmap
+            - &kubexEndpointsliceParamLabels
+              action: labelmap
               regex: __meta_kubernetes_service_annotation_prometheus_io_param_(.+)
               replacement: __param_$1
-            - action: labelmap
+            - &kubexEndpointsliceServiceLabels
+              action: labelmap
               regex: __meta_kubernetes_service_label_(.+)
-            - source_labels: [__meta_kubernetes_namespace]
+            - &kubexEndpointsliceNamespace
+              source_labels: [__meta_kubernetes_namespace]
               action: replace
               target_label: namespace
             - source_labels: [__meta_kubernetes_endpointslice_name]
               action: keep
               regex: '((kubex|densify)-(kube-state-metrics|prometheus-node-exporter|ephemeral-storage-collector)|.*dcgm|k8s-ephemeral-storage-metrics).*'
-            - source_labels: [__meta_kubernetes_service_name]
+            - &kubexEndpointsliceServiceName
+              source_labels: [__meta_kubernetes_service_name]
               action: replace
               target_label: service
-            - source_labels: [__meta_kubernetes_pod_node_name]
+            - &kubexEndpointsliceNodeName
+              source_labels: [__meta_kubernetes_pod_node_name]
               action: replace
               target_label: node
           metric_relabel_configs:
             - source_labels: [__name__]
               regex: '^(DCGM_FI_(DEV_(FB_(FREE|USED)|GPU_UTIL|POWER_USAGE)|PROF_(DRAM_ACTIVE|GR_ENGINE_ACTIVE|PIPE_TENSOR_ACTIVE))|ephemeral_storage_.*|kube_(cronjob_(created|info|labels|next_schedule_time|status_(active|last_schedule_time))|daemonset_(created|labels|status_number_available)|deployment_(created|labels|metadata_generation|spec_strategy_rollingupdate_max_(surge|unavailable))|horizontalpodautoscaler_(info|labels|spec_(max_replicas|min_replicas|target_metric)|status_(condition|current_replicas|target_metric))|job_(created|info|labels|owner|spec_(completions|parallelism)|status_(active|completion_time|start_time))|namespace_(annotations|labels)|node_(info|labels|role|spec_taint|status_(allocatable|capacity))|pod_(container_(info|resource_(limits|requests)|status_(last_terminated_(exitcode|timestamp)|restarts_total|terminated(?:_reason)?))|created|info|labels|owner|status_(phase|qos_class))|replicaset_(created|labels|owner|spec_replicas)|replicationcontroller_(created|spec_replicas)|resourcequota(?:_created)?|statefulset_(created|labels|replicas))|node_(cpu_(core_throttles_total|seconds_total)|disk_(read_bytes_total|reads_completed_total|writes_completed_total|written_bytes_total)|memory_(Buffers_bytes|Cached_bytes|MemFree_bytes|MemTotal_bytes|SReclaimable_bytes)|network_(receive_(bytes_total|packets_total)|speed_bytes|transmit_(bytes_total|packets_total))|vmstat_oom_kill)|openshift_clusterresourcequota_(created|labels|namespace_usage|selector|usage))$'
               action: keep
+
+        - job_name: 'kubex-automation-engine-metrics-endpointslice'
+          # The controller chart exposes unauthenticated metrics on port 8080 over plain HTTP.
+          # Unlike the shared endpointslice job above, this scrape does not honor scheme annotations or bearer tokens.
+          # The job is intentionally fixed to the validated controller metrics defaults.
+          # The shared path/port/param anchors stay with the shared job; this job keeps its own explicit endpoint.
+          # The target is scraped by service-name suffix so multiple controller releases can be collected when needed.
+          # No bearer token is required for this /metrics endpoint.
+          scheme: http
+          kubernetes_sd_configs:
+            - role: endpointslice
+          relabel_configs:
+            # This job uses a fixed controller metrics path/port instead of the shared annotation-driven overrides.
+            - target_label: __metrics_path__
+              replacement: /metrics
+            - *kubexEndpointsliceServiceLabels
+            - *kubexEndpointsliceNamespace
+            - source_labels: [__address__]
+              action: replace
+              target_label: __address__
+              regex: '(.+?)(?::\d+)?'
+              replacement: '$1:8080'
+            # Matches any Helm release name prefix (for example 'controller-' or 'prod-').
+            # This intentionally supports scraping multiple controller releases when their service names share this suffix.
+            - source_labels: [__meta_kubernetes_service_name]
+              action: keep
+              regex: '.+-kubex-automation-engine-metrics-service$'
+            - *kubexEndpointsliceServiceName
+            - *kubexEndpointsliceNodeName
+          # Stores all scraped metrics as-is (no metric_relabel_configs filter).
+          # Expected families: controller_runtime_*, go_*, process_*, workqueue_*, rest_client_*, automation_controller_*
+          # Add a metric_relabel_configs allowlist here if cardinality becomes a concern.
 
 #################################################################
 # Ephemeral Storage Metrics Exporter
