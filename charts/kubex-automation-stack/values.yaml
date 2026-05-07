@@ -239,6 +239,8 @@ prometheus:
         - job_name: 'kubex-automation-engine-metrics-endpointslice'
           # The controller chart exposes unauthenticated metrics on port 8080 over plain HTTP.
           # Unlike the shared endpointslice job above, this scrape does not honor scheme annotations or bearer tokens.
+          # The job is intentionally fixed to the validated controller metrics defaults.
+          # The shared path/port/param anchors stay with the shared job; this job keeps its own explicit endpoint.
           # The target is scraped by service-name suffix so multiple controller releases can be collected when needed.
           # No bearer token is required for this /metrics endpoint.
           scheme: http
