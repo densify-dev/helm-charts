@@ -8,6 +8,16 @@ on:
 permissions:
   contents: read
 
+env:
+  CHECKOUT_ACTION: &checkout-action actions/checkout@v6.0.2
+  SETUP_HELM_ACTION: &setup-helm-action azure/setup-helm@v5.0.0
+  UPLOAD_ARTIFACT_ACTION: &upload-artifact-action actions/upload-artifact@v7.0.1
+  DOWNLOAD_ARTIFACT_ACTION: &download-artifact-action actions/download-artifact@v8.0.1
+  COSIGN_INSTALLER_ACTION: &cosign-installer-action sigstore/cosign-installer@v4.1.2
+  # Keep Helm 3 unless you have validated Helm 4 with your charts/customers
+  HELM_VERSION: v3.20.2
+  COSIGN_VERSION: v3.0.6
+
 jobs:
   publish-pages:
     runs-on: ubuntu-latest
@@ -17,16 +27,15 @@ jobs:
       chart_count: ${{ steps.package.outputs.chart_count }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v6.0.2
+        uses: *checkout-action
         with:
           fetch-depth: 0 # Required to verify diffs
           ref: master
 
       - name: Set up Helm
-        uses: azure/setup-helm@v5.0.0
+        uses: *setup-helm-action
         with:
-          # Keep Helm 3 unless you have validated Helm 4 with your charts/customers.
-          version: v3.20.2
+          version: ${{ env.HELM_VERSION }}
 
       - name: Add Helm Repos
         run: |
@@ -84,14 +93,14 @@ jobs:
           echo "chart_count=${#packages[@]}" >> "${GITHUB_OUTPUT}"
 
       - name: Checkout gh-pages
-        uses: actions/checkout@v6.0.2
+        uses: *checkout-action
         with:
           ref: gh-pages
           path: gh-pages-branch # Checkout to a subdir to avoid overwriting current workspace context, or clean and switch.
           fetch-depth: 0
 
       - name: Publish Charts
-        if: steps.package.outputs.chart_count != '0'
+        if: steps.package.outputs.chart_count > 0
         working-directory: gh-pages-branch
         run: |
           set -euo pipefail
@@ -119,8 +128,8 @@ jobs:
           git push
 
       - name: Upload packaged charts
-        if: steps.package.outputs.chart_count != '0'
-        uses: actions/upload-artifact@v7.0.1
+        if: steps.package.outputs.chart_count > 0
+        uses: *upload-artifact-action
         with:
           name: kubex-charts
           path: /tmp/kubex-charts/*.tgz
@@ -129,20 +138,19 @@ jobs:
   push-ghcr:
     runs-on: ubuntu-latest
     needs: publish-pages
-    if: needs.publish-pages.outputs.chart_count != '0'
+    if: needs.publish-pages.outputs.chart_count > 0
     permissions:
       packages: write
     outputs:
       ref_count: ${{ steps.push.outputs.ref_count }}
     steps:
       - name: Set up Helm
-        uses: azure/setup-helm@v5.0.0
+        uses: *setup-helm-action
         with:
-          # Keep Helm 3 unless you have validated Helm 4 with your charts/customers.
-          version: v3.20.2
+          version: ${{ env.HELM_VERSION }}
 
       - name: Download packaged charts
-        uses: actions/download-artifact@v8.0.1
+        uses: *download-artifact-action
         with:
           name: kubex-charts
           path: /tmp/kubex-charts
@@ -169,8 +177,10 @@ jobs:
           packages=(/tmp/kubex-charts/*.tgz)
 
           for pkg in "${packages[@]}"; do
-            chart_name="$(helm show chart "${pkg}" | awk -F': ' '$1 == "name" { print $2; exit }')"
-            chart_version="$(helm show chart "${pkg}" | awk -F': ' '$1 == "version" { print $2; exit }')"
+
+            chart_meta="$(helm show chart "${pkg}")"
+            chart_name="$(printf '%s\n' "${chart_meta}" | awk -F': ' '$1 == "name" { print $2; exit }')"
+            chart_version="$(printf '%s\n' "${chart_meta}" | awk -F': ' '$1 == "version" { print $2; exit }')"
 
             if [ -z "${chart_name}" ] || [ -z "${chart_version}" ]; then
               echo "Could not read chart name/version from ${pkg}"
@@ -197,8 +207,8 @@ jobs:
           echo "ref_count=${ref_count}" >> "${GITHUB_OUTPUT}"
 
       - name: Upload GHCR chart refs
-        if: steps.push.outputs.ref_count != '0'
-        uses: actions/upload-artifact@v7.0.1
+        if: steps.push.outputs.ref_count > 0
+        uses: *upload-artifact-action
         with:
           name: kubex-chart-refs
           path: /tmp/kubex-chart-refs.txt
@@ -207,15 +217,15 @@ jobs:
   sign-ghcr:
     runs-on: ubuntu-latest
     needs: push-ghcr
-    if: needs.push-ghcr.outputs.ref_count != '0'
+    if: needs.push-ghcr.outputs.ref_count > 0
     permissions:
       id-token: write # Required for Cosign keyless signing via OIDC
       packages: write
     steps:
       - name: Install Cosign
-        uses: sigstore/cosign-installer@v4.1.2
+        uses: *cosign-installer-action
         with:
-          cosign-release: v3.0.6
+          cosign-release: ${{ env.COSIGN_VERSION }}
 
       - name: Login to GHCR for Cosign
         run: |
@@ -225,7 +235,7 @@ jobs:
               --password-stdin
 
       - name: Download GHCR chart refs
-        uses: actions/download-artifact@v8.0.1
+        uses: *download-artifact-action
         with:
           name: kubex-chart-refs
           path: /tmp
