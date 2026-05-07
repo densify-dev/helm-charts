@@ -237,8 +237,8 @@ prometheus:
               action: keep
 
         - job_name: 'kubex-automation-engine-metrics-endpointslice'
-          honor_labels: true
           # The controller chart exposes unauthenticated metrics on port 8080 over plain HTTP.
+          # Unlike the shared endpointslice job above, this scrape does not honor scheme annotations.
           # No bearer token is required for this /metrics endpoint.
           scheme: http
           kubernetes_sd_configs:
@@ -249,13 +249,13 @@ prometheus:
             - *kubexEndpointsliceParamLabels
             - *kubexEndpointsliceServiceLabels
             - *kubexEndpointsliceNamespace
-            - *kubexEndpointsliceServiceName
-            - *kubexEndpointsliceNodeName
             # Matches any Helm release name prefix (for example 'controller-' or 'prod-').
             # This intentionally supports scraping multiple controller releases when their service names share this suffix.
             - source_labels: [__meta_kubernetes_service_name]
               action: keep
-              regex: '.+-kubex-automation-engine-metrics-service'
+              regex: '.+-kubex-automation-engine-metrics-service$'
+            - *kubexEndpointsliceServiceName
+            - *kubexEndpointsliceNodeName
           # Stores all scraped metrics as-is (no metric_relabel_configs filter).
           # Expected families: controller_runtime_*, go_*, process_*, workqueue_*, rest_client_*, automation_controller_*
           # Add a metric_relabel_configs allowlist here if cardinality becomes a concern.
