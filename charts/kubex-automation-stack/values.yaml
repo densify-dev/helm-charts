@@ -251,9 +251,9 @@ prometheus:
             - *kubexEndpointsliceNamespace
             - *kubexEndpointsliceServiceName
             - *kubexEndpointsliceNodeName
-            # Matches any Helm release name prefix (for example 'controller-' or 'prod-')
-            # and the EndpointSlice-generated suffix appended after the service name.
-            - source_labels: [__meta_kubernetes_endpointslice_name]
+            # Matches any Helm release name prefix (for example 'controller-' or 'prod-').
+            # This intentionally supports scraping multiple controller releases when their service names share this suffix.
+            - source_labels: [__meta_kubernetes_service_name]
               action: keep
               regex: '.+-kubex-automation-engine-metrics-service'
           # Stores all scraped metrics as-is (no metric_relabel_configs filter).
