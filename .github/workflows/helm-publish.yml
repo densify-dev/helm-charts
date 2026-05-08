@@ -81,7 +81,13 @@ jobs:
                     helm dependency update "${chart_dir}"
                   fi
                 fi
-                helm lint "${chart_dir}"
+                if [ -f "${chart_dir}/values-edit.yaml" ]; then
+                  helm lint "${chart_dir}" -f "${chart_dir}/values-edit.yaml"
+                elif [ -f "${chart_dir}/kubex-automation-values.yaml" ]; then
+                  helm lint "${chart_dir}" -f "${chart_dir}/kubex-automation-values.yaml"
+                else
+                  helm lint "${chart_dir}"
+                fi
                 helm package "${chart_dir}" --destination /tmp/kubex-charts
               else
                 echo "No changes in ${chart_name}/Chart.yaml. Skipping."
