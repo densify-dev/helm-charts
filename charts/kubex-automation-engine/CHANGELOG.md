@@ -2,7 +2,10 @@
 
 All notable changes to the Kubex Automation Engine Helm chart will be documented in this file.
 
-**Note:** All versions 0.x.x are pre-release versions and may contain breaking changes between releases. Production stability is targeted for version 1.0.0 and later.
+## [1.0.0] - 2026-05-07
+
+### Changed
+- No customer-facing changes in this release.
 
 ---
 
@@ -10,8 +13,6 @@ All notable changes to the Kubex Automation Engine Helm chart will be documented
 
 ### Added
 - Namespace-level pause controls using the `rightsizing.kubex.ai/pause-until` annotation so automation can be paused across an entire namespace without annotating each pod individually
-
----
 
 ## [0.3.0] - 2026-05-01
 
