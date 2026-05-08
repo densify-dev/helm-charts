@@ -1,5 +1,7 @@
 # Automation Strategies
 
+> Experimental: GPU/KAI-related fields in this resource are subject to breaking changes. When using them, set `spec.experimental.gpuKaiContract: v1alpha1-2026-04`.
+
 `AutomationStrategy` defines how resizing is allowed to happen within a namespace.
 
 Use it when a team owns its own namespace and should manage resize behavior locally.

@@ -1,5 +1,7 @@
 # Cluster Automation Strategies
 
+> Experimental: GPU/KAI-related fields in this resource are subject to breaking changes. When using them, set `spec.experimental.gpuKaiContract: v1alpha1-2026-04`.
+
 `ClusterAutomationStrategy` defines how resizing is allowed to happen for cluster-scoped policy flows.
 
 Use it when a platform team wants one reusable resize behavior that can be referenced by `ClusterProactivePolicy` and `ClusterStaticPolicy` across multiple namespaces.

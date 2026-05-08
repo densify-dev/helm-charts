@@ -5,7 +5,7 @@
 apiVersion: rightsizing.kubex.ai/v1alpha1
 kind: GlobalConfiguration
 metadata:
-  name: global-config
+  name: {{ .Values.globalConfiguration.name }}
   labels:
     {{- include "kubex-automation-engine.labels" . | nindent 4 }}
 spec:
@@ -14,6 +14,7 @@ spec:
   rescanInterval: {{ $rescanInterval }}
   mutationLogInterval: {{ .Values.globalConfiguration.mutationLogInterval }}
   snapshotInterval: {{ .Values.globalConfiguration.snapshotInterval }}
+  gpuRebalancingCheckInterval: {{ .Values.globalConfiguration.gpuRebalancingCheckInterval }}
   heartbeatInterval: {{ .Values.globalConfiguration.heartbeatInterval }}
   kubexAPIRequestTimeout: {{ $kubexAPIRequestTimeout }}
   
@@ -31,6 +32,11 @@ spec:
     failureThreshold: {{ .Values.globalConfiguration.webhookHealth.failureThreshold }}
     successThreshold: {{ .Values.globalConfiguration.webhookHealth.successThreshold }}
     transitionCheckInterval: {{ .Values.globalConfiguration.webhookHealth.transitionCheckInterval | quote }}
+  kai:
+    schedulerName: {{ .Values.globalConfiguration.kai.schedulerName | quote }}
+  prometheus:
+    url: {{ .Values.globalConfiguration.prometheus.url | quote }}
+    requestTimeout: {{ .Values.globalConfiguration.prometheus.requestTimeout | quote }}
   webhookProbe:
     image: {{ .Values.globalConfiguration.webhookProbe.image | default (include "kubex-automation-engine.image" .) | quote }}
     {{- with .Values.globalConfiguration.webhookProbe.labels }}

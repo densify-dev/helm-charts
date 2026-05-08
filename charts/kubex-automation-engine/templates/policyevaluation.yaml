@@ -8,6 +8,10 @@ metadata:
     {{- include "kubex-automation-engine.labels" . | nindent 4 }}
 spec:
   precedence:
+  - type: GpuRebalancingPolicy
+    priority: 120
+  - type: ClusterWideGpuRebalancingPolicy
+    priority: 110
   - type: StaticPolicy
     priority: 90
   - type: ClusterStaticPolicy

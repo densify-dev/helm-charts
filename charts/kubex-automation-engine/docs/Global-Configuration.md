@@ -1,5 +1,7 @@
 # Global Configuration
 
+> Experimental: GPU/KAI-related fields in this resource are subject to breaking changes. When using them, set `spec.experimental.gpuKaiContract: v1alpha1-2026-04`.
+
 `GlobalConfiguration` defines cluster-wide controller behavior that applies across strategies and policies.
 
 Use it to control recommendation refresh timing, proactive rescans, heartbeat reporting, global automation switches, protected namespaces, and webhook health thresholds.
