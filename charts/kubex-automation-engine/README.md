@@ -2,9 +2,6 @@
 
 Kubernetes resource optimization with policy-driven rightsizing, admission-time mutation, and proactive resize execution.
 
-> [!IMPORTANT]
-> `kubex-automation-engine` is still in pre-release status. For production-grade automation, use the [`kubex-automation-controller`](https://github.com/densify-dev/helm-charts/tree/master/charts/kubex-automation-controller) chart instead.
-
 # Quick Links
 
 - [Kubex Automation Engine](#kubex-automation-engine)
