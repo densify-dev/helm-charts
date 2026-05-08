@@ -104,6 +104,53 @@
         }
       }
     },
+    "metrics": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "type": {
+          "type": "string"
+        },
+        "port": {
+          "type": "integer"
+        },
+        "annotations": {
+          "type": "object"
+        },
+        "serviceMonitor": {
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "additionalLabels": {
+              "type": "object"
+            },
+            "namespaceSelector": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "scheme": {
+              "type": "string",
+              "enum": ["http", "https"]
+            },
+            "path": {
+              "type": "string"
+            },
+            "interval": {
+              "type": "string"
+            },
+            "scrapeTimeout": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
     "openshift": {
       "type": "object",
       "properties": {

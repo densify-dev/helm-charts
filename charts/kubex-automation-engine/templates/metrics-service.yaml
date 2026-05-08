@@ -8,7 +8,7 @@ metadata:
     {{- include "kubex-automation-engine.labels" . | nindent 4 }}
   {{- with .Values.metrics.annotations }}
   annotations:
-    {{- toYaml . | nindent 4 }}
+    {{- tpl (toYaml .) $ | nindent 4 }}
   {{- end }}
 spec:
   type: {{ .Values.metrics.type }}
