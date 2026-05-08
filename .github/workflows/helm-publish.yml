@@ -117,30 +117,28 @@ jobs:
       - name: Publish Charts
         if: steps.package.outputs.chart_count > 0 || steps.package.outputs.readme_changed == 'true'
         working-directory: gh-pages-branch
+        env:
+          README_CHANGED: ${{ steps.package.outputs.readme_changed }}
         run: |
           set -euo pipefail
-          shopt -s nullglob
+          shopt -s nullglob # makes packages=() empty when no .tgz files exist
 
           packages=(/tmp/kubex-charts/*.tgz)
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           if [ "${#packages[@]}" -gt 0 ]; then
             # Copy tgz files from temp to repo folder (gh-pages root)
             cp "${packages[@]}" .
 
             # Run helm index
             helm repo index . --url https://densify-dev.github.io/helm-charts/
-          fi
-
-          if [ "${{ steps.package.outputs.readme_changed }}" = "true" ]; then
-            cp /tmp/kubex-charts/README.md .
-          fi
-
-          # Git add
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          if [ "${#packages[@]}" -gt 0 ]; then
+            # Git add
             git add index.yaml *.tgz
           fi
-          if [ "${{ steps.package.outputs.readme_changed }}" = "true" ]; then
+
+          if [ "${README_CHANGED}" = "true" ]; then
+            cp /tmp/kubex-charts/README.md .
+            # Git add
             git add README.md
           fi
 
@@ -150,7 +148,7 @@ jobs:
             exit 0
           fi
 
-          git commit -m "Publish charts from commit ${{ github.sha }}"
+          git commit -m "Publish charts/README from commit ${{ github.sha }}"
 
           # Git push
           git push
