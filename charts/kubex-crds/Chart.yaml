@@ -1,7 +1,7 @@
 apiVersion: v2
 name: kubex-crds
 description: CRDs for Kubex Automation Engine early access releases
-version: 0.4.2
+version: 0.4.3
 appVersion: v0.1
 keywords:
   - crd

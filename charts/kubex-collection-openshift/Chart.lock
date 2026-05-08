@@ -8,5 +8,5 @@ dependencies:
 - name: node-labeler
   repository: https://densify-dev.github.io/helm-charts
   version: 0.1.1
-digest: sha256:8ec037d223730e0fff2c0414559f616b9111c86ae4e7e1638716c20521cdfcae
-generated: "2026-05-07T16:11:00.297823324-04:00"
+digest: sha256:5a1278dc9448544f94861fe2e77dc783196b8033c568b22aacf5fafa59a6fc5a
+generated: "2026-05-08T09:35:00.278042423-04:00"
