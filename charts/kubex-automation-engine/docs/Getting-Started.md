@@ -2,9 +2,6 @@
 
 This guide walks through installing the chart and validating the current CRD-based automation flow.
 
-> [!IMPORTANT]
-> `kubex-automation-engine` is still in pre-release status. For production-grade automation, use the [`kubex-automation-controller`](https://github.com/densify-dev/helm-charts/tree/master/charts/kubex-automation-controller) chart instead.
-
 # Quick Links
 
 - [Getting Started with Kubex Automation Engine](#getting-started-with-kubex-automation-engine)
