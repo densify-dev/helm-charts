@@ -167,6 +167,9 @@
             }
           }
         },
+        "heartbeatInterval": {
+          "type": "string"
+        },
         "webhookProbe": {
           "type": "object",
           "properties": {

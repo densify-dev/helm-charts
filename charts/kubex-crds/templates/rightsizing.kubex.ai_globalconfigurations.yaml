@@ -45,6 +45,14 @@ spec:
                 description: automationEnabled controls whether automation is globally
                   enabled.
                 type: boolean
+              heartbeatInterval:
+                default: 5m
+                description: heartbeatInterval controls how often controller heartbeat
+                  status is sent.
+                type: string
+                x-kubernetes-validations:
+                - message: must be at least 1 minute
+                  rule: duration(self) >= duration('1m')
               kubexAPIRequestTimeout:
                 default: 30s
                 description: kubexAPIRequestTimeout controls timeout for outbound
