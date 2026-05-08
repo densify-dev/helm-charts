@@ -45,24 +45,29 @@ You can temporarily or permanently pause automation for individual pods using th
 rightsizing.kubex.ai/pause-until: "<RFC3339 timestamp | infinite>"
 ```
 
+This annotation is evaluated on Pod objects. If you want every pod created by a workload owner such as a `Deployment`, `StatefulSet`, or `DaemonSet` to receive it, add the annotation to the workload's pod template at `spec.template.metadata.annotations` so it is propagated to each Pod. Adding it only to the workload owner's own `metadata.annotations` does not affect controller or webhook behavior.
+
 ### Permanent Pause
 
 Exclude a pod from automation indefinitely:
 
 ```yaml
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: v1
+kind: Pod
 metadata:
-  name: my-app
+  name: my-app-pod
+  annotations:
+    rightsizing.kubex.ai/pause-until: "infinite"
 spec:
-  template:
-    metadata:
-      annotations:
-        rightsizing.kubex.ai/pause-until: "infinite"
-    spec:
-      containers:
-      - name: app
-        # ... container spec
+  containers:
+  - name: app
+    # ... container spec
+```
+
+Or annotate an existing pod:
+
+```bash
+kubectl annotate pod my-app-pod rightsizing.kubex.ai/pause-until="infinite"
 ```
 
 ### Time-Based Pause
@@ -70,20 +75,17 @@ spec:
 Pause automation until a specific date/time (uses RFC3339 format):
 
 ```yaml
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: v1
+kind: Pod
 metadata:
-  name: my-app
+  name: my-app-pod
+  annotations:
+    # Pause until December 31, 2025 at 23:59:59 UTC
+    rightsizing.kubex.ai/pause-until: "2025-12-31T23:59:59Z"
 spec:
-  template:
-    metadata:
-      annotations:
-        # Pause until December 31, 2025 at 23:59:59 UTC
-        rightsizing.kubex.ai/pause-until: "2025-12-31T23:59:59Z"
-    spec:
-      containers:
-      - name: app
-        # ... container spec
+  containers:
+  - name: app
+    # ... container spec
 ```
 
 **Time zone examples:**
@@ -109,57 +111,32 @@ rightsizing.kubex.ai/pause-until: "2025-12-31T23:59:59.999Z"
 
 **Learning Period After Application Changes:**
 ```yaml
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: v1
+kind: Pod
 metadata:
-  name: my-app
+  name: my-app-pod
+  annotations:
+    # Pause for 2 weeks to learn new utilization patterns after code changes
+    rightsizing.kubex.ai/pause-until: "2025-12-24T00:00:00Z"
 spec:
-  template:
-    metadata:
-      annotations:
-        # Pause for 2 weeks to learn new utilization patterns after code changes
-        rightsizing.kubex.ai/pause-until: "2025-12-24T00:00:00Z"
-    spec:
-      containers:
-      - name: app
-        # ... container spec
+  containers:
+  - name: app
+    # ... container spec
 ```
 
 **Gradual Rollout:**
-```yaml
-apiVersion: apps/v1
-kind: StatefulSet
-metadata:
-  name: my-database
-spec:
-  template:
-    metadata:
-      annotations:
-        # Pause new deployments, remove annotation after validation
-        rightsizing.kubex.ai/pause-until: "infinite"
-    spec:
-      containers:
-      - name: db
-        # ... container spec
+```bash
+# Pause one pod while validating behavior, then remove the annotation to resume automation
+kubectl annotate pod my-database-0 rightsizing.kubex.ai/pause-until="infinite"
 ```
 
 **Troubleshooting:**
-```yaml
-apiVersion: apps/v1
-kind: DaemonSet
-metadata:
-  name: my-daemon
-spec:
-  template:
-    metadata:
-      annotations:
-        # Pause while investigating issues
-        rightsizing.kubex.ai/pause-until: "infinite"
-        # Remove annotation when ready to resume
-    spec:
-      containers:
-      - name: daemon
-        # ... container spec
+```bash
+# Pause a specific pod while investigating issues
+kubectl annotate pod my-daemon-pod rightsizing.kubex.ai/pause-until="infinite"
+
+# Remove the annotation when ready to resume automation
+kubectl annotate pod my-daemon-pod rightsizing.kubex.ai/pause-until-
 ```
 
 ---
