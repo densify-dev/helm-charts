@@ -48,6 +48,7 @@ jobs:
         run: |
           mkdir -p /tmp/kubex-charts
           rm -rf /tmp/kubex-charts/*.tgz
+          rm -f /tmp/kubex-charts/README.md
 
       - name: Package changed charts
         id: package
@@ -59,12 +60,19 @@ jobs:
           # Get the list of changed files between the previous commit and the current one
           NULL_SHA="0000000000000000000000000000000000000000"
           if [ "${{ github.event.before }}" = "${NULL_SHA}" ]; then
-            CHANGED_FILES=$(git ls-files 'charts/*/Chart.yaml')
+            CHANGED_FILES=$(git ls-files 'README.md' 'charts/*/Chart.yaml')
           else
             CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.event.after }})
           fi
 
           echo "Processing charts..."
+
+          readme_changed=false
+          if printf '%s\n' "${CHANGED_FILES}" | grep -Fxq "README.md"; then
+            echo "Changes detected in top-level README.md. Staging for gh-pages..."
+            cp README.md /tmp/kubex-charts/README.md
+            readme_changed=true
+          fi
 
           # Iterate over directories in the charts folder
           for chart_dir in charts/*; do
@@ -97,6 +105,7 @@ jobs:
 
           packages=(/tmp/kubex-charts/*.tgz)
           echo "chart_count=${#packages[@]}" >> "${GITHUB_OUTPUT}"
+          echo "readme_changed=${readme_changed}" >> "${GITHUB_OUTPUT}"
 
       - name: Checkout gh-pages
         uses: *checkout-action
@@ -106,21 +115,32 @@ jobs:
           fetch-depth: 0
 
       - name: Publish Charts
-        if: steps.package.outputs.chart_count > 0
+        if: steps.package.outputs.chart_count > 0 || steps.package.outputs.readme_changed == 'true'
         working-directory: gh-pages-branch
+        env:
+          README_CHANGED: ${{ steps.package.outputs.readme_changed }}
         run: |
           set -euo pipefail
+          shopt -s nullglob # makes packages=() empty when no .tgz files exist
 
-          # Copy tgz files from temp to repo folder (gh-pages root)
-          cp /tmp/kubex-charts/*.tgz .
-
-          # Run helm index
-          helm repo index . --url https://densify-dev.github.io/helm-charts/
-
-          # Git add
+          packages=(/tmp/kubex-charts/*.tgz)
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.yaml *.tgz
+          if [ "${#packages[@]}" -gt 0 ]; then
+            # Copy tgz files from temp to repo folder (gh-pages root)
+            cp "${packages[@]}" .
+
+            # Run helm index
+            helm repo index . --url https://densify-dev.github.io/helm-charts/
+            # Git add
+            git add index.yaml *.tgz
+          fi
+
+          if [ "${README_CHANGED}" = "true" ]; then
+            cp /tmp/kubex-charts/README.md .
+            # Git add
+            git add README.md
+          fi
 
           # Git commit
           if git diff --cached --quiet; then
@@ -128,7 +148,7 @@ jobs:
             exit 0
           fi
 
-          git commit -m "Publish charts from commit ${{ github.sha }}"
+          git commit -m "Publish charts/README from commit ${{ github.sha }}"
 
           # Git push
           git push
