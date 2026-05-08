@@ -10,7 +10,7 @@
 
 ## Deprecation Notice
 
-This Helm Chart is being deprecated as OpenShift data collection is now supported within standard (Kubex Automation Stack chart)[https://github.com/densify-dev/helm-charts/tree/master/charts/kubex-automation-stack] 
+This Helm Chart is being deprecated as OpenShift data collection is now supported within standard [Kubex Automation Stack chart](https://github.com/densify-dev/helm-charts/tree/master/charts/kubex-automation-stack)
 
 ## Introduction
 
