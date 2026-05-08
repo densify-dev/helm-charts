@@ -1,0 +1,38 @@
+{{- if and .Values.metrics.enabled .Values.metrics.serviceMonitor.enabled -}}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "kubex-automation-engine.fullname" . }}-metrics
+  namespace: {{ include "kubex-automation-engine.namespace" . }}
+  labels:
+    {{- include "kubex-automation-engine.labels" . | nindent 4 }}
+    {{- with .Values.metrics.serviceMonitor.additionalLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  {{- with .Values.metrics.serviceMonitor.namespaceSelector }}
+  namespaceSelector:
+    matchNames:
+      {{- toYaml . | nindent 6 }}
+  {{- else }}
+  namespaceSelector:
+    any: true
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "kubex-automation-engine.selectorLabels" . | nindent 6 }}
+  endpoints:
+    - port: metrics
+      path: {{ .Values.metrics.serviceMonitor.path }}
+      scheme: {{ .Values.metrics.serviceMonitor.scheme }}
+      # tlsConfig:
+      #   caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+      #   insecureSkipVerify: true
+      #   bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+      {{- with .Values.metrics.serviceMonitor.interval }}
+      interval: {{ . }}
+      {{- end }}
+      {{- with .Values.metrics.serviceMonitor.scrapeTimeout }}
+      scrapeTimeout: {{ . }}
+      {{- end }}
+{{- end }}

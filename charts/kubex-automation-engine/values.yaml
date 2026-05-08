@@ -126,7 +126,7 @@ controllerManager:
   healthProbeBindAddress: ":8081"
 
   # -- Metrics bind address
-  metricsBindAddress: ":8443"
+  metricsBindAddress: ":8080"
 
   # -- Additional arguments for the controller manager
   extraArgs:
@@ -180,9 +180,30 @@ metrics:
   # -- Service type for metrics
   type: ClusterIP
   # -- Service port for metrics
-  port: 8443
+  port: 8080
   # -- Service annotations
-  annotations: {}
+  annotations:
+    # Controller metrics are served over plain HTTP without authentication in this chart; the manager args set --metrics-secure=false when this scheme is used.
+    prometheus.io/scrape: "true"
+    prometheus.io/port: '{{ .Values.metrics.port }}'
+    prometheus.io/path: '{{ .Values.metrics.serviceMonitor.path }}'
+    prometheus.io/scheme: '{{ .Values.metrics.serviceMonitor.scheme }}'
+  # -- Optional ServiceMonitor configuration for Prometheus Operator
+  serviceMonitor:
+    # -- Create a ServiceMonitor for the metrics Service
+    enabled: false
+    # -- Additional labels applied to the ServiceMonitor
+    additionalLabels: {}
+    # -- Namespace names to discover for the ServiceMonitor. Leave empty to watch all namespaces.
+    namespaceSelector: []
+    # -- Scrape scheme used by Prometheus
+    scheme: http
+    # -- Metrics endpoint path
+    path: /metrics
+    # -- Optional scrape interval
+    interval: ""
+    # -- Optional scrape timeout. Must be <= interval when interval is set.
+    scrapeTimeout: ""
 
 # Webhook configuration
 webhook:
