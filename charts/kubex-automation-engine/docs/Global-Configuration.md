@@ -119,6 +119,12 @@ Legacy `deployment.controllerEnv` values still act as fallbacks for the default 
 
 If both the new `globalConfiguration.*` value and the legacy value are set, the `globalConfiguration.*` value wins.
 
+## Heartbeat Reporting
+
+The controller periodically sends health and activity status to Kubex. This allows the Kubex platform to monitor controller health, display the running version, and track automation activity across your clusters.
+
+The controller version included in heartbeat payloads is read from the `IMAGE_TAG` environment variable, which the Helm chart automatically injects into the manager container from the `image.tag` Helm value. In airgapped environments, ensure this value matches your mirrored image tag so Kubex can accurately report the running version.
+
 ## Webhook Probe Pod Settings
 
 The pod admission webhook health probe creates a dry-run Pod using `spec.webhookProbe`.
