@@ -1,6 +1,13 @@
+# :no_entry: [DEPRECATED] Please see [active chart](https://github.com/densify-dev/helm-charts/tree/master/charts/kubex-automation-engine)
+
 # Kubex Automation Controller
 
 Enterprise-grade Kubernetes resource optimization automation with intelligent policy-driven container resizing.
+
+# Deprecation Notice
+
+This Helm Chart is being deprecated and replaced by [Kubex Automation Engine chart](https://github.com/densify-dev/helm-charts/tree/master/charts/kubex-automation-engine)
+
 
 # Quick Links
 
