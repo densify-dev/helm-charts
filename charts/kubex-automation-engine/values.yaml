@@ -4,7 +4,7 @@ crdCheck:
   skip: false
   # Minimum version of the kubex-crds chart required before this chart can be installed/upgraded.
   # Bump this whenever a new CRD field or schema change is required.
-  minCRDsHelmVersion: "0.4.0"
+  minCRDsHelmVersion: "1.0.0"
 # -- Whether to create the kubex-gateway-config Secret automatically
 createSecrets: true
 
@@ -13,13 +13,13 @@ kubex:
   url:
     # -- Kubex instance hostname (e.g., <customerName>.kubex.ai)
     host: ""
-  
+
   # -- Cluster name to identify this cluster in Kubex (required)
   clusterName: ""
-  
+
   # -- Path to local recommendations file (optional, for testing only - overrides gateway)
   recommendationsPath: "/densify/data/recommendations/recommendations.json"
-  
+
   # -- Request timeout for Kubex API calls
   requestTimeout: "30s"
 
@@ -44,7 +44,7 @@ image:
   # -- Image pull policy
   pullPolicy: IfNotPresent
   # -- Image tag
-  tag: "0.4.0"
+  tag: "1.0.0"
 
 # -- Image pull secrets applied to the controller deployment and cleanup job
 imagePullSecrets: []
@@ -54,7 +54,7 @@ cleanup:
     # -- Image repository for the pre-delete cleanup job.
     repository: "densify/kubex-automation-cleanup"
     # -- Image tag for the pre-delete cleanup job.
-    tag: "0.4.0"
+    tag: "1.0.0"
     # -- Image pull policy for the pre-delete cleanup job.
     pullPolicy: "IfNotPresent"
   # -- Optional pod security context for the pre-delete cleanup job
@@ -114,30 +114,29 @@ securityContext:
   allowPrivilegeEscalation: false
   capabilities:
     drop:
-    - "ALL"
+      - "ALL"
 
 # Controller manager configuration
 controllerManager:
   # -- Enable leader election for controller manager
   leaderElection:
     enabled: true
-  
+
   # -- Health probe bind address
   healthProbeBindAddress: ":8081"
-  
+
   # -- Metrics bind address
   metricsBindAddress: ":8443"
-  
+
   # -- Additional arguments for the controller manager
   extraArgs:
     - --zap-log-level=info
 
   # -- GlobalConfiguration controller reconcile interval (maps to GLOBAL_CONFIG_RECONCILE_INTERVAL)
   globalConfigReconcileInterval: "1m"
-  
+
   # -- Additional environment variables
   extraEnv: []
-
 
 # Local recommendations injection (for local/dev testing)
 localRecommendations:
@@ -154,7 +153,7 @@ localRecommendations:
 gateway:
   image:
     repository: "densify/automation-gateway"
-    tag: "1.2"
+    tag: "1.3"
     pullPolicy: "IfNotPresent"
   # Name of the secret containing gateway config (mounted at /densify/config/api)
   configSecretName: "kubex-gateway-config"
@@ -184,7 +183,6 @@ metrics:
   port: 8443
   # -- Service annotations
   annotations: {}
-
 
 # Webhook configuration
 webhook:
@@ -326,19 +324,19 @@ globalConfiguration:
 deployment:
   controllerEnv:
     # Timing configuration → Maps to GlobalConfiguration
-    recommendationsFetchInterval: "1h"       # → globalConfiguration.recommendationReloadInterval
-    podScanInterval: "6h"                    # → globalConfiguration.rescanInterval
-    apiRequestTimeout: "30s"                 # → globalConfiguration.kubexAPIRequestTimeout
-    
+    recommendationsFetchInterval: "1h" # → globalConfiguration.recommendationReloadInterval
+    podScanInterval: "6h" # → globalConfiguration.rescanInterval
+    apiRequestTimeout: "30s" # → globalConfiguration.kubexAPIRequestTimeout
+
     # Resize method configuration → Maps to AutomationStrategy.inPlaceResize
-    suppressInPlaceResizing: "false"         # → automationStrategy.inPlaceResize.enabled (inverted)
-    
+    suppressInPlaceResizing: "false" # → automationStrategy.inPlaceResize.enabled (inverted)
+
     # Node capacity configuration → Maps to AutomationStrategy.safetyChecks
-    nodeCpuHeadroom: "10%"                   # → automationStrategy.safetyChecks.nodeCpuHeadroom
-    nodeMemoryHeadroom: "200Mi"              # → automationStrategy.safetyChecks.nodeMemoryHeadroom
-    
+    nodeCpuHeadroom: "10%" # → automationStrategy.safetyChecks.nodeCpuHeadroom
+    nodeMemoryHeadroom: "200Mi" # → automationStrategy.safetyChecks.nodeMemoryHeadroom
+
     # Retry configuration → Maps to AutomationStrategy.safetyChecks
-    podEvictionCooldownPeriod: "30s"         # → automationStrategy.safetyChecks.resizeRetryInterval
+    podEvictionCooldownPeriod: "30s" # → automationStrategy.safetyChecks.resizeRetryInterval
 
 # Policy evaluation configuration
 policyEvaluation:
@@ -396,15 +394,15 @@ scope: []
 policy:
   # -- Global switch to enable/disable automation for the cluster
   automationEnabled: true
-  
+
   # -- Default policy used when scope[].policy is not specified
   defaultPolicy: ""
-  
+
   # -- Control where automation inclusion/exclusion rules are defined
   # false: Automation scope controlled ONLY by Helm configuration (recommended for GitOps)
   # true: Automation scope controlled by BOTH Helm configuration AND Kubex UI
   remoteEnablement: false
-  
+
   # -- Policy definitions
   # Each policy defines specific automation behaviors
   # ⚠️ IMPORTANT: Policy names MUST follow RFC 1123 subdomain rules:
@@ -416,7 +414,7 @@ policy:
     # base-optimization:
     #   # Allowed workload types (comma-separated string)
     #   allowedPodOwners: "Deployment,StatefulSet,CronJob,Rollout,Job,AnalysisRun"
-    #   
+    #
     #   # Enablement controls which resource changes are allowed
     #   enablement:
     #     cpu:
@@ -445,17 +443,17 @@ policy:
     #         setFromUnspecified: true
     #         # floor: "32Mi"       # Optional minimum memory limit
     #         # ceiling: "32Gi"     # Optional maximum memory limit
-    #   
+    #
     #   # In-place resize configuration
     #   inPlaceResize:
     #     enabled: true
     #     containerRestart: false  # Allow container restarts during resize
-    #   
+    #
     #   # Pod eviction configuration
     #   podEviction:
     #     enabled: true
     #     retryPodDisruptionBudget: true  # Retry if PDB blocks eviction
-    #   
+    #
     #   # Safety checks for proactive policies (NEW: per-policy, takes precedence)
     #   safetyChecks:
     #     maxAnalysisAgeDays: 5  # Reject recommendations older than 5 days
