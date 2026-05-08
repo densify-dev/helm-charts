@@ -10,7 +10,7 @@
 
 ## Description
 
-Kubex analyses Kubernetes clusters, produces recommendations for rightsizing resources to mitigate risk and reduce waste and automates rightsizing.
+Kubex analyses Kubernetes clusters, produces recommendations for rightsizing resources to mitigate risk and reduce waste, and automates rightsizing.
 
 This repository contains a number of Helm charts.
 
