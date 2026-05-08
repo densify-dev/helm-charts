@@ -135,6 +135,8 @@ The pod admission webhook health probe creates a dry-run Pod using `spec.webhook
 
 When `spec.webhookProbe.image` is unset, the Helm chart defaults it to the controller image (`image.repository:image.tag`). This allows airgapped environments to mirror only the controller image and have probe admissions use that same image by default.
 
+Heartbeat payloads also use the controller `image.tag`, injected into the manager container as `IMAGE_TAG`, so Kubex can display the running controller version with each report.
+
 On EKS clusters, the probe pod is labeled with `eks.amazonaws.com/skip-pod-identity-webhook: "true"` so the AWS-managed pod identity webhook skips this dry-run probe admission.
 
 ## Verification
