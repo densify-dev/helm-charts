@@ -119,4 +119,27 @@ This external-CR pattern applies equally to cluster-scoped and namespaced resour
 
 ## Precedence And Overlap
 
-When more than one policy matches, the controller resolves a winner by policy-type precedence and then by weight. If you expect overlap, set weights explicitly and verify the selected policy in events and `rightsizing summary` logs.
+When more than one policy matches, the controller resolves a winner using this order:
+
+1. **Policy-type precedence** (static vs. proactive)
+2. **Weight** (higher wins)
+3. **Creation time** (newer wins if weights are equal)
+
+### Policy Type Precedence
+
+By default, static policies (fixed resources) take precedence over proactive policies (recommendations). This is controlled by the `PolicyEvaluation` singleton resource.
+
+**Default precedence:**
+- `StaticPolicy` and `ClusterStaticPolicy`: priority 90
+- `ProactivePolicy` and `ClusterProactivePolicy`: priority 70
+
+To favor recommendation-driven automation instead, create or edit the `policy-evaluation` resource:
+
+- Start from the default `PolicyEvaluation` example in [Policy Evaluation](./Policy-Evaluation.md#default-behavior).
+- Change the priorities so proactive policy types win:
+  - Set `ProactivePolicy` and `ClusterProactivePolicy` to `priority: 90`
+  - Set `StaticPolicy` and `ClusterStaticPolicy` to `priority: 70`
+
+For the complete reference, see [Policy Evaluation](./Policy-Evaluation.md).
+
+To verify which policy was selected, check controller events or `rightsizing summary` logs.

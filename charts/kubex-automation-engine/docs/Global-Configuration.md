@@ -2,7 +2,7 @@
 
 `GlobalConfiguration` defines cluster-wide controller behavior that applies across strategies and policies.
 
-Use it to control recommendation refresh timing, proactive rescans, global automation switches, protected namespaces, and webhook health thresholds.
+Use it to control recommendation refresh timing, proactive rescans, heartbeat reporting, global automation switches, protected namespaces, and webhook health thresholds.
 
 ## Field Reference
 
@@ -12,6 +12,7 @@ Use it to control recommendation refresh timing, proactive rescans, global autom
 | `spec.rescanInterval` | `6h` | How often workloads are rescanned for proactive evaluation. |
 | `spec.mutationLogInterval` | `5m` | How often mutation logs are sent. |
 | `spec.snapshotInterval` | `30m` | How often policy snapshots are sent. |
+| `spec.heartbeatInterval` | `5m` | How often controller heartbeat status is sent to Kubex. |
 | `spec.kubexAPIRequestTimeout` | `30s` | Timeout for Kubex API requests. |
 | `spec.automationEnabled` | `true` | Global on or off switch for automation behavior. |
 | `spec.suppressFetchRecommendations` | `false` | Testing-oriented switch to suppress recommendation fetches. |
@@ -52,6 +53,7 @@ spec:
   rescanInterval: 6h
   mutationLogInterval: 5m
   snapshotInterval: 30m
+  heartbeatInterval: 5m
   kubexAPIRequestTimeout: 30s
   automationEnabled: true
   suppressFetchRecommendations: false
@@ -91,6 +93,7 @@ The chart creates a default `GlobalConfiguration` when `globalConfiguration.enab
 | `globalConfiguration.rescanInterval` | `spec.rescanInterval` | Falls back to legacy value if unset |
 | `globalConfiguration.mutationLogInterval` | `spec.mutationLogInterval` | Direct mapping |
 | `globalConfiguration.snapshotInterval` | `spec.snapshotInterval` | Direct mapping |
+| `globalConfiguration.heartbeatInterval` | `spec.heartbeatInterval` | Direct mapping |
 | `globalConfiguration.kubexAPIRequestTimeout` | `spec.kubexAPIRequestTimeout` | Falls back to legacy value if unset |
 | `globalConfiguration.automationEnabled` | `spec.automationEnabled` | Direct mapping |
 | `globalConfiguration.suppressFetchRecommendations` | `spec.suppressFetchRecommendations` | Direct mapping |
@@ -115,6 +118,12 @@ Legacy `deployment.controllerEnv` values still act as fallbacks for the default 
 | `deployment.controllerEnv.apiRequestTimeout` | `spec.kubexAPIRequestTimeout` |
 
 If both the new `globalConfiguration.*` value and the legacy value are set, the `globalConfiguration.*` value wins.
+
+## Heartbeat Reporting
+
+The controller periodically sends health and activity status to Kubex. This allows the Kubex platform to monitor controller health, display the running version, and track automation activity across your clusters.
+
+The controller version included in heartbeat payloads is read from the `IMAGE_TAG` environment variable, which the Helm chart automatically injects into the manager container from the `image.tag` Helm value. In airgapped environments, ensure this value matches your mirrored image tag so Kubex can accurately report the running version.
 
 ## Webhook Probe Pod Settings
 

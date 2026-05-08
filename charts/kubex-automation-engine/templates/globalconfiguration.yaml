@@ -14,6 +14,7 @@ spec:
   rescanInterval: {{ $rescanInterval }}
   mutationLogInterval: {{ .Values.globalConfiguration.mutationLogInterval }}
   snapshotInterval: {{ .Values.globalConfiguration.snapshotInterval }}
+  heartbeatInterval: {{ .Values.globalConfiguration.heartbeatInterval }}
   kubexAPIRequestTimeout: {{ $kubexAPIRequestTimeout }}
   
   # Behavior configuration

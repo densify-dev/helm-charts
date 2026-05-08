@@ -277,6 +277,8 @@ globalConfiguration:
   mutationLogInterval: "5m"
   # -- Policy snapshot upload interval
   snapshotInterval: "30m"
+  # -- Controller heartbeat report interval
+  heartbeatInterval: "5m"
   # -- Whether automation is globally enabled
   automationEnabled: true
   # -- Suppress fetching recommendations from gateway (testing only)
