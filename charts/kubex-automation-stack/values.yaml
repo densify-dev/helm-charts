@@ -198,19 +198,16 @@ prometheus:
               action: replace
               target_label: __scheme__
               regex: (https?)
-            - &kubexEndpointsliceMetricsPath
-              source_labels: [__meta_kubernetes_service_annotation_prometheus_io_path]
+            - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_path]
               action: replace
               target_label: __metrics_path__
               regex: (.+)
-            - &kubexEndpointsliceAddress
-              source_labels: [__address__, __meta_kubernetes_service_annotation_prometheus_io_port]
+            - source_labels: [__address__, __meta_kubernetes_service_annotation_prometheus_io_port]
               action: replace
               target_label: __address__
               regex: (.+?)(?::\d+)?;(\d+)
               replacement: $1:$2
-            - &kubexEndpointsliceParamLabels
-              action: labelmap
+            - action: labelmap
               regex: __meta_kubernetes_service_annotation_prometheus_io_param_(.+)
               replacement: __param_$1
             - &kubexEndpointsliceServiceLabels
@@ -252,16 +249,16 @@ prometheus:
               replacement: /metrics
             - *kubexEndpointsliceServiceLabels
             - *kubexEndpointsliceNamespace
-            - source_labels: [__address__]
-              action: replace
-              target_label: __address__
-              regex: '(.+?)(?::\d+)?'
-              replacement: '$1:8080'
             # Matches any Helm release name prefix (for example 'controller-' or 'prod-').
             # This intentionally supports scraping multiple controller releases when their service names share this suffix.
             - source_labels: [__meta_kubernetes_service_name]
               action: keep
               regex: '.+-kubex-automation-engine-metrics-service$'
+            - source_labels: [__address__]
+              action: replace
+              target_label: __address__
+              regex: '(.+?)(?::\d+)?'
+              replacement: '$1:8080'
             - *kubexEndpointsliceServiceName
             - *kubexEndpointsliceNodeName
           # Stores all scraped metrics as-is (no metric_relabel_configs filter).
