@@ -51,6 +51,8 @@ How to interpret `retry` in the context of this document:
 | Runtime name | Stage | Controlled by | Behavior | Targets / metadata | Typical message |
 | --- | --- | --- | --- | --- | --- |
 | `no-resize-needed` | plan build | always on | Marks resources where desired equals current and no action is needed | target list only | n/a (summary marker) |
+| `floor-clamped` | plan build | `spec.enablement.*.(requests|limits).floor` | Clamps a desired value up to the configured floor before execution | filter metadata includes `value`, `originalDesired`, `clampedDesired`, and `rule` | n/a (summary marker) |
+| `ceiling-clamped` | plan build | `spec.enablement.*.(requests|limits).ceiling` | Clamps a desired value down to the configured ceiling before execution | filter metadata includes `value`, `originalDesired`, `clampedDesired`, and `rule` | n/a (summary marker) |
 | `automation-strategy-disabled` | action filter | `spec.enablement.*` fields in the referenced strategy | Removes actions disallowed by direction such as `upsize`, `downsize`, or `setFromUnspecified` | filter metadata may include `direction` | `upsize disabled`, `downsize disabled`, or `setFromUnspecified disabled` |
 | `change-below-threshold` | pod action filter | `spec.safetyChecks.minCpuChangePercent`, `spec.safetyChecks.minMemoryChangePercent` | Removes actions whose percent delta is below threshold | target list only | `delta ... below minimum ...` |
 | `hpa-resource-managed` | pod action filter | `spec.safetyChecks.enableHpaFilter` | Removes actions for CPU or memory managed by a matching HPA, including KEDA-managed HPA handling | filter metadata may include `source=hpa` and `hpaMode` | `HPA targets <resource>` |
@@ -80,6 +82,7 @@ Notes:
 
 - `failedChecks` contains check failures with `name`, optional `message`, and optional `metadata`.
 - `appliedFilters` contains pruned actions with `name`, optional filter `metadata`, and `targets` with `container`, `usage`, and `resource`.
+- Bounds enforcement also appears in `appliedFilters`: `floor-clamped` and `ceiling-clamped` indicate the controller adjusted the desired value before deciding whether any resize action still remained.
 - `pause-active` sets `failedChecks[].metadata.scope` to `pod` or `namespace`; namespace pauses also include `failedChecks[].metadata.namespace`.
 
 Example interpretation:
@@ -87,6 +90,7 @@ Example interpretation:
 - `{"name":"min-ready-duration-not-met","message":"pod not ready"}` in `failedChecks` means execution is blocked for now and retried.
 - `{"name":"resource-quota-exceeded","message":"resource quota exceeded (ResourceQuota/team-quota)","metadata":{"name":"team-quota"}}` in `failedChecks` identifies the specific blocking quota.
 - `{"name":"hpa-resource-managed","targets":[{"container":"app","usage":"requests","resource":"cpu"}]}` in `appliedFilters` means that resize action was removed because HPA controls that resource.
+- `{"name":"floor-clamped","metadata":{"value":"200Mi","originalDesired":"128Mi","clampedDesired":"200Mi","rule":"AutomationStrategy/example-rule"},"targets":[{"container":"app","usage":"requests","resource":"memory"}]}` in `appliedFilters` means the recommendation was raised to the strategy floor before execution.
 
 ## Related Guides
 

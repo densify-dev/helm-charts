@@ -66,6 +66,12 @@ cleanup:
       drop:
         - "ALL"
 
+# -- Image pull secrets for private registries
+# Example:
+# imagePullSecrets:
+#   - name: regcred
+imagePullSecrets: []
+
 # -- Override the name of the chart
 nameOverride: ""
 
@@ -151,6 +157,7 @@ localRecommendations:
 
 # Gateway sidecar configuration
 gateway:
+  enabled: true
   image:
     repository: "densify/automation-gateway"
     tag: "1.3"
@@ -278,11 +285,18 @@ rbac:
 # CRD installation
 crds: {}
 
+# Experimental feature acknowledgements for unstable APIs.
+experimental:
+  # -- Required acknowledgement token for GPU/KAI experimental fields.
+  gpuKaiContract: "v1alpha1-2026-04"
+
 # Global configuration defaults
 # These will be used to create the default GlobalConfiguration CR
 globalConfiguration:
   # -- Enable creation of default GlobalConfiguration
   enabled: true
+  # -- Name of the GlobalConfiguration resource
+  name: global-config
   # -- Recommendation reload interval (how often to fetch from Kubex)
   # Can also use deployment.controllerEnv.recommendationsFetchInterval for backward compatibility
   recommendationReloadInterval: "1h"
@@ -294,6 +308,8 @@ globalConfiguration:
   kubexAPIRequestTimeout: "30s"
   # -- Mutation log send interval
   mutationLogInterval: "5m"
+  # -- GPU rebalancing policy workload check interval
+  gpuRebalancingCheckInterval: "1m"
   # -- Policy snapshot upload interval
   snapshotInterval: "30m"
   # -- Controller heartbeat report interval
@@ -331,6 +347,19 @@ globalConfiguration:
     podSecurityContext: {}
     # -- Container security context for the webhook probe container.
     securityContext: {}
+  kai:
+    # -- Scheduler name set on pods when Kai GPU mutation is applied by the webhook
+    schedulerName: "kai-scheduler"
+  prometheus:
+    # -- Prometheus base URL used by GPU rebalancing policies
+    url: "http://prometheus.monitoring.svc:9090"
+    # -- Timeout for individual Prometheus query requests
+    requestTimeout: "30s"
+
+# Optional Run:ai Queue resources for Kai scheduler integrations
+kaiQueues:
+  # -- Create built-in Run:ai Queue resources (`kubex-parent-queue` and `kubex-unlimited-gpu-queue`)
+  enabled: false
 
 # ================================================================
 # BACKWARD COMPATIBILITY: Legacy environment variable configuration
@@ -464,6 +493,14 @@ policy:
     #         setFromUnspecified: true
     #         # floor: "32Mi"       # Optional minimum memory limit
     #         # ceiling: "32Gi"     # Optional maximum memory limit
+    #     gpu:
+    #       # GPU is requests-only; limits are not supported.
+    #       request:
+    #         downsize: true
+    #         upsize: true
+    #         setFromUnspecified: true
+    #         # floor: "1"          # Optional minimum GPU request
+    #         # ceiling: "8"        # Optional maximum GPU request
     #
     #   # In-place resize configuration
     #   inPlaceResize:

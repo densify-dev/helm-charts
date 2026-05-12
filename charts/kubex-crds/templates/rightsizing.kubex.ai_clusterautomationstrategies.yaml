@@ -147,6 +147,76 @@ spec:
                           rule: '!has(self.floor) || !has(self.ceiling) || quantity(self.floor).compareTo(quantity(self.ceiling))
                             <= 0'
                     type: object
+                  gpu:
+                    default: {}
+                    description: |-
+                      gpu controls enablement rules for GPU request resources.
+                      EXPERIMENTAL: this field is subject to breaking changes or removal without notice.
+                    properties:
+                      overrideScheduler:
+                        allOf:
+                        - enum:
+                          - none
+                          - kai
+                        - enum:
+                          - none
+                          - kai
+                        default: none
+                        description: |-
+                          overrideScheduler selects the GPU mutation mode.
+                          EXPERIMENTAL: this field is subject to breaking changes or removal without notice.
+                        type: string
+                      requests:
+                        default: {}
+                        description: |-
+                          requests controls enablement for GPU requests.
+                          EXPERIMENTAL: this field is subject to breaking changes or removal without notice.
+                        properties:
+                          ceiling:
+                            description: ceiling is the maximum allowed resource quantity
+                              for this usage.
+                            type: string
+                          containers:
+                            additionalProperties:
+                              properties:
+                                ceiling:
+                                  description: ceiling is the maximum allowed resource
+                                    quantity for this usage.
+                                  type: string
+                                floor:
+                                  description: floor is the minimum allowed resource
+                                    quantity for this usage.
+                                  type: string
+                              type: object
+                            description: |-
+                              containers maps exact container names to floor/ceiling overrides for this usage.
+                              Any bound omitted for a specific container falls back to the usage-level floor/ceiling.
+                            type: object
+                          downsize:
+                            default: true
+                            description: downsize controls whether resource downsizing
+                              actions are permitted.
+                            type: boolean
+                          floor:
+                            description: floor is the minimum allowed resource quantity
+                              for this usage.
+                            type: string
+                          setFromUnspecified:
+                            default: true
+                            description: setFromUnspecified controls whether an unspecified
+                              resource value may be set.
+                            type: boolean
+                          upsize:
+                            default: true
+                            description: upsize controls whether resource upsizing
+                              actions are permitted.
+                            type: boolean
+                        type: object
+                        x-kubernetes-validations:
+                        - message: floor must be less than or equal to ceiling
+                          rule: '!has(self.floor) || !has(self.ceiling) || quantity(self.floor).compareTo(quantity(self.ceiling))
+                            <= 0'
+                    type: object
                   memory:
                     default: {}
                     description: memory controls enablement rules for memory resources.
@@ -249,6 +319,22 @@ spec:
                             <= 0'
                     type: object
                 type: object
+              experimental:
+                description: |-
+                  experimental must be set when using GPU/KAI fields.
+                  EXPERIMENTAL: GPU/KAI strategy behavior is subject to breaking changes or removal without notice.
+                properties:
+                  gpuKaiContract:
+                    description: |-
+                      gpuKaiContract explicitly acknowledges that GPU/KAI fields are experimental and may change.
+                      EXPERIMENTAL: this acknowledgement value is required for unstable GPU/KAI behavior.
+                    enum:
+                    - none
+                    - v1alpha1-2026-04
+                    type: string
+                required:
+                - gpuKaiContract
+                type: object
               inPlaceResize:
                 default: {}
                 description: inPlaceResize configures in-place resize behavior.
@@ -261,6 +347,28 @@ spec:
                   enabled:
                     default: true
                     description: enabled controls whether in-place resize is allowed.
+                    type: boolean
+                type: object
+              kai:
+                default: {}
+                description: |-
+                  kai configures Kai scheduler-specific admission behavior for GPU actions.
+                  EXPERIMENTAL: this field is subject to breaking changes or removal without notice.
+                properties:
+                  queue:
+                    default: kubex-unlimited-gpu-queue
+                    description: |-
+                      queue sets the Kai scheduler queue label value for GPU admission mutation when
+                      the pod does not already define kai.scheduler/queue.
+                      EXPERIMENTAL: this field is subject to breaking changes or removal without notice.
+                      Keep this default aligned with DefaultKaiQueueName; kubebuilder markers cannot reference Go constants.
+                    type: string
+                  setQueueWhenSpecified:
+                    default: false
+                    description: |-
+                      setQueueWhenSpecified controls whether Kai GPU admission mutation overwrites
+                      an existing kai.scheduler/queue label when queue is specified.
+                      EXPERIMENTAL: this field is subject to breaking changes or removal without notice.
                     type: boolean
                 type: object
               podEviction:
