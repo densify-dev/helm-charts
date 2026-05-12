@@ -217,6 +217,9 @@ prometheus:
               source_labels: [__meta_kubernetes_namespace]
               action: replace
               target_label: namespace
+            - source_labels: [__meta_kubernetes_service_name]
+              action: drop
+              regex: '.+-kubex-automation-engine-metrics-service$'
             - source_labels: [__meta_kubernetes_endpointslice_name]
               action: keep
               regex: '((kubex|densify)-(kube-state-metrics|prometheus-node-exporter|ephemeral-storage-collector)|.*dcgm|k8s-ephemeral-storage-metrics).*'
@@ -237,7 +240,7 @@ prometheus:
           # The controller chart exposes unauthenticated metrics on port 8080 over plain HTTP.
           # Unlike the shared endpointslice job above, this scrape does not honor scheme annotations or bearer tokens.
           # The job is intentionally fixed to the validated controller metrics defaults.
-          # The shared path/port/param anchors stay with the shared job; this job keeps its own explicit endpoint.
+          # The shared annotation-driven path/port/param rules stay with the shared job; this job keeps its own explicit endpoint.
           # The target is scraped by service-name suffix so multiple controller releases can be collected when needed.
           # No bearer token is required for this /metrics endpoint.
           scheme: http
