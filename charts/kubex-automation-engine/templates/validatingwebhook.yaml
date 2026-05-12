@@ -116,6 +116,29 @@ webhooks:
     service:
       name: {{ include "kubex-automation-engine.fullname" . }}-webhook-service
       namespace: {{ include "kubex-automation-engine.namespace" . }}
+      path: /validate-rightsizing-kubex-ai-v1alpha1-clusterwidegpurebalancingpolicy
+  failurePolicy: {{ .Values.webhook.failurePolicy }}
+  name: vclusterwidegpurebalancingpolicy-v1alpha1.kb.io
+  rules:
+  - apiGroups:
+    - rightsizing.kubex.ai
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - clusterwidegpurebalancingpolicies
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    {{- if not .Values.webhook.certManager.enabled }}
+    caBundle: {{ .caCert }}
+    {{- end }}
+    service:
+      name: {{ include "kubex-automation-engine.fullname" . }}-webhook-service
+      namespace: {{ include "kubex-automation-engine.namespace" . }}
       path: /validate-rightsizing-kubex-ai-v1alpha1-globalconfiguration
   failurePolicy: {{ .Values.webhook.failurePolicy }}
   name: vglobalconfiguration-v1alpha1.kb.io
@@ -126,8 +149,55 @@ webhooks:
     - v1alpha1
     operations:
     - CREATE
+    - UPDATE
     resources:
     - globalconfigurations
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    {{- if not .Values.webhook.certManager.enabled }}
+    caBundle: {{ .caCert }}
+    {{- end }}
+    service:
+      name: {{ include "kubex-automation-engine.fullname" . }}-webhook-service
+      namespace: {{ include "kubex-automation-engine.namespace" . }}
+      path: /validate-rightsizing-kubex-ai-v1alpha1-gpuconsolidationpolicy
+  failurePolicy: {{ .Values.webhook.failurePolicy }}
+  name: vgpuconsolidationpolicy-v1alpha1.kb.io
+  rules:
+  - apiGroups:
+    - rightsizing.kubex.ai
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - gpuconsolidationpolicies
+  sideEffects: None
+- admissionReviewVersions:
+  - v1
+  clientConfig:
+    {{- if not .Values.webhook.certManager.enabled }}
+    caBundle: {{ .caCert }}
+    {{- end }}
+    service:
+      name: {{ include "kubex-automation-engine.fullname" . }}-webhook-service
+      namespace: {{ include "kubex-automation-engine.namespace" . }}
+      path: /validate-rightsizing-kubex-ai-v1alpha1-gpurebalancingpolicy
+  failurePolicy: {{ .Values.webhook.failurePolicy }}
+  name: vgpurebalancingpolicy-v1alpha1.kb.io
+  rules:
+  - apiGroups:
+    - rightsizing.kubex.ai
+    apiVersions:
+    - v1alpha1
+    operations:
+    - CREATE
+    - UPDATE
+    resources:
+    - gpurebalancingpolicies
   sideEffects: None
 - admissionReviewVersions:
   - v1

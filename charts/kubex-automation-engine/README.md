@@ -36,8 +36,8 @@ The Helm chart supports both Helm-managed configuration and manually managed cus
 
 Important:
 
-- The Helm-managed `scope` and `policy.policies` values preserve the existing values-driven flow from `values-edit.yaml` by generating `AutomationStrategy` and `ClusterProactivePolicy`, but those CRs can also be created and managed independently of Helm
-- `ProactivePolicy`, `StaticPolicy`, `ClusterStaticPolicy`, and `ClusterAutomationStrategy` are supported by the controller but are managed as separate CR manifests today
+- The Helm-managed `scope` and `policy.policies` values preserve the existing values-driven flow from `values-edit.yaml` by generating `ClusterAutomationStrategy` and `ClusterProactivePolicy`, but those CRs can also be created and managed independently of Helm
+- `ProactivePolicy`, `StaticPolicy`, `ClusterStaticPolicy`, and namespaced `AutomationStrategy` are supported by the controller but are managed as separate CR manifests today
 
 ## Core Components
 
@@ -101,6 +101,7 @@ This guide covers:
 | **[Global Configuration Reference](./docs/Global-Configuration.md)** | Field-by-field reference for the `GlobalConfiguration` custom resource |
 | **[Policy Configuration](./docs/Policy-Configuration.md)** | Configure strategies, policy scope, precedence, and Helm-managed policy generation |
 | **[Policy Evaluation Reference](./docs/Policy-Evaluation.md)** | Policy type precedence configuration via the `PolicyEvaluation` singleton |
+| **[GPU Sharing with KAI](./docs/GPU-Sharing-with-KAI.md)** | Configure KAI-backed GPU sharing, rebalancing, and early consolidation |
 | **[Apply Updates](./docs/Getting-Started.md#apply-configuration-updates)** | Re-run `helm upgrade` after configuration changes |
 
 ## Advanced Topics
