@@ -1,7 +1,7 @@
 apiVersion: v2
 description: Kubex Collection Stack for GKE Autopilot Clusters
 name: kubex-collection-gke-autopilot
-version: 1.0.6
+version: 1.0.7
 type: application
 icon: https://www.kubex.ai/wp-content/uploads/kubex-by-densify-logo.png
 dependencies:
@@ -9,7 +9,7 @@ dependencies:
     version: "4.*.*"
     repository: https://densify-dev.github.io/helm-charts
   - name: kube-state-metrics
-    version: "6.*.*"
+    version: "7.*.*"
     repository: https://prometheus-community.github.io/helm-charts
     condition: stack.runsInGKEAutopilot
 keywords:

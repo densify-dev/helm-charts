@@ -1,7 +1,7 @@
 apiVersion: v2
 description: Kubex Collection Stack
 name: kubex-automation-stack
-version: 1.0.11
+version: 1.0.12
 type: application
 icon: https://www.kubex.ai/wp-content/uploads/kubex-by-densify-logo.png
 dependencies:
@@ -9,7 +9,7 @@ dependencies:
     version: "4.*.*"
     repository: https://densify-dev.github.io/helm-charts
   - name: prometheus
-    version: "27.*.*"
+    version: "29.*.*"
     repository: https://prometheus-community.github.io/helm-charts
     condition: stack.prometheus.deploy
   - name: k8s-ephemeral-storage-metrics
