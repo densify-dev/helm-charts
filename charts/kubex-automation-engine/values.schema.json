@@ -13,6 +13,10 @@
           "properties": {
             "host": {
               "type": "string"
+            },
+            "scheme": {
+              "type": "string",
+              "enum": ["http", "https"]
             }
           }
         },
@@ -158,10 +162,7 @@
           "type": "boolean"
         },
         "fsGroup": {
-          "type": [
-            "integer",
-            "null"
-          ]
+          "type": ["integer", "null"]
         },
         "fsGroupChangePolicy": {
           "type": "string"
@@ -320,20 +321,13 @@
         }
       },
       "then": {
-        "required": [
-          "kubex",
-          "kubexCredentials"
-        ],
+        "required": ["kubex", "kubexCredentials"],
         "properties": {
           "kubex": {
-            "required": [
-              "url"
-            ],
+            "required": ["url"],
             "properties": {
               "url": {
-                "required": [
-                  "host"
-                ],
+                "required": ["host"],
                 "properties": {
                   "host": {
                     "minLength": 1

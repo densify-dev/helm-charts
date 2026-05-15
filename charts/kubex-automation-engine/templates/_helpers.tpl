@@ -4,7 +4,7 @@ Validate kubexCredentials.epassword is provided if createSecrets is true
 {{- define "kubex-automation-engine.kubexEpassword" -}}
 {{- if .Values.createSecrets }}
 {{- .Values.kubexCredentials.epassword | required "An epassword must be provided in values.yaml under kubexCredentials.epassword" -}}
-{{- end }}
+{{- end -}}
 {{- end }}
 
 {{/*

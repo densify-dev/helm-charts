@@ -46,6 +46,7 @@ This document maps the current Helm chart values to the resources created by the
 | Key | Description |
 | --- | --- |
 | `kubex.url.host` | Kubex hostname, for example `example.kubex.ai` |
+| `kubex.url.scheme` | Scheme used when deriving `DENSIFY_BASE_URL` from `kubex.url.host` |
 | `kubex.clusterName` | Cluster identifier presented to Kubex |
 | `kubexCredentials.username` | Required when `createSecrets=true` |
 | `kubexCredentials.epassword` | Required when `createSecrets=true` |
@@ -87,6 +88,8 @@ stringData:
 ```
 
 Keep `kubex.url.host` set in your values file so the release configuration still documents the target Kubex instance, even when the secret is managed outside Helm.
+
+For non-TLS upstream endpoints, set `kubex.url.scheme` to `http`.
 
 Note: `kubexCredentials.userSecretName` is currently not consumed by this chart. When `createSecrets=false`, set `gateway.configSecretName` instead.
 
