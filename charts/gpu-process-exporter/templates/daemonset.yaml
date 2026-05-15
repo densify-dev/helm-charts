@@ -42,7 +42,7 @@ spec:
               value: {{ include "gpu-process-exporter.port" . | quote }}
             {{- if .Values.nvmlSearchPath }}
             - name: NVML_SEARCH_PATH
-              value: {{ .Values.nvmlSearchPath }}
+              value: {{ .Values.nvmlSearchPath | quote }}
             {{- end}}
             - name: SCRAPE_INTERVAL
               value: {{ include "gpu-process-exporter.prometheusScrapeInterval" . | quote }}
@@ -75,6 +75,8 @@ metadata:
   labels:
     app.kubernetes.io/name: {{ .Chart.Name }}
     app.kubernetes.io/instance: {{ .Release.Name }}
+{{- $hasAnnotations := or .Values.prometheusScrape.annotate .Values.service.annotations }}
+{{- if $hasAnnotations }}
   annotations:
     {{- if .Values.prometheusScrape.annotate }}
     prometheus.io/scrape: {{ .Values.prometheusScrape.annotate | quote }}
@@ -84,6 +86,7 @@ metadata:
     {{- if .Values.service.annotations }}
     {{- toYaml .Values.service.annotations | nindent 4 }}
     {{- end }}
+{{- end }}
 spec:
   selector:
     app.kubernetes.io/name: {{ .Chart.Name }}
