@@ -26,6 +26,7 @@ kubexCredentials:
 kubex:
   url:
     host: <customerName>.kubex.ai # mandatory: <instance>.kubex.ai
+    scheme: https # set to http for non-TLS local endpoints
   # REQUIRED: Your cluster identifier in Kubex
   clusterName: "<clusterName>" # mandatory: <clusterName>
 

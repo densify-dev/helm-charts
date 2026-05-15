@@ -1,0 +1,501 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.19.0
+  name: clusterwidegpurebalancingpolicies.rightsizing.kubex.ai
+spec:
+  group: rightsizing.kubex.ai
+  names:
+    kind: ClusterWideGpuRebalancingPolicy
+    listKind: ClusterWideGpuRebalancingPolicyList
+    plural: clusterwidegpurebalancingpolicies
+    singular: clusterwidegpurebalancingpolicy
+  scope: Cluster
+  versions:
+  - name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: ClusterWideGpuRebalancingPolicy is the Schema for the clusterwidegpurebalancingpolicies
+          API.
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: spec defines the desired state of ClusterWideGpuRebalancingPolicy
+            properties:
+              automationStrategyRef:
+                description: automationStrategyRef references the ClusterAutomationStrategy
+                  to use when applying this policy.
+                properties:
+                  name:
+                    description: name is the name of the referenced strategy.
+                    minLength: 1
+                    type: string
+                required:
+                - name
+                type: object
+              experimental:
+                description: |-
+                  experimental must be set to acknowledge unstable GPU/KAI behavior.
+                  EXPERIMENTAL: this API is subject to breaking changes or removal without notice.
+                properties:
+                  gpuKaiContract:
+                    description: |-
+                      gpuKaiContract explicitly acknowledges that GPU/KAI fields are experimental and may change.
+                      EXPERIMENTAL: this acknowledgement value is required for unstable GPU/KAI behavior.
+                    enum:
+                    - none
+                    - v1alpha1-2026-04
+                    type: string
+                required:
+                - gpuKaiContract
+                type: object
+              metrics:
+                description: metrics configures compute and memory utilization signals
+                  used for rebalancing.
+                properties:
+                  compute:
+                    description: compute configures the GPU compute utilization signal.
+                    properties:
+                      prometheus:
+                        description: prometheus configures metric and label mapping
+                          used for utilization checks.
+                        properties:
+                          containerLabel:
+                            description: containerLabel is the metric label key containing
+                              the container name.
+                            minLength: 1
+                            pattern: ^[A-Za-z_][A-Za-z0-9_]*$
+                            type: string
+                          metric:
+                            description: metric is the Prometheus metric name used
+                              to evaluate GPU utilization.
+                            minLength: 1
+                            pattern: ^[A-Za-z_:][A-Za-z0-9_:]*$
+                            type: string
+                          namespaceLabel:
+                            description: namespaceLabel is the metric label key containing
+                              the namespace name.
+                            minLength: 1
+                            pattern: ^[A-Za-z_][A-Za-z0-9_]*$
+                            type: string
+                          podLabel:
+                            description: podLabel is the metric label key containing
+                              the pod name.
+                            minLength: 1
+                            pattern: ^[A-Za-z_][A-Za-z0-9_]*$
+                            type: string
+                        required:
+                        - containerLabel
+                        - metric
+                        - namespaceLabel
+                        - podLabel
+                        type: object
+                      scaleBack:
+                        default:
+                          headroomPercent: 20
+                          metricsWindow: 10m
+                          thresholdPercent: 80
+                        description: scaleBack configures GPU scale-back behavior
+                          and thresholds for this metric.
+                        properties:
+                          headroomPercent:
+                            default: 20
+                            description: headroomPercent adds extra GPU headroom above
+                              inferred usage in the scale-back target.
+                            format: int32
+                            minimum: 0
+                            type: integer
+                          metricsWindow:
+                            default: 10m
+                            description: metricsWindow is the Prometheus lookback
+                              window for sustained threshold checks.
+                            type: string
+                            x-kubernetes-validations:
+                            - message: must be at least 1 minute
+                              rule: duration(self) >= duration('1m')
+                          thresholdPercent:
+                            default: 80
+                            description: thresholdPercent is the absolute utilization
+                              percentage threshold that triggers scale-back.
+                            format: int32
+                            minimum: 1
+                            type: integer
+                        type: object
+                      upsize:
+                        default:
+                          headroomPercent: 20
+                          maxPercent: 200
+                          metricsWindow: 10m
+                          thresholdPercent: 120
+                        description: upsize configures GPU upsize behavior and thresholds
+                          for this metric.
+                        properties:
+                          headroomPercent:
+                            default: 20
+                            description: headroomPercent adds extra GPU headroom above
+                              inferred usage in the upsize target.
+                            format: int32
+                            minimum: 0
+                            type: integer
+                          maxPercent:
+                            default: 200
+                            description: maxPercent caps growth relative to the stored
+                              baseline allocation.
+                            format: int32
+                            minimum: 1
+                            type: integer
+                          metricsWindow:
+                            default: 10m
+                            description: metricsWindow is the Prometheus lookback
+                              window for sustained threshold checks.
+                            type: string
+                            x-kubernetes-validations:
+                            - message: must be at least 1 minute
+                              rule: duration(self) >= duration('1m')
+                          thresholdPercent:
+                            default: 120
+                            description: thresholdPercent is the utilization percentage
+                              threshold that triggers resizing.
+                            format: int32
+                            minimum: 1
+                            type: integer
+                        type: object
+                    required:
+                    - prometheus
+                    type: object
+                  memory:
+                    description: memory configures the GPU memory utilization signal.
+                    properties:
+                      prometheus:
+                        description: prometheus configures metric and label mapping
+                          used for utilization checks.
+                        properties:
+                          containerLabel:
+                            description: containerLabel is the metric label key containing
+                              the container name.
+                            minLength: 1
+                            pattern: ^[A-Za-z_][A-Za-z0-9_]*$
+                            type: string
+                          metric:
+                            description: metric is the Prometheus metric name used
+                              to evaluate GPU utilization.
+                            minLength: 1
+                            pattern: ^[A-Za-z_:][A-Za-z0-9_:]*$
+                            type: string
+                          namespaceLabel:
+                            description: namespaceLabel is the metric label key containing
+                              the namespace name.
+                            minLength: 1
+                            pattern: ^[A-Za-z_][A-Za-z0-9_]*$
+                            type: string
+                          podLabel:
+                            description: podLabel is the metric label key containing
+                              the pod name.
+                            minLength: 1
+                            pattern: ^[A-Za-z_][A-Za-z0-9_]*$
+                            type: string
+                        required:
+                        - containerLabel
+                        - metric
+                        - namespaceLabel
+                        - podLabel
+                        type: object
+                      scaleBack:
+                        default:
+                          headroomPercent: 20
+                          metricsWindow: 10m
+                          thresholdPercent: 80
+                        description: scaleBack configures GPU scale-back behavior
+                          and thresholds for this metric.
+                        properties:
+                          headroomPercent:
+                            default: 20
+                            description: headroomPercent adds extra GPU headroom above
+                              inferred usage in the scale-back target.
+                            format: int32
+                            minimum: 0
+                            type: integer
+                          metricsWindow:
+                            default: 10m
+                            description: metricsWindow is the Prometheus lookback
+                              window for sustained threshold checks.
+                            type: string
+                            x-kubernetes-validations:
+                            - message: must be at least 1 minute
+                              rule: duration(self) >= duration('1m')
+                          thresholdPercent:
+                            default: 80
+                            description: thresholdPercent is the absolute utilization
+                              percentage threshold that triggers scale-back.
+                            format: int32
+                            minimum: 1
+                            type: integer
+                        type: object
+                      upsize:
+                        default:
+                          headroomPercent: 20
+                          maxPercent: 200
+                          metricsWindow: 10m
+                          thresholdPercent: 120
+                        description: upsize configures GPU upsize behavior and thresholds
+                          for this metric.
+                        properties:
+                          headroomPercent:
+                            default: 20
+                            description: headroomPercent adds extra GPU headroom above
+                              inferred usage in the upsize target.
+                            format: int32
+                            minimum: 0
+                            type: integer
+                          maxPercent:
+                            default: 200
+                            description: maxPercent caps growth relative to the stored
+                              baseline allocation.
+                            format: int32
+                            minimum: 1
+                            type: integer
+                          metricsWindow:
+                            default: 10m
+                            description: metricsWindow is the Prometheus lookback
+                              window for sustained threshold checks.
+                            type: string
+                            x-kubernetes-validations:
+                            - message: must be at least 1 minute
+                              rule: duration(self) >= duration('1m')
+                          thresholdPercent:
+                            default: 120
+                            description: thresholdPercent is the utilization percentage
+                              threshold that triggers resizing.
+                            format: int32
+                            minimum: 1
+                            type: integer
+                        type: object
+                    required:
+                    - prometheus
+                    type: object
+                required:
+                - compute
+                - memory
+                type: object
+              minPodMetricsAge:
+                default: 15m
+                description: |-
+                  minPodMetricsAge is the minimum pod age required before pod metrics are considered.
+                  Pods younger than this duration are skipped for metric-based rebalancing checks.
+                type: string
+                x-kubernetes-validations:
+                - message: must be zero or at least 1 minute
+                  rule: self == '' || duration(self) == duration('0s') || duration(self)
+                    >= duration('1m')
+              scope:
+                description: scope narrows the workloads and namespaces this policy
+                  applies to.
+                properties:
+                  labelSelector:
+                    description: labelSelector limits the workload objects (e.g.,
+                      Deployments, CronJobs) this policy applies to.
+                    properties:
+                      matchExpressions:
+                        description: matchExpressions is a list of label selector
+                          requirements. The requirements are ANDed.
+                        items:
+                          description: |-
+                            A label selector requirement is a selector that contains values, a key, and an operator that
+                            relates the key and values.
+                          properties:
+                            key:
+                              description: key is the label key that the selector
+                                applies to.
+                              type: string
+                            operator:
+                              description: |-
+                                operator represents a key's relationship to a set of values.
+                                Valid operators are In, NotIn, Exists and DoesNotExist.
+                              type: string
+                            values:
+                              description: |-
+                                values is an array of string values. If the operator is In or NotIn,
+                                the values array must be non-empty. If the operator is Exists or DoesNotExist,
+                                the values array must be empty. This array is replaced during a strategic
+                                merge patch.
+                              items:
+                                type: string
+                              type: array
+                              x-kubernetes-list-type: atomic
+                          required:
+                          - key
+                          - operator
+                          type: object
+                        type: array
+                        x-kubernetes-list-type: atomic
+                      matchLabels:
+                        additionalProperties:
+                          type: string
+                        description: |-
+                          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+                          map is equivalent to an element of matchExpressions, whose key field is "key", the
+                          operator is "In", and the values array contains only "value". The requirements are ANDed.
+                        type: object
+                    type: object
+                    x-kubernetes-map-type: atomic
+                  namespaceSelector:
+                    description: namespaceSelector restricts the namespaces this policy
+                      applies to.
+                    properties:
+                      operator:
+                        description: operator determines how the listed values are
+                          evaluated.
+                        enum:
+                        - In
+                        - NotIn
+                        type: string
+                      values:
+                        description: values contains the namespace name patterns to
+                          match.
+                        items:
+                          type: string
+                        minItems: 1
+                        type: array
+                    required:
+                    - operator
+                    - values
+                    type: object
+                  workloadTypes:
+                    default:
+                    - Deployment
+                    - StatefulSet
+                    - CronJob
+                    - Rollout
+                    - Job
+                    - AnalysisRun
+                    - DaemonSet
+                    description: workloadTypes limits the workload kinds this policy
+                      applies to. When omitted, all supported workload types are targeted.
+                    items:
+                      description: WorkloadType enumerates the workload kinds a policy
+                        can target.
+                      enum:
+                      - Deployment
+                      - StatefulSet
+                      - DaemonSet
+                      - CronJob
+                      - Rollout
+                      - Job
+                      - AnalysisRun
+                      type: string
+                    type: array
+                required:
+                - namespaceSelector
+                type: object
+              weight:
+                default: 0
+                description: |-
+                  weight determines which policy wins when multiple policies of the same kind match.
+                  Higher weights take precedence. When weights are equal, older policies win.
+                format: int32
+                minimum: 0
+                type: integer
+            required:
+            - automationStrategyRef
+            - experimental
+            - metrics
+            - scope
+            type: object
+          status:
+            description: status defines the observed state of ClusterWideGpuRebalancingPolicy
+            properties:
+              conditions:
+                description: |-
+                  conditions represent the current state of the StaticPolicy resource.
+                  Each condition has a unique type and reflects the status of a specific aspect of the resource.
+
+                  Standard condition types include:
+                  - "Available": the resource is fully functional
+                  - "Progressing": the resource is being created or updated
+                  - "Degraded": the resource failed to reach or maintain its desired state
+
+                  The status of each condition is one of True, False, or Unknown.
+                items:
+                  description: Condition contains details for one aspect of the current
+                    state of this API Resource.
+                  properties:
+                    lastTransitionTime:
+                      description: |-
+                        lastTransitionTime is the last time the condition transitioned from one status to another.
+                        This should be when the underlying condition changed.  If that is not known, then using the time when the API field changed is acceptable.
+                      format: date-time
+                      type: string
+                    message:
+                      description: |-
+                        message is a human readable message indicating details about the transition.
+                        This may be an empty string.
+                      maxLength: 32768
+                      type: string
+                    observedGeneration:
+                      description: |-
+                        observedGeneration represents the .metadata.generation that the condition was set based upon.
+                        For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date
+                        with respect to the current state of the instance.
+                      format: int64
+                      minimum: 0
+                      type: integer
+                    reason:
+                      description: |-
+                        reason contains a programmatic identifier indicating the reason for the condition's last transition.
+                        Producers of specific condition types may define expected values and meanings for this field,
+                        and whether the values are considered a guaranteed API.
+                        The value should be a CamelCase string.
+                        This field may not be empty.
+                      maxLength: 1024
+                      minLength: 1
+                      pattern: ^[A-Za-z]([A-Za-z0-9_,:]*[A-Za-z0-9_])?$
+                      type: string
+                    status:
+                      description: status of the condition, one of True, False, Unknown.
+                      enum:
+                      - "True"
+                      - "False"
+                      - Unknown
+                      type: string
+                    type:
+                      description: type of condition in CamelCase or in foo.example.com/CamelCase.
+                      maxLength: 316
+                      pattern: ^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$
+                      type: string
+                  required:
+                  - lastTransitionTime
+                  - message
+                  - reason
+                  - status
+                  - type
+                  type: object
+                type: array
+                x-kubernetes-list-map-keys:
+                - type
+                x-kubernetes-list-type: map
+            type: object
+        required:
+        - spec
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}

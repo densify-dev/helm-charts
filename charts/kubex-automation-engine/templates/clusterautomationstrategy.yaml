@@ -8,6 +8,10 @@ metadata:
   labels:
     {{- include "kubex-automation-engine.labels" $ | nindent 4 }}
 spec:
+  {{- if and $policyConfig.enablement $policyConfig.enablement.gpu }}
+  experimental:
+    gpuKaiContract: {{ $.Values.experimental.gpuKaiContract | quote }}
+  {{- end }}
   {{- if $policyConfig.enablement }}
   enablement:
     {{- if $policyConfig.enablement.cpu }}
@@ -129,6 +133,40 @@ spec:
         {{- if $memLim.containers }}
         containers:
           {{- range $containerName, $bounds := $memLim.containers }}
+          {{ $containerName }}:
+            {{- if $bounds.floor }}
+            floor: {{ $bounds.floor | quote }}
+            {{- end }}
+            {{- if $bounds.ceiling }}
+            ceiling: {{ $bounds.ceiling | quote }}
+            {{- end }}
+          {{- end }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+    {{- if $policyConfig.enablement.gpu }}
+    {{- $gpuReq := default $policyConfig.enablement.gpu.request $policyConfig.enablement.gpu.requests }}
+    gpu:
+      {{- if $gpuReq }}
+      requests:
+        {{- if hasKey $gpuReq "downsize" }}
+        downsize: {{ $gpuReq.downsize }}
+        {{- end }}
+        {{- if hasKey $gpuReq "upsize" }}
+        upsize: {{ $gpuReq.upsize }}
+        {{- end }}
+        {{- if hasKey $gpuReq "setFromUnspecified" }}
+        setFromUnspecified: {{ $gpuReq.setFromUnspecified }}
+        {{- end }}
+        {{- if $gpuReq.floor }}
+        floor: {{ $gpuReq.floor | quote }}
+        {{- end }}
+        {{- if $gpuReq.ceiling }}
+        ceiling: {{ $gpuReq.ceiling | quote }}
+        {{- end }}
+        {{- if $gpuReq.containers }}
+        containers:
+          {{- range $containerName, $bounds := $gpuReq.containers }}
           {{ $containerName }}:
             {{- if $bounds.floor }}
             floor: {{ $bounds.floor | quote }}
