@@ -1,9 +1,9 @@
 # Kubex Automation Stack Helm Chart for GKE Autopilot Clusters
 
 <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://www.kubex.ai/wp-content/uploads/kubex-by-densify-logo-reverse.png">
-    <source media="(prefers-color-scheme: light)" srcset="https://www.kubex.ai/wp-content/uploads/kubex-by-densify-logo.png">
-    <img src="https://www.kubex.ai/wp-content/uploads/kubex-by-densify-logo.png" width="300">
+    <source media="(prefers-color-scheme: dark)" srcset="https://kubex.ai/wp-content/uploads/kubex-logo-reverse-landscape.svg">
+    <source media="(prefers-color-scheme: light)" srcset="https://kubex.ai/wp-content/uploads/kubex-logo-landscape.svg">
+    <img src="https://kubex.ai/wp-content/uploads/kubex-logo-landscape.svg" width="300">
 </picture>
 
 ## Introduction
