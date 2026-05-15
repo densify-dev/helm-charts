@@ -1,0 +1,219 @@
+{
+  "$schema": "https://json-schema.org/schema#",
+  "type": "object",
+  "required": [
+    "image"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "serviceAccount": {
+            "type": "object",
+            "required": [
+              "create"
+            ],
+            "properties": {
+              "create": {
+                "const": false
+              }
+            }
+          }
+        },
+        "required": [
+          "serviceAccount"
+        ]
+      },
+      "then": {
+        "properties": {
+          "serviceAccount": {
+            "type": "object",
+            "required": [
+              "name"
+            ],
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "properties": {
+    "image": {
+      "type": "object",
+      "required": [
+        "tag"
+      ],
+      "properties": {
+        "repository": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "tag": {
+          "type": "string",
+          "minLength": 1
+        },
+        "pullPolicy": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "",
+            "Always",
+            "IfNotPresent",
+            "Never",
+            null
+          ]
+        }
+      },
+      "additionalProperties": true
+    },
+    "serviceAccount": {
+      "type": "object",
+      "properties": {
+        "create": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "name": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": true
+    },
+    "rbac": {
+      "type": "object",
+      "properties": {
+        "create": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "clusterRoleName": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "clusterRoleBindingName": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": true
+    },
+    "prometheusScrape": {
+      "type": "object",
+      "properties": {
+        "annotate": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "interval": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": true
+    },
+    "port": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 1,
+      "maximum": 65535
+    },
+    "service": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "",
+            "ClusterIP",
+            "NodePort",
+            "LoadBalancer",
+            "ExternalName",
+            null
+          ]
+        },
+        "annotations": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": true
+    },
+    "resources": {
+      "type": "object",
+      "properties": {
+        "requests": {
+          "type": "object",
+          "properties": {
+            "cpu": {
+              "type": "string"
+            },
+            "memory": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": true
+        },
+        "limits": {
+          "type": "object",
+          "properties": {
+            "cpu": {
+              "type": "string"
+            },
+            "memory": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": true
+    },
+    "hostProcMount": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "nvmlSearchPath": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "additionalProperties": true
+}

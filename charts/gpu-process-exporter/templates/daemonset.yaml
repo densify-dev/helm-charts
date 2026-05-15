@@ -1,0 +1,103 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ .Chart.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: {{ .Chart.Name }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ .Chart.Name }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ .Chart.Name }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      hostPID: true
+      nodeSelector:
+        nvidia.com/gpu.present: "true"
+      tolerations:
+        - key: nvidia.com/gpu
+          operator: Exists
+          effect: NoSchedule
+      serviceAccountName: {{ include "gpu-process-exporter.serviceAccountName" . }}
+      containers:
+        - name: exporter
+          image: "{{ include "gpu-process-exporter.imageRepository" . }}:{{ include "gpu-process-exporter.imageTag" . }}"
+          imagePullPolicy: {{ include "gpu-process-exporter.imagePullPolicy" . }}
+          env:
+            - name: NVIDIA_VISIBLE_DEVICES
+              value: "all"
+            - name: NVIDIA_DRIVER_CAPABILITIES
+              value: "utility"
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: EXPORTER_PORT
+              value: {{ include "gpu-process-exporter.port" . | quote }}
+            {{- if .Values.nvmlSearchPath }}
+            - name: NVML_SEARCH_PATH
+              value: {{ .Values.nvmlSearchPath | quote }}
+            {{- end}}
+            - name: SCRAPE_INTERVAL
+              value: {{ include "gpu-process-exporter.prometheusScrapeInterval" . | quote }}
+          ports:
+            - containerPort: {{ include "gpu-process-exporter.port" . }}
+              name: metrics
+          securityContext:
+            privileged: true
+            runAsUser: 0
+{{- if .Values.resources }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+{{- end }}
+          volumeMounts:
+            - name: host-root
+              mountPath: /host/root
+              readOnly: true
+            - name: host-proc
+              mountPath: /host/proc
+              readOnly: true
+      volumes:
+        - name: host-root
+          hostPath:
+            path: /
+        - name: host-proc
+          hostPath:
+            path: {{ include "gpu-process-exporter.hostProcMount" . }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Chart.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: {{ .Chart.Name }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+{{- $hasAnnotations := or .Values.prometheusScrape.annotate (and .Values.service.annotations (gt (len .Values.service.annotations) 0)) }}
+{{- if $hasAnnotations }}
+  annotations:
+    {{- if .Values.prometheusScrape.annotate }}
+    prometheus.io/scrape: {{ .Values.prometheusScrape.annotate | quote }}
+    prometheus.io/port: {{ include "gpu-process-exporter.port" . | quote }}
+    prometheus.io/path: "/metrics"
+    {{- end }}
+    {{- if .Values.service.annotations }}
+    {{- toYaml .Values.service.annotations | nindent 4 }}
+    {{- end }}
+{{- end }}
+spec:
+  selector:
+    app.kubernetes.io/name: {{ .Chart.Name }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+  ports:
+    - name: metrics
+      protocol: TCP
+      port: {{ include "gpu-process-exporter.port" . }}
+      targetPort: {{ include "gpu-process-exporter.port" . }}
+  type: {{ include "gpu-process-exporter.serviceType" . }}

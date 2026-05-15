@@ -1,9 +1,9 @@
 # Kubex Helm Charts
 
 <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://www.kubex.ai/wp-content/uploads/kubex-by-densify-logo-reverse.png">
-    <source media="(prefers-color-scheme: light)" srcset="https://www.kubex.ai/wp-content/uploads/kubex-by-densify-logo.png">
-    <img src="https://www.kubex.ai/wp-content/uploads/kubex-by-densify-logo.png" width="300">
+    <source media="(prefers-color-scheme: dark)" srcset="https://kubex.ai/wp-content/uploads/kubex-logo-reverse-landscape.svg">
+    <source media="(prefers-color-scheme: light)" srcset="https://kubex.ai/wp-content/uploads/kubex-logo-landscape.svg">
+    <img src="https://kubex.ai/wp-content/uploads/kubex-logo-landscape.svg" width="300">
 </picture>
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
@@ -42,7 +42,9 @@ The following charts are meant to be used **only** as dependencies of the [Insta
 
 2. [K8s Ephemeral Storage Metrics](https://github.com/densify-dev/helm-charts/tree/master/charts/k8s-ephemeral-storage-metrics).
 
-3. [Node Labeler](https://github.com/densify-dev/helm-charts/tree/master/charts/node-labeler).
+3. [GPU Process Exporter](https://github.com/densify-dev/helm-charts/tree/master/charts/gpu-process-exporter).
+
+4. [Node Labeler](https://github.com/densify-dev/helm-charts/tree/master/charts/node-labeler).
 
 ## Usage
 
