@@ -13,7 +13,8 @@ kubex:
   url:
     # -- Kubex instance hostname (e.g., <customerName>.kubex.ai)
     host: ""
-
+    # -- URL scheme used when deriving DENSIFY_BASE_URL from host
+    scheme: "https"
   # -- Cluster name to identify this cluster in Kubex (required)
   clusterName: ""
 
