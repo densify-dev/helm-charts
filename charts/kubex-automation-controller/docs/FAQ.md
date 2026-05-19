@@ -85,40 +85,40 @@ A scope references a policy by name, allowing you to apply different automation 
 
 **Pausing automation for individual pods:**
 
-Add the annotation to your pod owner's template (Deployment, StatefulSet, DaemonSet, etc.):
+Add the annotation to the Pod itself, because the controller and webhook read it from Pod objects. If you want all pods created by a workload such as a `Deployment`, `StatefulSet`, or `DaemonSet` to have this annotation, add it to the workload's pod template (`spec.template.metadata.annotations`) so it is copied onto every Pod. Adding the annotation only to the workload object's own `metadata.annotations` does not affect pod behavior.
 
 ```yaml
 # Permanent pause
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: v1
+kind: Pod
 metadata:
-  name: my-app
+  name: my-app-pod
+  annotations:
+    rightsizing.kubex.ai/pause-until: "infinite"
 spec:
-  template:
-    metadata:
-      annotations:
-        rightsizing.kubex.ai/pause-until: "infinite"
-    spec:
-      containers:
-      - name: app
-        # ... container spec
+  containers:
+  - name: app
+    # ... container spec
 ```
 
 ```yaml
 # Time-based pause (resumes after specified time)
-apiVersion: apps/v1
-kind: StatefulSet
+apiVersion: v1
+kind: Pod
 metadata:
-  name: my-app
+  name: my-app-pod
+  annotations:
+    rightsizing.kubex.ai/pause-until: "2025-12-31T23:59:59Z"  # RFC3339 timestamp
 spec:
-  template:
-    metadata:
-      annotations:
-        rightsizing.kubex.ai/pause-until: "2025-12-31T23:59:59Z"  # RFC3339 timestamp
-    spec:
-      containers:
-      - name: app
-        # ... container spec
+  containers:
+  - name: app
+    # ... container spec
+```
+
+```bash
+# Existing pod examples
+kubectl annotate pod my-app-pod rightsizing.kubex.ai/pause-until="infinite"
+kubectl annotate pod my-app-pod rightsizing.kubex.ai/pause-until="2025-12-31T23:59:59Z"
 ```
 
 **Usage:**
