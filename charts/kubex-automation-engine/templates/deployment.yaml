@@ -10,6 +10,9 @@ kind: Deployment
 metadata:
   name: {{ include "kubex-automation-engine.fullname" . }}
   namespace: {{ include "kubex-automation-engine.namespace" . }}
+  annotations:
+    # This annotation is set by default so that the automation doesn't attempt to automate itself
+    rightsizing.kubex.ai/pause-until: infinite
   labels:
     {{- include "kubex-automation-engine.labels" . | nindent 4 }}
 spec:

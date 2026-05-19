@@ -130,6 +130,7 @@ rules:
   - globalconfigurations
   - gpuconsolidationpolicies
   - gpurebalancingpolicies
+  - podaffinities
   - policyevaluations
   - proactivepolicies
   - staticpolicies
@@ -150,6 +151,7 @@ rules:
   - globalconfigurations/finalizers
   - gpuconsolidationpolicies/finalizers
   - gpurebalancingpolicies/finalizers
+  - podaffinities/finalizers
   - policyevaluations/finalizers
   - proactivepolicies/finalizers
   - staticpolicies/finalizers
@@ -164,6 +166,7 @@ rules:
   - globalconfigurations/status
   - gpuconsolidationpolicies/status
   - gpurebalancingpolicies/status
+  - podaffinities/status
   - policyevaluations/status
   - proactivepolicies/status
   - staticpolicies/status
