@@ -111,7 +111,7 @@ This chart consists of the following subcharts:
 
 ## Documentation
 
-* [Kubex](https://www.docs.kubex.ai)
+* [Kubex](https://docs.kubex.ai)
 
 ## License
 

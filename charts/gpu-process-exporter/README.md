@@ -111,7 +111,7 @@ If your k8s cluster nodes have a non-standard location for the NVML .so files, t
 
 ## Documentation
 
-* [Kubex](https://www.docs.kubex.ai)
+* [Kubex](https://docs.kubex.ai)
 
 ## License
 
