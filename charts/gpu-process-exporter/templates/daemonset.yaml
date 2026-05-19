@@ -43,7 +43,7 @@ spec:
             {{- if .Values.nvmlSearchPath }}
             - name: NVML_SEARCH_PATH
               value: {{ .Values.nvmlSearchPath | quote }}
-            {{- end}}
+            {{- end }}
             - name: SCRAPE_INTERVAL
               value: {{ include "gpu-process-exporter.prometheusScrapeInterval" . | quote }}
           ports:
