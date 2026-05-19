@@ -1,5 +1,11 @@
 # Kubex Automation Engine
 
+<picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://kubex.ai/wp-content/uploads/kubex-logo-reverse-landscape.svg">
+    <source media="(prefers-color-scheme: light)" srcset="https://kubex.ai/wp-content/uploads/kubex-logo-landscape.svg">
+    <img src="https://kubex.ai/wp-content/uploads/kubex-logo-landscape.svg" width="300">
+</picture>
+
 Kubernetes resource optimization with policy-driven rightsizing, admission-time mutation, and proactive resize execution.
 
 # Quick Links

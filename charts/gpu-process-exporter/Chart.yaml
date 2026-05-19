@@ -1,14 +1,14 @@
 apiVersion: v2
-description: Kubex Data Collector
+name: gpu-process-exporter
+description: A Helm chart for gpu-process-exporter
+type: application
 icon: https://kubex.ai/wp-content/uploads/kubex-logo-landscape.svg
+version: 1.0.0
 keywords:
 - kubex
-- densify
-- container
-- optimization
+- gpu
+- process
+- exporter
 maintainers:
 - email: support@kubex.ai
   name: support
-name: container-optimization-data-forwarder
-type: application
-version: 4.0.17
