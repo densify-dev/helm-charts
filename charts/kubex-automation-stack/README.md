@@ -76,16 +76,10 @@ To override any OpenShift defaults, add another values file or `--set` options a
 
 Version 1.0.12 moves the bundled Prometheus jobs from `prometheus.serverFiles.prometheus.yml.scrape_configs` to `prometheus.scrapeConfigs`. If the old values are reused during upgrade, Prometheus can receive both copies and fail because of duplicate scrape job names.
 
-When upgrading from `1.0.11`, add the upgrade overlay after your normal values files:
+When upgrading from `1.0.11`, add the upgrade overlay at the end:
 
 ```shell
-helm upgrade -n kubex -f values-edit.yaml -f <sizing file> -f https://raw.githubusercontent.com/densify-dev/helm-charts/master/charts/kubex-automation-stack/values-upgrade-1.0.11-to-1.0.12.yaml kubex kubex/kubex-automation-stack
-```
-
-For OpenShift installs, keep the OpenShift overlay before this upgrade overlay:
-
-```shell
-helm upgrade -n kubex -f values-edit.yaml -f <sizing file> -f https://raw.githubusercontent.com/densify-dev/helm-charts/master/charts/kubex-automation-stack/values-openshift.yaml -f https://raw.githubusercontent.com/densify-dev/helm-charts/master/charts/kubex-automation-stack/values-upgrade-1.0.11-to-1.0.12.yaml kubex kubex/kubex-automation-stack
+helm upgrade -n kubex --reuse-values -f https://raw.githubusercontent.com/densify-dev/helm-charts/master/charts/kubex-automation-stack/values-upgrade-1.0.11-to-1.0.12.yaml kubex kubex/kubex-automation-stack
 ```
 
 ## Sizing
