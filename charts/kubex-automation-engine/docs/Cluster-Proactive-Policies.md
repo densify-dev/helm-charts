@@ -19,7 +19,7 @@ For the namespaced variant, see [Proactive Policies](./Proactive-Policies.md). F
 | `spec.scope.labelSelector` | none | Kubernetes label selector for matching workloads. |
 | `spec.scope.workloadTypes` | `[Deployment, StatefulSet, CronJob, Rollout, Job, AnalysisRun, DaemonSet]` | Workload kinds this policy applies to. |
 | `spec.scope.namespaceSelector.operator` | none | Namespace selector operator: `In` or `NotIn`. |
-| `spec.scope.namespaceSelector.values` | none | Namespace patterns to include or exclude. |
+| `spec.scope.namespaceSelector.values` | none | Namespace patterns to include or exclude (supports `*` wildcards, e.g. `prod-*`). |
 | `spec.automationStrategyRef.name` | none | Required cluster strategy name. |
 | `spec.weight` | `0` | Higher weight wins when multiple proactive policies match. |
 | `spec.safetyChecks.maxAnalysisAgeDays` | `5` | Rejects old recommendations. |

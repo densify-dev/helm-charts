@@ -4,6 +4,34 @@ Use this sequence when rightsizing does not happen as expected.
 
 For a consolidated map of the controller's safety gates, see [Safety Controls](./Safety-Controls.md).
 
+## 0. Temporarily Enable Debug Logging (and Revert)
+
+Most of the time you only want debug logs briefly. The quickest way is to update the live Deployment args (this triggers a rollout and will be overwritten by the next `helm upgrade`).
+
+Enable debug (temporary):
+
+```bash
+kubectl -n kubex patch deploy/$(kubectl -n kubex get deploy -l app.kubernetes.io/name=kubex-automation-engine -o jsonpath='{.items[0].metadata.name}') --type='json' -p='[{"op":"replace","path":"/spec/template/spec/containers/0/args/3","value":"--zap-log-level=debug"}]'
+```
+
+Revert back to info:
+
+```bash
+kubectl -n kubex patch deploy/$(kubectl -n kubex get deploy -l app.kubernetes.io/name=kubex-automation-engine -o jsonpath='{.items[0].metadata.name}') --type='json' -p='[{"op":"replace","path":"/spec/template/spec/containers/0/args/3","value":"--zap-log-level=info"}]'
+```
+
+If you want the setting to persist across upgrades, use Helm instead:
+
+```bash
+helm upgrade kubex-automation kubex/kubex-automation-engine -n kubex --reuse-values --set 'controllerManager.extraArgs[0]=--zap-log-level=debug'
+```
+
+Revert with Helm:
+
+```bash
+helm upgrade kubex-automation kubex/kubex-automation-engine -n kubex --reuse-values --set 'controllerManager.extraArgs[0]=--zap-log-level=info'
+```
+
 ## 1. Interpret `rightsizing summary` Logs
 
 ```bash

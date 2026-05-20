@@ -72,6 +72,18 @@ Those resources remain fully supported by the controller and can be managed outs
 | `policy.policies.<name>.safetyChecks.maxAnalysisAgeDays` | `ClusterProactivePolicy.spec.safetyChecks.maxAnalysisAgeDays` | Per-policy value wins over top-level `policy.safetyChecks.maxAnalysisAgeDays`. |
 | `policy.safetyChecks.maxAnalysisAgeDays` | `ClusterProactivePolicy.spec.safetyChecks.maxAnalysisAgeDays` | Backward-compatible fallback when not set per policy. |
 
+### Namespace wildcards in `scope[].namespaces.values`
+
+`scope[].namespaces.values` supports shell-style `*` wildcards when matching namespace names (for example: `prod-*`).
+
+```yaml
+scope:
+  - name: platform
+    namespaces:
+      operator: In
+      values: ["prod-*", "staging"]
+```
+
 Important:
 
 - `maxAnalysisAgeDays` is written to generated `ClusterProactivePolicy` resources, not to generated strategies.
