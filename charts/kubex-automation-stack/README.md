@@ -72,6 +72,22 @@ helm install --create-namespace -n kubex -f values-edit.yaml -f <sizing file> -f
 
 To override any OpenShift defaults, add another values file or `--set` options after the OpenShift overlay.
 
+## Upgrading from 1.0.11 to 1.0.12
+
+Version 1.0.12 moves the bundled Prometheus jobs from `prometheus.serverFiles.prometheus.yml.scrape_configs` to `prometheus.scrapeConfigs`. If the old values are reused during upgrade, Prometheus can receive both copies and fail because of duplicate scrape job names.
+
+When upgrading from `1.0.11`, add the upgrade overlay after your normal values files:
+
+```shell
+helm upgrade -n kubex -f values-edit.yaml -f <sizing file> -f https://raw.githubusercontent.com/densify-dev/helm-charts/master/charts/kubex-automation-stack/values-upgrade-1.0.11-to-1.0.12.yaml kubex kubex/kubex-automation-stack
+```
+
+For OpenShift installs, keep the OpenShift overlay before this upgrade overlay:
+
+```shell
+helm upgrade -n kubex -f values-edit.yaml -f <sizing file> -f https://raw.githubusercontent.com/densify-dev/helm-charts/master/charts/kubex-automation-stack/values-openshift.yaml -f https://raw.githubusercontent.com/densify-dev/helm-charts/master/charts/kubex-automation-stack/values-upgrade-1.0.11-to-1.0.12.yaml kubex kubex/kubex-automation-stack
+```
+
 ## Sizing
 
 The following table indicates - depending on the cluster size - which sizing file to use initially. Please note that these are initial sizing settings, once Kubex is running long enough and producing rightsizing recommendations for the stack components, these recommendations should be implemented for optimization.
