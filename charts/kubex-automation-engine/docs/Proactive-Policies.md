@@ -58,3 +58,4 @@ spec:
 - Use namespaced proactive policies when teams own their own namespaces.
 - When multiple proactive policies of the same kind match, higher `weight` wins, then older objects win on ties.
 - For cluster-scoped examples and field references, see [Cluster Proactive Policies](./Cluster-Proactive-Policies.md).
+- EXPERIMENTAL: Recommendations can now include `gpu.gpuOverallOptimal`, which is applied as a proactive `requests.gpu` target. See the [GPU Sharing with KAI](./GPU-Sharing-with-KAI.md) guide for more information.

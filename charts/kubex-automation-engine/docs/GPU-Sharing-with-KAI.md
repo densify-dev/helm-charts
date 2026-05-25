@@ -142,6 +142,15 @@ That allows Kubex Automation Engine to participate in GPU sharing without taking
 
 If you want queue assignment to be done via Kubex, set `spec.kai.setQueueWhenSpecified: false` in your AutomationStrategy.
 
+## Proactive GPU Recommendations
+
+`ProactivePolicy` and `ClusterProactivePolicy` can consume GPU recommendations from the external recommendations API when the payload includes `gpu.gpuOverallOptimal`.
+
+- The value is translated into a proactive `requests.gpu` target for the matching container.
+- Scheduler behavior is still controlled by the referenced `AutomationStrategy` or `ClusterAutomationStrategy`.
+- With `overrideScheduler: kai`, Kubex updates the KAI GPU-sharing metadata from the proactive recommendation.
+- With `overrideScheduler: none`, Kubex applies the recommendation through `nvidia.com/gpu` requests and limits using the existing GPU policy behavior.
+
 ## GPU Node Consolidation
 
 `GpuConsolidationPolicy` can be used to consolidate KAI GPU workloads onto fewer GPU nodes.
