@@ -124,6 +124,8 @@ rules:
 - apiGroups:
   - rightsizing.kubex.ai
   resources:
+  - backoffpolicies
+  - clusterbackoffpolicies
   - clusterproactivepolicies
   - clusterstaticpolicies
   - clusterwidegpurebalancingpolicies
@@ -145,6 +147,8 @@ rules:
 - apiGroups:
   - rightsizing.kubex.ai
   resources:
+  - backoffpolicies/finalizers
+  - clusterbackoffpolicies/finalizers
   - clusterproactivepolicies/finalizers
   - clusterstaticpolicies/finalizers
   - clusterwidegpurebalancingpolicies/finalizers
@@ -160,6 +164,8 @@ rules:
 - apiGroups:
   - rightsizing.kubex.ai
   resources:
+  - backoffpolicies/status
+  - clusterbackoffpolicies/status
   - clusterproactivepolicies/status
   - clusterstaticpolicies/status
   - clusterwidegpurebalancingpolicies/status
