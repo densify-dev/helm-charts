@@ -104,6 +104,7 @@ kubectl get events -A --field-selector reason=PolicyEvaluationEvictResize
 - ResourceQuota or LimitRange conflict
 - node allocatable headroom gate
 - pod readiness or workload availability protection
+- `StrimziPodSet` not matching expected pods: verify the StrimziPodSet has a non-empty `spec.selector` and that the pods in the namespace actually match it.
 - webhook health probe failure
 - webhook probe dry-run pod denied by admission image policy (set `globalConfiguration.webhookProbe.image` to an allowed mirrored image)
 - on EKS, verify your version includes probe pod label `eks.amazonaws.com/skip-pod-identity-webhook: "true"` to bypass the AWS pod identity webhook for this dry-run probe

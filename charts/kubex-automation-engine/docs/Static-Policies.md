@@ -17,7 +17,7 @@ Use them when you want deterministic resource values instead of recommendation-d
 | --- | --- | --- |
 | `spec.scope` | none | Optional scope object for workload selection in the same namespace. |
 | `spec.scope.labelSelector` | none | Kubernetes label selector for matching workloads. |
-| `spec.scope.workloadTypes` | `[Deployment, StatefulSet, CronJob, Rollout, Job, AnalysisRun, DaemonSet]` | Workload kinds this policy applies to. |
+| `spec.scope.workloadTypes` | `[Deployment, StatefulSet, CronJob, Rollout, Job, AnalysisRun, DaemonSet]` | Workload kinds this policy applies to. Default excludes `StrimziPodSet` (opt-in only). |
 | `spec.resources.containers` | none | Map of container names to requests and limits. Use `"*"` for all containers. |
 | `spec.weight` | `0` | Higher weight wins when multiple static policies match. |
 | `spec.automationStrategyRef.name` | none | Required namespaced strategy name. |
@@ -27,7 +27,7 @@ Use them when you want deterministic resource values instead of recommendation-d
 | Field | Default | Description |
 | --- | --- | --- |
 | `spec.scope.labelSelector` | none | Kubernetes label selector for matching workloads. |
-| `spec.scope.workloadTypes` | `[Deployment, StatefulSet, CronJob, Rollout, Job, AnalysisRun, DaemonSet]` | Workload kinds this policy applies to. |
+| `spec.scope.workloadTypes` | `[Deployment, StatefulSet, CronJob, Rollout, Job, AnalysisRun, DaemonSet]` | Workload kinds this policy applies to. Default excludes `StrimziPodSet` (opt-in only). |
 | `spec.scope.namespaceSelector.operator` | none | Namespace selector operator: `In` or `NotIn`. |
 | `spec.scope.namespaceSelector.values` | none | Namespace patterns to include or exclude. |
 | `spec.resources.containers` | none | Map of container names to requests and limits. Use `"*"` for all containers. |

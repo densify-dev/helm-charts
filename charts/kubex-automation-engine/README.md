@@ -75,7 +75,8 @@ Recommendation-driven automation can target these workload owners when included 
 - `Rollout`
 - `Job`
 - `AnalysisRun`
-- `DaemonSet` when explicitly allowed by policy
+- `StrimziPodSet`
+- `DaemonSet`
 
 ---
 

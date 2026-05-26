@@ -464,7 +464,7 @@ policy:
     # Example policy configuration:
     # base-optimization:
     #   # Allowed workload types (comma-separated string)
-    #   allowedPodOwners: "Deployment,StatefulSet,CronJob,Rollout,Job,AnalysisRun"
+    #   allowedPodOwners: "Deployment,StatefulSet,CronJob,Rollout,Job,AnalysisRun,StrimziPodSet"
     #
     #   # Enablement controls which resource changes are allowed
     #   enablement:

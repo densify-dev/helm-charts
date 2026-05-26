@@ -164,7 +164,7 @@ Use [Global Configuration Reference](./Global-Configuration.md) for the CR field
 | --- | --- |
 | `policy.defaultPolicy` | Default strategy name used when a scope omits `policy` |
 | `policy.policies` | Map of strategy definitions generated as `ClusterAutomationStrategy` resources |
-| `policy.policies.<name>.allowedPodOwners` | Comma-separated workload owner types copied into generated `ClusterProactivePolicy.scope.workloadTypes`. Supported values: `Deployment`, `StatefulSet`, `DaemonSet`, `CronJob`, `Rollout`, `Job`, `AnalysisRun`. `ReplicaSet` is not supported. |
+| `policy.policies.<name>.allowedPodOwners` | Comma-separated workload owner types copied into generated `ClusterProactivePolicy.scope.workloadTypes`. Supported values: `Deployment`, `StatefulSet`, `DaemonSet`, `CronJob`, `Rollout`, `Job`, `AnalysisRun`, `StrimziPodSet`. `ReplicaSet` is not supported. |
 | `policy.policies.<name>.enablement` | Resource change permissions and optional floor/ceiling bounds |
 | `policy.policies.<name>.inPlaceResize` | In-place resize controls |
 | `policy.policies.<name>.podEviction` | Eviction fallback controls |
