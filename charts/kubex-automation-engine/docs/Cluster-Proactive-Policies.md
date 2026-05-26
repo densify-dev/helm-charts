@@ -17,7 +17,7 @@ For the namespaced variant, see [Proactive Policies](./Proactive-Policies.md). F
 | Field | Default | Description |
 | --- | --- | --- |
 | `spec.scope.labelSelector` | none | Kubernetes label selector for matching workloads. |
-| `spec.scope.workloadTypes` | `[Deployment, StatefulSet, CronJob, Rollout, Job, AnalysisRun, DaemonSet]` | Workload kinds this policy applies to. |
+| `spec.scope.workloadTypes` | `[Deployment, StatefulSet, CronJob, Rollout, Job, AnalysisRun, DaemonSet]` | Workload kinds this policy applies to. Default excludes `StrimziPodSet` (opt-in only). |
 | `spec.scope.namespaceSelector.operator` | none | Namespace selector operator: `In` or `NotIn`. |
 | `spec.scope.namespaceSelector.values` | none | Namespace patterns to include or exclude (supports `*` wildcards, e.g. `prod-*`). |
 | `spec.automationStrategyRef.name` | none | Required cluster strategy name. |
@@ -62,4 +62,6 @@ spec:
 
 - Use cluster proactive policies when a platform team needs one recommendation-driven policy across many namespaces.
 - Start with narrow namespace and label selectors, then widen scope after verifying the selected-policy behavior in events and controller logs.
+- GPU scheduler behavior still comes from the referenced `ClusterAutomationStrategy`; proactive recommendations only supply the desired GPU request value.
 - If you need per-namespace ownership instead, use namespaced `ProactivePolicy`.
+- EXPERIMENTAL: Recommendations can now include `gpu.gpuOverallOptimal`, which is applied as a proactive `requests.gpu` target. See the [GPU Sharing with KAI](./GPU-Sharing-with-KAI.md) guide for more information.

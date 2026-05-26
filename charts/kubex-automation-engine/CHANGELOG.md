@@ -2,6 +2,22 @@
 
 All notable changes to the Kubex Automation Engine Helm chart will be documented in this file.
 
+---
+
+## [1.1.0] - 2026-05-26
+
+### Added
+- PodAffinityPolicy automation for supported workload types, including preferred node placement rules
+- StrimziPodSet workload support for automating Strimzi-managed Kafka pods
+- Prometheus scraping support for controller metrics with a chart-managed metrics service and optional ServiceMonitor
+- Added experimental support for GPU sharing using the KAI scheduler
+
+### Changed
+- GPU proactive policies can use `gpuOverallOptimal` recommendations from KAI for overall GPU optimization
+- Resize summaries now show when recommendations were clamped to configured resource bounds
+
+---
+
 ## [1.0.0] - 2026-05-07
 
 ### Changed

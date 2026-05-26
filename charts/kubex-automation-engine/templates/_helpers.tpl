@@ -168,7 +168,7 @@ Returns a dict with ca, cert, and key
 Validate Helm-managed allowedPodOwners values before CR creation so users get a clear chart error.
 */}}
 {{- define "kubex-automation-engine.validateAllowedPodOwners" -}}
-{{- $supportedOwners := list "Deployment" "StatefulSet" "DaemonSet" "CronJob" "Rollout" "Job" "AnalysisRun" -}}
+{{- $supportedOwners := list "Deployment" "StatefulSet" "DaemonSet" "CronJob" "Rollout" "Job" "AnalysisRun" "StrimziPodSet" -}}
 {{- range $policyName, $policySettings := .Values.policy.policies }}
   {{- if $policySettings.allowedPodOwners }}
     {{- range $rawOwner := splitList "," $policySettings.allowedPodOwners }}

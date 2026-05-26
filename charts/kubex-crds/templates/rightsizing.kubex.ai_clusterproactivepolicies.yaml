@@ -146,7 +146,7 @@ spec:
                     - AnalysisRun
                     - DaemonSet
                     description: workloadTypes limits the workload kinds this policy
-                      applies to. When omitted, all supported workload types are targeted.
+                      applies to. When omitted, the default workload types are targeted.
                     items:
                       description: WorkloadType enumerates the workload kinds a policy
                         can target.
@@ -158,6 +158,7 @@ spec:
                       - Rollout
                       - Job
                       - AnalysisRun
+                      - StrimziPodSet
                       type: string
                     type: array
                 required:

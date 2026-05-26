@@ -68,7 +68,7 @@ Those resources remain fully supported by the controller and can be managed outs
 | `scope[].namespaces` | `ClusterProactivePolicy.spec.scope.namespaceSelector` | Namespace include or exclude rules. |
 | `scope[].podLabels` | `ClusterProactivePolicy.spec.scope.labelSelector` | Converted into `matchLabels` or `matchExpressions`. |
 | `scope[].weight` | `ClusterProactivePolicy.spec.weight` | Higher weight wins within the same policy type. |
-| `policy.policies.<name>.allowedPodOwners` | `ClusterProactivePolicy.spec.scope.workloadTypes` | Supported values: `Deployment`, `StatefulSet`, `DaemonSet`, `CronJob`, `Rollout`, `Job`, `AnalysisRun`. |
+| `policy.policies.<name>.allowedPodOwners` | `ClusterProactivePolicy.spec.scope.workloadTypes` | Supported values: `Deployment`, `StatefulSet`, `DaemonSet`, `CronJob`, `Rollout`, `Job`, `AnalysisRun`, `StrimziPodSet` (opt-in). |
 | `policy.policies.<name>.safetyChecks.maxAnalysisAgeDays` | `ClusterProactivePolicy.spec.safetyChecks.maxAnalysisAgeDays` | Per-policy value wins over top-level `policy.safetyChecks.maxAnalysisAgeDays`. |
 | `policy.safetyChecks.maxAnalysisAgeDays` | `ClusterProactivePolicy.spec.safetyChecks.maxAnalysisAgeDays` | Backward-compatible fallback when not set per policy. |
 
@@ -88,6 +88,7 @@ Important:
 
 - `maxAnalysisAgeDays` is written to generated `ClusterProactivePolicy` resources, not to generated strategies.
 - `ReplicaSet` is not supported in `allowedPodOwners`; use `Deployment` to cover Deployment-managed pods.
+- `StrimziPodSet` support is opt-in in `allowedPodOwners`.
 - Helm can reference a `ClusterAutomationStrategy` that was created outside Helm if the names match.
 
 ## Strategy Settings Exposed By Helm
