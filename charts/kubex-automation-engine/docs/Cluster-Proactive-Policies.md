@@ -62,4 +62,6 @@ spec:
 
 - Use cluster proactive policies when a platform team needs one recommendation-driven policy across many namespaces.
 - Start with narrow namespace and label selectors, then widen scope after verifying the selected-policy behavior in events and controller logs.
+- GPU scheduler behavior still comes from the referenced `ClusterAutomationStrategy`; proactive recommendations only supply the desired GPU request value.
 - If you need per-namespace ownership instead, use namespaced `ProactivePolicy`.
+- EXPERIMENTAL: Recommendations can now include `gpu.gpuOverallOptimal`, which is applied as a proactive `requests.gpu` target. See the [GPU Sharing with KAI](./GPU-Sharing-with-KAI.md) guide for more information.
