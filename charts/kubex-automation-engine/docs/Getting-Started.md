@@ -206,7 +206,7 @@ policy:
   defaultPolicy: base-optimization
   policies:
     base-optimization:
-      allowedPodOwners: "Deployment,StatefulSet,CronJob,Rollout,Job"
+      allowedPodOwners: "Deployment,StatefulSet,CronJob,Rollout,Job,StrimziPodSet"
       enablement:
         cpu:
           request:

@@ -19,7 +19,7 @@ For the cluster-scoped variant, see [Cluster Proactive Policies](./Cluster-Proac
 | --- | --- | --- |
 | `spec.scope` | none | Optional scope object for workload selection. |
 | `spec.scope.labelSelector` | none | Kubernetes label selector for matching workloads. |
-| `spec.scope.workloadTypes` | `[Deployment, StatefulSet, CronJob, Rollout, Job, AnalysisRun, DaemonSet]` | Workload kinds this policy applies to. |
+| `spec.scope.workloadTypes` | `[Deployment, StatefulSet, CronJob, Rollout, Job, AnalysisRun, DaemonSet]` | Workload kinds this policy applies to. Default excludes `StrimziPodSet` (opt-in only). |
 | `spec.automationStrategyRef.name` | none | Required namespaced strategy name. |
 | `spec.weight` | `0` | Higher weight wins when multiple proactive policies match. |
 | `spec.safetyChecks.maxAnalysisAgeDays` | `5` | Rejects old recommendations. |

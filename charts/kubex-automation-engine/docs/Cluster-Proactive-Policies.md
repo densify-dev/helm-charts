@@ -17,7 +17,7 @@ For the namespaced variant, see [Proactive Policies](./Proactive-Policies.md). F
 | Field | Default | Description |
 | --- | --- | --- |
 | `spec.scope.labelSelector` | none | Kubernetes label selector for matching workloads. |
-| `spec.scope.workloadTypes` | `[Deployment, StatefulSet, CronJob, Rollout, Job, AnalysisRun, DaemonSet]` | Workload kinds this policy applies to. |
+| `spec.scope.workloadTypes` | `[Deployment, StatefulSet, CronJob, Rollout, Job, AnalysisRun, DaemonSet]` | Workload kinds this policy applies to. Default excludes `StrimziPodSet` (opt-in only). |
 | `spec.scope.namespaceSelector.operator` | none | Namespace selector operator: `In` or `NotIn`. |
 | `spec.scope.namespaceSelector.values` | none | Namespace patterns to include or exclude (supports `*` wildcards, e.g. `prod-*`). |
 | `spec.automationStrategyRef.name` | none | Required cluster strategy name. |
