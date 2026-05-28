@@ -4,20 +4,20 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.19.0
-  name: backoffpolicies.rightsizing.kubex.ai
+  name: rollbackpolicies.rightsizing.kubex.ai
 spec:
   group: rightsizing.kubex.ai
   names:
-    kind: BackoffPolicy
-    listKind: BackoffPolicyList
-    plural: backoffpolicies
-    singular: backoffpolicy
+    kind: RollbackPolicy
+    listKind: RollbackPolicyList
+    plural: rollbackpolicies
+    singular: rollbackpolicy
   scope: Namespaced
   versions:
   - name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: BackoffPolicy is the Schema for the backoffpolicies API.
+        description: RollbackPolicy is the Schema for the rollbackpolicies API.
         properties:
           apiVersion:
             description: |-
@@ -37,7 +37,7 @@ spec:
           metadata:
             type: object
           spec:
-            description: spec defines the desired state of BackoffPolicy
+            description: spec defines the desired state of RollbackPolicy
             properties:
               adoptionThresholdPercent:
                 description: adoptionThresholdPercent is the percentage of the workload
@@ -136,7 +136,7 @@ spec:
               weight:
                 default: 0
                 description: |-
-                  weight determines which policy wins when multiple backoff policies of the same kind match.
+                  weight determines which policy wins when multiple rollback policies of the same kind match.
                   Higher weights take precedence. When weights are equal, older policies win.
                 format: int32
                 minimum: 0
@@ -147,15 +147,15 @@ spec:
             - rollbackTarget
             type: object
           status:
-            description: status defines the observed state of BackoffPolicy
+            description: status defines the observed state of RollbackPolicy
             properties:
               activeTrackedWorkloads:
                 description: activeTrackedWorkloads reports how many workloads currently
-                  have an active backoff session for this policy.
+                  have an active rollback session for this policy.
                 format: int32
                 type: integer
               conditions:
-                description: conditions represent the current state of the BackoffPolicy
+                description: conditions represent the current state of the RollbackPolicy
                   resource.
                 items:
                   description: Condition contains details for one aspect of the current
