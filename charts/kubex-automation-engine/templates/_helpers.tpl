@@ -115,6 +115,9 @@ Controller manager container args
 {{- define "kubex-automation-engine.managerArgs" -}}
 {{- if .Values.controllerManager.leaderElection.enabled }}
 - --leader-elect
+- --leader-election-lease-duration={{ .Values.controllerManager.leaderElection.leaseDuration }}
+- --leader-election-renew-deadline={{ .Values.controllerManager.leaderElection.renewDeadline }}
+- --leader-election-retry-period={{ .Values.controllerManager.leaderElection.retryPeriod }}
 {{- end }}
 - --health-probe-bind-address={{ .Values.controllerManager.healthProbeBindAddress }}
 {{- if .Values.metrics.enabled }}

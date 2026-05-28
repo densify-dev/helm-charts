@@ -10,7 +10,6 @@ rules:
   - ""
   resources:
   - limitranges
-  - namespaces
   - nodes
   - resourcequotas
   verbs:
@@ -20,6 +19,7 @@ rules:
 - apiGroups:
   - ""
   resources:
+  - namespaces
   - pods
   verbs:
   - get
@@ -133,9 +133,8 @@ rules:
 - apiGroups:
   - rightsizing.kubex.ai
   resources:
-  - backoffpolicies
-  - clusterbackoffpolicies
   - clusterproactivepolicies
+  - clusterrollbackpolicies
   - clusterstaticpolicies
   - clusterwidegpurebalancingpolicies
   - globalconfigurations
@@ -144,6 +143,7 @@ rules:
   - podaffinitypolicies
   - policyevaluations
   - proactivepolicies
+  - rollbackpolicies
   - staticpolicies
   verbs:
   - create
@@ -156,9 +156,8 @@ rules:
 - apiGroups:
   - rightsizing.kubex.ai
   resources:
-  - backoffpolicies/finalizers
-  - clusterbackoffpolicies/finalizers
   - clusterproactivepolicies/finalizers
+  - clusterrollbackpolicies/finalizers
   - clusterstaticpolicies/finalizers
   - clusterwidegpurebalancingpolicies/finalizers
   - globalconfigurations/finalizers
@@ -167,15 +166,15 @@ rules:
   - podaffinitypolicies/finalizers
   - policyevaluations/finalizers
   - proactivepolicies/finalizers
+  - rollbackpolicies/finalizers
   - staticpolicies/finalizers
   verbs:
   - update
 - apiGroups:
   - rightsizing.kubex.ai
   resources:
-  - backoffpolicies/status
-  - clusterbackoffpolicies/status
   - clusterproactivepolicies/status
+  - clusterrollbackpolicies/status
   - clusterstaticpolicies/status
   - clusterwidegpurebalancingpolicies/status
   - globalconfigurations/status
@@ -184,6 +183,7 @@ rules:
   - podaffinitypolicies/status
   - policyevaluations/status
   - proactivepolicies/status
+  - rollbackpolicies/status
   - staticpolicies/status
   verbs:
   - get

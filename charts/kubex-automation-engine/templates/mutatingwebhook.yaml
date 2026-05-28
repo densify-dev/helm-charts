@@ -35,4 +35,5 @@ webhooks:
     resources:
     - pods
   sideEffects: None
+  timeoutSeconds: {{ .Values.webhook.timeoutSeconds }}
 {{- end }}

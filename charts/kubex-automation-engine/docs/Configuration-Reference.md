@@ -104,9 +104,13 @@ Note: `kubexCredentials.userSecretName` is currently not consumed by this chart.
 | `gateway.image.repository` | `densify/automation-gateway` | Gateway sidecar image |
 | `createSecrets` | `true` | Create required gateway and TLS secrets |
 | `webhook.enabled` | `true` | Enable webhook components |
+| `webhook.timeoutSeconds` | `10` | Admission webhook timeout in seconds |
 | `webhook.certManager.enabled` | `false` | Use cert-manager instead of self-signed TLS |
 | `selfSignedCert.validity` | `3650` | Self-signed certificate validity in days |
 | `controllerManager.globalConfigReconcileInterval` | `1m` | Base reconcile cadence for global config controller |
+| `controllerManager.leaderElection.leaseDuration` | `15s` | Leader election lease duration; increase this on slow API servers |
+| `controllerManager.leaderElection.renewDeadline` | `10s` | Leader election renew deadline; must stay below `leaseDuration` |
+| `controllerManager.leaderElection.retryPeriod` | `2s` | Leader election retry interval; must stay below `renewDeadline` |
 | `controllerManager.metricsBindAddress` | `:8080` | Metrics bind address used by the controller manager |
 | `kubex.requestTimeout` | `30s` | Kubex API request timeout |
 | `podSecurityContext` | chart default | Pod-level security context for the controller Deployment; defaults to `65534` for `runAsUser`, `runAsGroup`, and `fsGroup`, plus `runAsNonRoot=true` and `seccompProfile.type=RuntimeDefault` |
@@ -141,6 +145,7 @@ Use [Global Configuration Reference](./Global-Configuration.md) for the CR field
 | `globalConfiguration.snapshotInterval` | `30m` | Policy snapshot upload cadence |
 | `globalConfiguration.heartbeatInterval` | `5m` | Controller heartbeat upload cadence |
 | `globalConfiguration.kubexAPIRequestTimeout` | `30s` | Timeout for Kubex requests |
+| `globalConfiguration.webhookOwnerResolutionRetryTimeout` | `1s` | Pod webhook owner-resolution retry budget |
 | `globalConfiguration.automationEnabled` | `true` | Global enable/disable switch |
 | `globalConfiguration.suppressFetchRecommendations` | `false` | Testing-only fetch suppression |
 | `globalConfiguration.respectKubexAutomation` | `true` | Respect recommendation-level disablement |
