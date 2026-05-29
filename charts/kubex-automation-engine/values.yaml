@@ -128,6 +128,12 @@ controllerManager:
   # -- Enable leader election for controller manager
   leaderElection:
     enabled: true
+    # -- Leader election lease duration. Increase on slow API servers.
+    leaseDuration: 15s
+    # -- Leader election renew deadline. Must be less than leaseDuration.
+    renewDeadline: 10s
+    # -- Leader election retry period. Must be less than renewDeadline.
+    retryPeriod: 2s
 
   # -- Health probe bind address
   healthProbeBindAddress: ":8081"
@@ -219,6 +225,8 @@ webhook:
   enabled: true
   # -- Webhook service port
   port: 9443
+  # -- Admission webhook timeout in seconds. Kubernetes defaults to 10 when omitted.
+  timeoutSeconds: 10
   # -- Failure policy for validating webhook (Ignore allows installation to proceed if webhook is unavailable)
   failurePolicy: Ignore
   # -- Certificate manager configuration
@@ -307,6 +315,8 @@ globalConfiguration:
   # -- Kubex API request timeout
   # Can also use deployment.controllerEnv.apiRequestTimeout for backward compatibility
   kubexAPIRequestTimeout: "30s"
+  # -- How long the pod admission webhook retries owner recommendation resolution
+  webhookOwnerResolutionRetryTimeout: "1s"
   # -- Mutation log send interval
   mutationLogInterval: "5m"
   # -- GPU rebalancing policy workload check interval

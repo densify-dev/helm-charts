@@ -179,7 +179,21 @@
       "type": "object",
       "properties": {
         "leaderElection": {
-          "type": "object"
+          "type": "object",
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "leaseDuration": {
+              "type": "string"
+            },
+            "renewDeadline": {
+              "type": "string"
+            },
+            "retryPeriod": {
+              "type": "string"
+            }
+          }
         },
         "healthProbeBindAddress": {
           "type": "string"
@@ -195,6 +209,16 @@
         },
         "extraEnv": {
           "type": "array"
+        }
+      }
+    },
+    "webhook": {
+      "type": "object",
+      "properties": {
+        "timeoutSeconds": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 30
         }
       }
     },
@@ -216,6 +240,9 @@
           }
         },
         "heartbeatInterval": {
+          "type": "string"
+        },
+        "webhookOwnerResolutionRetryTimeout": {
           "type": "string"
         },
         "webhookProbe": {
