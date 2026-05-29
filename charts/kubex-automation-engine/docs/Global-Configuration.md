@@ -16,6 +16,7 @@ Use it to control recommendation refresh timing, proactive rescans, heartbeat re
 | `spec.snapshotInterval` | `30m` | How often policy snapshots are sent. |
 | `spec.heartbeatInterval` | `5m` | How often controller heartbeat status is sent to Kubex. |
 | `spec.kubexAPIRequestTimeout` | `30s` | Timeout for Kubex API requests. |
+| `spec.webhookOwnerResolutionRetryTimeout` | `1s` | How long the pod admission webhook retries owner recommendation resolution before continuing without owner annotations. |
 | `spec.automationEnabled` | `true` | Global on or off switch for automation behavior. |
 | `spec.suppressFetchRecommendations` | `false` | Testing-oriented switch to suppress recommendation fetches. |
 | `spec.respectKubexAutomation` | `true` | Ignores recommendations marked with `KubexAutomation=false`. |
@@ -57,6 +58,7 @@ spec:
   snapshotInterval: 30m
   heartbeatInterval: 5m
   kubexAPIRequestTimeout: 30s
+  webhookOwnerResolutionRetryTimeout: 1s
   automationEnabled: true
   suppressFetchRecommendations: false
   respectKubexAutomation: true
@@ -97,6 +99,7 @@ The chart creates a default `GlobalConfiguration` when `globalConfiguration.enab
 | `globalConfiguration.snapshotInterval` | `spec.snapshotInterval` | Direct mapping |
 | `globalConfiguration.heartbeatInterval` | `spec.heartbeatInterval` | Direct mapping |
 | `globalConfiguration.kubexAPIRequestTimeout` | `spec.kubexAPIRequestTimeout` | Falls back to legacy value if unset |
+| `globalConfiguration.webhookOwnerResolutionRetryTimeout` | `spec.webhookOwnerResolutionRetryTimeout` | Direct mapping |
 | `globalConfiguration.automationEnabled` | `spec.automationEnabled` | Direct mapping |
 | `globalConfiguration.suppressFetchRecommendations` | `spec.suppressFetchRecommendations` | Direct mapping |
 | `globalConfiguration.respectKubexAutomation` | `spec.respectKubexAutomation` | Direct mapping |

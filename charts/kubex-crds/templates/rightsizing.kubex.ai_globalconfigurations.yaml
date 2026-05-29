@@ -182,6 +182,14 @@ spec:
                     - message: must be at least 1 second
                       rule: duration(self) >= duration('1s')
                 type: object
+              webhookOwnerResolutionRetryTimeout:
+                default: 1s
+                description: webhookOwnerResolutionRetryTimeout controls how long
+                  the pod admission webhook retries owner recommendation resolution.
+                type: string
+                x-kubernetes-validations:
+                - message: must be greater than 0 seconds
+                  rule: duration(self) > duration('0s')
               webhookProbe:
                 description: webhookProbe configures the dry-run Pod used to verify
                   pod admission webhook health.

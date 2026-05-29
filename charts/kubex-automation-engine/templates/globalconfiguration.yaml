@@ -17,6 +17,7 @@ spec:
   gpuRebalancingCheckInterval: {{ .Values.globalConfiguration.gpuRebalancingCheckInterval }}
   heartbeatInterval: {{ .Values.globalConfiguration.heartbeatInterval }}
   kubexAPIRequestTimeout: {{ $kubexAPIRequestTimeout }}
+  webhookOwnerResolutionRetryTimeout: {{ .Values.globalConfiguration.webhookOwnerResolutionRetryTimeout | quote }}
   
   # Behavior configuration
   automationEnabled: {{ .Values.globalConfiguration.automationEnabled }}

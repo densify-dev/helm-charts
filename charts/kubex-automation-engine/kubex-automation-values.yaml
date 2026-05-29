@@ -47,3 +47,7 @@ kubex:
 # Uncomment when deploying on OpenShift to enable restricted-friendly defaults.
 # openshift:
 #   enabled: true
+#
+# Optional webhook setting:
+# webhook:
+#   timeoutSeconds: 10
