@@ -141,6 +141,12 @@ controllerManager:
   # -- Metrics bind address
   metricsBindAddress: ":8080"
 
+  # -- QPS limit for the pod admission webhook Kubernetes client. Use 0 for client-go defaults or a negative value to disable client-side rate limiting.
+  podAdmissionWebhookKubeAPIQPS: -1
+
+  # -- Burst limit for the pod admission webhook Kubernetes client. Use 0 for the client-go default burst.
+  podAdmissionWebhookKubeAPIBurst: 0
+
   # -- Additional arguments for the controller manager
   extraArgs:
     - --zap-log-level=info

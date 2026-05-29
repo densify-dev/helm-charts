@@ -51,3 +51,8 @@ kubex:
 # Optional webhook setting:
 # webhook:
 #   timeoutSeconds: 10
+#
+# Optional pod admission webhook Kubernetes client throttling:
+# controllerManager:
+#   podAdmissionWebhookKubeAPIQPS: -1
+#   podAdmissionWebhookKubeAPIBurst: 0

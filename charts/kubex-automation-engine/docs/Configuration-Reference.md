@@ -112,6 +112,8 @@ Note: `kubexCredentials.userSecretName` is currently not consumed by this chart.
 | `controllerManager.leaderElection.renewDeadline` | `10s` | Leader election renew deadline; must stay below `leaseDuration` |
 | `controllerManager.leaderElection.retryPeriod` | `2s` | Leader election retry interval; must stay below `renewDeadline` |
 | `controllerManager.metricsBindAddress` | `:8080` | Metrics bind address used by the controller manager |
+| `controllerManager.podAdmissionWebhookKubeAPIQPS` | `-1` | QPS limit for the pod admission webhook Kubernetes client; use `0` for client-go defaults (`5 QPS`) or a negative value to disable client-side rate limiting |
+| `controllerManager.podAdmissionWebhookKubeAPIBurst` | `0` | Burst limit for the pod admission webhook Kubernetes client; use `0` for the client-go default burst (`10`) |
 | `kubex.requestTimeout` | `30s` | Kubex API request timeout |
 | `podSecurityContext` | chart default | Pod-level security context for the controller Deployment; defaults to `65534` for `runAsUser`, `runAsGroup`, and `fsGroup`, plus `runAsNonRoot=true` and `seccompProfile.type=RuntimeDefault` |
 | `openshift.enabled` | `false` | Enable OpenShift-oriented pod security context defaults and cleanup job settings without changing the default Kubernetes installation path |

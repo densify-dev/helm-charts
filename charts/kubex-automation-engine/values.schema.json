@@ -201,6 +201,12 @@
         "metricsBindAddress": {
           "type": "string"
         },
+        "podAdmissionWebhookKubeAPIQPS": {
+          "type": "number"
+        },
+        "podAdmissionWebhookKubeAPIBurst": {
+          "type": "integer"
+        },
         "extraArgs": {
           "type": "array"
         },
