@@ -124,6 +124,8 @@ Controller manager container args
 - --metrics-bind-address={{ .Values.controllerManager.metricsBindAddress }}
 {{- include "kubex-automation-engine.metricsSecureArg" . }}
 {{- end }}
+- --pod-admission-webhook-kube-api-qps={{ .Values.controllerManager.podAdmissionWebhookKubeAPIQPS }}
+- --pod-admission-webhook-kube-api-burst={{ .Values.controllerManager.podAdmissionWebhookKubeAPIBurst }}
 {{- range .Values.controllerManager.extraArgs }}
 - {{ . }}
 {{- end }}
