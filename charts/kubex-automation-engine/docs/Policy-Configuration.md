@@ -24,6 +24,7 @@ At the CRD level:
 - `AutomationStrategy` and `ClusterAutomationStrategy` define resize behavior.
 - `ProactivePolicy` and `ClusterProactivePolicy` apply recommendation-driven automation coming from Kubex.
 - `StaticPolicy` and `ClusterStaticPolicy` apply fixed request and limit values.
+- `RollbackPolicy` and `ClusterRollbackPolicy` apply rollback monitoring and backoff settings.
 
 Use the namespaced pages for namespace-owned CRs and the cluster-scoped pages for platform-owned, cross-namespace CRs.
 
@@ -57,6 +58,8 @@ It does **not** create:
 - `ClusterStaticPolicy`
 
 Those resources remain fully supported by the controller and can be managed outside Helm when you need them.
+
+Rollback policies are also fully supported outside Helm, but the chart does not render them from values.
 
 ## Values To Resource Mapping
 
