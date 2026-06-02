@@ -17,8 +17,7 @@ spec:
   - name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: ClusterRollbackPolicy is the Schema for the clusterrollbackpolicies
-          API.
+        description: Cluster policy schema for the clusterrollbackpolicies API.
         properties:
           apiVersion:
             description: |-
@@ -38,7 +37,7 @@ spec:
           metadata:
             type: object
           spec:
-            description: spec defines the desired state of ClusterRollbackPolicy
+            description: spec defines the desired state of this cluster policy
             properties:
               adoptionThresholdPercent:
                 description: adoptionThresholdPercent is the percentage of the workload
@@ -49,11 +48,11 @@ spec:
                 type: integer
               backoff:
                 description: backoff controls how long the controller waits before
-                  completing a rollback turn and how many turns are allowed.
+                  completing a retry turn and how many turns are allowed.
                 properties:
                   maxAttempts:
                     description: maxAttempts caps the number of turns before the controller
-                      marks the rollback as permanently failed.
+                      marks the policy as permanently failed.
                     format: int32
                     minimum: 1
                     type: integer
@@ -65,7 +64,7 @@ spec:
                     minimum: 1
                     type: integer
                   timePeriod:
-                    description: timePeriod is the base duration for a rollback turn.
+                    description: timePeriod is the base duration for a retry turn.
                     type: string
                 required:
                 - maxAttempts
@@ -77,7 +76,7 @@ spec:
                   an active resize attempt before declaring failure.
                 type: string
               rollbackTarget:
-                description: rollbackTarget determines whether rollback returns to
+                description: rollbackTarget determines whether the policy returns to
                   manifest resources or the last known successful state.
                 enum:
                 - manifest
@@ -187,7 +186,7 @@ spec:
               weight:
                 default: 0
                 description: |-
-                  weight determines which policy wins when multiple rollback policies of the same kind match.
+                  weight determines which policy wins when multiple policies of the same kind match.
                   Higher weights take precedence. When weights are equal, older policies win.
                 format: int32
                 minimum: 0
@@ -199,15 +198,15 @@ spec:
             - scope
             type: object
           status:
-            description: status defines the observed state of ClusterRollbackPolicy
+            description: status defines the observed state of this cluster policy
             properties:
               activeTrackedWorkloads:
                 description: activeTrackedWorkloads reports how many workloads currently
-                  have an active rollback session for this policy.
+                  have an active retry session for this policy.
                 format: int32
                 type: integer
               conditions:
-                description: conditions represent the current state of the RollbackPolicy
+                description: conditions represent the current state of this policy
                   resource.
                 items:
                   description: Condition contains details for one aspect of the current
