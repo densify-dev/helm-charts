@@ -99,7 +99,7 @@ Note: `kubexCredentials.userSecretName` is currently not consumed by this chart.
 | --- | --- | --- |
 | `replicaCount` | `1` | Controller replica count |
 | `image.repository` | `densify/automation-controller` | Controller image |
-| `image.tag` | `0.1-beta20` | Controller image tag; also injected as `IMAGE_TAG` for heartbeat payloads |
+| `image.tag` | `1.2.0` | Controller image tag; also injected as `IMAGE_TAG` for heartbeat payloads |
 | `imagePullSecrets` | `[]` | Secrets applied to the controller Deployment and cleanup Job pod specs |
 | `gateway.image.repository` | `densify/automation-gateway` | Gateway sidecar image |
 | `createSecrets` | `true` | Create required gateway and TLS secrets |

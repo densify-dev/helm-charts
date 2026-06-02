@@ -4,6 +4,22 @@ All notable changes to the Kubex Automation Engine Helm chart will be documented
 
 ---
 
+## [1.2.0] - 2026-06-02
+
+### Added
+- Webhook/client behavior improvements that make policy admission and reconciliation more resilient.
+
+### Changed
+- Webhook reconciliation now uses informers/client behavior tuned for more reliable event handling.
+- GPU-related e2e and policy behavior was refined for stability and consistency.
+- Chart/docs content was updated to reflect the current release flow and user-facing guidance.
+
+### Fixed
+- Webhook error handling paths that could surface avoidable failures.
+- Miscellaneous release-blocking regressions from the beta cycle.
+
+---
+
 ## [1.1.0] - 2026-05-26
 
 ### Added

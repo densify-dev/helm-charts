@@ -58,6 +58,7 @@ It does **not** create:
 
 Those resources remain fully supported by the controller and can be managed outside Helm when you need them.
 
+
 ## Values To Resource Mapping
 
 | Helm value | Generated resource | Notes |
