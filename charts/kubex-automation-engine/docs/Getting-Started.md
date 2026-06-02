@@ -267,14 +267,21 @@ A typical external-CR workflow looks like this:
 3. Create `ProactivePolicy`, `ClusterProactivePolicy`, `StaticPolicy`, or `ClusterStaticPolicy` objects that reference those strategies.
 4. Apply and reconcile those manifests through `kubectl`, GitOps, or another external workflow.
 
-For a minimal start-to-finish example, create a cluster strategy that uses the default automation enablement settings and a cluster proactive policy that targets a few namespaces:
+For a minimal start-to-finish example, create a cluster strategy that allows request upsizing and downsizing but prevents limit downsizing, and a cluster proactive policy that targets a few namespaces:
 
 ```yaml
 apiVersion: rightsizing.kubex.ai/v1alpha1
 kind: ClusterAutomationStrategy
 metadata:
   name: getting-started-defaults
-spec: {}
+spec:
+  enablement:
+    cpu:
+      limits:
+        downsize: false
+    memory:
+      limits:
+        downsize: false
 ---
 apiVersion: rightsizing.kubex.ai/v1alpha1
 kind: ClusterProactivePolicy

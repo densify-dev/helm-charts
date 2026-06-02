@@ -47,6 +47,31 @@ spec:
                 maximum: 100
                 minimum: 1
                 type: integer
+              backoff:
+                description: backoff controls how long the controller waits before
+                  completing a rollback turn and how many turns are allowed.
+                properties:
+                  maxAttempts:
+                    description: maxAttempts caps the number of turns before the controller
+                      marks the rollback as permanently failed.
+                    format: int32
+                    minimum: 1
+                    type: integer
+                  multiplyByTurn:
+                    description: |-
+                      multiplyByTurn scales the base duration by the current turn number.
+                      Example: with timePeriod 1m and multiplyByTurn 2, turn 1 waits 2m and turn 2 waits 4m.
+                    format: int32
+                    minimum: 1
+                    type: integer
+                  timePeriod:
+                    description: timePeriod is the base duration for a rollback turn.
+                    type: string
+                required:
+                - maxAttempts
+                - multiplyByTurn
+                - timePeriod
+                type: object
               monitoringPeriod:
                 description: monitoringPeriod bounds how long the controller observes
                   an active resize attempt before declaring failure.
