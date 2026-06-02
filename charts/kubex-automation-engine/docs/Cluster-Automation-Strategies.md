@@ -131,14 +131,18 @@ spec:
   enablement:
     cpu:
       requests:
-        downsize: false
+        downsize: true
         upsize: true
         setFromUnspecified: true
         floor: 250m
         ceiling: "8"
+      limits:
+        downsize: false
+        upsize: true
+        setFromUnspecified: false
     memory:
       requests:
-        downsize: false
+        downsize: true
         upsize: true
         setFromUnspecified: true
         floor: 512Mi
