@@ -4,6 +4,19 @@ All notable changes to the Kubex Automation Engine Helm chart will be documented
 
 ---
 
+## [1.3.0] - 2026-06-04
+
+### Added
+- Introduced Rollback automation so clusters can now use the rollback state machine in live environments.
+
+### Changed
+- Rollback owner/runtime handling and e2e fixtures were updated to support the new rollback flow.
+
+### Fixed
+- Live rollback e2e instability caused by synthetic state seeding.
+
+---
+
 ## [1.2.0] - 2026-06-02
 
 ### Added
