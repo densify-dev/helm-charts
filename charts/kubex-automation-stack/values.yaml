@@ -198,6 +198,12 @@ prometheus:
     kubernetes-pods-slow:
       enabled: false
   serverFiles:
+    recording_rules.yml:
+      groups:
+        - name: kubex-gpu-container.rules
+          rules:
+            - record: kubex_gpu_container_sm_utilization_percent
+              expr: rate(kubex_gpu_container_sm_utilization_percent_seconds_total[1m])
     prometheus.yml:
       rule_files:
         - /etc/config/recording_rules.yml

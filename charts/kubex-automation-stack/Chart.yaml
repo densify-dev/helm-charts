@@ -1,7 +1,7 @@
 apiVersion: v2
 description: Kubex Collection Stack
 name: kubex-automation-stack
-version: 1.0.13
+version: 1.0.14
 type: application
 icon: https://kubex.ai/wp-content/uploads/kubex-logo-landscape.svg
 dependencies:
