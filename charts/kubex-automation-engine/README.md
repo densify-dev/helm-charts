@@ -108,6 +108,7 @@ This guide covers:
 | **[Global Configuration Reference](./docs/Global-Configuration.md)** | Field-by-field reference for the `GlobalConfiguration` custom resource |
 | **[Policy Configuration](./docs/Policy-Configuration.md)** | Configure strategies, policy scope, precedence, and Helm-managed policy generation |
 | **[Policy Evaluation Reference](./docs/Policy-Evaluation.md)** | Policy type precedence configuration via the `PolicyEvaluation` singleton |
+| **[Rollback Backoff](./docs/Rollback-Backoff.md)** | Customer-facing guide to rollback retry windows, turn progression, and terminal outcomes |
 | **[GPU Sharing with KAI](./docs/GPU-Sharing-with-KAI.md)** | Configure KAI-backed GPU sharing, rebalancing, and early consolidation |
 | **[Apply Updates](./docs/Getting-Started.md#apply-configuration-updates)** | Re-run `helm upgrade` after configuration changes |
 
