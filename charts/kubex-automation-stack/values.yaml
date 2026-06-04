@@ -203,7 +203,7 @@ prometheus:
         - name: kubex-gpu-container.rules
           rules:
             - record: kubex_gpu_container_sm_utilization_percent
-              expr: rate(kubex_gpu_container_sm_utilization_percent_seconds_total[5m])
+              expr: rate(kubex_gpu_container_sm_utilization_percent_seconds_total[1m])
     prometheus.yml:
       rule_files:
         - /etc/config/recording_rules.yml
