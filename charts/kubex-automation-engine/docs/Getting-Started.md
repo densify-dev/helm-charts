@@ -273,7 +273,7 @@ For a minimal start-to-finish example, create a cluster strategy that allows req
 apiVersion: rightsizing.kubex.ai/v1alpha1
 kind: ClusterAutomationStrategy
 metadata:
-  name: getting-started-defaults
+  name: getting-started-strategy
 spec:
   enablement:
     cpu:
@@ -296,14 +296,14 @@ spec:
         - team-b
         - staging
   automationStrategyRef:
-    name: getting-started-defaults
+    name: getting-started-strategy
 ```
 
 Apply it with:
 
 ```bash
 kubectl apply -f getting-started-policy.yaml
-kubectl get clusterautomationstrategy getting-started-defaults
+kubectl get clusterautomationstrategy getting-started-strategy
 kubectl get clusterproactivepolicy getting-started-apps
 ```
 

@@ -89,6 +89,7 @@ scope:
 
 Important:
 
+- **Wildcard patterns must be enclosed in double quotes** (e.g., `"prod-*"`, not `prod-*`) to ensure proper YAML parsing.
 - `maxAnalysisAgeDays` is written to generated `ClusterProactivePolicy` resources, not to generated strategies.
 - `ReplicaSet` is not supported in `allowedPodOwners`; use `Deployment` to cover Deployment-managed pods.
 - `StrimziPodSet` support is opt-in in `allowedPodOwners`.

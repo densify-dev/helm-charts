@@ -103,7 +103,7 @@ The chart creates a default `GlobalConfiguration` when `globalConfiguration.enab
 | `globalConfiguration.automationEnabled` | `spec.automationEnabled` | Direct mapping |
 | `globalConfiguration.suppressFetchRecommendations` | `spec.suppressFetchRecommendations` | Direct mapping |
 | `globalConfiguration.respectKubexAutomation` | `spec.respectKubexAutomation` | Direct mapping |
-| `globalConfiguration.protectedNamespacePatterns` | `spec.protectedNamespacePatterns` | Supports `*` wildcard matching |
+| `globalConfiguration.protectedNamespacePatterns` | `spec.protectedNamespacePatterns` | Supports `*` wildcard matching. Wildcard patterns must be enclosed in double quotes (e.g., "kube-*"). |
 | `globalConfiguration.webhookHealth.failureThreshold` | `spec.webhookHealth.failureThreshold` | Direct mapping |
 | `globalConfiguration.webhookHealth.successThreshold` | `spec.webhookHealth.successThreshold` | Direct mapping |
 | `globalConfiguration.webhookHealth.transitionCheckInterval` | `spec.webhookHealth.transitionCheckInterval` | Direct mapping |
