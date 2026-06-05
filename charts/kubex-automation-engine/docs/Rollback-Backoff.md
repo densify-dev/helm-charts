@@ -2,27 +2,19 @@
 
 Rollback backoff is the retry window the controller uses after a workload resize does not stay healthy. It gives the workload time to settle, then when there is a failure after the resize, the controller enters `rollingBack` and restores a last known good state, which is either the last recorded successful resource settings or the original resource setting defined by the manifest. After rollback is complete, the controller moves to `backingOff` and waits before the next attempt. Backoff retries for a configured number of turns if the same recommendation that failed initially still applies. Rollback ends in `failedPermanent` when retries are exhausted.
 
+## Prerequisites
+
+Rollback functionality requires a `RollbackPolicy` (namespaced) or `ClusterRollbackPolicy` (cluster-scoped) that matches your workload.
+
+**Important**: Without a matching rollback policy, the controller will not monitor, rollback, or retry failed resizes. The rollback mechanism is disabled by default until you create a policy.
+
+See [Rollback Policies](./Rollback-Policies.md) for field references, configuration examples, and setup instructions.
+
+## Rollback Flow
+
+The diagram below shows the complete rollback lifecycle, from monitoring through backoff to terminal states:
+
 ![Rollback backoff flow](./assets/rollback-backoff-flow.svg)
-
-## Rollback Configuration
-
-Rollback backoff is configured on the rollback policy:
-
-- `timePeriod`: base wait time for each turn
-- `multiplyByTurn`: scales the wait by the current turn number
-- `maxAttempts`: maximum number of turns before failure becomes permanent
-
-Example:
-
-- `timePeriod: 1m`
-- `multiplyByTurn: 2`
-- `maxAttempts: 3`
-
-Expected waits:
-
-- turn 1: `2m`
-- turn 2: `4m`
-- turn 3: `6m`
 
 ## Expectations
 
@@ -94,6 +86,7 @@ If the same recommendation fingerprint appears again after the prior turn comple
 
 ## Common Pitfalls
 
+- forgetting to create a `RollbackPolicy` or `ClusterRollbackPolicy` - without a matching policy, rollback functionality is completely disabled
 - setting `maxAttempts: 1` means the first expired backoff is terminal
 - using a very short `timePeriod` can cause frequent retries on noisy workloads
 - forgetting that the current turn number affects the wait time can make later retries feel slower than expected
@@ -111,6 +104,7 @@ The controller emits events for the main transitions:
 
 ## Related Documentation
 
+- [Rollback Policies](./Rollback-Policies.md) - Field reference and examples for RollbackPolicy and ClusterRollbackPolicy
 - [Policy Configuration](./Policy-Configuration.md)
 - [Troubleshooting](./Troubleshooting.md)
 - [FAQ](./FAQ.md)
