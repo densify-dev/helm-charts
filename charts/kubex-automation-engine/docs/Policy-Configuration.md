@@ -11,6 +11,7 @@ For CR-specific field references and examples, see:
 - [Proactive Policies](./Proactive-Policies.md)
 - [Cluster Proactive Policies](./Cluster-Proactive-Policies.md)
 - [Static Policies](./Static-Policies.md)
+- [Rollback Policies](./Rollback-Policies.md)
 
 ## Configuration Model
 
@@ -24,7 +25,7 @@ At the CRD level:
 - `AutomationStrategy` and `ClusterAutomationStrategy` define resize behavior.
 - `ProactivePolicy` and `ClusterProactivePolicy` apply recommendation-driven automation coming from Kubex.
 - `StaticPolicy` and `ClusterStaticPolicy` apply fixed request and limit values.
-- `RollbackPolicy` and `ClusterRollbackPolicy` apply rollback monitoring and backoff settings.
+- `RollbackPolicy` and `ClusterRollbackPolicy` enable and configure rollback monitoring and backoff settings. **These policies are required for rollback functionality** - without a matching policy, workloads will not be monitored for health failures and rollback will not occur.
 
 Use the namespaced pages for namespace-owned CRs and the cluster-scoped pages for platform-owned, cross-namespace CRs.
 
@@ -56,10 +57,12 @@ It does **not** create:
 - `ProactivePolicy`
 - `StaticPolicy`
 - `ClusterStaticPolicy`
+- `RollbackPolicy`
+- `ClusterRollbackPolicy`
 
 Those resources remain fully supported by the controller and can be managed outside Helm when you need them.
 
-Rollback policies are also fully supported outside Helm, but the chart does not render them from values.
+Rollback policies are also fully supported by the controller and must be managed outside Helm when you need health monitoring and automatic rollback after failed resizes.
 
 ## Values To Resource Mapping
 
