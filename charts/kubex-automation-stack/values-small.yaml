@@ -17,7 +17,7 @@ prometheus:
 beyla:
   resources:
     requests:
-      memory: "256Mi"
+      memory: "192Mi"
       cpu: "50m"
     limits:
       memory: "512Mi"
