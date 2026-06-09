@@ -6,7 +6,7 @@ This is a cluster-scoped singleton resource named `policy-evaluation`.
 
 ## Default Behavior
 
-By default, static policies (fixed resources) take precedence over proactive policies (recommendations):
+By default, rollback policies take precedence over all other policy types:
 
 ```yaml
 apiVersion: rightsizing.kubex.ai/v1alpha1
@@ -15,6 +15,14 @@ metadata:
   name: policy-evaluation
 spec:
   precedence:
+  - type: RollbackPolicy
+    priority: 130
+  - type: ClusterRollbackPolicy
+    priority: 130
+  - type: GpuRebalancingPolicy
+    priority: 120
+  - type: ClusterWideGpuRebalancingPolicy
+    priority: 110
   - type: StaticPolicy
     priority: 90
   - type: ClusterStaticPolicy
@@ -33,12 +41,13 @@ Higher priority values win. Within the same priority, the policy with the highes
 
 ## Common Configurations
 
-### Favor Recommendations Over Fixed Values
+### Favor Rollback Policies Over Proactive, GPU, and Fixed Values
 
-To make recommendation-driven automation take precedence, start from the **Default Behavior** manifest above and change the priorities:
+To make rollback recommendation-driven automation take precedence, start from the **Default Behavior** manifest above and change the priorities:
 
-- Set `ProactivePolicy` and `ClusterProactivePolicy` to `priority: 90`
-- Set `StaticPolicy` and `ClusterStaticPolicy` to `priority: 70`
+- Set `RollbackPolicy` and `ClusterRollbackPolicy` to a value higher than all other policy types
+- Set `ProactivePolicy` and `ClusterProactivePolicy` below the rollback priority
+- Set `StaticPolicy` and `ClusterStaticPolicy` below the rollback priority
 
 ### Favor Namespace Policies Over Cluster Policies
 
@@ -78,10 +87,12 @@ kubectl apply -f custom-policy-evaluation.yaml
 Note: `priority` is set in the `PolicyEvaluation` CR and applies to all policies of that type. `weight` is set on each individual policy resource (e.g., `spec.weight` on a `StaticPolicy` or `ProactivePolicy`). See [Policy Configuration Guide](./Policy-Configuration.md) for how to set `weight` on policy resources.
 
 **Example 1 - Default precedence:**
+- `RollbackPolicy` with `spec.weight: 50` (type has `priority: 130` in `PolicyEvaluation`)
+- `GpuRebalancingPolicy` with `spec.weight: 10` (type has `priority: 120` in `PolicyEvaluation`)
 - `StaticPolicy` with `spec.weight: 50` (type has `priority: 90` in `PolicyEvaluation`)
 - `ProactivePolicy` with `spec.weight: 100` (type has `priority: 70` in `PolicyEvaluation`)
 
-Winner: `StaticPolicy` (policy-type priority 90 > 70, individual policy weight doesn't matter)
+Winner: `RollbackPolicy` (policy-type priority 130 > 120 > 90 > 70, individual policy weight doesn't matter)
 
 **Example 2 - Same policy type, different weights:**
 - `ProactivePolicy` named `policy-a` with `spec.weight: 50`
