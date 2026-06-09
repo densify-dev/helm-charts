@@ -8,6 +8,10 @@ metadata:
     {{- include "kubex-automation-engine.labels" . | nindent 4 }}
 spec:
   precedence:
+  - type: RollbackPolicy
+    priority: 130
+  - type: ClusterRollbackPolicy
+    priority: 130
   - type: GpuRebalancingPolicy
     priority: 120
   - type: ClusterWideGpuRebalancingPolicy

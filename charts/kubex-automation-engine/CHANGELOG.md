@@ -4,6 +4,13 @@ All notable changes to the Kubex Automation Engine Helm chart will be documented
 
 ---
 
+## [1.3.1] - 2026-06-09
+
+### Changed
+- Default policy evaluation now gives `RollbackPolicy` and `ClusterRollbackPolicy` the highest precedence.
+
+---
+
 ## [1.3.0] - 2026-06-04
 
 ### Added
