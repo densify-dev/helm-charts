@@ -113,7 +113,7 @@ The following table lists configuration parameters in `values-edit.yaml`.
 | `prometheus.server.persistentVolume.`<br/>`storageClass`                         |                    | Storage class for Prometheus persistent volume |
 | `gpu-process-exporter.enabled`                                                           |                    | Enable GPU process exporter subchart (default: `true`) |
 | `beyla.enabled`                                                           |                    | Enable Grafana Beyla for application runtime detection (default: `true`) |
-| `k8s-ephemeral-storage-metrics.enabled`                                          |                    | Enable ephemeral storage metrics collection (default: `false`) |
+| `k8s-ephemeral-storage-metrics.enabled`                                          |                    | Enable ephemeral storage metrics collection (default: `true`) |
 | `node-labeler.enabled`                                                           |                    | Enable optional node-labeler subchart (default: `false`) |
 
 ## Limitations
@@ -129,9 +129,9 @@ This chart consists of the following subcharts:
 
 * [Prometheus Community Prometheus chart](https://github.com/prometheus-community/helm-charts/blob/main/charts/prometheus/) - Used on Kubernetes clusters; disabled for OpenShift installs via the OpenShift overlay values file
 
-* [Grafana Beyla chart](https://github.com/grafana/beyla/tree/main/charts/beyla) - Used on Kubernetes clusters to get application runtime information; disabled for OpenShift installs via the OpenShift overlay values file
+* [Grafana Beyla chart](https://github.com/grafana/beyla/tree/main/charts/beyla) - Used on Kubernetes clusters to get application runtime information; requires elevated permissions; disabled for OpenShift installs via the OpenShift overlay values file
 
-* [GPU Process Exporter](../gpu-process-exporter) - Collects container-level metrics for containers using Nvidia GPUs, to overcome the limitations of Nvidia's [DCGM Exporter](https://github.com/NVIDIA/dcgm-exporter) in providing those metrics for use-cases like GPU sharing strategies (e.g. time-slicing, MPS) or the [KAI scheduler](https://github.com/kai-scheduler/KAI-Scheduler); enabled by default and runs **only** on nodes with Nvidia GPUs; requires read-only access to the node and elevated permissions. Disabled for OpenShift installs via the OpenShift overlay values file
+* [GPU Process Exporter](../gpu-process-exporter) - Collects container-level metrics for containers using Nvidia GPUs, to overcome the limitations of Nvidia's [DCGM Exporter](https://github.com/NVIDIA/dcgm-exporter) in providing those metrics for use-cases like GPU sharing strategies (e.g. time-slicing, MPS) or the [KAI scheduler](https://github.com/kai-scheduler/KAI-Scheduler); enabled by default and runs **only** on nodes with Nvidia GPUs; requires read-only access to the node and elevated permissions; disabled for OpenShift installs via the OpenShift overlay values file
 
 * [k8s-ephemeral-storage-metrics](../k8s-ephemeral-storage-metrics) - Collects ephemeral storage metrics for containers.
 
