@@ -211,13 +211,54 @@ prometheus:
         - /etc/config/rules
         - /etc/config/alerts
 
+beyla:
+  enabled: true
+  fullnameOverride: kubex-beyla
+  preset: application
+  privileged: true
+  contextPropagation:
+    enabled: false # Survey only - no context propagation needed
+  tolerations:
+    - key: "kubernetes.io/arch"
+      operator: "Exists"
+      effect: "NoSchedule"
+  service:
+    enabled: true
+    port: 8999
+    targetPort: 8999
+    portName: metrics
+  serviceMonitor:
+    enabled: false # Disabled - using Prometheus scrape_configs instead
+  config:
+    data:
+      attributes:
+        kubernetes:
+          enable: true
+      discovery:
+        # Remove built-in exclusions for kube-system, monitoring, cert-manager, etc.
+        # Needed as the goal is survey visibility, not safe default instrumentation scope.
+        default_exclude_instrument: []
+        # Default min_process_age is 5s, which means shorter-lived processes will not be found;
+        # however, currently survey mode picks the **first** runtime detected, so if the container
+        # for example runs some shell commands for a longer period and then starts a java/go/... app,
+        # the app runtime will not be detected
+        # min_process_age: 5s
+        survey:
+          - k8s_namespace: "*"  # Match Kubernetes-owned processes in every namespace.
+            containers_only: false  # keeps hostNetwork / hostPID pods eligible
+      prometheus_export:
+        port: 8999
+        path: /metrics
+        features:
+          - application
+
 #################################################################
 # Ephemeral Storage Metrics Exporter
 # Collects and exposes ephemeral storage metrics via a DaemonSet
 #################################################################
 
 k8s-ephemeral-storage-metrics:
-  enabled: false  # Set to true to enable ephemeral storage metrics collection
+  enabled: true
   nameOverride: kubex-ephemeral-storage-collector
   tolerations:
     - key: "kubernetes.io/arch"

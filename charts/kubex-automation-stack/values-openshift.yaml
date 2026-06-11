@@ -36,3 +36,9 @@ k8s-ephemeral-storage-metrics:
     enable: true
     interval: 30s
     scrapeTimeout: 10s
+
+gpu-process-exporter:
+  enabled: false
+
+beyla:
+  enabled: false
