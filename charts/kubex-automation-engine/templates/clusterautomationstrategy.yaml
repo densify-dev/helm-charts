@@ -8,12 +8,15 @@ metadata:
   labels:
     {{- include "kubex-automation-engine.labels" $ | nindent 4 }}
 spec:
-  {{- if and $policyConfig.enablement $policyConfig.enablement.gpu }}
+  {{- if and $policyConfig.enablement (or $policyConfig.enablement.gpu $policyConfig.enablement.overrideScheduler) }}
   experimental:
     gpuKaiContract: {{ $.Values.experimental.gpuKaiContract | quote }}
   {{- end }}
   {{- if $policyConfig.enablement }}
   enablement:
+    {{- if $policyConfig.enablement.overrideScheduler }}
+    overrideScheduler: {{ $policyConfig.enablement.overrideScheduler | quote }}
+    {{- end }}
     {{- if $policyConfig.enablement.cpu }}
     {{- $cpuReq := default $policyConfig.enablement.cpu.request $policyConfig.enablement.cpu.requests }}
     {{- $cpuLim := default $policyConfig.enablement.cpu.limit $policyConfig.enablement.cpu.limits }}

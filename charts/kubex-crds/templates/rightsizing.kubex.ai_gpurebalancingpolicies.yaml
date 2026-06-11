@@ -75,14 +75,23 @@ spec:
                     description: compute configures the GPU compute utilization signal.
                     properties:
                       prometheus:
-                        description: prometheus configures metric and label mapping
-                          used for utilization checks.
+                        description: prometheus configures metric, interpretation,
+                          and label mapping used for utilization checks.
                         properties:
                           containerLabel:
                             description: containerLabel is the metric label key containing
                               the container name.
                             minLength: 1
                             pattern: ^[A-Za-z_][A-Za-z0-9_]*$
+                            type: string
+                          interpretation:
+                            default: fullGPU
+                            description: |-
+                              interpretation controls whether the metric value is a percentage of one
+                              whole GPU or a percentage of the container's current GPU allocation.
+                            enum:
+                            - fullGPU
+                            - currentAllocation
                             type: string
                           metric:
                             description: metric is the Prometheus metric name used
@@ -133,8 +142,8 @@ spec:
                               rule: duration(self) >= duration('1m')
                           thresholdPercent:
                             default: 80
-                            description: thresholdPercent is the absolute utilization
-                              percentage threshold that triggers scale-back.
+                            description: thresholdPercent is the utilization percentage
+                              of the current allocation that triggers scale-back.
                             format: int32
                             minimum: 1
                             type: integer
@@ -185,14 +194,23 @@ spec:
                     description: memory configures the GPU memory utilization signal.
                     properties:
                       prometheus:
-                        description: prometheus configures metric and label mapping
-                          used for utilization checks.
+                        description: prometheus configures metric, interpretation,
+                          and label mapping used for utilization checks.
                         properties:
                           containerLabel:
                             description: containerLabel is the metric label key containing
                               the container name.
                             minLength: 1
                             pattern: ^[A-Za-z_][A-Za-z0-9_]*$
+                            type: string
+                          interpretation:
+                            default: fullGPU
+                            description: |-
+                              interpretation controls whether the metric value is a percentage of one
+                              whole GPU or a percentage of the container's current GPU allocation.
+                            enum:
+                            - fullGPU
+                            - currentAllocation
                             type: string
                           metric:
                             description: metric is the Prometheus metric name used
@@ -243,8 +261,8 @@ spec:
                               rule: duration(self) >= duration('1m')
                           thresholdPercent:
                             default: 80
-                            description: thresholdPercent is the absolute utilization
-                              percentage threshold that triggers scale-back.
+                            description: thresholdPercent is the utilization percentage
+                              of the current allocation that triggers scale-back.
                             format: int32
                             minimum: 1
                             type: integer
