@@ -41,6 +41,7 @@ jobs:
         run: |
           helm repo add kubex https://densify-dev.github.io/helm-charts
           helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+          helm repo add grafana https://grafana.github.io/helm-charts
           helm repo add groundhog2k https://groundhog2k.github.io/helm-charts
           helm repo update
 
