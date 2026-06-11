@@ -14,3 +14,10 @@ prometheus:
         cpu: "30m"
       limits:
         memory: "100Mi"
+beyla:
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "50m"
+    limits:
+      memory: "1Gi"
