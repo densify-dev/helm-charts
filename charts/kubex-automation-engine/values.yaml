@@ -369,7 +369,7 @@ globalConfiguration:
     schedulerName: "kai-scheduler"
   prometheus:
     # -- Prometheus base URL used by GPU rebalancing policies
-    url: "http://prometheus.monitoring.svc:9090"
+    url: "http://kubex-prometheus-server.kubex.svc"
     # -- Timeout for individual Prometheus query requests
     requestTimeout: "30s"
 
@@ -484,6 +484,9 @@ policy:
     #
     #   # Enablement controls which resource changes are allowed
     #   enablement:
+    #     # GPU scheduler override mode for GPU actions.
+    #     # Valid values: none, kai
+    #     overrideScheduler: kai
     #     cpu:
     #       request:
     #         downsize: true
@@ -511,6 +514,7 @@ policy:
     #         # floor: "32Mi"       # Optional minimum memory limit
     #         # ceiling: "32Gi"     # Optional maximum memory limit
     #     gpu:
+    #       # GPU requests config. Scheduler override now lives at enablement.overrideScheduler.
     #       # GPU is requests-only; limits are not supported.
     #       request:
     #         downsize: true

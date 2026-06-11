@@ -14,7 +14,7 @@ spec:
     priority: 130
   - type: GpuRebalancingPolicy
     priority: 120
-  - type: ClusterWideGpuRebalancingPolicy
+  - type: ClusterGpuRebalancingPolicy
     priority: 110
   - type: StaticPolicy
     priority: 90
