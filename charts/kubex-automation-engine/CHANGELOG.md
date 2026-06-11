@@ -2,6 +2,14 @@
 
 All notable changes to the Kubex Automation Engine Helm chart will be documented in this file.
 
+## [1.4.0] - 2026-06-11
+
+### Added
+- Initial formal release of the integration with the KAI scheduler for rightsizing fractional GPUs
+
+### Changed
+- KAI documentation, examples, and release notes were updated for the `v1.4.0` release
+
 ---
 
 ## [1.3.1] - 2026-06-09

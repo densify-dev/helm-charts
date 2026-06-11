@@ -133,10 +133,10 @@ rules:
 - apiGroups:
   - rightsizing.kubex.ai
   resources:
+  - clustergpurebalancingpolicies
   - clusterproactivepolicies
   - clusterrollbackpolicies
   - clusterstaticpolicies
-  - clusterwidegpurebalancingpolicies
   - globalconfigurations
   - gpuconsolidationpolicies
   - gpurebalancingpolicies
@@ -156,10 +156,10 @@ rules:
 - apiGroups:
   - rightsizing.kubex.ai
   resources:
+  - clustergpurebalancingpolicies/finalizers
   - clusterproactivepolicies/finalizers
   - clusterrollbackpolicies/finalizers
   - clusterstaticpolicies/finalizers
-  - clusterwidegpurebalancingpolicies/finalizers
   - globalconfigurations/finalizers
   - gpuconsolidationpolicies/finalizers
   - gpurebalancingpolicies/finalizers
@@ -173,10 +173,10 @@ rules:
 - apiGroups:
   - rightsizing.kubex.ai
   resources:
+  - clustergpurebalancingpolicies/status
   - clusterproactivepolicies/status
   - clusterrollbackpolicies/status
   - clusterstaticpolicies/status
-  - clusterwidegpurebalancingpolicies/status
   - globalconfigurations/status
   - gpuconsolidationpolicies/status
   - gpurebalancingpolicies/status

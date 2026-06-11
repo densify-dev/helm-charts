@@ -29,6 +29,7 @@ Usage-level `floor` and `ceiling` values apply to all containers by default. Add
 | Field | Default | Description |
 | --- | --- | --- |
 | `spec.enablement` | `{}` | Parent object for enablement rules. |
+| `spec.enablement.overrideScheduler` | `none` | EXPERIMENTAL. Selects GPU mutation mode for GPU actions. Valid values: `none`, `kai`. |
 | `spec.enablement.cpu.requests.downsize` | `true` | Allows reducing CPU requests. |
 | `spec.enablement.cpu.requests.upsize` | `true` | Allows increasing CPU requests. |
 | `spec.enablement.cpu.requests.setFromUnspecified` | `true` | Allows setting CPU requests when currently unset. |

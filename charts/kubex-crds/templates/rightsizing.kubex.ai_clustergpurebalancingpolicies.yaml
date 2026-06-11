@@ -4,20 +4,20 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.19.0
-  name: clusterwidegpurebalancingpolicies.rightsizing.kubex.ai
+  name: clustergpurebalancingpolicies.rightsizing.kubex.ai
 spec:
   group: rightsizing.kubex.ai
   names:
-    kind: ClusterWideGpuRebalancingPolicy
-    listKind: ClusterWideGpuRebalancingPolicyList
-    plural: clusterwidegpurebalancingpolicies
-    singular: clusterwidegpurebalancingpolicy
+    kind: ClusterGpuRebalancingPolicy
+    listKind: ClusterGpuRebalancingPolicyList
+    plural: clustergpurebalancingpolicies
+    singular: clustergpurebalancingpolicy
   scope: Cluster
   versions:
   - name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: ClusterWideGpuRebalancingPolicy is the Schema for the clusterwidegpurebalancingpolicies
+        description: ClusterGpuRebalancingPolicy is the Schema for the clustergpurebalancingpolicies
           API.
         properties:
           apiVersion:
@@ -38,7 +38,7 @@ spec:
           metadata:
             type: object
           spec:
-            description: spec defines the desired state of ClusterWideGpuRebalancingPolicy
+            description: spec defines the desired state of ClusterGpuRebalancingPolicy
             properties:
               automationStrategyRef:
                 description: automationStrategyRef references the ClusterAutomationStrategy
@@ -75,14 +75,23 @@ spec:
                     description: compute configures the GPU compute utilization signal.
                     properties:
                       prometheus:
-                        description: prometheus configures metric and label mapping
-                          used for utilization checks.
+                        description: prometheus configures metric, interpretation,
+                          and label mapping used for utilization checks.
                         properties:
                           containerLabel:
                             description: containerLabel is the metric label key containing
                               the container name.
                             minLength: 1
                             pattern: ^[A-Za-z_][A-Za-z0-9_]*$
+                            type: string
+                          interpretation:
+                            default: fullGPU
+                            description: |-
+                              interpretation controls whether the metric value is a percentage of one
+                              whole GPU or a percentage of the container's current GPU allocation.
+                            enum:
+                            - fullGPU
+                            - currentAllocation
                             type: string
                           metric:
                             description: metric is the Prometheus metric name used
@@ -133,8 +142,8 @@ spec:
                               rule: duration(self) >= duration('1m')
                           thresholdPercent:
                             default: 80
-                            description: thresholdPercent is the absolute utilization
-                              percentage threshold that triggers scale-back.
+                            description: thresholdPercent is the utilization percentage
+                              of the current allocation that triggers scale-back.
                             format: int32
                             minimum: 1
                             type: integer
@@ -185,14 +194,23 @@ spec:
                     description: memory configures the GPU memory utilization signal.
                     properties:
                       prometheus:
-                        description: prometheus configures metric and label mapping
-                          used for utilization checks.
+                        description: prometheus configures metric, interpretation,
+                          and label mapping used for utilization checks.
                         properties:
                           containerLabel:
                             description: containerLabel is the metric label key containing
                               the container name.
                             minLength: 1
                             pattern: ^[A-Za-z_][A-Za-z0-9_]*$
+                            type: string
+                          interpretation:
+                            default: fullGPU
+                            description: |-
+                              interpretation controls whether the metric value is a percentage of one
+                              whole GPU or a percentage of the container's current GPU allocation.
+                            enum:
+                            - fullGPU
+                            - currentAllocation
                             type: string
                           metric:
                             description: metric is the Prometheus metric name used
@@ -243,8 +261,8 @@ spec:
                               rule: duration(self) >= duration('1m')
                           thresholdPercent:
                             default: 80
-                            description: thresholdPercent is the absolute utilization
-                              percentage threshold that triggers scale-back.
+                            description: thresholdPercent is the utilization percentage
+                              of the current allocation that triggers scale-back.
                             format: int32
                             minimum: 1
                             type: integer
@@ -421,7 +439,7 @@ spec:
             - scope
             type: object
           status:
-            description: status defines the observed state of ClusterWideGpuRebalancingPolicy
+            description: status defines the observed state of ClusterGpuRebalancingPolicy
             properties:
               conditions:
                 description: |-

@@ -9,9 +9,11 @@ Tested with KAI `v0.12.16`.
 
 ## Prerequisites
 
-- KAI is already installed in the cluster
-- `kubex-crds` and `kubex-automation-engine` are already installed
-- Prometheus is available for GPU utilization metrics if you want to use `GpuRebalancingPolicy`
+- KAI is already installed in the cluster. [KAI installation instructions](https://github.com/kai-scheduler/KAI-Scheduler#installation-methods)
+  - NOTE: Kubex has been tested with KAI version v0.12.16
+- `kubex-crds`, `kubex-automation-engine` and `kubex-automation-stack` are already installed
+  - When using `ClusterGpuRebalancingPolicy` or `GpuRebalancingPolicy`, Prometheus must be available for GPU metrics, typically via `kubex-automation-stack`.
+  - If Prometheus runs at different endpoint, set `globalConfiguration.prometheus.url` to custom URL.
 
 This guide works with either:
 
@@ -20,111 +22,179 @@ This guide works with either:
 
 For existing KAI-managed workloads, Kubex Automation Engine can update the `gpu-fraction` annotation without replacing the existing `kai.scheduler/queue` label.
 
+### New KAI installation
+
+Depending on your cloud provider and nvidia configuration, KAI's configuration must be adjusted. 
+
+Here is an example of a minimal KAI installation tested with nvidia's GPU operator already running in the Kubernetes cluster. 
+
+```
+helm upgrade -i kai-scheduler oci://ghcr.io/kai-scheduler/kai-scheduler/kai-scheduler -n kai-scheduler --create-namespace \
+  --version v0.12.16 \
+  --set "global.gpuSharing=true" \
+  --set "global.clusterAutoscaling=true" --set binder.additionalArgs[0]="--cdi-enabled=true"
+```
+
+### Prometheus notes
+
+By default, the `kubex-automation-engine` chart configures GPU rebalancing policies to query Prometheus at `http://kubex-prometheus-server.kubex.svc`.
+
+That matches the default Prometheus service name used by `kubex-automation-stack`.
+
+If your Prometheus endpoint is different, override the controller-wide setting through the Helm value `globalConfiguration.prometheus.url`.
+
+### Built-in KAI queues
+
+If you want Kubex Automation Engine to create the built-in KAI queue resources used in this guide, enable them in your Helm values:
+
+```yaml
+kaiQueues:
+  enabled: true
+```
+
+This creates the built-in Run:ai queue resources, including `kubex-unlimited-gpu-queue`.
+
 ## Starter Example
 
 The following example creates:
 
-- an `AutomationStrategy` for KAI-enabled workloads in namespace `ml-team-a`
-- a `StaticPolicy` that sets an initial shared GPU request for matching `Deployment` workloads
-- a `GpuRebalancingPolicy` that adjusts that shared GPU request based on Prometheus GPU metrics
+- a `ClusterAutomationStrategy` for KAI-enabled workloads across the cluster
+- a `ClusterProactivePolicy` that makes matching `Deployment` workloads managed by that strategy
+- a `ClusterGpuRebalancingPolicy` that adjusts that shared GPU request based on Prometheus GPU metrics
 
-Both policies target `Deployment` workloads in a specific namespace that carry `nvidia.com/gpu.present: "true"`.
+Both policies target `Deployment` workloads in all namespaces that carry `nvidia.com/gpu.present: "true"`.
 
 ```yaml
+# Strategy shared by the baseline and rebalancing policies below.
 apiVersion: rightsizing.kubex.ai/v1alpha1
-kind: AutomationStrategy
+kind: ClusterAutomationStrategy
 metadata:
   name: kai-gpu-sharing
-  namespace: ml-team-a
 spec:
   experimental:
+    # Required contract version for the current experimental GPU/KAI integration.
     gpuKaiContract: v1alpha1-2026-04
   enablement:
+    # Convert matching workloads to the KAI GPU-sharing flow.
+    overrideScheduler: "kai"
     gpu:
-      overrideScheduler: "kai"
       requests:
+        # Allow lowering the requested GPU fraction when usage drops.
         downsize: true
+        # Allow raising the requested GPU fraction when usage increases.
         upsize: true
+        # Leave workloads that have no GPU request untouched.
         setFromUnspecified: false
-  kai:
-    queue: kubex-unlimited-gpu-queue
-    setQueueWhenSpecified: false
   inPlaceResize:
+    # Use restart/eviction flow instead of in-place pod resize.
     enabled: false
   podEviction:
+    # Permit the controller to evict pods when it needs to apply a new size.
     enabled: true
 ---
+# Baseline policy that makes matching workloads managed by the strategy.
 apiVersion: rightsizing.kubex.ai/v1alpha1
-kind: StaticPolicy
+kind: ClusterProactivePolicy
 metadata:
   name: kai-gpu-sharing-baseline
-  namespace: ml-team-a
 spec:
   scope:
+    namespaceSelector:
+      operator: In
+      values:
+        - "*"
     labelSelector:
       matchLabels:
+        # Only target workloads that advertise an attached GPU.
         nvidia.com/gpu.present: "true"
     workloadTypes:
+      # Limit the policy to Deployments across all namespaces.
       - Deployment
-  resources:
-    containers:
-      "*":
-        requests:
-          gpu: "0.25"
   automationStrategyRef:
     name: kai-gpu-sharing
 ---
+# Policy that adjusts shared GPU fractions from Prometheus utilization data.
 apiVersion: rightsizing.kubex.ai/v1alpha1
-kind: GpuRebalancingPolicy
+kind: ClusterGpuRebalancingPolicy
 metadata:
   name: kai-gpu-sharing-rebalancing
-  namespace: ml-team-a
 spec:
   experimental:
+    # Required contract version for the current experimental GPU/KAI integration.
     gpuKaiContract: v1alpha1-2026-04
   scope:
+    namespaceSelector:
+      operator: In
+      values:
+        - "*"
     labelSelector:
       matchLabels:
+        # Target the same GPU-enabled Deployments as the baseline policy.
         nvidia.com/gpu.present: "true"
     workloadTypes:
       - Deployment
-  minPodMetricsAge: 15m
+  # Wait for each pod to build at least 10 minutes of metrics before evaluating it.
+  minPodMetricsAge: 10m
   metrics:
     compute:
       upsize:
-        thresholdPercent: 125
-        metricsWindow: 10m
+        # Increase the GPU fraction when compute usage reaches the current allocation.
+        thresholdPercent: 100
+        # Base the upsize decision on the most recent 2 minutes of samples.
+        metricsWindow: 2m
+        # Add 20% headroom above observed compute usage when increasing the request.
         headroomPercent: 20
+        # Cap a single increase at 2x the current requested GPU fraction.
         maxPercent: 200
       scaleBack:
-        thresholdPercent: 60
+        # Reduce the GPU fraction only after compute usage stays below 75%.
+        thresholdPercent: 75
+        # Require 10 minutes of lower usage before scaling back.
         metricsWindow: 10m
+        # Keep 20% spare compute capacity after scaling back.
         headroomPercent: 20
       prometheus:
-        metric: kubex_gpu_container_compute_utilization_percent
+        # Prometheus metric and label mapping used to join compute samples to containers.
+        metric: kubex_gpu_container_sm_utilization_percent
+        # Treat metric values as percentages of one full GPU.
+        interpretation: fullGPU
         namespaceLabel: namespace
         podLabel: pod
         containerLabel: container
     memory:
       upsize:
-        thresholdPercent: 125
-        metricsWindow: 10m
+        # Apply the same upsize behavior using GPU memory utilization signals.
+        thresholdPercent: 100
+        # Base the upsize decision on the most recent 2 minutes of samples.
+        metricsWindow: 2m
+        # Add 20% headroom above observed memory usage when increasing the request.
         headroomPercent: 20
+        # Cap a single increase at 2x the current requested GPU fraction.
         maxPercent: 200
       scaleBack:
-        thresholdPercent: 60
+        # Reduce the GPU fraction only after memory usage stays below 75%.
+        thresholdPercent: 75
+        # Require 10 minutes of lower usage before scaling back.
         metricsWindow: 10m
+        # Keep 20% spare memory capacity after scaling back.
         headroomPercent: 20
       prometheus:
-        metric: kubex_gpu_container_memory_utilization_percent
+        # Prometheus metric and label mapping used to join memory samples to containers.
+        metric: kubex_gpu_container_memory_footprint_percent
+        # Treat metric values as percentages of the container's current GPU allocation.
+        # Example: if current KAI allocation is 0.30 and pod uses 15% of the whole GPU, the metric will show 50% usage
+        interpretation: currentAllocation
         namespaceLabel: namespace
         podLabel: pod
         containerLabel: container
   automationStrategyRef:
+    # Apply recommended changes through the strategy defined above.
     name: kai-gpu-sharing
 ```
 
 ## Automation Strategy Notes
+
+GPU metric interpretation defaults to `fullGPU`, which means Prometheus values are treated as percentages of one whole GPU. Set `prometheus.interpretation: currentAllocation` when a metric reports utilization relative to the container's current GPU allocation, such as KAI GPU memory utilization.
 
 For KAI-enabled workloads, start with `spec.inPlaceResize.enabled: false`.
 
@@ -133,46 +203,44 @@ For KAI-enabled workloads, start with `spec.inPlaceResize.enabled: false`.
 
 ## Existing KAI Installations
 
-For workloads that are already scheduled through KAI:
+For workloads that are already scheduled through KAI, these policies will:
 
 - keep the existing `kai.scheduler/queue` label on the workload template
 - let Kubex Automation Engine update `gpu-fraction` as policies are applied
 
 That allows Kubex Automation Engine to participate in GPU sharing without taking over queue assignment.
 
-If you want queue assignment to be done via Kubex, set `spec.kai.setQueueWhenSpecified: false` in your AutomationStrategy.
+If you want Kubex to overwrite an existing `kai.scheduler/queue` label, set `spec.kai.setQueueWhenSpecified: true` in your AutomationStrategy.
 
-## Proactive GPU Recommendations
+For workloads that are not currently scheduled through KAI, these policies will:
 
-`ProactivePolicy` and `ClusterProactivePolicy` can consume GPU recommendations from the external recommendations API when the payload includes `gpu.gpuOverallOptimal`.
+- replace the `nvidia.com/gpu` resource allocation with KAI `gpu-fraction` annotations
+- apply the KAI queue `kubex-unlimited-gpu-queue` (Kubex built-in KAI queue that doesn't perform quota allocations)
 
-- The value is translated into a proactive `requests.gpu` target for the matching container.
-- Scheduler behavior is still controlled by the referenced `AutomationStrategy` or `ClusterAutomationStrategy`.
-- With `overrideScheduler: kai`, Kubex updates the KAI GPU-sharing metadata from the proactive recommendation.
-- With `overrideScheduler: none`, Kubex applies the recommendation through `nvidia.com/gpu` requests and limits using the existing GPU policy behavior.
+## KAI node consolidation
 
-## GPU Node Consolidation
+`GpuConsolidationPolicy` is cluster-scoped and works separately from `AutomationStrategy`. Use it to look for underutilized GPU nodes inside a single compatible node pool and evict pods from a node only when the controller believes all `gpu-fraction` pods on that node can fit elsewhere in the same pool.
 
-`GpuConsolidationPolicy` can be used to consolidate KAI GPU workloads onto fewer GPU nodes.
-
-Example targeting a specific worker pool:
+Start with one narrowly scoped policy per compatibility pool:
 
 ```yaml
 apiVersion: rightsizing.kubex.ai/v1alpha1
 kind: GpuConsolidationPolicy
 metadata:
-  name: kai-gpu-workers-a
+  name: gpu-consolidation-pool-a
 spec:
   experimental:
     gpuKaiContract: v1alpha1-2026-04
   nodeSelector:
     matchLabels:
-      nodepool: gpu-workers-a
-  utilizationThresholdPercent: 70
-  requeueAfter: 2m
+      cloud.google.com/gke-accelerator: nvidia-tesla-t4
+  utilizationThresholdPercent: 75
+  requeueAfter: 1m
 ```
 
-## Consolidation Limitations
+If you have multiple GPU compatibility pools, create multiple policies instead of one broad selector. For example, keep `nvidia-tesla-t4` nodes separate from `nvidia-l4` nodes or from a different provider-specific GPU node class.
+
+### Node consolidation limitations
 
 GPU node consolidation is very early and has known limitations.
 

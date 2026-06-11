@@ -80,10 +80,8 @@ spec:
         resources:
           {{- toYaml .Values.resources | nindent 10 }}
         env:
-        {{- if .Values.kubex.clusterName }}
         - name: CLUSTER_NAME
-          value: {{ .Values.kubex.clusterName | quote }}
-        {{- end }}
+          value: {{ required "kubex.clusterName must be set to the Kubex cluster identifier" .Values.kubex.clusterName | quote }}
         - name: IMAGE_TAG
           value: {{ .Values.image.tag | quote }}
         - name: POD_NAMESPACE

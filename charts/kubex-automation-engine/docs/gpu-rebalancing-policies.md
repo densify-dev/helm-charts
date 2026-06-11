@@ -2,13 +2,14 @@
 
 > Experimental: GPU/KAI fields and related custom resources are subject to breaking changes. Set `spec.experimental.gpuKaiContract: v1alpha1-2026-04`.
 
-`GpuRebalancingPolicy` and `ClusterWideGpuRebalancingPolicy` emit GPU rebalancing recommendations (upsize and downsize) from Prometheus utilization.
+`GpuRebalancingPolicy` and `ClusterGpuRebalancingPolicy` emit GPU rebalancing recommendations (upsize and downsize) from Prometheus utilization.
 
 ## Behavior
 
 - Baseline is the live GPU allocation before first upsize and is persisted per container.
 - Pod metrics are considered only after the pod age reaches `spec.minPodMetricsAge` (default `15m`).
 - The policy evaluates two required GPU signals: `spec.metrics.compute` and `spec.metrics.memory`.
+- Each metric declares its Prometheus value interpretation through `spec.metrics.<signal>.prometheus.interpretation`. `fullGPU` treats the value as a percentage of one whole GPU. `currentAllocation` treats it as a percentage of the container's current GPU allocation.
 - Each metric is evaluated from per-pod aggregate GPU usage: the controller sums inferred GPU usage across all GPU containers in the pod, and compares that pod total against the summed current GPU allocation for those same containers.
 - Upsize evaluation is pod-level per metric: if any eligible pod total exceeds that metric's threshold, that metric can request an upsize.
 - Scale-back evaluation is owner-wide per metric: all eligible pod totals must stay below `currentAllocation * (spec.metrics.<signal>.scaleBack.thresholdPercent/100)` over `spec.metrics.<signal>.scaleBack.metricsWindow`, and every included container in those pods must have samples.
@@ -54,7 +55,8 @@ spec:
         metricsWindow: 10m
         headroomPercent: 20
       prometheus:
-        metric: kubex_gpu_container_compute_utilization_percent
+        metric: kubex_gpu_container_sm_utilization_percent
+        interpretation: fullGPU
         namespaceLabel: namespace
         podLabel: pod
         containerLabel: container
@@ -69,7 +71,8 @@ spec:
         metricsWindow: 10m
         headroomPercent: 20
       prometheus:
-        metric: kubex_gpu_container_memory_utilization_percent
+        metric: kubex_gpu_container_memory_footprint_percent
+        interpretation: currentAllocation
         namespaceLabel: namespace
         podLabel: pod
         containerLabel: container
@@ -77,11 +80,11 @@ spec:
     name: sample-automation-strategy
 ```
 
-## Cluster-Wide Spec
+## Cluster Spec
 
 ```yaml
 apiVersion: rightsizing.kubex.ai/v1alpha1
-kind: ClusterWideGpuRebalancingPolicy
+kind: ClusterGpuRebalancingPolicy
 metadata:
   name: gpu-rebalance-cluster
 spec:
@@ -107,7 +110,8 @@ spec:
         metricsWindow: 10m
         headroomPercent: 20
       prometheus:
-        metric: kubex_gpu_container_compute_utilization_percent
+        metric: kubex_gpu_container_sm_utilization_percent
+        interpretation: fullGPU
         namespaceLabel: namespace
         podLabel: pod
         containerLabel: container
@@ -122,12 +126,13 @@ spec:
         metricsWindow: 10m
         headroomPercent: 20
       prometheus:
-        metric: kubex_gpu_container_memory_utilization_percent
+        metric: kubex_gpu_container_memory_footprint_percent
+        interpretation: currentAllocation
         namespaceLabel: namespace
         podLabel: pod
         containerLabel: container
   automationStrategyRef:
-    name: sample-clusterwide-automation-strategy
+    name: sample-cluster-automation-strategy
 ```
 
 ## Global Prometheus Settings
