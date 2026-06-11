@@ -55,6 +55,7 @@ Once Helm is set up properly, add the Kubex repository and required upstream cha
 
 ```shell
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo add grafana https://grafana.github.io/helm-charts
 helm repo add kubex https://densify-dev.github.io/helm-charts
 helm repo update
 ```
