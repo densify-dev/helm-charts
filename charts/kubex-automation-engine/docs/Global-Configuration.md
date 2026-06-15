@@ -15,6 +15,7 @@ Use it to control recommendation refresh timing, proactive rescans, heartbeat re
 | `spec.mutationLogInterval` | `5m` | How often mutation logs are sent. |
 | `spec.snapshotInterval` | `30m` | How often policy snapshots are sent. |
 | `spec.heartbeatInterval` | `5m` | How often controller heartbeat status is sent to Kubex. |
+| `spec.proposalSyncEnabled` | `false` | Controls proposal sync. Disabled by default behind feature flag. When set to `false`, controller stops syncing proposals and deletes proposal-managed resources. |
 | `spec.kubexAPIRequestTimeout` | `30s` | Timeout for Kubex API requests. |
 | `spec.webhookOwnerResolutionRetryTimeout` | `1s` | How long the pod admission webhook retries owner recommendation resolution before continuing without owner annotations. |
 | `spec.automationEnabled` | `true` | Global on or off switch for automation behavior. |
@@ -57,6 +58,7 @@ spec:
   mutationLogInterval: 5m
   snapshotInterval: 30m
   heartbeatInterval: 5m
+  proposalSyncEnabled: false
   kubexAPIRequestTimeout: 30s
   webhookOwnerResolutionRetryTimeout: 1s
   automationEnabled: true
@@ -98,6 +100,7 @@ The chart creates a default `GlobalConfiguration` when `globalConfiguration.enab
 | `globalConfiguration.mutationLogInterval` | `spec.mutationLogInterval` | Direct mapping |
 | `globalConfiguration.snapshotInterval` | `spec.snapshotInterval` | Direct mapping |
 | `globalConfiguration.heartbeatInterval` | `spec.heartbeatInterval` | Direct mapping |
+| `globalConfiguration.proposalSyncEnabled` | `spec.proposalSyncEnabled` | Disabled by default; set to `true` to opt in. Disabling also deletes proposal-managed resources |
 | `globalConfiguration.kubexAPIRequestTimeout` | `spec.kubexAPIRequestTimeout` | Falls back to legacy value if unset |
 | `globalConfiguration.webhookOwnerResolutionRetryTimeout` | `spec.webhookOwnerResolutionRetryTimeout` | Direct mapping |
 | `globalConfiguration.automationEnabled` | `spec.automationEnabled` | Direct mapping |
@@ -125,6 +128,35 @@ Legacy `deployment.controllerEnv` values still act as fallbacks for the default 
 If both the new `globalConfiguration.*` value and the legacy value are set, the `globalConfiguration.*` value wins.
 
 ## Heartbeat Reporting
+
+## Proposal Sync Toggle
+
+`spec.proposalSyncEnabled` is top-level operational switch for proposal-backed resource management.
+
+Proposal sync disabled by default behind feature flag.
+
+- When `true`, controller continues syncing proposals on configured proposal sync interval.
+- When `false`, controller skips proposal sync and deletes all controller-managed proposal-backed resources.
+- Re-enabling triggers immediate proposal sync on next reconcile.
+- For local dev, `PROPOSALS_PATH=... make local-deploy` opts proposal sync in automatically in helper flow.
+
+Proposal sync supports these `rightsizing.kubex.ai/v1alpha1` kinds:
+
+- `AutomationStrategy`
+
+- `StaticPolicy`
+- `ProactivePolicy`
+- `RollbackPolicy`
+- `GpuRebalancingPolicy`
+- `ClusterAutomationStrategy`
+- `ClusterStaticPolicy`
+- `ClusterProactivePolicy`
+- `PodAffinityPolicy`
+- `ClusterRollbackPolicy`
+- `ClusterGpuRebalancingPolicy`
+- `GpuConsolidationPolicy`
+
+Proposal sync does not manage `PolicyEvaluation` or any other unsupported CRs.
 
 The controller periodically sends health and activity status to Kubex. This allows the Kubex platform to monitor controller health, display the running version, and track automation activity across your clusters.
 

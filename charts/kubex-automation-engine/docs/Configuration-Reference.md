@@ -36,8 +36,9 @@ This document maps the current Helm chart values to the resources created by the
 
 - Helm-managed policy generation creates `ClusterAutomationStrategy` resources
 - Helm-managed scope generation creates `ClusterProactivePolicy` resources
-- `AutomationStrategy`, `ProactivePolicy`, `StaticPolicy`, `ClusterStaticPolicy`, `ClusterAutomationStrategy`, and `ClusterProactivePolicy` can all be managed manually outside Helm
+- `AutomationStrategy`, `ProactivePolicy`, `StaticPolicy`, `ClusterStaticPolicy`, `PodAffinityPolicy`, `ClusterAutomationStrategy`, and `ClusterProactivePolicy` can all be managed manually outside Helm
 - `StaticPolicy` and `ClusterStaticPolicy` are supported by the controller, but this chart does not currently generate them from values
+- `PodAffinityPolicy` is also managed outside Helm; see [Policy Configuration](./Policy-Configuration.md#podaffinitypolicy-behavior) for behavior details and the eviction-loop warning for `spec.affinity.checkCurrentNodeSatisfiesAffinity`
 
 ---
 
@@ -146,6 +147,7 @@ Use [Global Configuration Reference](./Global-Configuration.md) for the CR field
 | `globalConfiguration.mutationLogInterval` | `5m` | Mutation log send cadence |
 | `globalConfiguration.snapshotInterval` | `30m` | Policy snapshot upload cadence |
 | `globalConfiguration.heartbeatInterval` | `5m` | Controller heartbeat upload cadence |
+| `globalConfiguration.proposalSyncEnabled` | `false` | Proposal sync disabled by default; set to `true` to opt in. When disabled, proposal-managed resources are deleted |
 | `globalConfiguration.kubexAPIRequestTimeout` | `30s` | Timeout for Kubex requests |
 | `globalConfiguration.webhookOwnerResolutionRetryTimeout` | `1s` | Pod webhook owner-resolution retry budget |
 | `globalConfiguration.automationEnabled` | `true` | Global enable/disable switch |

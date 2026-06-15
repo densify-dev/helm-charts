@@ -43,6 +43,12 @@ spec:
                 description: affinity describes the preferred node affinity to inject
                   at pod admission time.
                 properties:
+                  checkCurrentNodeSatisfiesAffinity:
+                    default: false
+                    description: |-
+                      checkCurrentNodeSatisfiesAffinity controls whether policy evaluation verifies
+                      the current node hostname is included in nodes before leaving the resize plan unchanged.
+                    type: boolean
                   nodes:
                     description: nodes lists hostname label values to prefer on replacement
                       pods.
