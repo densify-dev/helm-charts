@@ -21,6 +21,7 @@ spec:
   
   # Behavior configuration
   automationEnabled: {{ .Values.globalConfiguration.automationEnabled }}
+  proposalSyncEnabled: {{ .Values.globalConfiguration.proposalSyncEnabled }}
   suppressFetchRecommendations: {{ .Values.globalConfiguration.suppressFetchRecommendations }}
   respectKubexAutomation: {{ .Values.globalConfiguration.respectKubexAutomation }}
   {{- with .Values.globalConfiguration.protectedNamespacePatterns }}

@@ -14,8 +14,6 @@ This guide walks through installing the chart and validating the current CRD-bas
   - [Step 3: Install the Helm Chart](#step-3-install-the-helm-chart)
   - [Step 4: Verify Controller Health](#step-4-verify-controller-health)
   - [Step 5: Create Your First Strategy and Policy](#step-5-create-your-first-strategy-and-policy)
-    - [Option A: Helm-managed](#option-a-helm-managed)
-    - [Option B: External CR Management](#option-b-external-cr-management)
   - [Step 6: Validate Recommendation Application](#step-6-validate-recommendation-application)
   - [Apply Configuration Updates](#apply-configuration-updates)
   - [Uninstall](#uninstall)
@@ -151,12 +149,7 @@ helm install kubex-automation-engine kubex/kubex-automation-engine \
   -f kubex-automation-values.yaml
 ```
 
-Optional:
-
-- Define `scope` and `policy.policies` in the same values file to have Helm generate `ClusterAutomationStrategy` and `ClusterProactivePolicy` resources
-- This Helm-managed path is mainly available for backward compatibility with the previous automation controller configuration model
-- Prefer keeping `scope` empty and managing strategy and policy CRs outside Helm with `kubectl` or GitOps
-- Create `StaticPolicy` or `ClusterStaticPolicy` separately if you want fixed resource values instead of recommendation-driven automation for specific workloads
+Note: If you are migrating from the previous Kubex Automation Controller that used Helm values to manage automation configuration, see [Migrating from Helm-Managed Configuration](./Migrating-From-Helm-Managed-Config.md). For new installations, proceed to Step 4.
 
 ## Step 4: Verify Controller Health
 
@@ -180,65 +173,7 @@ If webhook health is not ready, automation stays paused until probe success reac
 
 ## Step 5: Create Your First Strategy and Policy
 
-### Option A: Helm-managed
-
-This path is mainly provided for backward compatibility with the previous automation controller, where automation behavior was driven from Helm values.
-
-For new setups, prefer Option B so strategy and policy CRs are managed outside Helm and can evolve independently of chart upgrades.
-
-If you need the backward-compatible Helm-managed flow, define both a policy and a scope in your values file:
-
-```yaml
-scope:
-  - name: team-a
-    policy: base-optimization
-    namespaces:
-      operator: In
-      values:
-        - team-a
-    podLabels:
-      - key: app
-        operator: In
-        values:
-          - demo
-
-policy:
-  defaultPolicy: base-optimization
-  policies:
-    base-optimization:
-      allowedPodOwners: "Deployment,StatefulSet,CronJob,Rollout,Job,StrimziPodSet"
-      enablement:
-        cpu:
-          request:
-            downsize: true
-            upsize: true
-            setFromUnspecified: true
-          limit:
-            downsize: false
-            upsize: true
-            setFromUnspecified: false
-        memory:
-          request:
-            downsize: true
-            upsize: true
-            setFromUnspecified: true
-          limit:
-            downsize: false
-            upsize: true
-            setFromUnspecified: true
-      inPlaceResize:
-        enabled: true
-      podEviction:
-        enabled: true
-      safetyChecks:
-        maxAnalysisAgeDays: 5
-```
-
-Apply it with `helm upgrade`. Helm will render the corresponding `ClusterAutomationStrategy` and `ClusterProactivePolicy` resources from these values.
-
-### Option B: External CR Management
-
-This is the preferred approach. Keep the chart focused on installing and operating the controller, and manage strategy and policy CRs separately with `kubectl`, GitOps, or another external delivery workflow.
+Strategy and policy CRs should be managed separately from the Helm chart using `kubectl`, GitOps, or another external delivery workflow. This approach keeps the chart focused on installing and operating the controller while allowing strategy and policy configurations to evolve independently of chart upgrades.
 
 The main CR patterns are:
 
@@ -260,9 +195,9 @@ Start with these guides, each with field references and fuller examples:
 - Fixed-resource policy configuration: [Static Policies](./Static-Policies.md)
 - Strategy and policy model overview: [Policy Configuration](./Policy-Configuration.md)
 
-A typical external-CR workflow looks like this:
+A typical CR workflow looks like this:
 
-1. Install or upgrade the controller with Helm without including `scope` / `policy` sections.
+1. Install or upgrade the controller with Helm (as done in Step 3).
 2. Create one or more `AutomationStrategy` or `ClusterAutomationStrategy` objects for the resize behaviors you want.
 3. Create `ProactivePolicy`, `ClusterProactivePolicy`, `StaticPolicy`, or `ClusterStaticPolicy` objects that reference those strategies.
 4. Apply and reconcile those manifests through `kubectl`, GitOps, or another external workflow.
@@ -425,5 +360,6 @@ helm uninstall kubex-crds --namespace kubex
 - Review [Configuration Reference](./Configuration-Reference.md) for Helm keys and generated CRs
 - Review [Policy Configuration](./Policy-Configuration.md) for strategy and scope design
 - Review [Safety Controls](./Safety-Controls.md) for webhook health gating, pause controls, freshness checks, and execution-time safety filters
+- Review [Rollback Policies](./Rollback-Policies.md) to add health monitoring and automatic rollback for production deployments
 - Review [Troubleshooting](./Troubleshooting.md) if rightsizing is selected but not applied
 - Use externally managed CRs for `StaticPolicy` and `ClusterStaticPolicy` until Helm-managed generation is added for those resource types

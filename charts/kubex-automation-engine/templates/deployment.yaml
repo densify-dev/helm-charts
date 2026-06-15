@@ -2,6 +2,10 @@
 {{- $localRecommendationsMountPath := .Values.localRecommendations.mountPath | default "/etc/automation-controller/recommendations" -}}
 {{- $localRecommendationsFileName := .Values.localRecommendations.fileName | default "recommendations.json" -}}
 {{- $localRecommendationsPath := printf "%s/%s" $localRecommendationsMountPath $localRecommendationsFileName -}}
+{{- $localProposalsEnabled := .Values.localProposals.enabled | default false -}}
+{{- $localProposalsMountPath := .Values.localProposals.mountPath | default "/etc/automation-controller/proposals" -}}
+{{- $localProposalsFileName := .Values.localProposals.fileName | default "proposals.json" -}}
+{{- $localProposalsPath := printf "%s/%s" $localProposalsMountPath $localProposalsFileName -}}
 {{- $openshiftFsGroupConfigured := and .Values.openshift.enabled (not (empty .Values.openshift.fsGroup)) -}}
 {{- $hasPodFsGroup := hasKey .Values.podSecurityContext "fsGroup" -}}
 {{- $hasEffectiveFsGroup := or $hasPodFsGroup $openshiftFsGroupConfigured -}}
@@ -97,6 +101,10 @@ spec:
         - name: RECOMMENDATIONS_PATH
           value: {{ .Values.kubex.recommendationsPath | quote }}
         {{- end }}
+        {{- if $localProposalsEnabled }}
+        - name: PROPOSALS_PATH
+          value: {{ $localProposalsPath | quote }}
+        {{- end }}
         {{- if .Values.kubex.requestTimeout }}
         - name: REQUEST_TIMEOUT
           value: {{ .Values.kubex.requestTimeout | quote }}
@@ -115,6 +123,11 @@ spec:
         {{- if $localRecommendationsEnabled }}
         - name: local-recommendations
           mountPath: {{ $localRecommendationsMountPath | quote }}
+          readOnly: true
+        {{- end }}
+        {{- if $localProposalsEnabled }}
+        - name: local-proposals
+          mountPath: {{ $localProposalsMountPath | quote }}
           readOnly: true
         {{- end }}
       {{- if .Values.gateway.enabled }}
@@ -179,6 +192,14 @@ spec:
           items:
           - key: {{ $localRecommendationsFileName | quote }}
             path: {{ $localRecommendationsFileName | quote }}
+      {{- end }}
+      {{- if $localProposalsEnabled }}
+      - name: local-proposals
+        configMap:
+          name: {{ .Values.localProposals.configMapName | default "proposals" }}
+          items:
+          - key: {{ $localProposalsFileName | quote }}
+            path: {{ $localProposalsFileName | quote }}
       {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:

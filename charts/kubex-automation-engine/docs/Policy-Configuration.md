@@ -25,6 +25,7 @@ At the CRD level:
 - `AutomationStrategy` and `ClusterAutomationStrategy` define resize behavior.
 - `ProactivePolicy` and `ClusterProactivePolicy` apply recommendation-driven automation coming from Kubex.
 - `StaticPolicy` and `ClusterStaticPolicy` apply fixed request and limit values.
+- `PodAffinityPolicy` applies preferred hostname-based node affinity to replacement pods and can force eviction-based rescheduling when its affinity rule must be enforced during evaluation.
 - `RollbackPolicy` and `ClusterRollbackPolicy` enable and configure rollback monitoring and backoff settings. **These policies are required for rollback functionality** - without a matching policy, workloads will not be monitored for health failures and rollback will not occur.
 
 Use the namespaced pages for namespace-owned CRs and the cluster-scoped pages for platform-owned, cross-namespace CRs.
@@ -128,6 +129,24 @@ Manage CRs outside Helm when you need:
 - scheduling windows that restrict when automation can run
 
 This external-CR pattern applies equally to cluster-scoped and namespaced resources. `ClusterAutomationStrategy` and `ClusterProactivePolicy` are not Helm-only resource types.
+
+## PodAffinityPolicy Behavior
+
+`PodAffinityPolicy` is a cluster-scoped CR that is supported by the controller but managed outside Helm today.
+
+Use it when you want replacement pods to prefer a specific set of node hostnames via `spec.affinity.nodes`.
+
+Behavior summary:
+
+- Admission always injects preferred `kubernetes.io/hostname In [...]` node affinity into newly created replacement pods.
+- During policy evaluation, eviction is enabled whenever the managed preferred hostname affinity on the pod would need to change.
+- `spec.affinity.checkCurrentNodeSatisfiesAffinity` defaults to `false`.
+- When `spec.affinity.checkCurrentNodeSatisfiesAffinity` is `true`, policy evaluation also checks the current node hostname. If the running pod is on a node whose `kubernetes.io/hostname` label is not in `spec.affinity.nodes`, eviction is enabled even when the pod already has the intended managed affinity.
+
+Warning:
+
+- Enabling `spec.affinity.checkCurrentNodeSatisfiesAffinity` can cause eviction loops if the workload cannot actually land on one of the intended nodes. This can happen when scheduler constraints, taints, missing tolerations, topology rules, resource pressure, or other placement rules keep replacement pods off the target nodes.
+- Prefer enabling this setting only when you know the target nodes are schedulable for the workload and the preferred hostname list is stable.
 
 ## Scope Design Guidance
 

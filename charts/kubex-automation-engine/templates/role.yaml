@@ -126,13 +126,6 @@ rules:
   resources:
   - automationstrategies
   - clusterautomationstrategies
-  verbs:
-  - get
-  - list
-  - watch
-- apiGroups:
-  - rightsizing.kubex.ai
-  resources:
   - clustergpurebalancingpolicies
   - clusterproactivepolicies
   - clusterrollbackpolicies
