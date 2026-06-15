@@ -70,6 +70,12 @@ Confirm:
 
 If `POD_NAMESPACE` is missing in a custom deployment, startup fails fast.
 
+Important:
+
+- pod webhook runtime or Kubernetes API communication failures usually show up as missed mutation, not rejected pod admission
+- if those failures make webhook health unhealthy, proactive automation can still pause until probe health recovers
+- validating webhook rejection behavior depends on `webhook.failurePolicy`, which defaults to `Ignore`
+
 ## 3. Check Policy and Strategy Resolution
 
 ```bash
@@ -108,6 +114,7 @@ kubectl get events -A --field-selector reason=PolicyEvaluationEvictResize
 - webhook health probe failure
 - webhook probe dry-run pod denied by admission image policy (set `globalConfiguration.webhookProbe.image` to an allowed mirrored image)
 - on EKS, verify your version includes probe pod label `eks.amazonaws.com/skip-pod-identity-webhook: "true"` to bypass the AWS pod identity webhook for this dry-run probe
+- webhook runtime or API failures causing missing mutation on new pods while admission still succeeds; in that case inspect webhook-health gating and the [Tuning Guide](./Tuning-Guide.md#admission-webhook-fail-open-semantics)
 
 ## 6. Verify Webhook Registration
 
@@ -116,3 +123,5 @@ kubectl get mutatingwebhookconfigurations.admissionregistration.k8s.io
 ```
 
 Confirm the Kubex mutating webhook configuration exists and is accepted by the API server.
+
+For targeted slow-cluster and degraded-environment settings, see [Tuning Guide](./Tuning-Guide.md).

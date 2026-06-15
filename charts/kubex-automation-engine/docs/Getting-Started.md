@@ -103,6 +103,7 @@ Sizing notes:
 - `Medium` means 1,000 to 10,000 managed containers
 - `Large` means more than 10,000 managed containers
 - The chart currently exposes sizing controls for the controller manager and gateway sidecar; the older webhook and Valkey components do not apply to this chart
+- For slow API servers, webhook latency, restrictive admission environments, or placement resilience, continue with the [Tuning Guide](./Tuning-Guide.md)
 
 Example values:
 
@@ -358,6 +359,7 @@ helm uninstall kubex-crds --namespace kubex
 ## Next Steps
 
 - Review [Configuration Reference](./Configuration-Reference.md) for Helm keys and generated CRs
+- Review [Tuning Guide](./Tuning-Guide.md) for slow-cluster tolerance, webhook fail-open expectations, and example values
 - Review [Policy Configuration](./Policy-Configuration.md) for strategy and scope design
 - Review [Safety Controls](./Safety-Controls.md) for webhook health gating, pause controls, freshness checks, and execution-time safety filters
 - Review [Rollback Policies](./Rollback-Policies.md) to add health monitoring and automatic rollback for production deployments

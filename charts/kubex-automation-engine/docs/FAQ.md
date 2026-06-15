@@ -52,6 +52,10 @@ Yes. A common pattern is Helm for the baseline and manual CRs for workload-speci
 
 Set `globalConfiguration.automationEnabled: false` and run `helm upgrade`, or scale down the controller as an emergency action.
 
+### Where do I tune behavior for slow or constrained clusters?
+
+Use the [Tuning Guide](./Tuning-Guide.md) for leader election tolerance, webhook/API latency, probe pod admission constraints, cluster throttling, and HA placement.
+
 ## Security and Safety Questions
 
 ### What prevents unsafe resizes?
@@ -68,7 +72,7 @@ Not by default. Protected namespace patterns exclude well-known platform namespa
 
 ### Where should I look first if nothing happens?
 
-Check `GlobalConfiguration`, policy objects, events, and `rightsizing summary` logs in that order.
+Check `GlobalConfiguration`, policy objects, events, and `rightsizing summary` logs in that order. If new pods are being created but expected mutation is missing, also review the webhook fail-open notes in the [Tuning Guide](./Tuning-Guide.md#admission-webhook-fail-open-semantics).
 
 ### Why is a matching policy not enough?
 
