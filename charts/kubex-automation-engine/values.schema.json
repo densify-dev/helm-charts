@@ -219,6 +219,23 @@
         }
       }
     },
+    "localProposals": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean"
+        },
+        "configMapName": {
+          "type": "string"
+        },
+        "mountPath": {
+          "type": "string"
+        },
+        "fileName": {
+          "type": "string"
+        }
+      }
+    },
     "webhook": {
       "type": "object",
       "properties": {

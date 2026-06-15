@@ -110,6 +110,20 @@ spec:
                       EXPERIMENTAL: this field is subject to breaking changes or removal without notice.
                     type: string
                 type: object
+              proposalSyncEnabled:
+                default: false
+                description: |-
+                  proposalSyncEnabled controls proposal-backed resources behind feature flag and is disabled by default.
+                  When false, proposal sync does not run and proposal-managed resources are deleted.
+                type: boolean
+              proposalSyncInterval:
+                default: 5m
+                description: proposalSyncInterval controls how often proposal sync
+                  runs.
+                type: string
+                x-kubernetes-validations:
+                - message: must be at least 1 minute
+                  rule: duration(self) >= duration('1m')
               protectedNamespacePatterns:
                 default:
                 - kube-*
@@ -770,6 +784,39 @@ spec:
                 x-kubernetes-list-map-keys:
                 - type
                 x-kubernetes-list-type: map
+              proposalReload:
+                description: proposalReload captures the most recent proposal reload
+                  status.
+                properties:
+                  lastAppliedCount:
+                    description: lastAppliedCount records the number of proposals
+                      successfully applied during the most recent successful reload.
+                    format: int64
+                    type: integer
+                  lastCount:
+                    description: lastCount records the number of proposals loaded
+                      during the most recent successful reload.
+                    format: int64
+                    type: integer
+                  lastError:
+                    description: lastError records the last proposal reload error
+                      message.
+                    type: string
+                  lastErrorCount:
+                    description: lastErrorCount records the number of invalid or failed
+                      proposals seen during the most recent successful reload.
+                    format: int64
+                    type: integer
+                  lastErrorTime:
+                    description: lastErrorTime records when the last proposal reload
+                      error occurred.
+                    format: date-time
+                    type: string
+                  lastTime:
+                    description: lastTime records the most recent proposal reload.
+                    format: date-time
+                    type: string
+                type: object
               recommendationReload:
                 description: recommendationReload captures the most recent recommendation
                   reload status.
