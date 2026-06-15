@@ -117,6 +117,7 @@ This guide covers:
 | Document | Purpose |
 |----------|---------|
 | **[Advanced Configuration](./docs/Advanced-Configuration.md)** | Global configuration, pause controls, safety controls, and operating patterns |
+| **[Tuning Guide](./docs/Tuning-Guide.md)** | Tune control plane tolerance, webhook behavior, external dependency timeouts, and resilient placement |
 | **[Global Configuration Reference](./docs/Global-Configuration.md)** | Detailed `GlobalConfiguration` fields, defaults, Helm mapping, and timing behavior |
 | **[Safety Controls Reference](./docs/Safety-Controls.md)** | Pre-checks, filters, evaluation order, and `failedChecks` / `appliedFilters` interpretation |
 | **[RBAC Permissions](./docs/RBAC-Guide.md)** | Controller and webhook permission model |

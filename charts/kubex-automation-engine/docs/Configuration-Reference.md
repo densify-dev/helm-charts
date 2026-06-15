@@ -5,6 +5,7 @@ This document maps the current Helm chart values to the resources created by the
 ## How to Use This Reference
 
 - Use [Getting Started](./Getting-Started.md) for the install sequence
+- Use [Tuning Guide](./Tuning-Guide.md) for slow-cluster and degraded-environment tuning patterns
 - Use this document to understand which values are required and which CRs Helm creates
 - Use [Policy Configuration](./Policy-Configuration.md) for detailed strategy and scope examples
 - Use [Cluster Automation Strategies](./Cluster-Automation-Strategies.md) and [Cluster Proactive Policies](./Cluster-Proactive-Policies.md) for cluster-scoped CRD field references
@@ -20,8 +21,8 @@ This document maps the current Helm chart values to the resources created by the
 | `Deployment` | Runs the controller manager and gateway sidecar |
 | `Service` | Exposes metrics and webhook endpoints |
 | `ServiceMonitor` | Optional Prometheus scrape target for the metrics Service |
-| `MutatingWebhookConfiguration` | Registers pod mutation webhook |
-| `ValidatingWebhookConfiguration` | Registers validation webhook |
+| `MutatingWebhookConfiguration` | Registers pod mutation webhook; fail-open via `failurePolicy: Ignore` |
+| `ValidatingWebhookConfiguration` | Registers validation webhooks; default fail-open because `webhook.failurePolicy` defaults to `Ignore`, but this is configurable |
 | `Secret` | Stores gateway credentials and TLS material when `createSecrets=true` |
 
 ### Generated Custom Resources
@@ -106,6 +107,7 @@ Note: `kubexCredentials.userSecretName` is currently not consumed by this chart.
 | `createSecrets` | `true` | Create required gateway and TLS secrets |
 | `webhook.enabled` | `true` | Enable webhook components |
 | `webhook.timeoutSeconds` | `10` | Admission webhook timeout in seconds |
+| `webhook.failurePolicy` | `Ignore` | Failure policy for validating webhooks; default is fail-open, but operators can change it |
 | `webhook.certManager.enabled` | `false` | Use cert-manager instead of self-signed TLS |
 | `selfSignedCert.validity` | `3650` | Self-signed certificate validity in days |
 | `controllerManager.globalConfigReconcileInterval` | `1m` | Base reconcile cadence for global config controller |
@@ -113,8 +115,8 @@ Note: `kubexCredentials.userSecretName` is currently not consumed by this chart.
 | `controllerManager.leaderElection.renewDeadline` | `10s` | Leader election renew deadline; must stay below `leaseDuration` |
 | `controllerManager.leaderElection.retryPeriod` | `2s` | Leader election retry interval; must stay below `renewDeadline` |
 | `controllerManager.metricsBindAddress` | `:8080` | Metrics bind address used by the controller manager |
-| `controllerManager.podAdmissionWebhookKubeAPIQPS` | `-1` | QPS limit for the pod admission webhook Kubernetes client; use `0` for client-go defaults (`5 QPS`) or a negative value to disable client-side rate limiting |
-| `controllerManager.podAdmissionWebhookKubeAPIBurst` | `0` | Burst limit for the pod admission webhook Kubernetes client; use `0` for the client-go default burst (`10`) |
+| `controllerManager.podAdmissionWebhookKubeAPIQPS` | `-1` | QPS limit for the pod admission webhook Kubernetes client; use `0` for client-go default `5 QPS`, or a negative value to disable client-side rate limiting |
+| `controllerManager.podAdmissionWebhookKubeAPIBurst` | `0` | Burst limit for the pod admission webhook Kubernetes client; `0` leaves burst at client-go default when webhook client rate limiting is active. With default `controllerManager.podAdmissionWebhookKubeAPIQPS: -1`, client-side rate limiting is disabled, so Burst is not practical cap |
 | `kubex.requestTimeout` | `30s` | Kubex API request timeout |
 | `podSecurityContext` | chart default | Pod-level security context for the controller Deployment; defaults to `65534` for `runAsUser`, `runAsGroup`, and `fsGroup`, plus `runAsNonRoot=true` and `seccompProfile.type=RuntimeDefault` |
 | `openshift.enabled` | `false` | Enable OpenShift-oriented pod security context defaults and cleanup job settings without changing the default Kubernetes installation path |
@@ -164,6 +166,12 @@ Use [Global Configuration Reference](./Global-Configuration.md) for the CR field
 | `globalConfiguration.webhookProbe.podSecurityContext` | `{}` | Pod security context for the dry-run webhook probe Pod |
 | `globalConfiguration.webhookProbe.securityContext` | `{}` | Container security context for the dry-run webhook probe container |
 | `experimental.gpuKaiContract` | `v1alpha1-2026-04` | Required acknowledgement token for experimental GPU/KAI CR fields rendered by the chart |
+
+Webhook behavior notes:
+
+- The pod mutating webhook is always fail-open. Pod creation continues if the webhook hits Kubernetes API communication errors or internal runtime errors; the effect is missed mutation rather than blocked admission.
+- Validating webhooks are fail-open by default because `webhook.failurePolicy` defaults to `Ignore`, but that behavior is configurable.
+- For operational tuning guidance around these behaviors, see [Tuning Guide](./Tuning-Guide.md#admission-webhook-fail-open-semantics).
 
 ## Helm-Managed Policy Values
 
