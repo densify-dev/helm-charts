@@ -123,10 +123,11 @@ Use when you want predictable, deterministic rollback behavior that always retur
 
 ## Adoption Threshold
 
-The `adoptionThresholdPercent` field determines what percentage of the workload cohort (e.g., all pods in a Deployment) must successfully adopt the target resources before monitoring is considered successful.
+The `adoptionThresholdPercent` field determines what percentage of the workload cohort (e.g., all pods in a Deployment) must successfully adopt the active recommendation fingerprint before monitoring is considered successful.
 
-- Setting `80` means at least 80% of pods must be healthy with the new resource settings
-- This helps detect partial failures where only some pods fail health checks
+- Setting `80` means at least 80% of the baseline workload cohort must be healthy on the targeted resources by the end of the monitoring window
+- Pods count toward the threshold only after they adopt the active recommendation fingerprint and become healthy
+- If too many adopted pods fail and the threshold becomes unreachable, rollback begins immediately instead of waiting for the full monitoring window
 - Range: 1-100
 
 ## Backoff Turn Calculation
