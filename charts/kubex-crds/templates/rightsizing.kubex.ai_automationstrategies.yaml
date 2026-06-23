@@ -370,6 +370,22 @@ spec:
                       an existing kai.scheduler/queue label when queue is specified.
                       EXPERIMENTAL: this field is subject to breaking changes or removal without notice.
                     type: boolean
+                  vllm:
+                    description: |-
+                      vllm configures admission-time tuning for vLLM workloads using KAI GPU sharing.
+                      EXPERIMENTAL: this field is subject to breaking changes or removal without notice.
+                    properties:
+                      gpuMemoryUtilizationBufferPercent:
+                        description: |-
+                          gpuMemoryUtilizationBufferPercent reduces the vLLM --gpu-memory-utilization target
+                          below the admitted gpu-fraction by this percentage.
+                          effective = gpuFraction * (1 - bufferPercent/100)
+                          EXPERIMENTAL: this field is subject to breaking changes or removal without notice.
+                        format: int32
+                        maximum: 100
+                        minimum: 0
+                        type: integer
+                    type: object
                 type: object
               podEviction:
                 default: {}
