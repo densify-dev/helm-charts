@@ -4,7 +4,7 @@ dependencies:
   version: 4.0.17
 - name: prometheus
   repository: https://prometheus-community.github.io/helm-charts
-  version: 29.10.1
+  version: 29.13.0
 - name: beyla
   repository: https://grafana.github.io/helm-charts
   version: 1.16.8
@@ -17,5 +17,5 @@ dependencies:
 - name: node-labeler
   repository: https://densify-dev.github.io/helm-charts
   version: 0.1.2
-digest: sha256:3aa412eab0b1491a81caece95ffae4b00d812e1a9afc56377a4b35537eba768c
-generated: "2026-06-08T16:40:59.818978905-04:00"
+digest: sha256:c498ce4d74c71ae798389273aa7a982b7b5bab36fda22cf138ce8d9fc7df4d91
+generated: "2026-06-23T13:15:52.035420594-04:00"
