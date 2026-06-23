@@ -122,6 +122,15 @@ rules:
   - patch
   - watch
 - apiGroups:
+  - kubeai.org
+  resources:
+  - models
+  verbs:
+  - get
+  - list
+  - patch
+  - watch
+- apiGroups:
   - rightsizing.kubex.ai
   resources:
   - automationstrategies

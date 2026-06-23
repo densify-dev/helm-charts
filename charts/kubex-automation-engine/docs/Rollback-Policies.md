@@ -19,7 +19,7 @@ Use them when you want the controller to monitor workloads after a resize is app
 | --- | --- | --- |
 | `spec.scope` | none | Optional scope object for workload selection within the namespace. |
 | `spec.scope.labelSelector` | none | Kubernetes label selector for matching workloads. |
-| `spec.scope.workloadTypes` | `[Deployment, StatefulSet, CronJob, Rollout, Job, AnalysisRun, DaemonSet]` | Workload kinds this policy applies to. Default excludes `StrimziPodSet` (opt-in only). |
+| `spec.scope.workloadTypes` | `[Deployment, StatefulSet, CronJob, Rollout, Job, AnalysisRun, DaemonSet, Model]` | Workload kinds this policy applies to. Default excludes `StrimziPodSet` only. |
 | `spec.monitoringPeriod` | none (required) | How long the controller observes an active resize attempt before declaring failure. Example: `5m`, `10m`. |
 | `spec.rollbackTarget` | none (required) | Whether rollback returns to `manifest` resources or `lastSuccessful` state. |
 | `spec.adoptionThresholdPercent` | none (required) | Percentage of the workload cohort that must adopt the target resources successfully (1-100). |
@@ -33,7 +33,7 @@ Use them when you want the controller to monitor workloads after a resize is app
 | Field | Default | Description |
 | --- | --- | --- |
 | `spec.scope.labelSelector` | none | Kubernetes label selector for matching workloads. |
-| `spec.scope.workloadTypes` | `[Deployment, StatefulSet, CronJob, Rollout, Job, AnalysisRun, DaemonSet]` | Workload kinds this policy applies to. Default excludes `StrimziPodSet` (opt-in only). |
+| `spec.scope.workloadTypes` | `[Deployment, StatefulSet, CronJob, Rollout, Job, AnalysisRun, DaemonSet, Model]` | Workload kinds this policy applies to. Default excludes `StrimziPodSet` only. |
 | `spec.scope.namespaceSelector.operator` | none | Namespace selector operator: `In` or `NotIn`. |
 | `spec.scope.namespaceSelector.values` | none | Namespace patterns to include or exclude (supports `*` wildcards, e.g. `"prod-*"`). Wildcard patterns must be enclosed in double quotes. |
 | `spec.monitoringPeriod` | none (required) | How long the controller observes an active resize attempt before declaring failure. Example: `5m`, `10m`. |
@@ -150,6 +150,7 @@ After `maxAttempts` turns are exhausted, the rollback moves to `failedPermanent`
 
 - Use namespaced rollback policies when teams own their own namespaces and want namespace-specific rollback behavior.
 - Use cluster rollback policies when you want consistent rollback behavior across multiple namespaces or the entire cluster.
+- `Model` is included in default workload types. Use `spec.scope.workloadTypes: [Model]` when you want to restrict scope to KubeAI `Model` objects only. Rollback policy selection and rollback state live on the `Model` owner, and health monitoring evaluates model-owned pods.
 - When multiple rollback policies of the same kind match, higher `weight` wins, then older objects win on ties.
 - For behavioral details and operational expectations, see [Rollback Backoff](./Rollback-Backoff.md).
 - Rollback policies are independent of automation strategies and proactive/static policies - they work alongside those policies to add health monitoring and automatic rollback capabilities.
