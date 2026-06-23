@@ -17,7 +17,7 @@ Use them when you want deterministic resource values instead of recommendation-d
 | --- | --- | --- |
 | `spec.scope` | none | Optional scope object for workload selection in the same namespace. |
 | `spec.scope.labelSelector` | none | Kubernetes label selector for matching workloads. |
-| `spec.scope.workloadTypes` | `[Deployment, StatefulSet, CronJob, Rollout, Job, AnalysisRun, DaemonSet]` | Workload kinds this policy applies to. Default excludes `StrimziPodSet` (opt-in only). |
+| `spec.scope.workloadTypes` | `[Deployment, StatefulSet, CronJob, Rollout, Job, AnalysisRun, DaemonSet, Model]` | Workload kinds this policy applies to. Default excludes `StrimziPodSet` only. |
 | `spec.resources.containers` | none | Map of container names to requests and limits. Use `"*"` for all containers. |
 | `spec.weight` | `0` | Higher weight wins when multiple static policies match. |
 | `spec.automationStrategyRef.name` | none | Required namespaced strategy name. |
@@ -27,7 +27,7 @@ Use them when you want deterministic resource values instead of recommendation-d
 | Field | Default | Description |
 | --- | --- | --- |
 | `spec.scope.labelSelector` | none | Kubernetes label selector for matching workloads. |
-| `spec.scope.workloadTypes` | `[Deployment, StatefulSet, CronJob, Rollout, Job, AnalysisRun, DaemonSet]` | Workload kinds this policy applies to. Default excludes `StrimziPodSet` (opt-in only). |
+| `spec.scope.workloadTypes` | `[Deployment, StatefulSet, CronJob, Rollout, Job, AnalysisRun, DaemonSet, Model]` | Workload kinds this policy applies to. Default excludes `StrimziPodSet` only. |
 | `spec.scope.namespaceSelector.operator` | none | Namespace selector operator: `In` or `NotIn`. |
 | `spec.scope.namespaceSelector.values` | none | Namespace patterns to include or exclude (supports `*` wildcards, e.g. "prod-*"). Wildcard patterns must be enclosed in double quotes. |
 | `spec.resources.containers` | none | Map of container names to requests and limits. Use `"*"` for all containers. |
@@ -121,4 +121,5 @@ spec:
 
 - Use static policies when exact values matter more than recommendation-driven tuning.
 - `resources.containers."*"` applies a default to every container, and named containers can override it.
+- `Model` is included in default workload types. Use `spec.scope.workloadTypes: [Model]` when you want to restrict scope to KubeAI `Model` objects only. Recommendations and rollback state are stored on the `Model` owner, then inherited by model-owned pods.
 - When multiple static policies of the same kind match, higher `weight` wins, then older objects win on ties.

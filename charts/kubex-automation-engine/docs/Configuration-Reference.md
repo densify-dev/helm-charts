@@ -130,6 +130,105 @@ Note: `kubexCredentials.userSecretName` is currently not consumed by this chart.
 | `cleanup.podSecurityContext` | `{}` | Optional pod security context for the pre-delete cleanup job |
 | `cleanup.securityContext` | chart default | Container security context for the pre-delete cleanup job |
 
+## High Availability and Replica Scaling
+
+### Leader Election Behavior
+
+The controller uses leader election by default (`controllerManager.leaderElection.enabled=true`), which ensures only one replica actively reconciles resources at any given time:
+
+- **Active reconciliation**: Only the leader pod reconciles policy and workload resources, applies recommendations, and executes resource mutations
+- **Webhook load balancing**: All replicas (leader and standby) serve admission webhook requests through the webhook Service, distributing webhook traffic across all pods
+- **Automatic failover**: If the leader pod crashes, is evicted, or becomes unresponsive, another replica automatically acquires the leader lease and takes over reconciliation within the lease duration window (default 15 seconds)
+- **Coordination mechanism**: Leader election uses `coordination.k8s.io/leases` resources in the controller namespace to coordinate active/standby roles
+
+### When to Increase Replicas
+
+Consider increasing `replicaCount` beyond the default of `1` in these scenarios:
+
+#### 1. High Availability Requirements
+
+**Recommended: `replicaCount: 2`**
+
+- Production clusters where automation must remain available during node maintenance, pod evictions, or rolling updates
+- Environments with strict uptime SLAs where a brief reconciliation pause during controller restarts is unacceptable
+- Clusters where the controller deployment may be subject to pod disruption budgets or preemption
+
+**Trade-off**: Additional memory and CPU overhead for standby replicas that are not actively reconciling.
+
+#### 2. High Webhook Request Volume
+
+**Recommended: Scale based on webhook latency and pod creation rate**
+
+- Clusters with high pod creation rates where webhook request volume exceeds a single pod's capacity
+- Environments where webhook timeout errors appear under load (`webhook.timeoutSeconds` default is 10 seconds)
+- Large clusters with frequent deployments, job executions, or autoscaling events that trigger many admission requests concurrently
+
+**How to evaluate**:
+- Monitor webhook latency via the controller `/metrics` endpoint (default `:8080/metrics`)
+- Check controller logs for webhook timeouts or slow request warnings
+- If webhook requests are queueing or timing out, increase replicas to distribute load
+
+**Trade-off**: Webhook requests are distributed across all replicas, so scaling provides linear improvements in webhook throughput.
+
+#### 3. Zero-Downtime During Updates
+
+**Recommended: `replicaCount: 2` minimum**
+
+- During Helm upgrades or image updates, multiple replicas ensure webhook availability remains uninterrupted while pods are being replaced
+- Leader election allows standby replicas to immediately take over reconciliation when the active pod terminates
+- Avoids admission webhook downtime that could block pod creation cluster-wide if the webhook `failurePolicy` is set to `Fail`
+
+### When NOT to Increase Replicas
+
+**Do not increase replicas to**:
+- Speed up policy reconciliation (only one replica reconciles at a time due to leader election)
+- Process more workloads in parallel (the leader election model serializes reconciliation)
+- Reduce reconciliation latency (tune `--max-concurrent-reconciles` instead; see below)
+
+### Scaling Alternatives for Reconciliation Throughput
+
+If reconciliation throughput is insufficient with a single active leader:
+
+- **Increase concurrent reconcilers**: Set `controllerManager.extraArgs: ["--max-concurrent-reconciles=20"]` to increase per-controller worker count (default is 10). This allows the leader to process more reconcile requests in parallel.
+- **Tune API client rate limits**: Adjust `--kube-api-qps` and `--kube-api-burst` via `controllerManager.extraArgs` if you observe client-side throttling in logs (messages like "Waited before sending request").
+- **Review policy scope**: Broad selectors or frequent policy changes can create reconciliation bursts; prefer narrow selectors and explicit workload type filters in `scope[].podLabels` and `policy.policies.<name>.allowedPodOwners`.
+
+### Example: High-Availability Production Configuration
+
+```yaml
+replicaCount: 2
+
+controllerManager:
+  leaderElection:
+    enabled: true
+  extraArgs:
+    - --max-concurrent-reconciles=15
+
+resources:
+  requests:
+    cpu: 500m
+    memory: 512Mi
+  limits:
+    memory: 1Gi
+```
+
+For tuning leader election parameters (`leaseDuration`, `renewDeadline`, `retryPeriod`) and other performance settings, refer to the [Tuning Guide](./Tuning-Guide.md) and monitor your cluster's behavior under load.
+
+### Monitoring Replica Health
+
+When running multiple replicas, verify leader election and webhook distribution:
+
+```bash
+# Check which pod holds the leader lease
+kubectl get lease -n kubex
+
+# Verify all replicas are ready
+kubectl get pods -n kubex -l control-plane=controller-manager
+
+# Monitor webhook request distribution
+kubectl logs -n kubex -l control-plane=controller-manager -c manager --tail=100 | grep webhook
+```
+
 ## OpenShift Notes
 
 - Installing this chart still requires cluster-scoped permissions because it creates `ClusterRole`, `ClusterRoleBinding`, and admission webhook resources
@@ -181,7 +280,7 @@ Webhook behavior notes:
 | --- | --- |
 | `policy.defaultPolicy` | Default strategy name used when a scope omits `policy` |
 | `policy.policies` | Map of strategy definitions generated as `ClusterAutomationStrategy` resources |
-| `policy.policies.<name>.allowedPodOwners` | Comma-separated workload owner types copied into generated `ClusterProactivePolicy.scope.workloadTypes`. Supported values: `Deployment`, `StatefulSet`, `DaemonSet`, `CronJob`, `Rollout`, `Job`, `AnalysisRun`, `StrimziPodSet`. `ReplicaSet` is not supported. |
+| `policy.policies.<name>.allowedPodOwners` | Comma-separated workload owner types copied into generated `ClusterProactivePolicy.scope.workloadTypes`. Supported values: `Deployment`, `StatefulSet`, `DaemonSet`, `CronJob`, `Rollout`, `Job`, `AnalysisRun`, `StrimziPodSet`, `Model`. `ReplicaSet` is not supported. |
 | `policy.policies.<name>.enablement` | Resource change permissions and optional floor/ceiling bounds |
 | `policy.policies.<name>.inPlaceResize` | In-place resize controls |
 | `policy.policies.<name>.podEviction` | Eviction fallback controls |

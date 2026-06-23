@@ -19,7 +19,7 @@ For the cluster-scoped variant, see [Cluster Proactive Policies](./Cluster-Proac
 | --- | --- | --- |
 | `spec.scope` | none | Optional scope object for workload selection. |
 | `spec.scope.labelSelector` | none | Kubernetes label selector for matching workloads. |
-| `spec.scope.workloadTypes` | `[Deployment, StatefulSet, CronJob, Rollout, Job, AnalysisRun, DaemonSet]` | Workload kinds this policy applies to. Default excludes `StrimziPodSet` (opt-in only). |
+| `spec.scope.workloadTypes` | `[Deployment, StatefulSet, CronJob, Rollout, Job, AnalysisRun, DaemonSet, Model]` | Workload kinds this policy applies to. Default excludes `StrimziPodSet` only. |
 | `spec.automationStrategyRef.name` | none | Required namespaced strategy name. |
 | `spec.weight` | `0` | Higher weight wins when multiple proactive policies match. |
 | `spec.safetyChecks.maxAnalysisAgeDays` | `5` | Rejects old recommendations. |
@@ -57,5 +57,6 @@ spec:
 
 - Use namespaced proactive policies when teams own their own namespaces.
 - When multiple proactive policies of the same kind match, higher `weight` wins, then older objects win on ties.
+- `Model` is included in default workload types. Use `spec.scope.workloadTypes: [Model]` when you want to restrict scope to KubeAI `Model` objects only. Recommendations and rollback state are stored on the `Model` owner, then inherited by model-owned pods.
 - For cluster-scoped examples and field references, see [Cluster Proactive Policies](./Cluster-Proactive-Policies.md).
 - EXPERIMENTAL: Recommendations can now include `gpu.gpuOverallOptimal`, which is applied as a proactive `requests.gpu` target. See the [GPU Sharing with KAI](./GPU-Sharing-with-KAI.md) guide for more information.

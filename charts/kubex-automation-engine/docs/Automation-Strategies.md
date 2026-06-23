@@ -58,6 +58,10 @@ Usage-level `floor` and `ceiling` values apply to all containers by default. Add
 | `spec.enablement.memory.limits.ceiling` | none | Maximum memory limit target. |
 | `spec.enablement.memory.limits.containers.<name>.floor` | none | Container-specific memory limit minimum that overrides the usage-level floor for that container only. |
 | `spec.enablement.memory.limits.containers.<name>.ceiling` | none | Container-specific memory limit maximum that overrides the usage-level ceiling for that container only. |
+| `spec.kai.queue` | `kubex-unlimited-gpu-queue` | EXPERIMENTAL. Default KAI queue label applied for KAI GPU admission mutation. |
+| `spec.kai.setQueueWhenSpecified` | `false` | EXPERIMENTAL. Allows strategy queue value to overwrite an existing `kai.scheduler/queue` label. |
+| `spec.kai.vllm` | none | EXPERIMENTAL. Enables admission-time vLLM tuning for KAI GPU-sharing workloads. Requires `spec.experimental.gpuKaiContract`. |
+| `spec.kai.vllm.gpuMemoryUtilizationBufferPercent` | `0` | EXPERIMENTAL. Reduces vLLM `--gpu-memory-utilization` below admitted `gpu-fraction` by this percent. Effective target = `gpuFraction * (1 - bufferPercent/100)`. |
 | `spec.inPlaceResize.enabled` | `true` | Enables the in-place resize execution path. |
 | `spec.inPlaceResize.containerRestart` | `false` | Allows in-place resize operations that require container restart. |
 | `spec.podEviction.enabled` | `true` | Enables eviction-based fallback. |
@@ -113,6 +117,35 @@ Validation notes:
 - `start` and `end` cannot be the same value, unless they are both omitted.
 
 When a proactive resize is blocked by scheduling, the controller keeps the recommendation pending and retries when a future allowed window opens.
+
+## KAI vLLM tuning
+
+When `spec.kai.vllm` is set, pod admission keeps KAI `gpu-fraction` as source value and tunes vLLM `--gpu-memory-utilization` from it.
+
+Formula:
+
+- `effective = gpuFraction * (1 - bufferPercent/100)`
+- Example: `gpuFraction=0.5` and `gpuMemoryUtilizationBufferPercent=10` => `0.45`
+
+Admission behavior:
+
+- applies only to KAI GPU request admission mutation
+- mutates container `args` in place for detected vLLM containers
+- replaces existing `--gpu-memory-utilization=<value>`
+- replaces existing split form `--gpu-memory-utilization <value>`
+- appends flag when missing
+- never leaves duplicate `--gpu-memory-utilization` args behind
+
+Example:
+
+```yaml
+spec:
+  experimental:
+    gpuKaiContract: v1alpha1-2026-04
+  kai:
+    vllm:
+      gpuMemoryUtilizationBufferPercent: 10
+```
 
 ## Helm Mapping
 

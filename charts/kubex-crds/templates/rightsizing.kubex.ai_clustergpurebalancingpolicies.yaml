@@ -405,6 +405,7 @@ spec:
                     - Job
                     - AnalysisRun
                     - DaemonSet
+                    - Model
                     description: workloadTypes limits the workload kinds this policy
                       applies to. When omitted, the default workload types are targeted.
                     items:
@@ -419,6 +420,7 @@ spec:
                       - Job
                       - AnalysisRun
                       - StrimziPodSet
+                      - Model
                       type: string
                     type: array
                 required:
