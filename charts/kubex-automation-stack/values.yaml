@@ -92,6 +92,8 @@ kubex-connector:
   enabled: false
   extraLabels: {}
   extraAnnotations: {}
+  image:
+    tag: 0.1.9-rc.3
   forwarderConfigMap:
     name: kubex-kubex-stack
   forwarderCredentialsSecretRef:
@@ -101,6 +103,8 @@ kubex-ai-cdi:
   enabled: false
   extraLabels: {}
   extraAnnotations: {}
+  image:
+    tag: 0.1.9-rc.3
   rbac:
     enabled: false
 
