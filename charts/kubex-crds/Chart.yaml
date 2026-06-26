@@ -2,7 +2,7 @@ apiVersion: v2
 name: kubex-crds
 description: CRDs for Kubex Automation Engine
 icon: https://kubex.ai/wp-content/uploads/kubex-logo-landscape.svg
-version: 1.4.0
+version: 1.5.0
 keywords:
   - crd
   - kubex

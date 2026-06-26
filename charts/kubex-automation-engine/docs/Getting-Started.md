@@ -311,7 +311,7 @@ kubectl get proactivepolicy,clusterproactivepolicy,staticpolicy,clusterstaticpol
 
 ### Manually remove finalizers from external CRs only if deletion is stuck
 
-The chart's pre-delete hook removes finalizers from Helm-managed `ClusterProactivePolicy` and `ClusterAutomationStrategy` resources so `helm uninstall` can complete while the controller is shutting down.
+The chart's pre-delete hook removes finalizers from Helm-managed custom resources created by this release so `helm uninstall` can complete while the controller is shutting down.
 
 CRs managed outside Helm are not part of that hook. Do not clear finalizers before attempting deletion, because that can bypass controller cleanup. Only if a policy or strategy CR stays in `Terminating` after the delete step above should you manually clear its finalizers, and you should do that before `helm uninstall`:
 
