@@ -31,6 +31,8 @@ Yes, selected legacy `deployment.controllerEnv` settings are still honored for b
 
 Delete externally managed policies and strategies before uninstalling the Helm release so the running controller can process their cleanup.
 
+Helm-managed rightsizing resources are handled by the chart's pre-delete hook; external CRs still need to be deleted first if you want controller cleanup to run.
+
 If any external CRs remain stuck, manually patch away their finalizers, then run `helm uninstall`. For the full sequence and example commands, see [Getting Started](./Getting-Started.md#uninstall).
 
 ## Configuration Questions
