@@ -406,6 +406,12 @@ spec:
                 default: {}
                 description: safetyChecks configures safety guardrails.
                 properties:
+                  blockVpaOffModeAutomation:
+                    default: false
+                    description: |-
+                      blockVpaOffModeAutomation filters out resize actions for resources recommended by a matching VPA
+                      even when the VPA updateMode is Off.
+                    type: boolean
                   enableHpaFilter:
                     default: true
                     description: enableHpaFilter filters out resize actions for resources
