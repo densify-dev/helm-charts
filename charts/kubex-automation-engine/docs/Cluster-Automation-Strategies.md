@@ -73,6 +73,7 @@ Usage-level `floor` and `ceiling` values apply to all containers by default. Add
 | `spec.safetyChecks.enableResourceQuotaFilter` | `true` | Filters actions that would violate `ResourceQuota`. |
 | `spec.safetyChecks.enableHpaFilter` | `true` | Filters actions for HPA-managed resources. |
 | `spec.safetyChecks.enableVpaFilter` | `true` | Filters actions for VPA-managed resources. |
+| `spec.safetyChecks.blockVpaOffModeAutomation` | `false` | Also filters actions when a matching VPA has `updateMode: Off` and an active recommendation. |
 | `spec.safetyChecks.enableLimitRangeFilter` | `true` | Filters actions that violate `LimitRange` container rules. |
 | `spec.safetyChecks.enablePodLimitRangeFilter` | `true` | Filters actions that violate pod-level `LimitRange` rules. |
 | `spec.safetyChecks.retainGuaranteedQOS` | `false` | Keeps Guaranteed QoS pods at request=limit by treating limits as the source of truth for CPU and memory when enabled. |
