@@ -9,6 +9,9 @@ The chart includes standard Prometheus and kube-state-metrics components (with t
 - **Kubex Data Collector** (container-optimization-data-forwarder) - collects and forwards metrics from Prometheus to Kubex
 - **Ephemeral Storage Metrics Collector** - reads node and pod storage data
 - **Node Labeler** (optional) - writes labels to nodes and reads OpenShift machine resources
+- **Node Exporter** - collects hardware and OS metrics from nodes (requires host access)
+- **Beyla** (optional) - eBPF-based application observability (requires privileged mode)
+- **GPU Exporters** (optional) - collects GPU utilization metrics (requires GPU device access)
 
 ## Kubex-Specific Component Permissions
 
@@ -62,13 +65,54 @@ Adds labels to nodes indicating their Kubex Node Group assignment. Disabled by d
 
 When deploying on OpenShift with `openshift.enabled: true`, the data collector service account is bound to the built-in `cluster-monitoring-view` ClusterRole, granting read access to OpenShift's user workload monitoring APIs.
 
+### Node Exporter (prometheus-node-exporter)
+
+Collects hardware and OS-level metrics from each node for Kubex rightsizing analysis.
+
+**ClusterRole permissions (when kube-rbac-proxy is enabled):**
+- tokenreviews (authentication.k8s.io) - `create` verb
+- subjectaccessreviews (authorization.k8s.io) - `create` verb
+
+**Special privileges:**
+- `hostNetwork: true` - access to host network namespace
+- `hostPID: true` - access to host PID namespace
+- Host path mounts: `/proc`, `/sys`, `/` (all read-only) - for system metrics
+
+### Beyla (eBPF Application Observability)
+
+Uses eBPF to collect application-level network metrics without code changes. Disabled by default.
+
+**When to enable:**
+- Enable via `beyla.enabled: true` for HTTP/gRPC request metrics and service observability
+- Provides request latency, throughput, and error rate metrics
+
+**Special privileges:**
+- `privileged: true` - required for eBPF program loading and kernel instrumentation
+
+**RBAC permissions:**
+- No additional cluster-level RBAC required beyond standard service account
+
+### GPU Exporters (gpu-process-exporter)
+
+Collects GPU utilization metrics for GPU-enabled workloads.
+
+**RBAC permissions:**
+- Minimal RBAC required - uses standard service account
+
+**Special privileges:**
+- Access to GPU device files on host (`/dev/nvidia*`)
+- May require host path mounts for GPU driver access
+
+**When to enable:**
+- Enable via `gpu-process-exporter.enabled: true` for clusters with NVIDIA GPUs
+- Required for Kubex GPU workload rightsizing recommendations
+
 ## Standard Prometheus/KSM Components
 
 The chart bundles standard Prometheus components with their typical RBAC requirements:
 
 - **Prometheus Server** - read access to cluster resources for metric scraping
 - **Kube-State-Metrics** - read access to Kubernetes object state
-- **Node Exporter** - authentication/authorization for kube-rbac-proxy
 - **Alertmanager, Pushgateway** - standard component permissions
 
 These follow standard upstream RBAC patterns. See the subchart documentation for details:
@@ -81,6 +125,11 @@ These follow standard upstream RBAC patterns. See the subchart documentation for
 - Ephemeral storage collector requires read-only access to node stats endpoints
 - Data collector has minimal permissions (namespace read, API discovery)
 - Node labeler is the only component with write access (node labels only) and is disabled by default
+
+**Exporter components:**
+- Node Exporter requires host access (`hostNetwork`, `hostPID`) but all mounts are read-only
+- Beyla requires privileged mode for eBPF instrumentation - disabled by default
+- GPU exporters require device access but have minimal RBAC permissions
 
 **Standard components:**
 - All Prometheus/KSM permissions are read-only except authentication/authorization checks
@@ -103,6 +152,12 @@ kubectl auth can-i --list --as=system:serviceaccount:kubex:k8s-ephemeral-storage
 
 # Check permissions for node labeler service account (if enabled)
 kubectl auth can-i --list --as=system:serviceaccount:kubex:kubex-node-labeler
+
+# Check permissions for node exporter service account
+kubectl auth can-i --list --as=system:serviceaccount:kubex:kubex-prometheus-node-exporter
+
+# Check permissions for GPU exporter service account (if enabled)
+kubectl auth can-i --list --as=system:serviceaccount:kubex:gpu-process-exporter
 ```
 
 ## Customization
@@ -128,6 +183,23 @@ node-labeler:
   enabled: false  # Enable if you want nodes labeled with Kubex node groups
   rbac:
     create: true  # Create RBAC resources when enabled
+
+# Node exporter RBAC (part of Prometheus chart)
+prometheus:
+  prometheus-node-exporter:
+    rbac:
+      create: true  # Create RBAC resources
+    kubeRBACProxy:
+      enabled: true  # Enable kube-rbac-proxy for authentication
+
+# Beyla RBAC (optional component, disabled by default)
+beyla:
+  enabled: false  # Enable for eBPF-based application observability
+  privileged: true  # Required for eBPF
+
+# GPU exporter (optional component, disabled by default)
+gpu-process-exporter:
+  enabled: false  # Enable for GPU workload monitoring
 
 # OpenShift monitoring integration
 openshift:
