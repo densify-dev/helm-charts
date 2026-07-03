@@ -47,6 +47,10 @@ spec:
         runAsUser: {{ .Values.securityContext.runAsUser }}
         runAsGroup: {{ .Values.securityContext.runAsGroup }}
         fsGroup: {{ .Values.securityContext.fsGroup }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 6 }}
+      {{- end }}
       {{- if and .Values.relay.enabled .Values.relay.tlsCaSecretName }}
       volumes:
       - name: relay-ca

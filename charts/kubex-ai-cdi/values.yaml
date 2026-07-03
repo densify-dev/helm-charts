@@ -65,6 +65,8 @@ securityContext:
   runAsGroup: 3000
   fsGroup: 3000
 
+tolerations: []
+
 containerSecurityContext:
   runAsNonRoot: true
   allowPrivilegeEscalation: false
