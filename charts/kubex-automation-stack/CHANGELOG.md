@@ -2,6 +2,20 @@
 
 All notable changes to the kubex-automation-stack chart will be documented in this file.
 
+## [1.0.19] - 2026-07-03
+
+### Added
+- Added optional `kubex-connector` and `kubex-ai-cdi` subchart support to the stack
+- Added stack-managed CDI service account, ClusterRole, and ClusterRoleBinding templates
+- Added forwarder `ConfigMap` keys for shared Kubex host, tenant, and cluster name consumption
+
+### Changed
+- Switched stack-managed connector tunnel wiring to `/tunnel/connect`
+- Documented stack-managed connector/CDI configuration and RBAC behavior
+
+### Fixed
+- Disabled the forwarder hook job in the OpenShift overlay so the cron-based collector path is used consistently
+- Added OpenShift security context defaults for stack-managed connector and CDI deployments
 
 ## [1.0.17] - 2026-06-23
 

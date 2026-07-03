@@ -114,6 +114,7 @@ The following table lists configuration parameters in `values-edit.yaml`.
 | `gpu-process-exporter.enabled`                                                           |                    | Enable GPU process exporter subchart (default: `true`) |
 | `beyla.enabled`                                                           |                    | Enable Grafana Beyla for application runtime detection (default: `true`) |
 | `k8s-ephemeral-storage-metrics.enabled`                                          |                    | Enable ephemeral storage metrics collection (default: `true`) |
+| `node-labeler.enabled`                                                           |                    | Enable optional node-labeler subchart to add Kubex Node Group labels to nodes; useful when nodes lack standard cloud provider node pool/group labels (default: `false`) |
 | `kubex-connector.enabled`                                                        |                    | Enable optional connector subchart (default: `false`) |
 | `kubex-ai-cdi.enabled`                                                           |                    | Enable optional kubex-ai-cdi subchart (default: `false`) |
 | `kubex-connector.heartbeatSeconds`                                               |                    | Connector heartbeat interval in seconds |
@@ -122,7 +123,8 @@ The following table lists configuration parameters in `values-edit.yaml`.
 Connector and CDI use the shared Kubex host and cluster entered under `container-optimization-data-forwarder.config.*`. The forwarder publishes those runtime values in its `ConfigMap`, and the connector consumes them through `forwarderConfigMap.name`. Credentials come from `stack.densify` through `densify-api-secret`, which the connector consumes through `forwarderCredentialsSecretRef.name` by default. The stack chart also owns the CDI service account and RBAC by rendering those manifests itself while disabling `kubex-ai-cdi.rbac.enabled` in the subchart.
 
 For the full stack RBAC shape and defaults, refer to `charts/kubex-automation-stack/values.yaml`.
-| `node-labeler.enabled`                                                           |                    | Enable optional node-labeler subchart to add Kubex Node Group labels to nodes; useful when nodes lack standard cloud provider pool/group labels (default: `false`) |
+
+For a guided explanation of the stack-managed CDI RBAC model, see [docs/RBAC-Guide.md](docs/RBAC-Guide.md).
 
 ## Limitations
 
