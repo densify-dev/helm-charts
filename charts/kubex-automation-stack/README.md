@@ -123,6 +123,7 @@ The following table lists configuration parameters in `values-edit.yaml`.
 Connector and CDI use the shared Kubex host and cluster entered under `container-optimization-data-forwarder.config.*`. The forwarder publishes those runtime values in its `ConfigMap`, and the connector consumes them through `forwarderConfigMap.name`. Credentials come from `stack.densify` through `densify-api-secret`, which the connector consumes through `forwarderCredentialsSecretRef.name` by default. The stack chart also owns the CDI service account and RBAC by rendering those manifests itself while disabling `kubex-ai-cdi.rbac.enabled` in the subchart.
 
 For the full stack RBAC shape and defaults, refer to `charts/kubex-automation-stack/values.yaml`.
+| `node-labeler.enabled`                                                           |                    | Enable optional node-labeler subchart to add Kubex Node Group labels to nodes; useful when nodes lack standard cloud provider pool/group labels (default: `false`) |
 
 ## Limitations
 
@@ -143,7 +144,10 @@ This chart consists of the following subcharts:
 
 * [k8s-ephemeral-storage-metrics](../k8s-ephemeral-storage-metrics) - Collects ephemeral storage metrics for containers.
 
-* [Node Labeler](../node-labeler) - Adds labels to nodes to indicate which Kubex Node Group they belong to. This is an optional component that can be enabled if desired (disabled by default).
+* [Node Labeler](../node-labeler) - Adds labels to nodes to indicate which Kubex Node Group they belong to. This is an optional component (disabled by default) that should be enabled when:
+  - Nodes lack standard cloud provider node pool/group labels (e.g., GKE node pools, EKS node groups, AKS agent pools)
+  - Additional Kubex-specific grouping labels are needed beyond cloud provider labels
+  - Enhanced node group visibility is desired in OpenShift environments (leverages Machine API)
 
 * [Kubex Connector](../kubex-ai-connector) - Optional in-cluster connector used for the cluster data interface.
 
