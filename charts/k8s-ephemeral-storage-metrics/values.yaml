@@ -1,6 +1,6 @@
 image:
   repository: docker.io/densify/k8s-ephemeral-storage-metrics
-  tag: 1.20.0
+  tag: 1.21.0
   imagePullPolicy: IfNotPresent
   imagePullSecrets: []
 
