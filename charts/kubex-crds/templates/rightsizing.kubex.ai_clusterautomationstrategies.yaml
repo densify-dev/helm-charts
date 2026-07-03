@@ -406,6 +406,12 @@ spec:
                 default: {}
                 description: safetyChecks configures safety guardrails.
                 properties:
+                  blockResizeOnVpaControlledResources:
+                    default: false
+                    description: |-
+                      blockResizeOnVpaControlledResources filters out resize actions for resources declared in a matching VPA resourcePolicy, regardless of the VPA updateMode or recommendation status.
+                      This check is only evaluated when enableVpaFilter is true.
+                    type: boolean
                   enableHpaFilter:
                     default: true
                     description: enableHpaFilter filters out resize actions for resources
