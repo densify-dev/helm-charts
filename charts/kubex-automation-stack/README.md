@@ -114,7 +114,6 @@ The following table lists configuration parameters in `values-edit.yaml`.
 | `gpu-process-exporter.enabled`                                                           |                    | Enable GPU process exporter subchart (default: `true`) |
 | `beyla.enabled`                                                           |                    | Enable Grafana Beyla for application runtime detection (default: `true`) |
 | `k8s-ephemeral-storage-metrics.enabled`                                          |                    | Enable ephemeral storage metrics collection (default: `true`) |
-| `node-labeler.enabled`                                                           |                    | Enable optional node-labeler subchart (default: `false`) |
 | `kubex-connector.enabled`                                                        |                    | Enable optional connector subchart (default: `false`) |
 | `kubex-ai-cdi.enabled`                                                           |                    | Enable optional kubex-ai-cdi subchart (default: `false`) |
 | `kubex-connector.heartbeatSeconds`                                               |                    | Connector heartbeat interval in seconds |
@@ -149,7 +148,7 @@ This chart consists of the following subcharts:
   - Additional Kubex-specific grouping labels are needed beyond cloud provider labels
   - Enhanced node group visibility is desired in OpenShift environments (leverages Machine API)
 
-* [Kubex Connector](../kubex-ai-connector) - Optional in-cluster connector used for the cluster data interface.
+* [Kubex Connector](../kubex-connector) - Optional in-cluster connector used for the cluster data interface.
 
 * [kubex-ai-cdi](../kubex-ai-cdi) - Optional in-cluster Kubex cluster data interface service.
 
