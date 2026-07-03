@@ -1,0 +1,9 @@
+apiVersion: v2
+name: kubex-connector
+description: Stack-managed in-cluster connector used for the cluster data interface
+type: application
+version: 0.1.7
+icon: https://kubex.ai/wp-content/uploads/kubex-logo-landscape.svg
+maintainers:
+- email: support@kubex.ai
+  name: support

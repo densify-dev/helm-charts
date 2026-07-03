@@ -1,0 +1,9 @@
+apiVersion: v2
+name: kubex-ai-cdi
+description: In-cluster Kubex cluster data interface service exposed over HTTP
+type: application
+version: 0.1.7
+icon: https://kubex.ai/wp-content/uploads/kubex-logo-landscape.svg
+maintainers:
+- email: support@kubex.ai
+  name: support
