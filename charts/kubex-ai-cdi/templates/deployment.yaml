@@ -29,7 +29,6 @@ spec:
         {{- toYaml .Values.extraAnnotations | nindent 8 }}
       {{- end }}
     spec:
-      hostUsers: false
       serviceAccountName: {{ include "kubex-ai-cdi.serviceAccountName" . }}
       securityContext:
         runAsUser: {{ .Values.securityContext.runAsUser }}

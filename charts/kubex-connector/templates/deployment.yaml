@@ -29,7 +29,6 @@ spec:
         {{- toYaml .Values.extraAnnotations | nindent 8 }}
       {{- end }}
     spec:
-      hostUsers: false
       {{- $kubexHost := include "kubex-connector.kubexHost" . }}
       {{- $kubexClusterName := include "kubex-connector.kubexClusterName" . }}
       {{- $localKubex := .Values.kubex | default dict }}
