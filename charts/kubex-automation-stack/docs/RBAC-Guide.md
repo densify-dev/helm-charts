@@ -20,7 +20,7 @@ The chart includes standard Prometheus and kube-state-metrics components (with t
 | Kubex Data Collector | `kubex-stack-kubex-forwarder` | ClusterRole | API discovery, token/subject reviews, namespaces (get) | ✅ Yes | None |
 | Ephemeral Storage | `k8s-ephemeral-storage-metrics` | ClusterRole | nodes, nodes/proxy, nodes/stats, pods (get/list/watch) | ✅ Yes | None |
 | Beyla | `kubex-beyla` | ClusterRole | pods, services, nodes (get/list/watch), replicasets (list/watch) | ✅ Yes | privileged, hostPID |
-| GPU Exporter | `gpu-process-exporter` | ClusterRole | pods (get/list/watch) | ✅ Yes | privileged, hostPID, device access |
+| GPU Exporter | `gpu-process-exporter` | ClusterRole | pods (get/list/watch) | ✅ Yes | privileged, hostPID, host mounts, device access |
 | Node Labeler | `kubex-node-labeler` | ClusterRole + Role | nodes (get/list/watch/patch/update), events, machines/machinesets (OpenShift) | ❌ No | None |
 | Node Exporter | `kubex-prometheus-node-exporter` | ClusterRole | token/subject reviews (when kube-rbac-proxy enabled) | ✅ Yes | hostNetwork, hostPID, host mounts |
 | Prometheus Server | `kubex-prometheus-server` | ClusterRole | nodes, services, endpoints, pods, configmaps, ingresses (get/list/watch) | ✅ Yes | None |
@@ -146,8 +146,7 @@ Collects GPU utilization metrics for GPU-enabled workloads. Enabled by default.
 **Special privileges:**
 - `hostPID: true` - access to host PID namespace
 - `privileged: true` - runs as root with privileged container
-- Read-only access to node's `/` filesystem (for NVML libraries)
-- Read-only access to node's `/proc` filesystem
+- Host path mounts: `/` and `/proc` (both read-only) - for NVML libraries and process information
 - Access to GPU device files on host (`/dev/nvidia*`)
 
 ## Standard Prometheus/KSM Components
