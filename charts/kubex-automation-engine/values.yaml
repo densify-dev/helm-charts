@@ -47,9 +47,6 @@ image:
   # -- Image tag
   tag: "1.5.0"
 
-# -- Image pull secrets applied to the controller deployment and cleanup job
-imagePullSecrets: []
-
 cleanup:
   image:
     # -- Image repository for the pre-delete cleanup job.
@@ -246,6 +243,9 @@ webhook:
   timeoutSeconds: 10
   # -- Failure policy for validating webhook (Ignore allows installation to proceed if webhook is unavailable)
   failurePolicy: Ignore
+  podMutation:
+    # -- Prefix added to mutating webhook object and webhook entry names. Empty string removes default `zzz-` prefix. Prefix may contain lowercase letters, digits, and hyphens, and must start with letter or digit. Changing it renames webhook objects on upgrade.
+    namePrefix: "zzz-"
   # -- Certificate manager configuration
   certManager:
     # -- Enable cert-manager for webhook certificates (if false, uses self-signed)

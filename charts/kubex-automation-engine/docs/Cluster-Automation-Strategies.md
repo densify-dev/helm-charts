@@ -72,7 +72,8 @@ Usage-level `floor` and `ceiling` values apply to all containers by default. Add
 | `spec.safetyChecks.enablePauseUntilAnnotationCheck` | `true` | Blocks actions when pause annotations are present. |
 | `spec.safetyChecks.enableResourceQuotaFilter` | `true` | Filters actions that would violate `ResourceQuota`. |
 | `spec.safetyChecks.enableHpaFilter` | `true` | Filters actions for HPA-managed resources. |
-| `spec.safetyChecks.enableVpaFilter` | `true` | Filters actions for VPA-managed resources. |
+| `spec.safetyChecks.enableVpaFilter` | `true` | Filters actions when a VPA is actively managing the resource (has recommendations and updateMode enabled). |
+| `spec.safetyChecks.blockResizeOnVpaControlledResources` | `false` | Filters actions for any resource declared in a VPA resourcePolicy, even if the VPA is Off or has no recommendations. This setting is only evaluated after `enableVpaFilter=true` passes, so it is more defensive than `enableVpaFilter`. |
 | `spec.safetyChecks.enableLimitRangeFilter` | `true` | Filters actions that violate `LimitRange` container rules. |
 | `spec.safetyChecks.enablePodLimitRangeFilter` | `true` | Filters actions that violate pod-level `LimitRange` rules. |
 | `spec.safetyChecks.retainGuaranteedQOS` | `false` | Keeps Guaranteed QoS pods at request=limit by treating limits as the source of truth for CPU and memory when enabled. |
@@ -85,6 +86,44 @@ Usage-level `floor` and `ceiling` values apply to all containers by default. Add
 | `spec.safetyChecks.requireNodeAllocatable` | `true` | Filters request increases that exceed node allocatable capacity. |
 | `spec.safetyChecks.nodeCpuHeadroom` | `10%` | CPU headroom reserved before node allocatable checks. |
 | `spec.safetyChecks.nodeMemoryHeadroom` | `200Mi` | Memory headroom reserved before node allocatable checks. |
+
+## VPA Filter Behavior
+
+Two complementary VPA filters help avoid conflicts between Kubex automation and Vertical Pod Autoscalers:
+
+### enableVpaFilter (default: true)
+
+Filters actions when a VPA is **actively managing** the resource. This requires all of:
+- VPA `updateMode` is not `Off` (i.e., `Auto`, `Recreate`, or `Initial`)
+- VPA has an active recommendation with status `RecommendationProvided=True`
+- The resource dimension (e.g., `cpu.requests`) appears in the VPA's `containerRecommendations`
+
+**Use case:** Prevent conflicts when VPA is actively recommending and applying changes. This is the default safe behavior that defers to VPA when it's doing work.
+
+### blockResizeOnVpaControlledResources (default: false)
+
+Filters actions for resources **declared** in a VPA `resourcePolicy`, regardless of whether the VPA is active. This check is only evaluated when `enableVpaFilter=true`. It checks only:
+- The resource is listed in `resourcePolicy.containerPolicies[].controlledResources`
+- The usage type (requests/limits) matches `controlledValues` (defaults to both)
+
+Does **not** check:
+- VPA `updateMode` (blocks even when `Off`)
+- Recommendation status (blocks even when no recommendations exist)
+- Whether VPA is actively applying changes
+
+**Use case:** Reserve resources for future VPA management, or ensure strict non-interference when VPA ownership is declared but the VPA may be temporarily disabled or not yet providing recommendations.
+
+### Comparison
+
+| Scenario | enableVpaFilter | blockResizeOnVpaControlledResources |
+| --- | --- | --- |
+| VPA in `Auto` mode with active recommendations | Blocks | Blocks |
+| VPA in `Off` mode with resourcePolicy declared | Allows | Blocks |
+| VPA in `Auto` mode but no recommendations yet | Allows | Blocks |
+| VPA in `Initial` mode after first recommendation | Allows | Blocks (if resourcePolicy declared) |
+| No matching VPA | Allows | Allows |
+
+**Note:** `blockResizeOnVpaControlledResources` is ignored unless `enableVpaFilter=true` is enabled.
 
 ## Scheduling Windows
 

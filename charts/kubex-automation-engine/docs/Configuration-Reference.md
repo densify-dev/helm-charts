@@ -108,6 +108,7 @@ Note: `kubexCredentials.userSecretName` is currently not consumed by this chart.
 | `webhook.enabled` | `true` | Enable webhook components |
 | `webhook.timeoutSeconds` | `10` | Admission webhook timeout in seconds |
 | `webhook.failurePolicy` | `Ignore` | Failure policy for validating webhooks; default is fail-open, but operators can change it |
+| `webhook.podMutation.namePrefix` | `zzz-` | Prefix added to mutating webhook object and webhook entry names; set `""` to remove prefix. Prefix may contain lowercase letters, digits, and hyphens, and must start with a letter or digit. **Warning:** changing this renames webhook objects on upgrade, and Helm applies that as delete-then-create, leaving brief window where pod mutation webhook is absent. |
 | `webhook.certManager.enabled` | `false` | Use cert-manager instead of self-signed TLS |
 | `selfSignedCert.validity` | `3650` | Self-signed certificate validity in days |
 | `controllerManager.globalConfigReconcileInterval` | `1m` | Base reconcile cadence for global config controller |
