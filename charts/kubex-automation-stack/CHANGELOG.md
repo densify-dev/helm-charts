@@ -3,6 +3,14 @@
 All notable changes to the kubex-automation-stack chart will be documented in this file.
 
 
+## [1.0.18] - 2026-07-03
+
+### Security
+- Updated k8s-ephemeral-storage-metrics dependency to v1.21.0 to resolve CVE-2026-39821
+
+### Changed
+- Updated Prometheus chart dependency to v29.14.0
+
 ## [1.0.17] - 2026-06-23
 
 ### Changed
