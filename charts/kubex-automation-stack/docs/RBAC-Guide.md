@@ -1,6 +1,6 @@
 # RBAC Guide
 
-This guide explains the RBAC model used by `kubex-automation-stack` for the optional connector and CDI components.
+This guide explains the RBAC model used by `kubex-automation-stack` for the stack-managed connector, CDI, and the supporting collection components.
 
 ## Overview
 
@@ -12,54 +12,55 @@ When `kubex-connector.enabled=true` and `kubex-ai-cdi.enabled=true`, the stack d
 
 The stack keeps CDI RBAC ownership at the umbrella chart layer and disables subchart RBAC with `kubex-ai-cdi.rbac.enabled=false`.
 
-## CDI RBAC Ownership
+## Component RBAC Summary
 
-The stack renders these resources directly:
+| Component | Service Account Name | RBAC Type | Key Permissions | Enabled by Default | Special Privileges |
+|-----------|----------------------|-----------|-----------------|-------------------|-------------------|
+| Kubex Data Collector | `kubex-stack-kubex-forwarder` | ClusterRole | API discovery, token/subject reviews, namespaces (get) | ✅ Yes | None |
+| Connector | stack-owned | None | Uses runtime identity from the forwarder ConfigMap and `densify-api-secret` | ✅ Yes when enabled | None |
+| CDI | `kubex-ai-cdi-sa` | ClusterRole + ClusterRoleBinding | core resources, workloads, logs, rollout APIs, Kubex CRDs, self-subject reviews | ✅ Yes when enabled | None |
+| Ephemeral Storage | `k8s-ephemeral-storage-metrics` | ClusterRole | nodes, nodes/proxy, nodes/stats, pods (get/list/watch) | ✅ Yes | None |
+| Beyla | `kubex-beyla` | ClusterRole | pods, services, nodes (get/list/watch), replicasets (list/watch) | ✅ Yes | privileged, hostPID |
+| GPU Exporter | `gpu-process-exporter` | ClusterRole | pods (get/list/watch) | ✅ Yes | privileged, hostPID, host mounts, device access |
+| Node Labeler | `kubex-node-labeler` | ClusterRole + Role | nodes, events, machines, machinesets, leases | ❌ No | None |
+| Node Exporter | `kubex-prometheus-node-exporter` | ClusterRole | token/subject reviews (when kube-rbac-proxy enabled) | ✅ Yes | hostNetwork, hostPID, host mounts |
+| Prometheus Server | `kubex-prometheus-server` | ClusterRole | nodes, services, endpoints, pods, configmaps, ingresses, endpointslices | ✅ Yes | None |
+| Kube-State-Metrics | `kubex-kube-state-metrics` | ClusterRole | various K8s resources based on collectors config | ✅ Yes | None |
+
+## Kubex Data Collector
+
+The data collector queries Prometheus and forwards metrics to Kubex for rightsizing analysis.
+
+It requires:
+
+- API discovery
+- token/subject review APIs for kube-rbac-proxy
+- namespace read access for cluster context
+
+## Connector
+
+The connector does not create extra RBAC in the stack. It consumes:
+
+- `kubex_host`
+- `kubex_tenant_id`
+- `kubex_cluster_name`
+- `densify-api-secret`
+
+The stack-managed connector runtime wiring is derived from the forwarder ConfigMap.
+
+## CDI
+
+The stack renders CDI RBAC itself and disables subchart RBAC with `kubex-ai-cdi.rbac.enabled=false`.
+
+The stack-managed CDI resources are:
 
 - `ServiceAccount/kubex-ai-cdi-sa`
 - `ClusterRole/kubex-ai-cdi-reader`
 - `ClusterRoleBinding/kubex-ai-cdi-reader`
 
-Those resources are controlled through `rbac.permissions.cdi.*` in `values.yaml`.
+## OpenShift Note
 
-## Default CDI Permissions
-
-By default, the stack grants CDI read access to the cluster resources needed for cluster data interface behavior, including:
-
-- core resources: `pods`, `services`, `configmaps`, `namespaces`, `nodes`, `events`
-- pod logs: `pods/log`
-- workloads: `deployments`, `daemonsets`, `statefulsets`, `replicasets`
-- rollout APIs: `rollouts`, `analysisruns`, `experiments`
-- Kubex rightsizing CRDs
-- self-subject review APIs for capability discovery
-
-The default rule set also includes optional integrations for:
-
-- OpenShift Machine API resources when `openshift.enabled=true`
-- Karpenter resources
-- Karpenter AWS node class resources
-
-## Connector RBAC
-
-The connector itself does not create RBAC resources in the stack. It consumes runtime identity from the forwarder `ConfigMap` and credentials from `densify-api-secret` through `forwarderCredentialsSecretRef`.
-
-The stack leaves `rbac.permissions.connector.*` disabled by default because the connector currently does not require additional Kubernetes API permissions for its tunnel role.
-
-## Runtime Wiring
-
-The stack-managed connector and CDI share cluster identity from the forwarder-generated `ConfigMap`:
-
-- `kubex_host`
-- `kubex_tenant_id`
-- `kubex_cluster_name`
-
-The connector uses those values to derive:
-
-- `CONNECTOR_PROXY_WS_URL`
-- `CONNECTOR_TENANT_ID`
-- `CONNECTOR_CLUSTER_ID`
-- `RELAY_UPSTREAM_WSS_URL`
-- `DENSIFY_BASE_URL`
+For OpenShift installs, use `values-openshift.yaml` so the stack-managed connector and CDI receive compatible security context defaults.
 
 ## Validation
 
@@ -72,7 +73,3 @@ kubectl get clusterrolebinding kubex-ai-cdi-reader
 kubectl auth can-i --list --as=system:serviceaccount:kubex:kubex-ai-cdi-sa
 kubectl -n kubex get configmap kubex-kubex-stack -o yaml
 ```
-
-## OpenShift Note
-
-For OpenShift installs, use `values-openshift.yaml` so the stack-managed connector and CDI receive compatible security context defaults.
