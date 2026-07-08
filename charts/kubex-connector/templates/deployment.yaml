@@ -1,9 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: kubex-connector-deployment
+  name: {{ include "kubex-connector.fullname" . }}
   labels:
-    app: kubex-connector
+    app: {{ include "kubex-connector.name" . }}
     chart: {{ .Chart.Name }}-{{ .Chart.Version }}
     {{- if .Values.extraLabels }}
     {{- toYaml .Values.extraLabels | nindent 4 }}
@@ -16,11 +16,11 @@ spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: kubex-connector
+      app: {{ include "kubex-connector.name" . }}
   template:
     metadata:
       labels:
-        app: kubex-connector
+        app: {{ include "kubex-connector.name" . }}
         {{- if .Values.extraLabels }}
         {{- toYaml .Values.extraLabels | nindent 8 }}
         {{- end }}
@@ -32,21 +32,28 @@ spec:
       {{- $kubexHost := include "kubex-connector.kubexHost" . }}
       {{- $kubexClusterName := include "kubex-connector.kubexClusterName" . }}
       {{- $localKubex := .Values.kubex | default dict }}
-      {{- $localKubexCredentials := $localKubex.credentials | default dict }}
       {{- $forwarderConfigMapName := trim (default "" .Values.forwarderConfigMap.name) }}
       {{- $forwarderSecretName := trim (default "" .Values.forwarderCredentialsSecretRef.name) }}
-      {{- $kubexUsername := trim (default "" $localKubexCredentials.username) }}
-      {{- $kubexEpassword := trim (default "" $localKubexCredentials.epassword) }}
       {{- $useForwarderConfigMap := and (eq $kubexHost "") (eq $kubexClusterName "") (ne $forwarderConfigMapName "") }}
       {{- $useForwarderSecretRef := ne $forwarderSecretName "" }}
       {{- if and .Values.relay.enabled .Values.relay.hostAliases }}
       hostAliases:
       {{- toYaml .Values.relay.hostAliases | nindent 6 }}
       {{- end }}
+      {{- with .Values.securityContext }}
+      {{- if or .runAsUser .runAsGroup .fsGroup }}
       securityContext:
-        runAsUser: {{ .Values.securityContext.runAsUser }}
-        runAsGroup: {{ .Values.securityContext.runAsGroup }}
-        fsGroup: {{ .Values.securityContext.fsGroup }}
+        {{- with .runAsUser }}
+        runAsUser: {{ . }}
+        {{- end }}
+        {{- with .runAsGroup }}
+        runAsGroup: {{ . }}
+        {{- end }}
+        {{- with .fsGroup }}
+        fsGroup: {{ . }}
+        {{- end }}
+      {{- end }}
+      {{- end }}
       {{- with .Values.tolerations }}
       tolerations:
         {{- toYaml . | nindent 6 }}
@@ -58,7 +65,7 @@ spec:
           secretName: {{ .Values.relay.tlsCaSecretName }}
       {{- end }}
       containers:
-      - name: kubex-connector
+      - name: {{ include "kubex-connector.name" . }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         securityContext:
@@ -169,8 +176,6 @@ spec:
             secretKeyRef:
               name: {{ $forwarderSecretName | quote }}
               key: {{ .Values.forwarderCredentialsSecretRef.usernameKey | quote }}
-          {{- else if ne $kubexUsername "" }}
-          value: {{ $kubexUsername | quote }}
           {{- else }}
           valueFrom:
             secretKeyRef:
@@ -183,8 +188,6 @@ spec:
             secretKeyRef:
               name: {{ $forwarderSecretName | quote }}
               key: {{ .Values.forwarderCredentialsSecretRef.epasswordKey | quote }}
-          {{- else if ne $kubexEpassword "" }}
-          value: {{ $kubexEpassword | quote }}
           {{- else }}
           valueFrom:
             secretKeyRef:

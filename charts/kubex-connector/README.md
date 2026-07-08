@@ -8,12 +8,10 @@ It can deploy the websocket relay sidecar for connector traffic relaying. The co
 
 The chart supports two configuration modes:
 
-- Standalone mode via `kubex.*` values for host, cluster name, username, and encrypted password
+- Standalone mode via `kubex.*` values for host and cluster name, with credentials sourced from secrets
 - Stack-managed mode via the forwarder `ConfigMap` and `forwarderCredentialsSecretRef`
 
 When installed through `kubex-automation-stack`, the chart reads the shared Kubex host, tenant, and cluster identity from the forwarder `ConfigMap` via `forwarderConfigMap.name`.
-
-Standalone credentials are configured through `kubex.credentials.username` and `kubex.credentials.epassword`.
 
 Stack-managed credentials are configured through `forwarderCredentialsSecretRef.name`.
 
@@ -23,8 +21,6 @@ Connector timing and relay wiring remain configurable:
 - `requestTimeoutSeconds`
 - `kubex.url.host`
 - `kubex.clusterName`
-- `kubex.credentials.username`
-- `kubex.credentials.epassword`
 - `forwarderConfigMap.name`
 - `forwarderCredentialsSecretRef.name`
 - `forwarderCredentialsSecretRef.usernameKey`

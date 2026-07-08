@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: {{ .Values.service.name }}
   labels:
-    app: kubex-ai-cdi
+    app: {{ include "kubex-ai-cdi.name" . }}
     chart: {{ .Chart.Name }}-{{ .Chart.Version }}
     {{- if .Values.extraLabels }}
     {{- toYaml .Values.extraLabels | nindent 4 }}
@@ -20,4 +20,4 @@ spec:
     targetPort: http
     name: http
   selector:
-    app: kubex-ai-cdi
+    app: {{ include "kubex-ai-cdi.name" . }}

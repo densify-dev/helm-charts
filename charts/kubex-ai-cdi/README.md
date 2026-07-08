@@ -8,12 +8,6 @@ It is intended to be installed through `kubex-automation-stack` and assumes stac
 
 Standalone installs keep RBAC enabled by default. The stack chart disables `rbac.enabled` and renders the ServiceAccount, ClusterRole, and ClusterRoleBinding itself.
 
-## Prerequisites
-
-- Kubernetes 1.24+
-- Helm 3.x
-- Appropriate RBAC permissions to create cluster-scoped resources
-
 ## Features
 
 - Deploys the CDI service

@@ -5,6 +5,12 @@ image:
 
 replicaCount: 1
 
+nameOverride: ""
+fullnameOverride: ""
+
+clusterRoleNameOverride: ""
+clusterRoleBindingNameOverride: ""
+
 service:
   name: kubex-ai-cdi-service
   type: ClusterIP
@@ -51,6 +57,10 @@ rbac:
       enabled: false
       resources: ["ec2nodeclasses"]
       verbs: ["get", "list"]
+    karpenterAzure:
+      enabled: false
+      resources: ["nodeclasses"]
+      verbs: ["get", "list"]
     kubexCRDs:
       enabled: true
       resources: ["automationstrategies", "clusterautomationstrategies", "clustergpurebalancingpolicies", "clusterproactivepolicies", "clusterrollbackpolicies", "clusterstaticpolicies", "globalconfigurations", "gpuconsolidationpolicies", "gpurebalancingpolicies", "podaffinitypolicies", "policyevaluations", "proactivepolicies", "rollbackpolicies", "staticpolicies"]
@@ -61,9 +71,9 @@ rbac:
       verbs: ["create"]
 
 securityContext:
-  runAsUser: 3000
-  runAsGroup: 3000
-  fsGroup: 3000
+  runAsUser: null
+  runAsGroup: null
+  fsGroup: null
 
 tolerations: []
 

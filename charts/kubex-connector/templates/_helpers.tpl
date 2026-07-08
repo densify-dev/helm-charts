@@ -1,3 +1,15 @@
+{{- define "kubex-connector.name" -}}
+{{- default .Chart.Name .Values.nameOverride -}}
+{{- end -}}
+
+{{- define "kubex-connector.fullname" -}}
+{{- if .Values.fullnameOverride -}}
+{{- .Values.fullnameOverride -}}
+{{- else -}}
+{{- printf "%s-deployment" (include "kubex-connector.name" .) -}}
+{{- end -}}
+{{- end -}}
+
 {{- define "kubex-connector.kubexHost" -}}
 {{- $localKubex := .Values.kubex | default dict -}}
 {{- $localUrl := $localKubex.url | default dict -}}

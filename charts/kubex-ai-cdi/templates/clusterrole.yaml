@@ -3,9 +3,9 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: kubex-ai-cdi-reader
+  name: {{ include "kubex-ai-cdi.clusterRoleName" . }}
   labels:
-    app: kubex-ai-cdi
+    app: {{ include "kubex-ai-cdi.name" . }}
     chart: {{ .Chart.Name }}-{{ .Chart.Version }}
     {{- if .Values.extraLabels }}
     {{- toYaml .Values.extraLabels | nindent 4 }}
@@ -72,6 +72,15 @@ rules:
 {{- with $permissions.karpenterAWS }}
 {{- if .enabled }}
 - apiGroups: ["karpenter.k8s.aws"]
+  resources:
+    {{- toYaml .resources | nindent 4 }}
+  verbs:
+    {{- toYaml .verbs | nindent 4 }}
+{{- end }}
+{{- end }}
+{{- with $permissions.karpenterAzure }}
+{{- if .enabled }}
+- apiGroups: ["karpenter.azure.com"]
   resources:
     {{- toYaml .resources | nindent 4 }}
   verbs:

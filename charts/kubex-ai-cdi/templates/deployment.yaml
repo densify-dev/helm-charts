@@ -1,9 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: kubex-ai-cdi-deployment
+  name: {{ include "kubex-ai-cdi.fullname" . }}
   labels:
-    app: kubex-ai-cdi
+    app: {{ include "kubex-ai-cdi.name" . }}
     chart: {{ .Chart.Name }}-{{ .Chart.Version }}
     {{- if .Values.extraLabels }}
     {{- toYaml .Values.extraLabels | nindent 4 }}
@@ -16,11 +16,11 @@ spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: kubex-ai-cdi
+      app: {{ include "kubex-ai-cdi.name" . }}
   template:
     metadata:
       labels:
-        app: kubex-ai-cdi
+        app: {{ include "kubex-ai-cdi.name" . }}
         {{- if .Values.extraLabels }}
         {{- toYaml .Values.extraLabels | nindent 8 }}
         {{- end }}
@@ -30,16 +30,26 @@ spec:
       {{- end }}
     spec:
       serviceAccountName: {{ include "kubex-ai-cdi.serviceAccountName" . }}
+      {{- with .Values.securityContext }}
+      {{- if or .runAsUser .runAsGroup .fsGroup }}
       securityContext:
-        runAsUser: {{ .Values.securityContext.runAsUser }}
-        runAsGroup: {{ .Values.securityContext.runAsGroup }}
-        fsGroup: {{ .Values.securityContext.fsGroup }}
+        {{- with .runAsUser }}
+        runAsUser: {{ . }}
+        {{- end }}
+        {{- with .runAsGroup }}
+        runAsGroup: {{ . }}
+        {{- end }}
+        {{- with .fsGroup }}
+        fsGroup: {{ . }}
+        {{- end }}
+      {{- end }}
+      {{- end }}
       {{- with .Values.tolerations }}
       tolerations:
         {{- toYaml . | nindent 6 }}
       {{- end }}
       containers:
-      - name: kubex-ai-cdi
+      - name: {{ include "kubex-ai-cdi.name" . }}
         image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         securityContext:
