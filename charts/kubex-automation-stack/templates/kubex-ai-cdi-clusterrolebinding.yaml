@@ -1,16 +1,17 @@
 {{- $rbac := .Values.rbac | default dict -}}
 {{- $cdi := $rbac.permissions.cdi | default dict -}}
 {{- $clusterRole := $cdi.clusterRole | default dict -}}
+{{- $clusterRoleBinding := $cdi.clusterRoleBinding | default dict -}}
 {{- $serviceAccount := $cdi.serviceAccount | default dict -}}
 {{- $cdiValues := index .Values "kubex-ai-cdi" | default dict -}}
 {{- $cdiRbac := $cdiValues.rbac | default dict -}}
 {{- $extraLabels := $cdiValues.extraLabels | default dict -}}
 {{- $extraAnnotations := $cdiValues.extraAnnotations | default dict -}}
-{{- if and $cdiValues.enabled $rbac.create (not ($cdiRbac.enabled | default false)) (dig "create" false $clusterRole) }}
+{{- if and $cdiValues.enabled $rbac.create (not ($cdiRbac.enabled | default false)) (dig "create" false $clusterRoleBinding) }}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: {{ default "kubex-ai-cdi-reader" (dig "name" "" $clusterRole) }}
+  name: {{ default "kubex-ai-cdi-reader" (dig "name" "" $clusterRoleBinding) }}
   labels:
     app: kubex-ai-cdi
     chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}

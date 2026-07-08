@@ -1,19 +1,6 @@
 {{- define "common.namespace" -}}
   {{- default .Release.Namespace .Values.nsPrefix -}}
 {{- end -}}
-{{- define "common.kubexHost" -}}
-{{- $forwarder := index .Values "container-optimization-data-forwarder" | default dict -}}
-{{- $config := $forwarder.config | default dict -}}
-{{- $densify := $config.forwarder.densify | default dict -}}
-{{- $url := $densify.url | default dict -}}
-{{- trim (default "" $url.host) -}}
-{{- end -}}
-{{- define "common.kubexClusters" -}}
-{{- $forwarder := index .Values "container-optimization-data-forwarder" | default dict -}}
-{{- $config := $forwarder.config | default dict -}}
-{{- $clusters := $config.clusters | default list -}}
-{{- toYaml $clusters -}}
-{{- end -}}
 {{- define "common.checkValues" -}}
 {{- $openshiftEnabled := .Values.openshift.enabled -}}
 {{- $deployPrometheus := .Values.stack.prometheus.deploy -}}

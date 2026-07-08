@@ -39,10 +39,6 @@ k8s-ephemeral-storage-metrics:
     scrapeTimeout: 10s
 
 kubex-connector:
-  securityContext:
-    runAsUser: 1000750000
-    runAsGroup: 1000750000
-    fsGroup: 1000750000
   containerSecurityContext:
     capabilities:
       drop:
@@ -51,10 +47,6 @@ kubex-connector:
       type: RuntimeDefault
 
 kubex-ai-cdi:
-  securityContext:
-    runAsUser: 1000750000
-    runAsGroup: 1000750000
-    fsGroup: 1000750000
   containerSecurityContext:
     capabilities:
       drop:
