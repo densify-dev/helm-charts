@@ -71,6 +71,16 @@ kubex:
   clusterName: my-cluster
 ```
 
+If this cluster is acting as a passive (DR) cluster, configure `secondaryCluster` so it follows recommendations from the active cluster.
+
+```yaml
+secondaryCluster:
+  enabled: true
+  primaryClusterName: primary-cluster
+```
+
+Use this only for active/passive cluster pairs where both clusters run the same workloads with the same namespaces, workload names, workload types, and container names. If the passive cluster has different workloads or different naming, do not enable this mode. For more detail, see [Secondary/DR Cluster Mode](./Configuration-Reference.md#secondarydr-cluster-mode).
+
 Then create the referenced Secret in the same namespace as the Helm release using the exact keys `username`, `epassword`, `url`, and `DENSIFY_BASE_URL`. For the full Secret format, see [External Credential Secret](./Configuration-Reference.md#external-credential-secret).
 
 If you are deploying on OpenShift, also set `openshift.enabled: true` in your values file to apply the chart's restricted-friendly OpenShift defaults.

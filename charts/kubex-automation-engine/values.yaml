@@ -24,6 +24,15 @@ kubex:
   # -- Request timeout for Kubex API calls
   requestTimeout: "30s"
 
+# Secondary/DR cluster mode. When enabled, this cluster keeps its own
+# kubex.clusterName identity and reads recommendation values from
+# secondaryCluster.primaryClusterName.
+secondaryCluster:
+  # -- Enable secondary/DR mode for cross-cluster recommendation consumption
+  enabled: false
+  # -- Primary/active Kubex cluster name to read recommendations from when secondaryCluster.enabled=true
+  primaryClusterName: ""
+
 kubexCredentials:
   # -- Username to access Kubex API
   username: ""
