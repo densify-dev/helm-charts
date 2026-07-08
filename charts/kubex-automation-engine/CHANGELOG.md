@@ -2,6 +2,23 @@
 
 All notable changes to the Kubex Automation Engine Helm chart will be documented in this file.
 
+## [1.6.0] - 2026-07-06
+
+### Added
+- KubeAI `Model` workload support for automated rightsizing and rollback tracking.
+- GPU-sharing tuning controls for KAI-based automation strategies.
+- Container-level skip controls for rightsizing, so specific containers can be excluded without blocking resize actions for the rest of the pod.
+
+### Changed
+- Default policy evaluation now includes KubeAI `Model` workloads when `workloadTypes` is not set.
+- VPA-aware resize handling is more consistent across live workloads.
+
+### Fixed
+- Helm uninstall reliability for charts using rightsizing resources.
+- GPU rightsizing and validation stability.
+
+---
+
 ## [1.5.0] - 2026-06-23
 
 ### Added

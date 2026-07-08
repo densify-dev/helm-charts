@@ -52,14 +52,23 @@ spec:
 
 ## Pause Controls
 
-Use the `rightsizing.kubex.ai/pause-until` annotation to temporarily or permanently block automation for a pod, a supported workload owner, or an entire namespace.
+Use pause annotations to temporarily or permanently block automation.
 
-Supported values:
+Pod-scoped whole-pod pause:
+
+- `rightsizing.kubex.ai/pause-until: <RFC3339|infinite>`
+- `rightsizing.kubex.ai/pause-reason: <string>`
+
+Container-scoped skip:
+
+- `rightsizing.kubex.ai/skip-containers: "app,sidecar"`
+
+Supported values for every `pause-until` key:
 
 - RFC3339 timestamp
 - `infinite`
 
-Example:
+Pod example:
 
 ```yaml
 spec:
@@ -67,6 +76,17 @@ spec:
     metadata:
       annotations:
         rightsizing.kubex.ai/pause-until: "2026-04-01T00:00:00Z"
+        rightsizing.kubex.ai/pause-reason: "maintenance window"
+```
+
+Container example:
+
+```yaml
+spec:
+  template:
+    metadata:
+      annotations:
+        rightsizing.kubex.ai/skip-containers: "app,sidecar"
 ```
 
 Namespace example:
@@ -83,21 +103,29 @@ metadata:
 
 Behavior:
 
-- new pods inherit `rightsizing.kubex.ai/pause-until` and `rightsizing.kubex.ai/pause-reason` from supported workload owners during admission
-- existing owned pods are reconciled to inherit the same pause annotations from the workload owner
-- pods in a paused namespace are skipped even when the pod itself has no pause annotation
+- pod-level `rightsizing.kubex.ai/pause-until` blocks whole pod and appears in `rightsizing summary.failedChecks` as `pause-active`
+- `rightsizing.kubex.ai/skip-containers` prunes only matching container actions and appears in `rightsizing summary.appliedFilters` as `container-skip-active`
+- sibling container actions still proceed when only one container is skipped
+- pod annotation key beats owner annotation; no merge across pod and owners
+- empty pod `skip-containers` value means skip none and disables owner fallback for that pod
+- nearest supported owner with non-empty annotation wins when pod key is absent; no merge across multiple owners
+- empty owner `skip-containers` values are ignored
+- new pods do not inherit `skip-containers`; it is resolved directly from pod or owner at evaluation time
+- existing owned pods are not reconciled to copy `skip-containers`
+- pods in paused namespace are skipped even when pod itself has no pause annotation
 - namespace pause annotations are evaluated at runtime only and are not copied onto pods
-- when both pod and namespace pauses are active, the pod-level pause reason wins
-- webhook mutation skips paused pods
-- controller-side proactive execution skips paused pods
+- namespace pause supports only pod-scoped keys
+- webhook mutation skips whole pod only for pod-level or namespace-level pauses; `skip-containers` still allows non-skipped sibling mutations
+- controller-side proactive execution skips whole pod only for pod-level or namespace-level pauses; `skip-containers` filters matching actions only
 - time-based pauses automatically resume after expiration
 
 Notes:
 
 - pod-local pause annotations are still supported
-- namespace-local pause annotations use the same `rightsizing.kubex.ai/pause-reason` message format in `rightsizing summary` failed checks
-- when a pause annotation was inherited from the workload owner, the controller tracks that internal inheritance state so it can safely remove the inherited value later
-- if a pause annotation exists only on the pod and was not inherited, the controller treats it as pod-local and does not remove it during workload reconciliation
+- `skip-containers` can be set on pod or supported workload owner, but is not propagated or stored as inherited control state
+- namespace-local pause annotations use same `rightsizing.kubex.ai/pause-reason` message format in `rightsizing summary` failed checks
+- when pause annotation was inherited from workload owner, controller tracks internal inheritance state so it can safely remove inherited value later
+- if pause annotation exists only on pod and was not inherited, controller treats it as pod-local and does not remove it during workload reconciliation
 
 ## Safety Controls
 
