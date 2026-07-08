@@ -62,7 +62,7 @@ Use the [Tuning Guide](./Tuning-Guide.md) for leader election tolerance, webhook
 
 ### What prevents unsafe resizes?
 
-The controller filters or blocks actions based on webhook health, protected namespaces, pause annotations, HPA/VPA detection, quota and LimitRange checks, node headroom, and workload readiness checks. Pause annotations can be set directly on a pod or on a supported workload owner, in which case new pods inherit them during admission and existing owned pods are reconciled to the same pause state.
+The controller filters or blocks actions based on webhook health, protected namespaces, pause annotations, HPA/VPA detection, quota and LimitRange checks, node headroom, and workload readiness checks. Pod-level `rightsizing.kubex.ai/pause-until` blocks whole pod. `rightsizing.kubex.ai/skip-containers` removes only matching container actions and still allows sibling container actions to proceed. Pod annotation key beats owner annotation. If pod key is present with an empty value, that pod skips no containers and does not fall back to owners. If pod key is absent, nearest supported owner with non-empty value wins. Values are never merged. Namespace pause supports pod-level keys only.
 
 For the complete safety model and where each control is configured, see [Safety Controls](./Safety-Controls.md).
 
@@ -75,6 +75,8 @@ Not by default. Protected namespace patterns exclude well-known platform namespa
 ### Where should I look first if nothing happens?
 
 Check `GlobalConfiguration`, policy objects, events, and `rightsizing summary` logs in that order. If new pods are being created but expected mutation is missing, also review the webhook fail-open notes in the [Tuning Guide](./Tuning-Guide.md#admission-webhook-fail-open-semantics).
+
+For multi-container pods, also check whether only some actions were filtered. `failedChecks` means whole pod blocked. `appliedFilters` with `container-skip-active`, `hpa-resource-managed`, or similar means only specific container/resource actions were removed.
 
 ### Why is a matching policy not enough?
 
