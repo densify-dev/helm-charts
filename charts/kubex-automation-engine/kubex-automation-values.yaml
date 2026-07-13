@@ -30,6 +30,11 @@ kubex:
   # REQUIRED: Your cluster identifier in Kubex
   clusterName: "<clusterName>" # mandatory: <clusterName>
 
+# Optional secondary/DR cluster mode:
+# secondaryCluster:
+#   enabled: true
+#   primaryClusterName: "<primaryClusterName>"
+
 # Optional image pull secrets for private registries:
 # imagePullSecrets:
 #   - name: my-registry-secret

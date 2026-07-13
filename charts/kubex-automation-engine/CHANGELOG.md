@@ -2,6 +2,13 @@
 
 All notable changes to the Kubex Automation Engine Helm chart will be documented in this file.
 
+## [1.6.1] - 2026-07-10
+
+### Added
+- Secondary/DR cluster mode for recommendation consumption from a primary cluster.
+
+---
+
 ## [1.6.0] - 2026-07-06
 
 ### Added
