@@ -14,12 +14,18 @@ stack:
 
 gpu-process-exporter:
   enabled: true
+  nodeSelector:
+    kubernetes.io/os: linux
 
 node-labeler:
   enabled: false
+  nodeSelector:
+    kubernetes.io/os: linux
 
 container-optimization-data-forwarder:
   nameOverride: kubex-stack
+  nodeSelector:
+    kubernetes.io/os: linux
   tolerations:
     - key: "kubernetes.io/arch"
       operator: "Exists"
@@ -50,6 +56,8 @@ prometheus:
     enabled: false 
   kube-state-metrics:
     prometheusScrape: false
+    nodeSelector:
+      kubernetes.io/os: linux
     tolerations:
       - key: "kubernetes.io/arch"
         operator: "Exists"
@@ -95,12 +103,16 @@ prometheus:
           - ALL
       seccompProfile:
         type: RuntimeDefault
+    nodeSelector:
+      kubernetes.io/os: linux
     tolerations:
       - key: "kubernetes.io/arch"
         operator: "Exists"
         effect: "NoSchedule"
   server:
     fullnameOverride: kubex-prometheus-server
+    nodeSelector:
+      kubernetes.io/os: linux
     tolerations:
       - key: "kubernetes.io/arch"
         operator: "Exists"
@@ -218,6 +230,8 @@ beyla:
   privileged: true
   contextPropagation:
     enabled: false # Survey only - no context propagation needed
+  nodeSelector:
+    kubernetes.io/os: linux
   tolerations:
     - key: "kubernetes.io/arch"
       operator: "Exists"
@@ -260,6 +274,8 @@ beyla:
 k8s-ephemeral-storage-metrics:
   enabled: true
   nameOverride: kubex-ephemeral-storage-collector
+  nodeSelector:
+    kubernetes.io/os: linux
   tolerations:
     - key: "kubernetes.io/arch"
       operator: "Exists"
