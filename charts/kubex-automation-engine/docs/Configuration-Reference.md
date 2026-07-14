@@ -95,6 +95,29 @@ For non-TLS upstream endpoints, set `kubex.url.scheme` to `http`.
 
 Note: `kubexCredentials.userSecretName` is currently not consumed by this chart. When `createSecrets=false`, set `gateway.configSecretName` instead.
 
+## Secondary/DR Cluster Mode
+
+Secondary/DR mode is intended for active/passive disaster-recovery deployments where the passive cluster should follow the same sizing guidance as the active cluster.
+
+Use Secondary/DR mode only when:
+
+- the deployment consists of an active/passive cluster pair
+- the passive cluster should consume the same sizing recommendations as the active cluster
+- workloads in both clusters have the same topology, including namespaces, workload types, workload names, and container names
+- the passive cluster is expected to apply recommendations locally, while the recommendations themselves are generated from the active cluster
+
+Do not use Secondary/DR mode when the two clusters are managing different workloads, use different naming, or have drifted topology. In those cases, the passive cluster should run with its own recommendations instead.
+
+Use these values to enable the feature:
+
+```yaml
+secondaryCluster:
+  enabled: true
+  primaryClusterName: primary-cluster
+```
+
+`secondaryCluster.enabled` defaults to `false`. `secondaryCluster.primaryClusterName` is required when secondary mode is enabled.
+
 ## Core Operational Values
 
 | Key | Default | Description |
@@ -119,6 +142,8 @@ Note: `kubexCredentials.userSecretName` is currently not consumed by this chart.
 | `controllerManager.podAdmissionWebhookKubeAPIQPS` | `-1` | QPS limit for the pod admission webhook Kubernetes client; use `0` for client-go default `5 QPS`, or a negative value to disable client-side rate limiting |
 | `controllerManager.podAdmissionWebhookKubeAPIBurst` | `0` | Burst limit for the pod admission webhook Kubernetes client; `0` leaves burst at client-go default when webhook client rate limiting is active. With default `controllerManager.podAdmissionWebhookKubeAPIQPS: -1`, client-side rate limiting is disabled, so Burst is not practical cap |
 | `kubex.requestTimeout` | `30s` | Kubex API request timeout |
+| `secondaryCluster.enabled` | `false` | Enable secondary/DR mode for recommendation consumption from a primary cluster |
+| `secondaryCluster.primaryClusterName` | `""` | Primary Kubex cluster name used to fetch recommendations when secondary mode is enabled |
 | `podSecurityContext` | chart default | Pod-level security context for the controller Deployment; defaults to `65534` for `runAsUser`, `runAsGroup`, and `fsGroup`, plus `runAsNonRoot=true` and `seccompProfile.type=RuntimeDefault` |
 | `openshift.enabled` | `false` | Enable OpenShift-oriented pod security context defaults and cleanup job settings without changing the default Kubernetes installation path |
 | `openshift.fsGroup` | `null` | Optional `fsGroup` applied when `openshift.enabled=true` unless already set in `podSecurityContext` |
