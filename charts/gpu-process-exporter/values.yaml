@@ -29,7 +29,18 @@ resources:
   limits:
     memory: 256Mi
 
-nodeSelector: {}
+nodeSelector:
+  kubernetes.io/os: linux
+  nvidia.com/gpu.present: "true"
+
+tolerations:
+  - key: nvidia.com/gpu
+    operator: Exists
+    effect: NoSchedule
+
+affinity: {}
+
+topologySpreadConstraints: []
 
 hostProcMount: null
 
