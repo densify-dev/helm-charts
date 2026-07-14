@@ -3,7 +3,7 @@ name: gpu-process-exporter
 description: A Helm chart for gpu-process-exporter
 type: application
 icon: https://kubex.ai/wp-content/uploads/kubex-logo-landscape.svg
-version: 1.0.0
+version: 1.0.1
 keywords:
 - kubex
 - gpu
