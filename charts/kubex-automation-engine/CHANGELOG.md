@@ -2,6 +2,13 @@
 
 All notable changes to the Kubex Automation Engine Helm chart will be documented in this file.
 
+## [1.7.0] - 2026-07-14
+
+### Added
+- Secondary/DR cluster mode for recommendation consumption from a primary cluster.
+
+---
+
 ## [1.6.0] - 2026-07-06
 
 ### Added
@@ -16,6 +23,7 @@ All notable changes to the Kubex Automation Engine Helm chart will be documented
 ### Fixed
 - Helm uninstall reliability for charts using rightsizing resources.
 - GPU rightsizing and validation stability.
+- In-place resized pods now retain the pod-rightsizing-info annotation so live pod state stays observable.
 
 ---
 

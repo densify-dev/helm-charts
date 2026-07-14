@@ -4,7 +4,7 @@ crdCheck:
   skip: false
   # Minimum version of the kubex-crds chart required before this chart can be installed/upgraded.
   # Bump this whenever a new CRD field or schema change is required.
-  minCRDsHelmVersion: "1.6.0"
+  minCRDsHelmVersion: "1.7.0"
 # -- Whether to create the kubex-gateway-config Secret automatically
 createSecrets: true
 
@@ -23,6 +23,15 @@ kubex:
 
   # -- Request timeout for Kubex API calls
   requestTimeout: "30s"
+
+# Secondary/DR cluster mode. When enabled, this cluster keeps its own
+# kubex.clusterName identity and reads recommendation values from
+# secondaryCluster.primaryClusterName.
+secondaryCluster:
+  # -- Enable secondary/DR mode for cross-cluster recommendation consumption
+  enabled: false
+  # -- Primary/active Kubex cluster name to read recommendations from when secondaryCluster.enabled=true
+  primaryClusterName: ""
 
 kubexCredentials:
   # -- Username to access Kubex API
@@ -45,14 +54,14 @@ image:
   # -- Image pull policy
   pullPolicy: IfNotPresent
   # -- Image tag
-  tag: "1.6.0"
+  tag: "1.7.0"
 
 cleanup:
   image:
     # -- Image repository for the pre-delete cleanup job.
     repository: "densify/kubex-automation-cleanup"
     # -- Image tag for the pre-delete cleanup job. Defaults to the controller image tag.
-    tag: "1.6.0"
+    tag: "1.7.0"
     # -- Image pull policy for the pre-delete cleanup job.
     pullPolicy: "IfNotPresent"
   # -- Optional pod security context for the pre-delete cleanup job
