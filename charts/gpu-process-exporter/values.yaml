@@ -29,6 +29,8 @@ resources:
   limits:
     memory: 256Mi
 
+nodeSelector: {}
+
 hostProcMount: null
 
 nvmlSearchPath: null

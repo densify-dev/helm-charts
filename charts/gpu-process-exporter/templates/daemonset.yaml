@@ -19,7 +19,11 @@ spec:
     spec:
       hostPID: true
       nodeSelector:
+        kubernetes.io/os: linux
         nvidia.com/gpu.present: "true"
+        {{- with .Values.nodeSelector }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
       tolerations:
         - key: nvidia.com/gpu
           operator: Exists
