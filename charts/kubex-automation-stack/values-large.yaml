@@ -21,3 +21,24 @@ beyla:
       cpu: "50m"
     limits:
       memory: "1Gi"
+
+k8s-ephemeral-storage-metrics:
+  interval: 45
+  max_node_concurrency: 30
+  client_go_qps: 15
+  client_go_burst: 30
+  metrics:
+    gc_enabled: true
+    gc_interval: 3
+    gc_batch_size: 1000
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "500m"
+    limits:
+      memory: "1Gi"
+      cpu: "2000m"
+  livenessProbe:
+    timeoutSeconds: 60
+  readinessProbe:
+    timeoutSeconds: 60

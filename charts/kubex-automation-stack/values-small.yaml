@@ -21,3 +21,16 @@ beyla:
       cpu: "50m"
     limits:
       memory: "512Mi"
+
+k8s-ephemeral-storage-metrics:
+  interval: 25
+  max_node_concurrency: 15
+  client_go_qps: 8
+  client_go_burst: 15
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
+    limits:
+      memory: "256Mi"
+      cpu: "500m"
