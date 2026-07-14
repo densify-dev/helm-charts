@@ -3,6 +3,15 @@
 All notable changes to the kubex-automation-stack chart will be documented in this file.
 
 
+## [1.0.19] - 2026-07-14
+
+### Added
+- Added Linux OS requirement to nodeSelector for all stack components to ensure proper scheduling on Linux nodes
+- Added configurable nodeSelector to gpu-process-exporter chart
+
+### Changed
+- Updated gpu-process-exporter dependency to v1.0.1
+
 ## [1.0.18] - 2026-07-03
 
 ### Security
