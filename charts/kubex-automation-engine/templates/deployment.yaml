@@ -86,6 +86,12 @@ spec:
         env:
         - name: CLUSTER_NAME
           value: {{ required "kubex.clusterName must be set to the Kubex cluster identifier" .Values.kubex.clusterName | quote }}
+        {{- if ((.Values.secondaryCluster).enabled) }}
+        - name: SECONDARY_CLUSTER_ENABLED
+          value: "true"
+        - name: PRIMARY_CLUSTER_NAME
+          value: {{ required "secondaryCluster.primaryClusterName must be set when secondaryCluster.enabled=true" .Values.secondaryCluster.primaryClusterName | quote }}
+        {{- end }}
         - name: IMAGE_TAG
           value: {{ .Values.image.tag | quote }}
         - name: POD_NAMESPACE

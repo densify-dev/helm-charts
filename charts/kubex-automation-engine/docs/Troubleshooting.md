@@ -105,7 +105,8 @@ kubectl get events -A --field-selector reason=PolicyEvaluationEvictResize
 
 - no valid Kubex recommendation for the target container
 - recommendation older than `maxAnalysisAgeDays`
-- pause annotation present
+- pod-level pause annotation present, which blocks whole pod
+- container-level pause annotation present, which can partially filter multi-container pods while leaving sibling actions eligible
 - HPA or VPA overlap
 - ResourceQuota or LimitRange conflict
 - node allocatable headroom gate

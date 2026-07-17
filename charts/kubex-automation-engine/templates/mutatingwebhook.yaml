@@ -5,7 +5,7 @@
 apiVersion: admissionregistration.k8s.io/v1
 kind: MutatingWebhookConfiguration
 metadata:
-  name: zzz-kubex-mutating-webhook-configuration
+  name: {{ printf "%skubex-mutating-webhook-configuration" .Values.webhook.podMutation.namePrefix }}
   labels:
     {{- include "kubex-automation-engine.labels" . | nindent 4 }}
   {{- if .Values.webhook.certManager.enabled }}
@@ -24,7 +24,7 @@ webhooks:
       namespace: {{ include "kubex-automation-engine.namespace" . }}
       path: /mutate--v1-pod
   failurePolicy: Ignore
-  name: zzz-mpod-rightsizing-recommendations.kubex.ai
+  name: {{ printf "%smpod-rightsizing-recommendations.kubex.ai" .Values.webhook.podMutation.namePrefix }}
   rules:
   - apiGroups:
     - ""
