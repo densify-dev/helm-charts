@@ -1,0 +1,63 @@
+image:
+  repository: densify/kubex-connector
+  tag: 0.1.8
+  pullPolicy: IfNotPresent
+
+replicaCount: 1
+
+nameOverride: ""
+fullnameOverride: ""
+
+extraLabels: {}
+
+extraAnnotations: {}
+
+heartbeatSeconds: 10
+requestTimeoutSeconds: 30
+
+connectorServices:
+  - service_id: kubex-ai-cdi
+    upstream_url: http://kubex-ai-cdi-service:8080/mcp
+
+kubex:
+  url:
+    host: ""
+  clusterName: ""
+
+forwarderConfigMap:
+  name: ""
+
+forwarderCredentialsSecretRef:
+  name: ""
+  usernameKey: username
+  epasswordKey: epassword
+
+extraEnv: []
+
+relay:
+  enabled: true
+  image:
+    repository: densify/automation-gateway
+    tag: 1.5
+    pullPolicy: IfNotPresent
+  listenAddr: ":18181"
+  connectPath: "/tunnel/connect"
+  tlsCaSecretName: ""
+  tlsCaKey: ca.crt
+  hostAliases: []
+  extraEnv: []
+  resources: {}
+
+resources: {}
+
+securityContext:
+  runAsUser: null
+  runAsGroup: null
+  fsGroup: null
+
+tolerations: []
+
+containerSecurityContext:
+  runAsNonRoot: true
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
