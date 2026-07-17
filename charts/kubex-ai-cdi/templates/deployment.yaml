@@ -1,0 +1,112 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "kubex-ai-cdi.fullname" . }}
+  labels:
+    app: {{ include "kubex-ai-cdi.name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    {{- if .Values.extraLabels }}
+    {{- toYaml .Values.extraLabels | nindent 4 }}
+    {{- end }}
+  {{- if .Values.extraAnnotations }}
+  annotations:
+    {{- toYaml .Values.extraAnnotations | nindent 4 }}
+  {{- end }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "kubex-ai-cdi.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "kubex-ai-cdi.name" . }}
+        {{- if .Values.extraLabels }}
+        {{- toYaml .Values.extraLabels | nindent 8 }}
+        {{- end }}
+      {{- if .Values.extraAnnotations }}
+      annotations:
+        {{- toYaml .Values.extraAnnotations | nindent 8 }}
+      {{- end }}
+    spec:
+      serviceAccountName: {{ include "kubex-ai-cdi.serviceAccountName" . }}
+      {{- with .Values.securityContext }}
+      {{- if or .runAsUser .runAsGroup .fsGroup }}
+      securityContext:
+        {{- with .runAsUser }}
+        runAsUser: {{ . }}
+        {{- end }}
+        {{- with .runAsGroup }}
+        runAsGroup: {{ . }}
+        {{- end }}
+        {{- with .fsGroup }}
+        fsGroup: {{ . }}
+        {{- end }}
+      {{- end }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 6 }}
+      {{- end }}
+      containers:
+      - name: {{ include "kubex-ai-cdi.name" . }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        securityContext:
+          runAsNonRoot: {{ .Values.containerSecurityContext.runAsNonRoot }}
+          allowPrivilegeEscalation: {{ .Values.containerSecurityContext.allowPrivilegeEscalation }}
+          readOnlyRootFilesystem: {{ .Values.containerSecurityContext.readOnlyRootFilesystem }}
+          {{- with .Values.containerSecurityContext.capabilities }}
+          capabilities:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.containerSecurityContext.seccompProfile }}
+          seccompProfile:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+        env:
+        - name: LOG_LEVEL
+          value: {{ .Values.logging.level | quote }}
+        - name: HEALTH_PORT
+          value: "8080"
+        - name: TOOL_TIMEOUT
+          value: {{ .Values.worker.toolTimeout | quote }}
+        - name: MAX_PAYLOAD_BYTES
+          value: {{ .Values.worker.maxPayloadBytes | quote }}
+        - name: K8S_MCP_REQUIRE_AUTH
+          value: "false"
+        - name: ENABLE_CLUSTER_SCOPE_OPS
+          value: {{ .Values.worker.enableClusterScopeOps | quote }}
+        - name: ALLOWED_NAMESPACES
+          value: {{ .Values.worker.allowedNamespaces | quote }}
+        {{- range .Values.extraEnv }}
+        - name: {{ .name }}
+          value: {{ .value | quote }}
+        {{- end }}
+        ports:
+        - containerPort: 8080
+          name: http
+        {{- if .Values.livenessProbe.enabled }}
+        livenessProbe:
+          httpGet:
+            path: {{ .Values.livenessProbe.path }}
+            port: 8080
+          initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+          failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
+        {{- end }}
+        {{- if .Values.readinessProbe.enabled }}
+        readinessProbe:
+          httpGet:
+            path: {{ .Values.readinessProbe.path }}
+            port: 8080
+          initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
+          failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
+        {{- end }}
+        {{- if .Values.resources }}
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
+        {{- end }}
