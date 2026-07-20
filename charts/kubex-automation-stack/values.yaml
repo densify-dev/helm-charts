@@ -95,7 +95,7 @@ kubex-connector:
   image:
     tag: 0.1.9-rc.3
   forwarderConfigMap:
-    name: kubex-kubex-stack
+    name: kubex-connector-runtime
   forwarderCredentialsSecretRef:
     name: densify-api-secret
 

@@ -1,0 +1,25 @@
+{{- $connectorValues := index .Values "kubex-connector" | default dict -}}
+{{- $enabled := $connectorValues.enabled | default false -}}
+{{- if $enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kubex-connector-runtime
+  namespace: {{ template "common.namespace" . }}
+  labels:
+    app: kubex-connector
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    {{- with $connectorValues.extraLabels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+  {{- with $connectorValues.extraAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+data:
+  kubex_host: {{ include "common.kubexHost" . | quote }}
+  kubex_tenant_id: {{ (index (splitList "." (include "common.kubexHost" .)) 0) | quote }}
+  kubex_cluster_name: {{ ((first (fromYamlArray (include "common.kubexClusters" .))).name) | quote }}
+{{- end }}
