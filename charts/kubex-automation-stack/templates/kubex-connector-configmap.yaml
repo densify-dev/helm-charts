@@ -1,5 +1,16 @@
 {{- $connectorValues := index .Values "kubex-connector" | default dict -}}
 {{- $enabled := $connectorValues.enabled | default false -}}
+{{- $forwarder := index .Values "container-optimization-data-forwarder" | default dict -}}
+{{- $config := $forwarder.config | default dict -}}
+{{- $forwarderConfig := $config.forwarder | default dict -}}
+{{- $densify := $forwarderConfig.densify | default dict -}}
+{{- $url := $densify.url | default dict -}}
+{{- $host := trim (default "" $url.host) -}}
+{{- $clusters := $config.clusters | default list -}}
+{{- $cluster := dict -}}
+{{- if gt (len $clusters) 0 -}}
+{{- $cluster = first $clusters -}}
+{{- end -}}
 {{- if $enabled }}
 apiVersion: v1
 kind: ConfigMap
@@ -19,7 +30,7 @@ metadata:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 data:
-  kubex_host: {{ include "common.kubexHost" . | quote }}
-  kubex_tenant_id: {{ (index (splitList "." (include "common.kubexHost" .)) 0) | quote }}
-  kubex_cluster_name: {{ ((first (fromYamlArray (include "common.kubexClusters" .))).name) | quote }}
+  kubex_host: {{ $host | quote }}
+  kubex_tenant_id: {{ (index (splitList "." $host) 0) | quote }}
+  kubex_cluster_name: {{ (default "" $cluster.name) | quote }}
 {{- end }}
