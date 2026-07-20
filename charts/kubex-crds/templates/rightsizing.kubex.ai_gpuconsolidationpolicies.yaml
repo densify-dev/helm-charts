@@ -51,7 +51,7 @@ spec:
                       EXPERIMENTAL: this acknowledgement value is required for unstable GPU/KAI behavior.
                     enum:
                     - none
-                    - v1alpha1-2026-04
+                    - v1alpha1-2026-07
                     type: string
                 required:
                 - gpuKaiContract

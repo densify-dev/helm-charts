@@ -5,7 +5,7 @@ This guide shows how to configure GPU sharing with KAI and Kubex Automation Engi
 Tested with KAI `v0.12.16`.
 
 > [!IMPORTANT]
-> GPU/KAI fields and related custom resources are experimental and subject to breaking changes. Set `spec.experimental.gpuKaiContract: v1alpha1-2026-04` on GPU/KAI resources.
+> GPU/KAI fields and related custom resources are experimental and subject to breaking changes. Set `spec.experimental.gpuKaiContract: v1alpha1-2026-07` on GPU/KAI resources.
 
 ## Prerequisites
 
@@ -84,7 +84,7 @@ metadata:
 spec:
   experimental:
     # Required contract version for the current experimental GPU/KAI integration.
-    gpuKaiContract: v1alpha1-2026-04
+    gpuKaiContract: v1alpha1-2026-07
   enablement:
     # Convert matching workloads to the KAI GPU-sharing flow.
     overrideScheduler: "kai"
@@ -137,7 +137,7 @@ metadata:
 spec:
   experimental:
     # Required contract version for the current experimental GPU/KAI integration.
-    gpuKaiContract: v1alpha1-2026-04
+    gpuKaiContract: v1alpha1-2026-07
   scope:
     namespaceSelector:
       operator: In
@@ -229,7 +229,7 @@ Example math:
 
 Behavior:
 
-- requires experimental contract: `spec.experimental.gpuKaiContract: v1alpha1-2026-04`
+- requires experimental contract: `spec.experimental.gpuKaiContract: v1alpha1-2026-07`
 - only runs for KAI GPU request admission mutation
 - only mutates detected vLLM containers
 - updates existing `--gpu-memory-utilization=<value>`
@@ -266,7 +266,7 @@ metadata:
   name: gpu-consolidation-pool-a
 spec:
   experimental:
-    gpuKaiContract: v1alpha1-2026-04
+    gpuKaiContract: v1alpha1-2026-07
   nodeSelector:
     matchLabels:
       cloud.google.com/gke-accelerator: nvidia-tesla-t4

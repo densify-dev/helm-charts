@@ -323,7 +323,7 @@ crds: {}
 # Experimental feature acknowledgements for unstable APIs.
 experimental:
   # -- Required acknowledgement token for GPU/KAI experimental fields.
-  gpuKaiContract: "v1alpha1-2026-04"
+  gpuKaiContract: "v1alpha1-2026-07"
 
 # Global configuration defaults
 # These will be used to create the default GlobalConfiguration CR
