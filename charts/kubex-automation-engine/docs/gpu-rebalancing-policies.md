@@ -1,6 +1,6 @@
 # GPU Rebalancing Policies
 
-> Experimental: GPU/KAI fields and related custom resources are subject to breaking changes. Set `spec.experimental.gpuKaiContract: v1alpha1-2026-04`.
+> Experimental: GPU/KAI fields and related custom resources are subject to breaking changes. Set `spec.experimental.gpuKaiContract: v1alpha1-2026-07`.
 
 `GpuRebalancingPolicy` and `ClusterGpuRebalancingPolicy` emit GPU rebalancing recommendations (upsize and downsize) from Prometheus utilization.
 
@@ -37,7 +37,7 @@ metadata:
   namespace: default
 spec:
   experimental:
-    gpuKaiContract: v1alpha1-2026-04
+    gpuKaiContract: v1alpha1-2026-07
   scope:
     labelSelector:
       matchLabels:
@@ -89,7 +89,7 @@ metadata:
   name: gpu-rebalance-cluster
 spec:
   experimental:
-    gpuKaiContract: v1alpha1-2026-04
+    gpuKaiContract: v1alpha1-2026-07
   scope:
     namespaceSelector:
       operator: In

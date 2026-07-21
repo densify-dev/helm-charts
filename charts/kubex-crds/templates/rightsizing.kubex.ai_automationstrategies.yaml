@@ -180,8 +180,8 @@ spec:
                               Any bound omitted for a specific container falls back to the usage-level floor/ceiling.
                             type: object
                           downsize:
-                            default: true
-                            description: downsize controls whether resource downsizing
+                            default: false
+                            description: downsize controls whether GPU request downsizing
                               actions are permitted.
                             type: boolean
                           floor:
@@ -189,13 +189,13 @@ spec:
                               for this usage.
                             type: string
                           setFromUnspecified:
-                            default: true
+                            default: false
                             description: setFromUnspecified controls whether an unspecified
-                              resource value may be set.
+                              GPU request may be set.
                             type: boolean
                           upsize:
-                            default: true
-                            description: upsize controls whether resource upsizing
+                            default: false
+                            description: upsize controls whether GPU request upsizing
                               actions are permitted.
                             type: boolean
                         type: object
@@ -330,7 +330,7 @@ spec:
                       EXPERIMENTAL: this acknowledgement value is required for unstable GPU/KAI behavior.
                     enum:
                     - none
-                    - v1alpha1-2026-04
+                    - v1alpha1-2026-07
                     type: string
                 required:
                 - gpuKaiContract
