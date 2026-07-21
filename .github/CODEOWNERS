@@ -1,2 +1,6 @@
 # Default owner for everything in the repo
 * @densify-dev/cluster-kit
+
+# Kubex AI charts
+/charts/kubex-connector/ @gasarekubex @shsma
+/charts/kubex-ai-cdi/ @gasarekubex @shsma
