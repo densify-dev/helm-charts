@@ -1,6 +1,6 @@
 # Global Configuration
 
-> Experimental: GPU/KAI-related fields in this resource are subject to breaking changes. When using them, set `spec.experimental.gpuKaiContract: v1alpha1-2026-04`.
+> Experimental: GPU/KAI-related fields in this resource are subject to breaking changes. When using them, set `spec.experimental.gpuKaiContract: v1alpha1-2026-07`.
 
 `GlobalConfiguration` defines cluster-wide controller behavior that applies across strategies and policies.
 

@@ -2,6 +2,21 @@
 
 All notable changes to the Kubex Automation Engine Helm chart will be documented in this file.
 
+## [1.8.0] - 2026-07-22
+
+### Breaking
+- **[GPU enablement defaults and experimental contract](./BREAKING.md#2026-07-20---gpu-enablement-defaults-and-experimental-contract)**: GPU request actions now default to disabled. `spec.enablement.gpu.requests.downsize`, `.upsize`, and `.setFromUnspecified` changed from `true` to `false`. The GPU/KAI experimental contract changed to `v1alpha1-2026-07`; the previous contract is no longer accepted. Affects `AutomationStrategy`, `ClusterAutomationStrategy`, `GpuRebalancingPolicy`, `ClusterGpuRebalancingPolicy`, and `GpuConsolidationPolicy`.
+  - After upgrading the CRDs, update `spec.experimental.gpuKaiContract` from `v1alpha1-2026-04` to `v1alpha1-2026-07` in every affected resource.
+  - For `AutomationStrategy`/`ClusterAutomationStrategy`, explicitly set each desired GPU action under `spec.enablement.gpu.requests` to `true` if you rely on GPU request resizing. GPU policy kinds only need the contract update.
+  - Reapply affected resources after making these changes.
+
+### Added
+- Rollback monitoring now reopens automatically when a newer replacement pod appears carrying the same recommendation and matching resources, so a pod recreated by eviction, in-place resize, or a manual restart resumes being tracked instead of starting a brand-new monitoring turn.
+- `RollbackPolicy`/`ClusterRollbackPolicy` gain `spec.enableMonitoringReopen` (default `true`) to opt out of this reopen behavior for a given policy.
+- Manifest-level resource sizing is now reported to the Kubex backend, giving visibility into a workload's declared (manifest) resources alongside its live/adopted values.
+
+---
+
 ## [1.7.0] - 2026-07-14
 
 ### Added
