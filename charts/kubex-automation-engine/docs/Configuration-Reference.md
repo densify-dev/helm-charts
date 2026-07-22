@@ -290,7 +290,7 @@ Use [Global Configuration Reference](./Global-Configuration.md) for the CR field
 | `globalConfiguration.webhookProbe.resources` | `{}` | Resource requests and limits for the dry-run webhook probe container |
 | `globalConfiguration.webhookProbe.podSecurityContext` | `{}` | Pod security context for the dry-run webhook probe Pod |
 | `globalConfiguration.webhookProbe.securityContext` | `{}` | Container security context for the dry-run webhook probe container |
-| `experimental.gpuKaiContract` | `v1alpha1-2026-04` | Required acknowledgement token for experimental GPU/KAI CR fields rendered by the chart |
+| `experimental.gpuKaiContract` | `v1alpha1-2026-07` | Required acknowledgement token for experimental GPU/KAI CR fields rendered by the chart |
 
 Webhook behavior notes:
 
