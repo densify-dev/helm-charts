@@ -2,29 +2,39 @@
 {{- if not .Values.webhook.certManager.enabled -}}
 {{- $_ := include "kubex-automation-engine.gen-certs-data" . -}}
 {{- end }}
+{{- $root := . }}
+{{- $configs := list (dict "namePrefix" .Values.webhook.podMutation.namePrefix) }}
+{{- if .Values.webhook.podMutation.additionalWebhook.enabled }}
+{{- if eq .Values.webhook.podMutation.additionalWebhook.namePrefix .Values.webhook.podMutation.namePrefix }}
+{{- fail "webhook.podMutation.additionalWebhook.namePrefix must differ from webhook.podMutation.namePrefix when additionalWebhook is enabled" }}
+{{- end }}
+{{- $configs = prepend $configs (dict "namePrefix" .Values.webhook.podMutation.additionalWebhook.namePrefix) }}
+{{- end }}
+{{- range $config := $configs }}
+---
 apiVersion: admissionregistration.k8s.io/v1
 kind: MutatingWebhookConfiguration
 metadata:
-  name: {{ printf "%skubex-mutating-webhook-configuration" .Values.webhook.podMutation.namePrefix }}
+  name: {{ printf "%skubex-mutating-webhook-configuration" $config.namePrefix }}
   labels:
-    {{- include "kubex-automation-engine.labels" . | nindent 4 }}
-  {{- if .Values.webhook.certManager.enabled }}
+    {{- include "kubex-automation-engine.labels" $root | nindent 4 }}
+  {{- if $root.Values.webhook.certManager.enabled }}
   annotations:
-    cert-manager.io/inject-ca-from: {{ include "kubex-automation-engine.namespace" . }}/{{ include "kubex-automation-engine.fullname" . }}-serving-cert
+    cert-manager.io/inject-ca-from: {{ include "kubex-automation-engine.namespace" $root }}/{{ include "kubex-automation-engine.fullname" $root }}-serving-cert
   {{- end }}
 webhooks:
 - admissionReviewVersions:
   - v1
   clientConfig:
-    {{- if not .Values.webhook.certManager.enabled }}
-    caBundle: {{ .caCert }}
+    {{- if not $root.Values.webhook.certManager.enabled }}
+    caBundle: {{ $root.caCert }}
     {{- end }}
     service:
-      name: {{ include "kubex-automation-engine.fullname" . }}-webhook-service
-      namespace: {{ include "kubex-automation-engine.namespace" . }}
+      name: {{ include "kubex-automation-engine.fullname" $root }}-webhook-service
+      namespace: {{ include "kubex-automation-engine.namespace" $root }}
       path: /mutate--v1-pod
   failurePolicy: Ignore
-  name: {{ printf "%smpod-rightsizing-recommendations.kubex.ai" .Values.webhook.podMutation.namePrefix }}
+  name: {{ printf "%smpod-rightsizing-recommendations.kubex.ai" $config.namePrefix }}
   rules:
   - apiGroups:
     - ""
@@ -35,5 +45,6 @@ webhooks:
     resources:
     - pods
   sideEffects: None
-  timeoutSeconds: {{ .Values.webhook.timeoutSeconds }}
+  timeoutSeconds: {{ $root.Values.webhook.timeoutSeconds }}
+{{- end }}
 {{- end }}
