@@ -3,6 +3,22 @@
 All notable changes to the kubex-automation-stack chart will be documented in this file.
 
 
+## [1.0.19] - 2026-07-14
+
+### Added
+- Added Linux OS requirement to nodeSelector for all stack components to ensure proper scheduling on Linux nodes
+- Added configurable nodeSelector to gpu-process-exporter chart
+- Added ephemeral storage metrics scaling configurations for all cluster size overlays (xsmall/small/medium/large)
+  - Configured polling intervals, API rate limits, and concurrency settings scaled by cluster size
+  - Added resource requests and limits for ephemeral storage metrics collector
+  - Enabled garbage collection for medium and large clusters to handle pod churn
+  - Extended probe timeouts for medium and large clusters to prevent false restarts during long polling cycles
+
+### Changed
+- Updated gpu-process-exporter dependency to v1.0.1
+- Updated Prometheus chart dependency to v29.17.0
+- Updated Beyla chart dependency to v1.16.10
+
 ## [1.0.18] - 2026-07-03
 
 ### Security
@@ -14,7 +30,7 @@ All notable changes to the kubex-automation-stack chart will be documented in th
 ## [1.0.17] - 2026-06-23
 
 ### Changed
-- Upgraded Prometheus chart dependency to v29.13.0 to overcome KSM sharding issues with v2.19.0
+- Upgraded Prometheus chart dependency to v29.14.0 to overcome KSM sharding issues with v2.19.0
 
 ## [1.0.16] - 2026-06-11
 
