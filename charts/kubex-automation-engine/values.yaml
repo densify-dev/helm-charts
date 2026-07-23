@@ -255,6 +255,12 @@ webhook:
   podMutation:
     # -- Prefix added to mutating webhook object and webhook entry names. Empty string removes default `zzz-` prefix. Prefix may contain lowercase letters, digits, and hyphens, and must start with letter or digit. Changing it renames webhook objects on upgrade.
     namePrefix: "zzz-"
+    # -- Additional early pod mutation webhook configuration.
+    additionalWebhook:
+      # -- Register an additional early pod mutation webhook so Kubex can restore resources after intervening mutators.
+      enabled: false
+      # -- Prefix added to the additional mutating webhook object and webhook entry names.
+      namePrefix: "000-"
   # -- Certificate manager configuration
   certManager:
     # -- Enable cert-manager for webhook certificates (if false, uses self-signed)
@@ -340,7 +346,7 @@ globalConfiguration:
   rescanInterval: "6h"
   # -- Kubex API request timeout
   # Can also use deployment.controllerEnv.apiRequestTimeout for backward compatibility
-  kubexAPIRequestTimeout: "30s"
+  kubexAPIRequestTimeout: "60s"
   # -- How long the pod admission webhook retries owner recommendation resolution
   webhookOwnerResolutionRetryTimeout: "1s"
   # -- Mutation log send interval
@@ -415,7 +421,7 @@ deployment:
     # Timing configuration → Maps to GlobalConfiguration
     recommendationsFetchInterval: "1h" # → globalConfiguration.recommendationReloadInterval
     podScanInterval: "6h" # → globalConfiguration.rescanInterval
-    apiRequestTimeout: "30s" # → globalConfiguration.kubexAPIRequestTimeout
+    apiRequestTimeout: null
 
     # Resize method configuration → Maps to AutomationStrategy.inPlaceResize
     suppressInPlaceResizing: "false" # → automationStrategy.inPlaceResize.enabled (inverted)

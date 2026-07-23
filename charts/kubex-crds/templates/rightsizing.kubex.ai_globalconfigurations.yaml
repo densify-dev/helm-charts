@@ -76,7 +76,7 @@ spec:
                     type: string
                 type: object
               kubexAPIRequestTimeout:
-                default: 30s
+                default: 60s
                 description: kubexAPIRequestTimeout controls timeout for outbound
                   requests to the Kubex API.
                 type: string

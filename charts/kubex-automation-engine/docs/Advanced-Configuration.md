@@ -37,7 +37,7 @@ spec:
   recommendationReloadInterval: 1h
   rescanInterval: 6h
   mutationLogInterval: 5m
-  kubexAPIRequestTimeout: 30s
+  kubexAPIRequestTimeout: 60s
   automationEnabled: true
   respectKubexAutomation: true
   protectedNamespacePatterns:
