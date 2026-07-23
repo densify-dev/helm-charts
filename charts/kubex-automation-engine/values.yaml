@@ -255,6 +255,12 @@ webhook:
   podMutation:
     # -- Prefix added to mutating webhook object and webhook entry names. Empty string removes default `zzz-` prefix. Prefix may contain lowercase letters, digits, and hyphens, and must start with letter or digit. Changing it renames webhook objects on upgrade.
     namePrefix: "zzz-"
+    # -- Additional early pod mutation webhook configuration.
+    additionalWebhook:
+      # -- Register an additional early pod mutation webhook so Kubex can restore resources after intervening mutators.
+      enabled: false
+      # -- Prefix added to the additional mutating webhook object and webhook entry names.
+      namePrefix: "000-"
   # -- Certificate manager configuration
   certManager:
     # -- Enable cert-manager for webhook certificates (if false, uses self-signed)
