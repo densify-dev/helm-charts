@@ -8,6 +8,7 @@ stack:
 container-optimization-data-forwarder:
   assignedUIDs: true
   job:
+    enable: false
     checkPrometheusReady: false
   config:
     prometheus:
@@ -36,6 +37,22 @@ k8s-ephemeral-storage-metrics:
     enable: true
     interval: 30s
     scrapeTimeout: 10s
+
+kubex-connector:
+  containerSecurityContext:
+    capabilities:
+      drop:
+        - ALL
+    seccompProfile:
+      type: RuntimeDefault
+
+kubex-ai-cdi:
+  containerSecurityContext:
+    capabilities:
+      drop:
+        - ALL
+    seccompProfile:
+      type: RuntimeDefault
 
 gpu-process-exporter:
   enabled: false

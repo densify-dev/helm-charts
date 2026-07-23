@@ -1,13 +1,21 @@
 apiVersion: v2
 description: Kubex Collection Stack
 name: kubex-automation-stack
-version: 1.0.18
+version: 1.0.19
 type: application
 icon: https://kubex.ai/wp-content/uploads/kubex-logo-landscape.svg
 dependencies:
   - name: container-optimization-data-forwarder
     version: "4.*.*"
     repository: https://densify-dev.github.io/helm-charts
+  - name: kubex-connector
+    version: "0.1.*"
+    repository: https://densify-dev.github.io/helm-charts
+    condition: kubex-connector.enabled
+  - name: kubex-ai-cdi
+    version: "0.1.*"
+    repository: https://densify-dev.github.io/helm-charts
+    condition: kubex-ai-cdi.enabled
   - name: prometheus
     version: "29.*.*"
     repository: https://prometheus-community.github.io/helm-charts

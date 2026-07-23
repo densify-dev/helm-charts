@@ -6,6 +6,76 @@
 openshift:
   enabled: false
 
+rbac:
+  create: true
+  permissions:
+    cdi:
+      serviceAccount:
+        create: true
+        name: kubex-ai-cdi-sa
+      clusterRole:
+        create: true
+        name: kubex-ai-cdi-reader
+      clusterRoleBinding:
+        create: true
+        name: kubex-ai-cdi-reader
+      role:
+        create: false
+        name: kubex-ai-cdi-reader
+      roleBinding:
+        create: false
+        name: kubex-ai-cdi-reader
+      rules:
+        core:
+          enabled: true
+          resources: ["pods", "services", "configmaps", "namespaces", "nodes", "events"]
+          verbs: ["get", "list"]
+        podLogs:
+          enabled: true
+          resources: ["pods/log"]
+          verbs: ["get"]
+        workloads:
+          enabled: true
+          resources: ["deployments", "daemonsets", "statefulsets", "replicasets"]
+          verbs: ["get", "list"]
+        # Automatically enable OpenShift permissions when openshift mode is on.
+        openshift:
+          enabled: null
+          resources: ["machines", "machinesets", "machinedeployments", "machinehealthchecks", "controlplanemachinesets"]
+          verbs: ["get", "list"]
+        karpenter:
+          enabled: true
+          resources: ["nodepools", "nodeclaims"]
+          verbs: ["get", "list"]
+        karpenterAWS:
+          enabled: true
+          resources: ["ec2nodeclasses"]
+          verbs: ["get", "list"]
+        rollouts:
+          enabled: true
+          resources: ["rollouts", "analysisruns", "experiments"]
+          verbs: ["get", "list"]
+        kubexCRDs:
+          enabled: true
+          resources: ["automationstrategies", "clusterautomationstrategies", "clustergpurebalancingpolicies", "clusterproactivepolicies", "clusterrollbackpolicies", "clusterstaticpolicies", "globalconfigurations", "gpuconsolidationpolicies", "gpurebalancingpolicies", "podaffinitypolicies", "policyevaluations", "proactivepolicies", "rollbackpolicies", "staticpolicies"]
+          verbs: ["get", "list"]
+        selfSubjectReview:
+          enabled: true
+          resources: ["selfsubjectrulesreviews", "selfsubjectaccessreviews"]
+          verbs: ["create"]
+    connector:
+      serviceAccount:
+        create: false
+      clusterRole:
+        create: false
+      clusterRoleBinding:
+        create: false
+      role:
+        create: false
+      roleBinding:
+        create: false
+      rules: {}
+
 stack:
   densify:
     createSecret: true
@@ -17,6 +87,26 @@ gpu-process-exporter:
 
 node-labeler:
   enabled: false
+
+kubex-connector:
+  enabled: false
+  extraLabels: {}
+  extraAnnotations: {}
+  image:
+    tag: 0.1.9-rc.3
+  forwarderConfigMap:
+    name: kubex-connector-runtime
+  forwarderCredentialsSecretRef:
+    name: densify-api-secret
+
+kubex-ai-cdi:
+  enabled: false
+  extraLabels: {}
+  extraAnnotations: {}
+  image:
+    tag: 0.1.9-rc.3
+  rbac:
+    enabled: false
 
 container-optimization-data-forwarder:
   nameOverride: kubex-stack
@@ -34,6 +124,7 @@ container-optimization-data-forwarder:
       densify:
         url:
           UserSecretName: densify-api-secret
+    clusters: []
     prometheus:
       url:
         host: kubex-prometheus-server

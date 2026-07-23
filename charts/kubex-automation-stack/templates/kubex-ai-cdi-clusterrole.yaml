@@ -1,0 +1,111 @@
+{{- $rbac := .Values.rbac | default dict -}}
+{{- $cdi := $rbac.permissions.cdi | default dict -}}
+{{- $rules := $cdi.rules | default dict -}}
+{{- $clusterRole := $cdi.clusterRole | default dict -}}
+{{- $cdiValues := index .Values "kubex-ai-cdi" | default dict -}}
+{{- $cdiRbac := $cdiValues.rbac | default dict -}}
+{{- $extraLabels := $cdiValues.extraLabels | default dict -}}
+{{- $extraAnnotations := $cdiValues.extraAnnotations | default dict -}}
+{{- if and $cdiValues.enabled $rbac.create (not ($cdiRbac.enabled | default false)) (dig "create" false $clusterRole) }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ default "kubex-ai-cdi-reader" (dig "name" "" $clusterRole) }}
+  labels:
+    app: kubex-ai-cdi
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    {{- if $extraLabels }}
+    {{- toYaml $extraLabels | nindent 4 }}
+    {{- end }}
+  {{- if $extraAnnotations }}
+  annotations:
+    {{- toYaml $extraAnnotations | nindent 4 }}
+  {{- end }}
+rules:
+{{- with $rules.core }}
+{{- if .enabled }}
+- apiGroups: [""]
+  resources:
+    {{- toYaml (.resources | default (list)) | nindent 4 }}
+  verbs:
+    {{- toYaml (.verbs | default (list)) | nindent 4 }}
+{{- end }}
+{{- end }}
+{{- with $rules.podLogs }}
+{{- if .enabled }}
+- apiGroups: [""]
+  resources:
+    {{- toYaml (.resources | default (list)) | nindent 4 }}
+  verbs:
+    {{- toYaml (.verbs | default (list)) | nindent 4 }}
+{{- end }}
+{{- end }}
+{{- with $rules.workloads }}
+{{- if .enabled }}
+- apiGroups: ["apps"]
+  resources:
+    {{- toYaml (.resources | default (list)) | nindent 4 }}
+  verbs:
+    {{- toYaml (.verbs | default (list)) | nindent 4 }}
+{{- end }}
+{{- end }}
+{{- with $rules.rollouts }}
+{{- if .enabled }}
+- apiGroups: ["argoproj.io"]
+  resources:
+    {{- toYaml (.resources | default (list)) | nindent 4 }}
+  verbs:
+    {{- toYaml (.verbs | default (list)) | nindent 4 }}
+{{- end }}
+{{- end }}
+{{- $openshiftRule := $rules.openshift | default dict -}}
+{{- $openshiftEnabled := dig "enabled" nil $openshiftRule -}}
+{{- if eq $openshiftEnabled nil -}}
+{{- $openshiftEnabled = .Values.openshift.enabled -}}
+{{- end -}}
+{{- if $openshiftEnabled }}
+- apiGroups: ["machine.openshift.io"]
+  resources:
+    {{- toYaml ((dig "resources" (list) $openshiftRule)) | nindent 4 }}
+  verbs:
+    {{- toYaml ((dig "verbs" (list) $openshiftRule)) | nindent 4 }}
+{{- end }}
+{{- with $rules.karpenter }}
+{{- if .enabled }}
+- apiGroups: ["karpenter.sh"]
+  resources:
+    {{- toYaml (.resources | default (list)) | nindent 4 }}
+  verbs:
+    {{- toYaml (.verbs | default (list)) | nindent 4 }}
+{{- end }}
+{{- end }}
+{{- with $rules.karpenterAWS }}
+{{- if .enabled }}
+- apiGroups: ["karpenter.k8s.aws"]
+  resources:
+    {{- toYaml (.resources | default (list)) | nindent 4 }}
+  verbs:
+    {{- toYaml (.verbs | default (list)) | nindent 4 }}
+{{- end }}
+{{- end }}
+{{- with $rules.kubexCRDs }}
+{{- if .enabled }}
+- apiGroups: ["rightsizing.kubex.ai"]
+  resources:
+    {{- toYaml (.resources | default (list)) | nindent 4 }}
+  verbs:
+    {{- toYaml (.verbs | default (list)) | nindent 4 }}
+{{- end }}
+{{- end }}
+{{- with $rules.selfSubjectReview }}
+{{- if .enabled }}
+- apiGroups: ["authorization.k8s.io"]
+  resources:
+    {{- toYaml (.resources | default (list)) | nindent 4 }}
+  verbs:
+    {{- toYaml (.verbs | default (list)) | nindent 4 }}
+{{- end }}
+{{- end }}
+{{- end }}
