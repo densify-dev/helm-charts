@@ -12,6 +12,7 @@ Tested with KAI `v0.12.16`.
 - KAI is already installed in the cluster. [KAI installation instructions](https://github.com/kai-scheduler/KAI-Scheduler#installation-methods)
   - NOTE: Kubex has been tested with KAI version v0.12.16
 - `kubex-crds`, `kubex-automation-engine` and `kubex-automation-stack` are already installed
+  - The `kubex-automation-engine` release must enable `webhook.podMutation.additionalWebhook.enabled` as shown below.
   - When using `ClusterGpuRebalancingPolicy` or `GpuRebalancingPolicy`, Prometheus must be available for GPU metrics, typically via `kubex-automation-stack`.
   - If Prometheus runs at different endpoint, set `globalConfiguration.prometheus.url` to custom URL.
 
@@ -21,6 +22,19 @@ This guide works with either:
 - an existing KAI installation
 
 For existing KAI-managed workloads, Kubex Automation Engine can update the `gpu-fraction` annotation without replacing the existing `kai.scheduler/queue` label.
+
+### Required Kubex webhook values
+
+KAI relies on Kubex-updated resource information when making admission decisions. Before deploying KAI-managed workloads from this guide, configure the `kubex-automation-engine` Helm release with the additional webhook enabled:
+
+```yaml
+webhook:
+  podMutation:
+    additionalWebhook:
+      enabled: true
+```
+
+This setting is required for the KAI integration. The early Kubex invocation applies selected resources and KAI metadata such as `gpu-fraction`, queue label, and scheduler selection before KAI makes its decision. The late invocation restores Kubex-selected resources after other mutators run while keeping metadata idempotent.
 
 ### New KAI installation
 
