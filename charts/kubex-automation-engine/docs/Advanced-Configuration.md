@@ -37,7 +37,7 @@ spec:
   recommendationReloadInterval: 1h
   rescanInterval: 6h
   mutationLogInterval: 5m
-  kubexAPIRequestTimeout: 30s
+  kubexAPIRequestTimeout: 60s
   automationEnabled: true
   respectKubexAutomation: true
   protectedNamespacePatterns:
@@ -52,25 +52,37 @@ spec:
 
 ## Pause Controls
 
-Use pause annotations to temporarily or permanently block automation.
+Use pause annotations to control when and how automation applies to your workloads.
 
-Pod-scoped whole-pod pause:
+### Overview
 
-- `rightsizing.kubex.ai/pause-until: <RFC3339|infinite>`
-- `rightsizing.kubex.ai/pause-reason: <string>`
+There are two types of pause controls with different behaviors:
 
-Container-scoped skip:
+| Annotation | Scope | Effect | Appears In |
+|------------|-------|--------|------------|
+| `rightsizing.kubex.ai/pause-until` | Whole pod | Blocks **all** automation for the pod | `failedChecks` as `pause-active` |
+| `rightsizing.kubex.ai/skip-containers` | Specific containers | Removes actions **only** for named containers; other containers still resized | `appliedFilters` as `container-skip-active` |
 
-- `rightsizing.kubex.ai/skip-containers: "app,sidecar"`
+**Key difference**: `pause-until` is an emergency stop for the entire pod. `skip-containers` is a surgical filter for individual containers.
 
-Supported values for every `pause-until` key:
+### `pause-until` - Block Entire Pod
 
-- RFC3339 timestamp
-- `infinite`
+Use `pause-until` to completely stop all automation for a pod.
 
-Pod example:
+**Supported values:**
+- RFC3339 timestamp (e.g., `2026-04-01T00:00:00Z`) - pauses until that time
+- `infinite` - pauses indefinitely
 
+**Where you can set it:**
+- Pod template (in Deployment, StatefulSet, etc.)
+- Namespace (blocks all pods in that namespace)
+
+**Example: Pause pod during maintenance**
 ```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app
 spec:
   template:
     metadata:
@@ -79,18 +91,7 @@ spec:
         rightsizing.kubex.ai/pause-reason: "maintenance window"
 ```
 
-Container example:
-
-```yaml
-spec:
-  template:
-    metadata:
-      annotations:
-        rightsizing.kubex.ai/skip-containers: "app,sidecar"
-```
-
-Namespace example:
-
+**Example: Pause entire namespace**
 ```yaml
 apiVersion: v1
 kind: Namespace
@@ -101,31 +102,214 @@ metadata:
     rightsizing.kubex.ai/pause-reason: "quarter-end freeze"
 ```
 
-Behavior:
+**Behavior:**
+- Blocks **both** webhook mutations and controller-side proactive execution for the entire pod
+- Time-based pauses automatically resume after expiration
+- Namespace pauses affect all pods in that namespace, even if the pod itself has no annotation
+- `pause-reason` is optional but recommended for clarity in logs and events
 
-- pod-level `rightsizing.kubex.ai/pause-until` blocks whole pod and appears in `rightsizing summary.failedChecks` as `pause-active`
-- `rightsizing.kubex.ai/skip-containers` prunes only matching container actions and appears in `rightsizing summary.appliedFilters` as `container-skip-active`
-- sibling container actions still proceed when only one container is skipped
-- pod annotation key beats owner annotation; no merge across pod and owners
-- empty pod `skip-containers` value means skip none and disables owner fallback for that pod
-- nearest supported owner with non-empty annotation wins when pod key is absent; no merge across multiple owners
-- empty owner `skip-containers` values are ignored
-- new pods do not inherit `skip-containers`; it is resolved directly from pod or owner at evaluation time
-- existing owned pods are not reconciled to copy `skip-containers`
-- pods in paused namespace are skipped even when pod itself has no pause annotation
-- namespace pause annotations are evaluated at runtime only and are not copied onto pods
-- namespace pause supports only pod-scoped keys
-- webhook mutation skips whole pod only for pod-level or namespace-level pauses; `skip-containers` still allows non-skipped sibling mutations
-- controller-side proactive execution skips whole pod only for pod-level or namespace-level pauses; `skip-containers` filters matching actions only
-- time-based pauses automatically resume after expiration
+### `skip-containers` - Skip Specific Containers
 
-Notes:
+Use `skip-containers` to prevent automation for specific containers while allowing other containers in the same pod to be resized.
 
-- pod-local pause annotations are still supported
-- `skip-containers` can be set on pod or supported workload owner, but is not propagated or stored as inherited control state
-- namespace-local pause annotations use same `rightsizing.kubex.ai/pause-reason` message format in `rightsizing summary` failed checks
-- when pause annotation was inherited from workload owner, controller tracks internal inheritance state so it can safely remove inherited value later
-- if pause annotation exists only on pod and was not inherited, controller treats it as pod-local and does not remove it during workload reconciliation
+**Format:** Comma-separated list of container names (e.g., `"app,sidecar"`)
+
+**Where you can set it:**
+- Pod template (in Deployment, StatefulSet, etc.)
+- Workload owner (Deployment, StatefulSet, etc.)
+- **NOT supported** on Namespace
+
+**Example: Skip specific containers**
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app
+spec:
+  template:
+    metadata:
+      annotations:
+        rightsizing.kubex.ai/skip-containers: "app,sidecar"
+    spec:
+      containers:
+      - name: app          # ← Will NOT be resized
+      - name: sidecar      # ← Will NOT be resized
+      - name: proxy        # ← Will still be resized
+```
+
+**Behavior:**
+- Only removes actions for the named containers
+- Other containers in the same pod continue to be resized normally
+- Works with both webhook mutations and controller-side proactive execution
+- Does **not** block the entire pod - only filters specific container actions
+
+### How They Work Together
+
+If both annotations are present, `pause-until` takes precedence because it's evaluated first:
+
+```yaml
+annotations:
+  rightsizing.kubex.ai/pause-until: "infinite"      # ← Checked first (blocks whole pod)
+  rightsizing.kubex.ai/skip-containers: "app"       # ← Never evaluated (pod already blocked)
+```
+
+**Result:** Entire pod is blocked. The `skip-containers` annotation is ignored.
+
+If only `skip-containers` is present:
+
+```yaml
+annotations:
+  rightsizing.kubex.ai/skip-containers: "app,sidecar"
+```
+
+**Result:** Pod is processed normally, but actions for `app` and `sidecar` containers are removed. Other containers are still resized.
+
+### Resolution Rules
+
+#### `pause-until` Resolution
+
+1. **Namespace-level pause** - Blocks all pods in the namespace
+2. **Pod-level pause** - Blocks that specific pod
+3. **Owner-level pause** (Deployment, etc.) - Controller copies to owned pods and tracks inheritance
+
+**Pod annotations override everything:**
+- If a pod has `pause-until`, it uses that value (even if namespace or owner also has it)
+- If the annotation was inherited from an owner, the controller manages its lifecycle and can remove it later
+- If you manually set `pause-until` directly on a pod (not via owner), the controller treats it as user-managed and won't remove it
+
+#### `skip-containers` Resolution
+
+The controller uses this priority order to determine which containers to skip:
+
+**1. Pod annotation (if present) - Always wins**
+
+The behavior depends on whether the annotation exists and its value:
+
+- **Pod has `skip-containers: "app,sidecar"`** → Skip those containers (uses pod value)
+- **Pod has `skip-containers: ""`** (empty string) → Skip NO containers and stop looking (explicit override)
+- **Pod has no `skip-containers` annotation** → Continue to step 2 (check owners)
+
+**2. Owner fallback (only if pod has NO annotation)**
+
+If the pod template has no `skip-containers` annotation at all, the controller checks workload owners (Deployment, StatefulSet, etc.):
+
+- First owner with a **non-empty** value wins
+- Owners with **empty values** (`skip-containers: ""`) are **ignored** and the search continues
+- No merging across multiple owners
+
+**The key distinction:**
+- **Missing annotation on pod** = "I don't care, check my owner"
+- **Empty annotation on pod** (`skip-containers: ""`) = "I explicitly want to skip nothing, don't check my owner"
+- **Empty annotation on owner** (`skip-containers: ""`) = "Ignore this owner, keep searching for another owner"
+
+**Key points:**
+- `skip-containers` is **resolved at evaluation time** - it's not copied to pods
+- New pods do not inherit `skip-containers` - it's looked up each time from pod or owner
+- Namespace-level `skip-containers` is **not supported**
+
+### Examples
+
+**Example 1: Multi-container pod with selective skip**
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-app
+spec:
+  template:
+    metadata:
+      annotations:
+        rightsizing.kubex.ai/skip-containers: "nginx,redis"
+    spec:
+      containers:
+      - name: nginx        # Skipped
+      - name: redis        # Skipped
+      - name: app          # Still resized
+      - name: metrics      # Still resized
+```
+
+**Example 2: Pod overrides owner**
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app
+  annotations:
+    rightsizing.kubex.ai/skip-containers: "app,sidecar"  # Owner wants to skip these
+spec:
+  template:
+    metadata:
+      annotations:
+        rightsizing.kubex.ai/skip-containers: ""  # Pod explicitly skips NONE
+    spec:
+      containers:
+      - name: app          # Will be resized (pod annotation wins)
+      - name: sidecar      # Will be resized (pod annotation wins)
+```
+
+**Example 3: Empty owner value vs missing pod annotation**
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app
+  annotations:
+    rightsizing.kubex.ai/skip-containers: ""  # Empty owner value - ignored
+spec:
+  template:
+    metadata:
+      # Pod has NO skip-containers annotation (missing entirely)
+    spec:
+      containers:
+      - name: app          # Will be resized
+      - name: sidecar      # Will be resized
+```
+**Why?** Pod has no annotation (missing), so controller checks owner. Owner has empty value, which is ignored. No other owners found, so nothing is skipped.
+
+**Contrast with Example 2:** If the pod had `skip-containers: ""` (empty but present), all containers would still be resized, but for a different reason - the pod explicitly says "skip nothing" and blocks owner fallback.
+
+**Example 4: Combined pause and skip (pause wins)**
+```yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: production
+  annotations:
+    rightsizing.kubex.ai/pause-until: "infinite"  # Namespace-level pause
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app
+  namespace: production
+spec:
+  template:
+    metadata:
+      annotations:
+        rightsizing.kubex.ai/skip-containers: "sidecar"  # Never evaluated
+    spec:
+      containers:
+      - name: app          # Blocked by namespace pause
+      - name: sidecar      # Blocked by namespace pause
+```
+
+### Troubleshooting
+
+**Where annotations appear in summaries:**
+- `pause-until` failures → `rightsizing summary.failedChecks` with name `pause-active`
+- `skip-containers` filters → `rightsizing summary.appliedFilters` with name `container-skip-active`
+
+**Check if a pod is paused:**
+```bash
+kubectl get pod <pod-name> -o yaml | grep -A2 "pause-until"
+kubectl get namespace <namespace> -o yaml | grep -A2 "pause-until"
+```
+
+**Check which containers are skipped:**
+```bash
+kubectl get deployment <name> -o yaml | grep "skip-containers"
+kubectl get pod <pod-name> -o yaml | grep "skip-containers"
+```
 
 ## Safety Controls
 
