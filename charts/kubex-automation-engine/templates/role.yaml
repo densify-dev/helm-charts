@@ -135,13 +135,13 @@ rules:
   resources:
   - automationstrategies
   - clusterautomationstrategies
-  - clustergpurebalancingpolicies
+  - clustergpureactivepolicies
   - clusterproactivepolicies
   - clusterrollbackpolicies
   - clusterstaticpolicies
   - globalconfigurations
   - gpuconsolidationpolicies
-  - gpurebalancingpolicies
+  - gpureactivepolicies
   - podaffinitypolicies
   - policyevaluations
   - proactivepolicies
@@ -158,13 +158,13 @@ rules:
 - apiGroups:
   - rightsizing.kubex.ai
   resources:
-  - clustergpurebalancingpolicies/finalizers
+  - clustergpureactivepolicies/finalizers
   - clusterproactivepolicies/finalizers
   - clusterrollbackpolicies/finalizers
   - clusterstaticpolicies/finalizers
   - globalconfigurations/finalizers
   - gpuconsolidationpolicies/finalizers
-  - gpurebalancingpolicies/finalizers
+  - gpureactivepolicies/finalizers
   - podaffinitypolicies/finalizers
   - policyevaluations/finalizers
   - proactivepolicies/finalizers
@@ -175,13 +175,13 @@ rules:
 - apiGroups:
   - rightsizing.kubex.ai
   resources:
-  - clustergpurebalancingpolicies/status
+  - clustergpureactivepolicies/status
   - clusterproactivepolicies/status
   - clusterrollbackpolicies/status
   - clusterstaticpolicies/status
   - globalconfigurations/status
   - gpuconsolidationpolicies/status
-  - gpurebalancingpolicies/status
+  - gpureactivepolicies/status
   - podaffinitypolicies/status
   - policyevaluations/status
   - proactivepolicies/status

@@ -4,20 +4,20 @@ kind: CustomResourceDefinition
 metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.19.0
-  name: gpurebalancingpolicies.rightsizing.kubex.ai
+  name: clustergpureactivepolicies.rightsizing.kubex.ai
 spec:
   group: rightsizing.kubex.ai
   names:
-    kind: GpuRebalancingPolicy
-    listKind: GpuRebalancingPolicyList
-    plural: gpurebalancingpolicies
-    singular: gpurebalancingpolicy
-  scope: Namespaced
+    kind: ClusterGpuReactivePolicy
+    listKind: ClusterGpuReactivePolicyList
+    plural: clustergpureactivepolicies
+    singular: clustergpureactivepolicy
+  scope: Cluster
   versions:
   - name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: GpuRebalancingPolicy is the Schema for the gpurebalancingpolicies
+        description: ClusterGpuReactivePolicy is the Schema for the clustergpureactivepolicies
           API.
         properties:
           apiVersion:
@@ -38,10 +38,10 @@ spec:
           metadata:
             type: object
           spec:
-            description: spec defines the desired state of GpuRebalancingPolicy
+            description: spec defines the desired state of ClusterGpuReactivePolicy
             properties:
               automationStrategyRef:
-                description: automationStrategyRef references the AutomationStrategy
+                description: automationStrategyRef references the ClusterAutomationStrategy
                   to use when applying this policy.
                 properties:
                   name:
@@ -69,7 +69,7 @@ spec:
                 type: object
               metrics:
                 description: metrics configures compute and memory utilization signals
-                  used for rebalancing.
+                  used for GPU reactive scaling.
                 properties:
                   compute:
                     description: compute configures the GPU compute utilization signal.
@@ -317,7 +317,7 @@ spec:
                 default: 15m
                 description: |-
                   minPodMetricsAge is the minimum pod age required before pod metrics are considered.
-                  Pods younger than this duration are skipped for metric-based rebalancing checks.
+                  Pods younger than this duration are skipped for GPU reactive checks.
                 type: string
                 x-kubernetes-validations:
                 - message: must be zero or at least 1 minute
@@ -374,6 +374,28 @@ spec:
                         type: object
                     type: object
                     x-kubernetes-map-type: atomic
+                  namespaceSelector:
+                    description: namespaceSelector restricts the namespaces this policy
+                      applies to.
+                    properties:
+                      operator:
+                        description: operator determines how the listed values are
+                          evaluated.
+                        enum:
+                        - In
+                        - NotIn
+                        type: string
+                      values:
+                        description: values contains the namespace name patterns to
+                          match.
+                        items:
+                          type: string
+                        minItems: 1
+                        type: array
+                    required:
+                    - operator
+                    - values
+                    type: object
                   workloadTypes:
                     default:
                     - Deployment
@@ -401,6 +423,8 @@ spec:
                       - Model
                       type: string
                     type: array
+                required:
+                - namespaceSelector
                 type: object
               weight:
                 default: 0
@@ -414,9 +438,10 @@ spec:
             - automationStrategyRef
             - experimental
             - metrics
+            - scope
             type: object
           status:
-            description: status defines the observed state of GpuRebalancingPolicy
+            description: status defines the observed state of ClusterGpuReactivePolicy
             properties:
               conditions:
                 description: |-

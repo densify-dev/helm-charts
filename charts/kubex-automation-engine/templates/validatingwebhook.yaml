@@ -72,9 +72,9 @@ webhooks:
     service:
       name: {{ include "kubex-automation-engine.fullname" . }}-webhook-service
       namespace: {{ include "kubex-automation-engine.namespace" . }}
-      path: /validate-rightsizing-kubex-ai-v1alpha1-clustergpurebalancingpolicy
+      path: /validate-rightsizing-kubex-ai-v1alpha1-clustergpureactivepolicy
   failurePolicy: {{ .Values.webhook.failurePolicy }}
-  name: vclustergpurebalancingpolicy-v1alpha1.kb.io
+  name: vclustergpureactivepolicy-v1alpha1.kb.io
   rules:
   - apiGroups:
     - rightsizing.kubex.ai
@@ -84,7 +84,7 @@ webhooks:
     - CREATE
     - UPDATE
     resources:
-    - clustergpurebalancingpolicies
+    - clustergpureactivepolicies
   sideEffects: None
   timeoutSeconds: {{ .Values.webhook.timeoutSeconds }}
 - admissionReviewVersions:
@@ -192,9 +192,9 @@ webhooks:
     service:
       name: {{ include "kubex-automation-engine.fullname" . }}-webhook-service
       namespace: {{ include "kubex-automation-engine.namespace" . }}
-      path: /validate-rightsizing-kubex-ai-v1alpha1-gpurebalancingpolicy
+      path: /validate-rightsizing-kubex-ai-v1alpha1-gpureactivepolicy
   failurePolicy: {{ .Values.webhook.failurePolicy }}
-  name: vgpurebalancingpolicy-v1alpha1.kb.io
+  name: vgpureactivepolicy-v1alpha1.kb.io
   rules:
   - apiGroups:
     - rightsizing.kubex.ai
@@ -204,7 +204,7 @@ webhooks:
     - CREATE
     - UPDATE
     resources:
-    - gpurebalancingpolicies
+    - gpureactivepolicies
   sideEffects: None
   timeoutSeconds: {{ .Values.webhook.timeoutSeconds }}
 - admissionReviewVersions:
