@@ -121,7 +121,7 @@ readinessProbe:
     scheme: HTTP
   periodSeconds: 10
   successThreshold: 1
-  timeoutSeconds: 1
+  timeoutSeconds: 30
 
 # -- Additional environment variables for the metrics container
 extraEnv: []
