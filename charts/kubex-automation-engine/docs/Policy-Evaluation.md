@@ -19,9 +19,9 @@ spec:
     priority: 130
   - type: ClusterRollbackPolicy
     priority: 130
-  - type: GpuRebalancingPolicy
+  - type: GpuReactivePolicy
     priority: 120
-  - type: ClusterGpuRebalancingPolicy
+  - type: ClusterGpuReactivePolicy
     priority: 110
   - type: StaticPolicy
     priority: 90
@@ -88,7 +88,7 @@ Note: `priority` is set in the `PolicyEvaluation` CR and applies to all policies
 
 **Example 1 - Default precedence:**
 - `RollbackPolicy` with `spec.weight: 50` (type has `priority: 130` in `PolicyEvaluation`)
-- `GpuRebalancingPolicy` with `spec.weight: 10` (type has `priority: 120` in `PolicyEvaluation`)
+- `GpuReactivePolicy` with `spec.weight: 10` (type has `priority: 120` in `PolicyEvaluation`)
 - `StaticPolicy` with `spec.weight: 50` (type has `priority: 90` in `PolicyEvaluation`)
 - `ProactivePolicy` with `spec.weight: 100` (type has `priority: 70` in `PolicyEvaluation`)
 

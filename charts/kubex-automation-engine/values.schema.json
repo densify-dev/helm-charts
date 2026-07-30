@@ -252,6 +252,20 @@
               "type": "string",
               "maxLength": 31,
               "pattern": "^$|^[a-z0-9](?:[-a-z0-9]{0,30})?$"
+            },
+            "additionalWebhook": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "enabled": {
+                  "type": "boolean"
+                },
+                "namePrefix": {
+                  "type": "string",
+                  "maxLength": 31,
+                  "pattern": "^$|^[a-z0-9](?:[-a-z0-9]{0,30})?$"
+                }
+              }
             }
           }
         }
@@ -276,6 +290,10 @@
         },
         "heartbeatInterval": {
           "type": "string"
+        },
+        "kubexAPIRequestTimeout": {
+          "type": "string",
+          "pattern": "^(?:(?:[0-9]+(?:\\.[0-9]*)?|\\.[0-9]+)(?:ns|us|µs|μs|ms|s|m|h))+$"
         },
         "webhookOwnerResolutionRetryTimeout": {
           "type": "string"

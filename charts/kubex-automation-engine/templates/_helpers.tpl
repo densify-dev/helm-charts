@@ -25,6 +25,13 @@ Validate kubex.url.host is provided if createSecrets is true
 {{- end }}
 {{- end }}
 {{/*
+Resolve Kubex API request timeout, preserving legacy controller environment fallback.
+*/}}
+{{- define "kubex-automation-engine.kubexAPIRequestTimeout" -}}
+{{- .Values.deployment.controllerEnv.apiRequestTimeout | default .Values.globalConfiguration.kubexAPIRequestTimeout -}}
+{{- end }}
+
+{{/*
 Expand the name of the chart.
 */}}
 {{- define "kubex-automation-engine.name" -}}

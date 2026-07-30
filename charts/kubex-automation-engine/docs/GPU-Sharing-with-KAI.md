@@ -12,7 +12,8 @@ Tested with KAI `v0.12.16`.
 - KAI is already installed in the cluster. [KAI installation instructions](https://github.com/kai-scheduler/KAI-Scheduler#installation-methods)
   - NOTE: Kubex has been tested with KAI version v0.12.16
 - `kubex-crds`, `kubex-automation-engine` and `kubex-automation-stack` are already installed
-  - When using `ClusterGpuRebalancingPolicy` or `GpuRebalancingPolicy`, Prometheus must be available for GPU metrics, typically via `kubex-automation-stack`.
+  - The `kubex-automation-engine` release must enable `webhook.podMutation.additionalWebhook.enabled` as shown below.
+  - When using `ClusterGpuReactivePolicy` or `GpuReactivePolicy`, Prometheus must be available for GPU metrics, typically via `kubex-automation-stack`.
   - If Prometheus runs at different endpoint, set `globalConfiguration.prometheus.url` to custom URL.
 
 This guide works with either:
@@ -21,6 +22,19 @@ This guide works with either:
 - an existing KAI installation
 
 For existing KAI-managed workloads, Kubex Automation Engine can update the `gpu-fraction` annotation without replacing the existing `kai.scheduler/queue` label.
+
+### Required Kubex webhook values
+
+KAI relies on Kubex-updated resource information when making admission decisions. Before deploying KAI-managed workloads from this guide, configure the `kubex-automation-engine` Helm release with the additional webhook enabled:
+
+```yaml
+webhook:
+  podMutation:
+    additionalWebhook:
+      enabled: true
+```
+
+This setting is required for the KAI integration. The early Kubex invocation applies selected resources and KAI metadata such as `gpu-fraction`, queue label, and scheduler selection before KAI makes its decision. The late invocation restores Kubex-selected resources after other mutators run while keeping metadata idempotent.
 
 ### New KAI installation
 
@@ -37,7 +51,7 @@ helm upgrade -i kai-scheduler oci://ghcr.io/kai-scheduler/kai-scheduler/kai-sche
 
 ### Prometheus notes
 
-By default, the `kubex-automation-engine` chart configures GPU rebalancing policies to query Prometheus at `http://kubex-prometheus-server.kubex.svc`.
+By default, the `kubex-automation-engine` chart configures GPU reactive policies to query Prometheus at `http://kubex-prometheus-server.kubex.svc`.
 
 That matches the default Prometheus service name used by `kubex-automation-stack`.
 
@@ -60,7 +74,7 @@ The following example creates:
 
 - a `ClusterAutomationStrategy` for KAI-enabled workloads across the cluster
 - a `ClusterProactivePolicy` that makes matching `Deployment` workloads managed by that strategy
-- a `ClusterGpuRebalancingPolicy` that adjusts that shared GPU request based on Prometheus GPU metrics
+- a `ClusterGpuReactivePolicy` that adjusts that shared GPU request based on Prometheus GPU metrics
 
 Both policies target `Deployment` workloads in all namespaces that carry `nvidia.com/gpu.present: "true"`.
 
@@ -76,7 +90,7 @@ spec:
 In that mode, Kubex stores recommendations and rollback state on the `Model` owner, then propagates effects to model-owned pods.
 
 ```yaml
-# Strategy shared by the baseline and rebalancing policies below.
+# Strategy shared by the baseline and reactive policies below.
 apiVersion: rightsizing.kubex.ai/v1alpha1
 kind: ClusterAutomationStrategy
 metadata:
@@ -131,9 +145,9 @@ spec:
 ---
 # Policy that adjusts shared GPU fractions from Prometheus utilization data.
 apiVersion: rightsizing.kubex.ai/v1alpha1
-kind: ClusterGpuRebalancingPolicy
+kind: ClusterGpuReactivePolicy
 metadata:
-  name: kai-gpu-sharing-rebalancing
+  name: kai-gpu-sharing-reactive
 spec:
   experimental:
     # Required contract version for the current experimental GPU/KAI integration.
