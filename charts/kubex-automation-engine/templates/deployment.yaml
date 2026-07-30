@@ -9,6 +9,7 @@
 {{- $openshiftFsGroupConfigured := and .Values.openshift.enabled (not (empty .Values.openshift.fsGroup)) -}}
 {{- $hasPodFsGroup := hasKey .Values.podSecurityContext "fsGroup" -}}
 {{- $hasEffectiveFsGroup := or $hasPodFsGroup $openshiftFsGroupConfigured -}}
+{{- $kubexAPIRequestTimeout := include "kubex-automation-engine.kubexAPIRequestTimeout" . -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -152,6 +153,8 @@ spec:
           value: /densify/config/api
         - name: SPOOL
           value: /densify/data/spool
+        - name: API_REQUEST_TIMEOUT
+          value: {{ $kubexAPIRequestTimeout | quote }}
         - name: DENSIFY_USERNAME
           valueFrom:
             secretKeyRef:

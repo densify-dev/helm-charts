@@ -2,6 +2,20 @@
 
 All notable changes to the Kubex Automation Engine Helm chart will be documented in this file.
 
+## [1.9.0] - 2026-07-28
+
+### Breaking
+- **[GPU policies renamed](./BREAKING.md#2026-07-21-gpu-reactive-policy-rename)**: `GpuRebalancingPolicy` and `ClusterGpuRebalancingPolicy` are renamed to `GpuReactivePolicy` and `ClusterGpuReactivePolicy`. Kubernetes doesn't support renaming a CRD in place, so existing GPU policies need to be recreated under the new names after upgrading - see the linked migration steps before upgrading.
+
+### Added
+- The pod rightsizing webhook can now optionally run at the beginning and end of admission, so it works correctly alongside the KAI GPU-sharing scheduler's own webhook. This is off by default and only needed if you're running other resource-mutating webhooks alongside Kubex.
+- Pods now get a `rightsizing.kubex.ai/automation-constraints` annotation explaining why a recommendation couldn't be fully applied (for example, a resource being managed by an HPA, or automation being disabled), including which containers and resources were affected.
+
+### Changed
+- The default timeout for requests to the Kubex API increased from 30 seconds to 60 seconds.
+
+---
+
 ## [1.8.0] - 2026-07-22
 
 ### Breaking

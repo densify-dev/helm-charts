@@ -58,6 +58,9 @@ kubex:
 #   timeoutSeconds: 10
 #   podMutation:
 #     namePrefix: "" # WARNING: changing this renames webhook object on upgrade (brief admission gap)
+#     additionalWebhook:
+#       enabled: false # Register early and late pod mutation webhooks
+#       namePrefix: "000-"
 #
 # Optional pod admission webhook Kubernetes client throttling:
 # controllerManager:
