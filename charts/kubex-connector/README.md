@@ -1,32 +1,50 @@
-# Kubex Connector Helm Chart
+# kubex-connector chart
 
-This chart deploys the in-cluster connector used for cluster data interface.
+Deploys the customer-side connector that dials proxy `/tunnel/connect` and forwards traffic to local upstream.
 
-It is intended to be installed through `kubex-automation-stack`.
+`values-dev.yaml` uses `connectorServices` (YAML list) to define one or more service IDs and upstream URLs.
 
-It can deploy the websocket relay sidecar for connector traffic relaying. The connector talks to the local relay automatically when the relay sidecar is enabled, and the relay dials the public Kubex tunnel endpoint.
+`connectorServices` is required.
 
-The chart supports two configuration modes:
+For an end-to-end tunnel smoke test using an echo app, see `charts/kubex-connector/examples/README.md`.
 
-- Standalone mode via `kubex.*` values for host and cluster name, with credentials sourced from secrets
-- Stack-managed mode via the forwarder `ConfigMap` and `forwarderCredentialsSecretRef`
+## Architecture
 
-When installed through `kubex-automation-stack`, the chart reads the shared Kubex host, tenant, and cluster identity from the forwarder `ConfigMap` via `forwarderConfigMap.name`.
+The connector is a customer-cluster tunnel agent. It does not expose public ingress by itself.
 
-Stack-managed credentials are configured through `forwarderCredentialsSecretRef.name`.
+- Establishes a persistent WebSocket tunnel to proxy at `/tunnel/connect`
+- Identifies itself with `CONNECTOR_TENANT_ID` and `CONNECTOR_CLUSTER_ID`
+- Registers one or more service IDs from `connectorServices` (rendered to `CONNECTOR_SERVICES_JSON` in the deployment)
+- Receives proxied requests for `/proxy/:tenant/:cluster/:service/*`
+- Forwards each request to the matching local upstream URL in the customer cluster
+- Returns status, headers, and body back through the same tunnel
 
-Connector timing and relay wiring remain configurable:
+Routing contract:
 
-- `heartbeatSeconds`
-- `requestTimeoutSeconds`
-- `kubex.url.host`
-- `kubex.clusterName`
-- `forwarderConfigMap.name`
-- `forwarderCredentialsSecretRef.name`
-- `forwarderCredentialsSecretRef.usernameKey`
-- `forwarderCredentialsSecretRef.epasswordKey`
-- `relay.enabled`
-- `relay.listenAddr`
-- `relay.connectPath`
-- `relay.tlsCaSecretName`
-- `relay.hostAliases`
+- Tenant + cluster select the connector session
+- Service ID selects the upstream within that connector
+- Path suffix after `/:service` is forwarded to the target upstream
+
+Example:
+
+- Proxy request: `/proxy/tenant-a/cluster-1/echo/hello?x=1`
+- Connector lookup: tenant `tenant-a`, cluster `cluster-1`, service `echo`
+- Upstream target: `http://kubex-echo:8080/hello?x=1`
+
+## Deploy
+
+```bash
+kubectl config use-context <KUBEX_CUSTOMER_CONTEXT>
+kubectl --context <KUBEX_CUSTOMER_CONTEXT> create namespace kubex-ai --dry-run=client -o yaml | kubectl apply -f -
+
+helm upgrade --install kubex-connector ./charts/kubex-connector \
+  --namespace kubex-ai \
+  -f ./charts/kubex-connector/values-dev.yaml
+```
+
+## Verify
+
+```bash
+kubectl --context <KUBEX_CUSTOMER_CONTEXT> -n kubex-ai get pods
+kubectl --context <KUBEX_CUSTOMER_CONTEXT> -n kubex-ai logs deploy/kubex-connector-deployment
+```

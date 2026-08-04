@@ -6,7 +6,7 @@
 {{- if .Values.fullnameOverride -}}
 {{- .Values.fullnameOverride -}}
 {{- else -}}
-{{- printf "%s-deployment" (include "kubex-connector.name" .) -}}
+{{- .Release.Name | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 {{- end -}}
 
@@ -78,4 +78,9 @@
 {{- fail "kubex host is required when forwarderConfigMap.name is not set" -}}
 {{- end -}}
 {{- printf "wss://%s/tunnel/connect" $kubexHost -}}
+{{- end -}}
+
+{{- define "kubex-connector.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "kubex-connector.fullname" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end -}}

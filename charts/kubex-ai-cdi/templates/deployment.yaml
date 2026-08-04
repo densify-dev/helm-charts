@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "kubex-ai-cdi.fullname" . }}
+  name: {{ include "kubex-ai-cdi.fullname" . }}-deployment
   labels:
     app: {{ include "kubex-ai-cdi.name" . }}
     chart: {{ .Chart.Name }}-{{ .Chart.Version }}
@@ -16,11 +16,11 @@ spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ include "kubex-ai-cdi.name" . }}
+      {{- include "kubex-ai-cdi.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        app: {{ include "kubex-ai-cdi.name" . }}
+        {{- include "kubex-ai-cdi.selectorLabels" . | nindent 8 }}
         {{- if .Values.extraLabels }}
         {{- toYaml .Values.extraLabels | nindent 8 }}
         {{- end }}
@@ -77,6 +77,10 @@ spec:
           value: "false"
         - name: ENABLE_CLUSTER_SCOPE_OPS
           value: {{ .Values.worker.enableClusterScopeOps | quote }}
+        {{- if .Values.worker.clusterName }}
+        - name: CLUSTER_NAME
+          value: {{ .Values.worker.clusterName | quote }}
+        {{- end }}
         - name: ALLOWED_NAMESPACES
           value: {{ .Values.worker.allowedNamespaces | quote }}
         {{- range .Values.extraEnv }}

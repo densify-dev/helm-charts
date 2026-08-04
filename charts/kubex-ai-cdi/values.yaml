@@ -1,6 +1,6 @@
 image:
   repository: densify/kubex-ai-cdi
-  tag: 0.1.8
+  tag: 0.1.9-rc.3
   pullPolicy: IfNotPresent
 
 replicaCount: 1
@@ -24,6 +24,7 @@ worker:
   toolTimeout: "20s"
   maxPayloadBytes: 262144
   enableClusterScopeOps: true
+  clusterName: ""
   allowedNamespaces: ""
 
 rbac:
@@ -41,9 +42,27 @@ rbac:
       enabled: true
       resources: ["deployments", "daemonsets", "statefulsets", "replicasets"]
       verbs: ["get", "list"]
+    batchWorkloads:
+      enabled: true
+      resources: ["jobs", "cronjobs"]
+      verbs: ["get", "list"]
     rollouts:
       enabled: true
       resources: ["rollouts", "analysisruns", "experiments"]
+      verbs: ["get", "list"]
+    strimzi:
+      enabled: true
+      resources: ["strimzipodsets"]
+      verbs: ["get", "list"]
+    openshiftApps:
+      enabled: true
+      resources: ["deploymentconfigs"]
+      coreResources: ["replicationcontrollers"]
+      verbs: ["get", "list"]
+    models:
+      enabled: false
+      apiGroups: []
+      resources: ["models"]
       verbs: ["get", "list"]
     openshift:
       enabled: false
@@ -85,7 +104,13 @@ containerSecurityContext:
 serviceAccount:
   name: kubex-ai-cdi-sa
 
-resources: {}
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
 
 livenessProbe:
   enabled: true

@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "kubex-connector.fullname" . }}
+  name: {{ include "kubex-connector.fullname" . }}-deployment
   labels:
     app: {{ include "kubex-connector.name" . }}
     chart: {{ .Chart.Name }}-{{ .Chart.Version }}
@@ -16,11 +16,11 @@ spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ include "kubex-connector.name" . }}
+      {{- include "kubex-connector.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        app: {{ include "kubex-connector.name" . }}
+        {{- include "kubex-connector.selectorLabels" . | nindent 8 }}
         {{- if .Values.extraLabels }}
         {{- toYaml .Values.extraLabels | nindent 8 }}
         {{- end }}

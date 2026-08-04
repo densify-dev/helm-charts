@@ -6,8 +6,13 @@
 {{- if .Values.fullnameOverride -}}
 {{- .Values.fullnameOverride -}}
 {{- else -}}
-{{- printf "%s-deployment" (include "kubex-ai-cdi.name" .) -}}
+{{- .Release.Name | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
+{{- end -}}
+
+{{- define "kubex-ai-cdi.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "kubex-ai-cdi.fullname" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end -}}
 
 {{- define "kubex-ai-cdi.clusterRoleName" -}}
