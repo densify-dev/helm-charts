@@ -18,7 +18,7 @@ dependencies:
     condition: beyla.enabled
   - name: k8s-ephemeral-storage-metrics
     version: "1.22.0"
-    repository: file://../k8s-ephemeral-storage-metrics
+    repository: https://densify-dev.github.io/helm-charts
     condition: k8s-ephemeral-storage-metrics.enabled
   - name: gpu-process-exporter
     version: "1.0.0"
