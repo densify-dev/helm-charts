@@ -18,12 +18,22 @@ spec:
         app.kubernetes.io/instance: {{ .Release.Name }}
     spec:
       hostPID: true
+{{- if .Values.nodeSelector }}
       nodeSelector:
-        nvidia.com/gpu.present: "true"
+        {{- toYaml .Values.nodeSelector | nindent 8 }}
+{{- end }}
+{{- if .Values.tolerations }}
       tolerations:
-        - key: nvidia.com/gpu
-          operator: Exists
-          effect: NoSchedule
+        {{- toYaml .Values.tolerations | nindent 8 }}
+{{- end }}
+{{- if .Values.affinity }}
+      affinity:
+        {{- toYaml .Values.affinity | nindent 8 }}
+{{- end }}
+{{- if .Values.topologySpreadConstraints }}
+      topologySpreadConstraints:
+        {{- toYaml .Values.topologySpreadConstraints | nindent 8 }}
+{{- end }}
       serviceAccountName: {{ include "gpu-process-exporter.serviceAccountName" . }}
       containers:
         - name: exporter
