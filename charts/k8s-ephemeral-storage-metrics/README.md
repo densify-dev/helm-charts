@@ -73,7 +73,7 @@ percentage and inode metric families are additive.
 | prometheus.rules.predictFilledHours | int | `12` | How many hours in the future to predict filling up of a volume |
 | prometheus.rules.predictMinCurrentUsage | float | `33.3` | What percentage of limit must be used right now to predict filling up of a volume |
 | rbac | object | `{"create":true}` | RBAC configuration |
-| readinessProbe | object | `{"failureThreshold":10,"httpGet":{"path":"/health","port":"metrics","scheme":"HTTP"},"periodSeconds":10,"successThreshold":1,"timeoutSeconds":1}` | Readiness probe configuration for the metrics container |
+| readinessProbe | object | `{"failureThreshold":10,"httpGet":{"path":"/health","port":"metrics","scheme":"HTTP"},"periodSeconds":10,"successThreshold":1,"timeoutSeconds":30}` | Readiness probe configuration for the metrics container |
 | replicaCount | int | `1` | Number of pod replicas when deploy_type is Deployment |
 | resources | object | `{}` | Resource requests and limits for the container |
 | revisionHistoryLimit | int | `10` | Revision history limit for the Deployment |
