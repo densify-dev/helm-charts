@@ -1,7 +1,7 @@
 apiVersion: v2
 description: Kubex Collection Stack
 name: kubex-automation-stack
-version: 1.0.18
+version: 1.0.19
 type: application
 icon: https://kubex.ai/wp-content/uploads/kubex-logo-landscape.svg
 dependencies:
@@ -17,7 +17,7 @@ dependencies:
     repository: https://grafana.github.io/helm-charts
     condition: beyla.enabled
   - name: k8s-ephemeral-storage-metrics
-    version: "1.21.0"
+    version: "1.22.1"
     repository: https://densify-dev.github.io/helm-charts
     condition: k8s-ephemeral-storage-metrics.enabled
   - name: gpu-process-exporter
