@@ -9,13 +9,13 @@ dependencies:
   repository: https://grafana.github.io/helm-charts
   version: 1.16.8
 - name: k8s-ephemeral-storage-metrics
-  repository: https://densify-dev.github.io/helm-charts
-  version: 1.21.0
+  repository: file://../k8s-ephemeral-storage-metrics
+  version: 1.22.0
 - name: gpu-process-exporter
   repository: https://densify-dev.github.io/helm-charts
   version: 1.0.0
 - name: node-labeler
   repository: https://densify-dev.github.io/helm-charts
   version: 0.1.2
-digest: sha256:d4b36dc243779019f4a3277b17c487f1be80c39d5a6ce5a3b40979a42dbc5955
-generated: "2026-07-03T17:48:40.199770372Z"
+digest: sha256:acdb0c1d28435fc15aeb9de3d67a1ddf75944493be8406074de45d7fc886ef39
+generated: "2026-08-05T12:56:03.431426799Z"
