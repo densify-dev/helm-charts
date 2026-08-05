@@ -8,7 +8,7 @@ helm install --create-namespace -n kubex k8s-ephemeral-storage-metrics kubex/k8s
 
 ## 1.22 migration
 
-Exporter now removes stale pod series after consecutive successful scrapes.
+Exporter now evicts stale pod series after a pod has been missing for N consecutive scrapes.
 `metrics.scrape_miss_tolerance` replaces removed `gc_enabled`, `gc_interval`,
 and `gc_batch_size` values. Readiness checks use dedicated `/health` endpoint.
 Existing metric names and labels remain compatible; container rootfs/log usage
