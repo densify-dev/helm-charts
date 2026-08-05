@@ -35,7 +35,7 @@ percentage and inode metric families are additive.
 | image.imagePullPolicy | string | `"IfNotPresent"` |  |
 | image.imagePullSecrets | list | `[]` |  |
 | image.repository | string | `"docker.io/densify/k8s-ephemeral-storage-metrics"` |  |
-| image.tag | string | `"1.22.0-rc1"` |  |
+| image.tag | string | `"1.22.0"` |  |
 | interval | int | `15` | Polling node rate for exporter |
 | list_pods_with_cache | bool | `false` | Use Kubernetes API server cache for pod list requests |
 | kubelet | object | `{"insecure":false,"readOnlyPort":0,"scrape":false}` | Scrape metrics through kubelet instead of kube api |
