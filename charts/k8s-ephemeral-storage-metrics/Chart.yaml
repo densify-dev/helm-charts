@@ -11,7 +11,7 @@ keywords:
 sources:
 - https://github.com/densify-dev/helm-charts/tree/master/charts/k8s-ephemeral-storage-metrics
 annotations:
-  artifacthub.io/prerelease: "true"
+  artifacthub.io/prerelease: "false"
   artifacthub.io/license: MIT
   artifacthub.io/links: |
     - name: Documentation
