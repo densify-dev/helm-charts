@@ -9,6 +9,7 @@
 {{- $openshiftFsGroupConfigured := and .Values.openshift.enabled (not (empty .Values.openshift.fsGroup)) -}}
 {{- $hasPodFsGroup := hasKey .Values.podSecurityContext "fsGroup" -}}
 {{- $hasEffectiveFsGroup := or $hasPodFsGroup $openshiftFsGroupConfigured -}}
+{{- $kubexAPIRequestTimeout := include "kubex-automation-engine.kubexAPIRequestTimeout" . -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -86,6 +87,12 @@ spec:
         env:
         - name: CLUSTER_NAME
           value: {{ required "kubex.clusterName must be set to the Kubex cluster identifier" .Values.kubex.clusterName | quote }}
+        {{- if ((.Values.secondaryCluster).enabled) }}
+        - name: SECONDARY_CLUSTER_ENABLED
+          value: "true"
+        - name: PRIMARY_CLUSTER_NAME
+          value: {{ required "secondaryCluster.primaryClusterName must be set when secondaryCluster.enabled=true" .Values.secondaryCluster.primaryClusterName | quote }}
+        {{- end }}
         - name: IMAGE_TAG
           value: {{ .Values.image.tag | quote }}
         - name: POD_NAMESPACE
@@ -146,6 +153,8 @@ spec:
           value: /densify/config/api
         - name: SPOOL
           value: /densify/data/spool
+        - name: API_REQUEST_TIMEOUT
+          value: {{ $kubexAPIRequestTimeout | quote }}
         - name: DENSIFY_USERNAME
           valueFrom:
             secretKeyRef:

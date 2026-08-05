@@ -114,7 +114,7 @@ The following table lists configuration parameters in `values-edit.yaml`.
 | `gpu-process-exporter.enabled`                                                           |                    | Enable GPU process exporter subchart (default: `true`) |
 | `beyla.enabled`                                                           |                    | Enable Grafana Beyla for application runtime detection (default: `true`) |
 | `k8s-ephemeral-storage-metrics.enabled`                                          |                    | Enable ephemeral storage metrics collection (default: `true`) |
-| `node-labeler.enabled`                                                           |                    | Enable optional node-labeler subchart (default: `false`) |
+| `node-labeler.enabled`                                                           |                    | Enable optional node-labeler subchart to add Kubex Node Group labels to nodes; useful when nodes lack standard cloud provider pool/group labels (default: `false`) |
 
 ## Limitations
 
@@ -135,7 +135,10 @@ This chart consists of the following subcharts:
 
 * [k8s-ephemeral-storage-metrics](../k8s-ephemeral-storage-metrics) - Collects ephemeral storage metrics for containers.
 
-* [Node Labeler](../node-labeler) - Adds labels to nodes to indicate which Kubex Node Group they belong to. This is an optional component that can be enabled if desired (disabled by default).
+* [Node Labeler](../node-labeler) - Adds labels to nodes to indicate which Kubex Node Group they belong to. This is an optional component (disabled by default) that should be enabled when:
+  - Nodes lack standard cloud provider node pool/group labels (e.g., GKE node pools, EKS node groups, AKS agent pools)
+  - Additional Kubex-specific grouping labels are needed beyond cloud provider labels
+  - Enhanced node group visibility is desired in OpenShift environments (leverages Machine API)
 
 ## Documentation
 

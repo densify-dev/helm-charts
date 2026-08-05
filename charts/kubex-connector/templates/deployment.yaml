@@ -1,0 +1,218 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "kubex-connector.fullname" . }}
+  labels:
+    app: {{ include "kubex-connector.name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    {{- if .Values.extraLabels }}
+    {{- toYaml .Values.extraLabels | nindent 4 }}
+    {{- end }}
+  {{- if .Values.extraAnnotations }}
+  annotations:
+    {{- toYaml .Values.extraAnnotations | nindent 4 }}
+  {{- end }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "kubex-connector.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "kubex-connector.name" . }}
+        {{- if .Values.extraLabels }}
+        {{- toYaml .Values.extraLabels | nindent 8 }}
+        {{- end }}
+      {{- if .Values.extraAnnotations }}
+      annotations:
+        {{- toYaml .Values.extraAnnotations | nindent 8 }}
+      {{- end }}
+    spec:
+      {{- $kubexHost := include "kubex-connector.kubexHost" . }}
+      {{- $kubexClusterName := include "kubex-connector.kubexClusterName" . }}
+      {{- $localKubex := .Values.kubex | default dict }}
+      {{- $forwarderConfigMapName := trim (default "" .Values.forwarderConfigMap.name) }}
+      {{- $forwarderSecretName := trim (default "" .Values.forwarderCredentialsSecretRef.name) }}
+      {{- $useForwarderConfigMap := and (eq $kubexHost "") (eq $kubexClusterName "") (ne $forwarderConfigMapName "") }}
+      {{- $useForwarderSecretRef := ne $forwarderSecretName "" }}
+      {{- if and .Values.relay.enabled .Values.relay.hostAliases }}
+      hostAliases:
+      {{- toYaml .Values.relay.hostAliases | nindent 6 }}
+      {{- end }}
+      {{- with .Values.securityContext }}
+      {{- if or .runAsUser .runAsGroup .fsGroup }}
+      securityContext:
+        {{- with .runAsUser }}
+        runAsUser: {{ . }}
+        {{- end }}
+        {{- with .runAsGroup }}
+        runAsGroup: {{ . }}
+        {{- end }}
+        {{- with .fsGroup }}
+        fsGroup: {{ . }}
+        {{- end }}
+      {{- end }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 6 }}
+      {{- end }}
+      {{- if and .Values.relay.enabled .Values.relay.tlsCaSecretName }}
+      volumes:
+      - name: relay-ca
+        secret:
+          secretName: {{ .Values.relay.tlsCaSecretName }}
+      {{- end }}
+      containers:
+      - name: {{ include "kubex-connector.name" . }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        securityContext:
+          runAsNonRoot: {{ .Values.containerSecurityContext.runAsNonRoot }}
+          allowPrivilegeEscalation: {{ .Values.containerSecurityContext.allowPrivilegeEscalation }}
+          readOnlyRootFilesystem: {{ .Values.containerSecurityContext.readOnlyRootFilesystem }}
+          {{- with .Values.containerSecurityContext.capabilities }}
+          capabilities:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.containerSecurityContext.seccompProfile }}
+          seccompProfile:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+        env:
+        {{- if $useForwarderConfigMap }}
+        - name: KUBEX_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: {{ $forwarderConfigMapName | quote }}
+              key: kubex_host
+        {{- end }}
+        - name: CONNECTOR_PROXY_WS_URL
+          {{- if .Values.relay.enabled }}
+          value: {{ printf "ws://127.0.0.1%s/tunnel/connect" .Values.relay.listenAddr | quote }}
+          {{- else if $useForwarderConfigMap }}
+          value: "wss://$(KUBEX_HOST)/tunnel/connect"
+          {{- else }}
+          value: {{ include "kubex-connector.relayUpstreamWssUrl" . | quote }}
+          {{- end }}
+        - name: CONNECTOR_TENANT_ID
+          {{- if $useForwarderConfigMap }}
+          valueFrom:
+            configMapKeyRef:
+              name: {{ $forwarderConfigMapName | quote }}
+              key: kubex_tenant_id
+          {{- else }}
+          value: {{ include "kubex-connector.tenantID" . | quote }}
+          {{- end }}
+        - name: CONNECTOR_CLUSTER_ID
+          {{- if $useForwarderConfigMap }}
+          valueFrom:
+            configMapKeyRef:
+              name: {{ $forwarderConfigMapName | quote }}
+              key: kubex_cluster_name
+          {{- else }}
+          value: {{ include "kubex-connector.clusterID" . | quote }}
+          {{- end }}
+        - name: CONNECTOR_HEARTBEAT_SECONDS
+          value: {{ required "heartbeatSeconds is required" .Values.heartbeatSeconds | quote }}
+        - name: CONNECTOR_REQUEST_TIMEOUT_SECONDS
+          value: {{ required "requestTimeoutSeconds is required" .Values.requestTimeoutSeconds | quote }}
+        - name: CONNECTOR_SERVICES_JSON
+          value: {{ required "connectorServices is required and must contain at least one service" .Values.connectorServices | toJson | quote }}
+        {{- range .Values.extraEnv }}
+        - name: {{ .name }}
+          value: {{ .value | quote }}
+        {{- end }}
+        {{- if .Values.resources }}
+        resources:
+          {{- toYaml .Values.resources | nindent 10 }}
+        {{- end }}
+      {{- if .Values.relay.enabled }}
+      - name: relay
+        image: "{{ .Values.relay.image.repository }}:{{ .Values.relay.image.tag }}"
+        imagePullPolicy: {{ .Values.relay.image.pullPolicy }}
+        securityContext:
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          {{- with .Values.containerSecurityContext.capabilities }}
+          capabilities:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.containerSecurityContext.seccompProfile }}
+          seccompProfile:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+        env:
+        - name: GATEWAY_MODE
+          value: ws-relay
+        - name: RELAY_LISTEN_ADDR
+          value: {{ .Values.relay.listenAddr | quote }}
+        - name: RELAY_CONNECT_PATH
+          value: {{ .Values.relay.connectPath | quote }}
+        {{- if $useForwarderConfigMap }}
+        - name: KUBEX_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: {{ $forwarderConfigMapName | quote }}
+              key: kubex_host
+        {{- end }}
+        - name: RELAY_UPSTREAM_WSS_URL
+          {{- if $useForwarderConfigMap }}
+          value: "wss://$(KUBEX_HOST)/tunnel/connect"
+          {{- else }}
+          value: {{ include "kubex-connector.relayUpstreamWssUrl" . | quote }}
+          {{- end }}
+        - name: DENSIFY_BASE_URL
+          {{- if $useForwarderConfigMap }}
+          value: "https://$(KUBEX_HOST)"
+          {{- else }}
+          value: {{ printf "https://%s" (include "kubex-connector.kubexHost" .) | quote }}
+          {{- end }}
+        - name: DENSIFY_USERNAME
+          {{- if $useForwarderSecretRef }}
+          valueFrom:
+            secretKeyRef:
+              name: {{ $forwarderSecretName | quote }}
+              key: {{ .Values.forwarderCredentialsSecretRef.usernameKey | quote }}
+          {{- else }}
+          valueFrom:
+            secretKeyRef:
+              name: densify-api-secret
+              key: username
+          {{- end }}
+        - name: DENSIFY_EPASSWORD
+          {{- if $useForwarderSecretRef }}
+          valueFrom:
+            secretKeyRef:
+              name: {{ $forwarderSecretName | quote }}
+              key: {{ .Values.forwarderCredentialsSecretRef.epasswordKey | quote }}
+          {{- else }}
+          valueFrom:
+            secretKeyRef:
+              name: densify-api-secret
+              key: epassword
+          {{- end }}
+        {{- if and .Values.relay.tlsCaSecretName .Values.relay.tlsCaKey }}
+        - name: SSL_CERT_FILE
+          value: /etc/relay-ca/{{ .Values.relay.tlsCaKey }}
+        {{- end }}
+        {{- range .Values.relay.extraEnv }}
+        - name: {{ .name }}
+          value: {{ .value | quote }}
+        {{- end }}
+        {{- if .Values.relay.tlsCaSecretName }}
+        volumeMounts:
+        - name: relay-ca
+          mountPath: /etc/relay-ca
+          readOnly: true
+        {{- end }}
+        ports:
+        - containerPort: 18181
+          name: relay
+        {{- if .Values.relay.resources }}
+        resources:
+          {{- toYaml .Values.relay.resources | nindent 10 }}
+        {{- end }}
+      {{- end }}
