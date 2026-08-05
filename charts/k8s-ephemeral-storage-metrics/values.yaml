@@ -50,7 +50,7 @@ metrics:
   ephemeral_storage_node_percentage: true
   # -- Create the ephemeral_storage_adjusted_polling_rate metrics to report Adjusted Poll Rate in milliseconds. Typically used for testing.
   adjusted_polling_rate: false
-  # -- Number of consecutive successful scrapes a pod can be missing before its metrics are evicted
+  # -- Number of consecutive scrapes in which a pod may be missing before its metrics are evicted
   scrape_miss_tolerance: 2
 
 log_level: info
