@@ -92,8 +92,12 @@ spec:
           env:
             - name: DEPLOY_TYPE
               value: "{{ .Values.deploy_type }}"
+            - name: METRICS_PORT
+              value: "{{ .Values.metrics.port }}"
             - name: SCRAPE_INTERVAL
               value: "{{ .Values.interval }}"
+            - name: READINESS_PROBE_TIMEOUT_SECONDS
+              value: "{{ .Values.readinessProbe.timeoutSeconds }}"
             - name: MAX_NODE_CONCURRENCY
               value: "{{ .Values.max_node_concurrency }}"
             - name: CLIENT_GO_QPS
@@ -102,6 +106,14 @@ spec:
               value: "{{ .Values.client_go_burst }}"
             - name: LOG_LEVEL
               value: "{{ .Values.log_level }}"
+              {{- if .Values.list_pods_with_cache }}
+            - name: EPHEMERAL_STORAGE_LIST_PODS_WITH_CACHE
+              value: "{{ .Values.list_pods_with_cache }}"
+              {{- end }}
+              {{- if .Values.node_label_selector }}
+            - name: NODE_LABEL_SELECTOR
+              value: "{{ .Values.node_label_selector }}"
+              {{- end }}
               {{- if .Values.metrics.ephemeral_storage_pod_usage }}
             - name: EPHEMERAL_STORAGE_POD_USAGE
               value: "{{ .Values.metrics.ephemeral_storage_pod_usage }}"
@@ -162,18 +174,8 @@ spec:
             - name: PPROF
               value: "{{ .Values.pprof }}"
               {{- end }}
-              {{- if .Values.metrics.gc_enabled }}
-            - name: GC_ENABLED
-              value: "{{ .Values.metrics.gc_enabled }}"
-              {{- end }}
-              {{- if .Values.metrics.gc_interval }}
-            - name: GC_INTERVAL
-              value: "{{ .Values.metrics.gc_interval }}"
-              {{- end }}
-              {{- if .Values.metrics.gc_batch_size }}
-            - name: GC_BATCH_SIZE
-              value: "{{ .Values.metrics.gc_batch_size }}"
-              {{- end }}
+            - name: SCRAPE_MISS_TOLERANCE
+              value: "{{ .Values.metrics.scrape_miss_tolerance }}"
               {{- if eq .Values.deploy_type  "DaemonSet" }}
             - name: CURRENT_NODE_NAME
               valueFrom:
