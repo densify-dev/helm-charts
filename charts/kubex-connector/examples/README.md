@@ -15,8 +15,9 @@ kubectl --context <KUBEX_CUSTOMER_CONTEXT> -n kubex-ai get pods,svc -l app=kubex
 Ensure connector values include the `echo` service entry:
 
 ```yaml
-env:
-  CONNECTOR_SERVICES_JSON: '[{"service_id":"echo","upstream_url":"http://kubex-echo:8080"}]'
+connectorServices:
+  - service_id: echo
+    upstream_url: http://kubex-echo:8080
 ```
 
 Then redeploy connector:

@@ -10,6 +10,9 @@ env:
   CONNECTOR_HEARTBEAT_SECONDS: "10"
   CONNECTOR_REQUEST_TIMEOUT_SECONDS: "30"
 
+relay:
+  enabled: false
+
 connectorServices:
   - service_id: cdi
     upstream_url: http://kubex-ai-cdi-service:8080/mcp

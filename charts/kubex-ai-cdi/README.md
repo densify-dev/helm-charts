@@ -21,9 +21,12 @@ Standalone installs keep RBAC enabled by default. The stack chart disables `rbac
 - `worker.toolTimeout`
 - `worker.maxPayloadBytes`
 - `worker.enableClusterScopeOps`
+- `worker.clusterName` for standalone installs
+- `worker.clusterNameConfigMap` for stack-managed cluster identity
 - `worker.allowedNamespaces`
 - `resources` (empty by default)
 - `rbac.enabled`
+- `serviceAccount.create`
 
 ## RBAC
 
