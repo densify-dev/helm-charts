@@ -92,8 +92,6 @@ kubex-connector:
   enabled: false
   extraLabels: {}
   extraAnnotations: {}
-  image:
-    tag: 0.1.9-rc.3
   forwarderConfigMap:
     name: kubex-connector-runtime
   forwarderCredentialsSecretRef:
@@ -103,8 +101,17 @@ kubex-ai-cdi:
   enabled: false
   extraLabels: {}
   extraAnnotations: {}
-  image:
-    tag: 0.1.9-rc.3
+  clusterRoleNameOverride: kubex-ai-cdi-reader
+  clusterRoleBindingNameOverride: kubex-ai-cdi-reader
+  service:
+    name: kubex-ai-cdi-service
+  worker:
+    clusterNameConfigMap:
+      name: kubex-connector-runtime
+      key: kubex_cluster_name
+  serviceAccount:
+    create: false
+    name: kubex-ai-cdi-sa
   rbac:
     enabled: false
 
