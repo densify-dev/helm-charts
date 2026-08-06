@@ -23,10 +23,10 @@ spec:
         {{- with .Values.nodeSelector }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
+      {{- with .Values.tolerations }}
       tolerations:
-        - key: nvidia.com/gpu
-          operator: Exists
-          effect: NoSchedule
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       serviceAccountName: {{ include "gpu-process-exporter.serviceAccountName" . }}
       containers:
         - name: exporter
