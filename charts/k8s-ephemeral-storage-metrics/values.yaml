@@ -1,6 +1,6 @@
 image:
   repository: docker.io/densify/k8s-ephemeral-storage-metrics
-  tag: 1.21.0
+  tag: 1.22.0
   imagePullPolicy: IfNotPresent
   imagePullSecrets: []
 
@@ -50,12 +50,8 @@ metrics:
   ephemeral_storage_node_percentage: true
   # -- Create the ephemeral_storage_adjusted_polling_rate metrics to report Adjusted Poll Rate in milliseconds. Typically used for testing.
   adjusted_polling_rate: false
-  # -- Enable garbage collection for metrics
-  gc_enabled: false
-  # -- The interval, in minutes, to perform garbage collection
-  gc_interval: 5
-  # -- The amount of resource to fetch from kubernetes at once when performing garbage collection
-  gc_batch_size: 500
+  # -- Number of consecutive scrapes in which a pod may be missing before its metrics are evicted
+  scrape_miss_tolerance: 2
 
 log_level: info
 # -- Set as Deployment for single controller to query all nodes or Daemonset
@@ -64,6 +60,10 @@ deploy_type: Deployment
 replicaCount: 1
 # -- Set additional labels for the Deployment/Daemonset
 deploy_labels: {}
+# -- Use Kubernetes API server cache for pod list requests
+list_pods_with_cache: false
+# -- Label selector used to watch nodes in Deployment mode
+node_label_selector: ""
 # -- Set additional labels for the Pods
 pod_labels: {}
 # Note in testing, Kube API does not refresh faster than 10 seconds
@@ -116,7 +116,7 @@ livenessProbe:
 readinessProbe:
   failureThreshold: 10
   httpGet:
-    path: /metrics
+    path: /health
     port: metrics
     scheme: HTTP
   periodSeconds: 10
@@ -130,6 +130,9 @@ extraEnv: []
 envFrom: []
 
 podAnnotations: {}
+
+# -- Annotations added to the metrics Service
+serviceAnnotations: {}
 
 nodeSelector: {}
 

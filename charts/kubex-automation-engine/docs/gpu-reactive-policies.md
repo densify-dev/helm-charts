@@ -1,8 +1,8 @@
-# GPU Rebalancing Policies
+# GPU Reactive Policies
 
-> Experimental: GPU/KAI fields and related custom resources are subject to breaking changes. Set `spec.experimental.gpuKaiContract: v1alpha1-2026-04`.
+> Experimental: GPU/KAI fields and related custom resources are subject to breaking changes. Set `spec.experimental.gpuKaiContract: v1alpha1-2026-07`.
 
-`GpuRebalancingPolicy` and `ClusterGpuRebalancingPolicy` emit GPU rebalancing recommendations (upsize and downsize) from Prometheus utilization.
+`GpuReactivePolicy` and `ClusterGpuReactivePolicy` emit GPU reactive recommendations (upsize and downsize) from Prometheus utilization.
 
 ## Behavior
 
@@ -25,19 +25,19 @@
 - Existing recommendations that predate driving-metric metadata do not lower until a non-decreasing recommendation establishes an owner metric.
 - After a workload total is chosen, it is redistributed back to the selected pod's containers in proportion to their current GPU allocations.
 - If neither upsize nor scale-back produces an accepted recommendation and current allocation still differs from baseline, the controller reuses the previous recommendation when present; otherwise it emits nothing.
-- Workloads matched by GPU rebalancing policies are reevaluated periodically using `GlobalConfiguration.spec.gpuRebalancingCheckInterval` (default `1m`).
+- Workloads matched by GPU reactive policies are reevaluated periodically using `GlobalConfiguration.spec.gpuReactiveCheckInterval` (default `1m`).
 
 ## Namespaced Spec
 
 ```yaml
 apiVersion: rightsizing.kubex.ai/v1alpha1
-kind: GpuRebalancingPolicy
+kind: GpuReactivePolicy
 metadata:
-  name: gpu-rebalance
+  name: gpu-reactive
   namespace: default
 spec:
   experimental:
-    gpuKaiContract: v1alpha1-2026-04
+    gpuKaiContract: v1alpha1-2026-07
   scope:
     labelSelector:
       matchLabels:
@@ -84,12 +84,12 @@ spec:
 
 ```yaml
 apiVersion: rightsizing.kubex.ai/v1alpha1
-kind: ClusterGpuRebalancingPolicy
+kind: ClusterGpuReactivePolicy
 metadata:
-  name: gpu-rebalance-cluster
+  name: gpu-reactive-cluster
 spec:
   experimental:
-    gpuKaiContract: v1alpha1-2026-04
+    gpuKaiContract: v1alpha1-2026-07
   scope:
     namespaceSelector:
       operator: In

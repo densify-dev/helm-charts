@@ -1,6 +1,6 @@
 # Automation Strategies
 
-> Experimental: GPU/KAI-related fields in this resource are subject to breaking changes. When using them, set `spec.experimental.gpuKaiContract: v1alpha1-2026-04`.
+> Experimental: GPU/KAI-related fields in this resource are subject to breaking changes. When using them, set `spec.experimental.gpuKaiContract: v1alpha1-2026-07`.
 
 `AutomationStrategy` defines how resizing is allowed to happen within a namespace.
 
@@ -58,6 +58,13 @@ Usage-level `floor` and `ceiling` values apply to all containers by default. Add
 | `spec.enablement.memory.limits.ceiling` | none | Maximum memory limit target. |
 | `spec.enablement.memory.limits.containers.<name>.floor` | none | Container-specific memory limit minimum that overrides the usage-level floor for that container only. |
 | `spec.enablement.memory.limits.containers.<name>.ceiling` | none | Container-specific memory limit maximum that overrides the usage-level ceiling for that container only. |
+| `spec.enablement.gpu.requests.downsize` | `false` | EXPERIMENTAL. Allows reducing GPU requests. |
+| `spec.enablement.gpu.requests.upsize` | `false` | EXPERIMENTAL. Allows increasing GPU requests. |
+| `spec.enablement.gpu.requests.setFromUnspecified` | `false` | EXPERIMENTAL. Allows setting GPU requests when currently unset. |
+| `spec.enablement.gpu.requests.floor` | none | EXPERIMENTAL. Minimum GPU request target. |
+| `spec.enablement.gpu.requests.ceiling` | none | EXPERIMENTAL. Maximum GPU request target. |
+| `spec.enablement.gpu.requests.containers.<name>.floor` | none | EXPERIMENTAL. Container-specific GPU request minimum that overrides the usage-level floor for that container only. |
+| `spec.enablement.gpu.requests.containers.<name>.ceiling` | none | EXPERIMENTAL. Container-specific GPU request maximum that overrides the usage-level ceiling for that container only. |
 | `spec.kai.queue` | `kubex-unlimited-gpu-queue` | EXPERIMENTAL. Default KAI queue label applied for KAI GPU admission mutation. |
 | `spec.kai.setQueueWhenSpecified` | `false` | EXPERIMENTAL. Allows strategy queue value to overwrite an existing `kai.scheduler/queue` label. |
 | `spec.kai.vllm` | none | EXPERIMENTAL. Enables admission-time vLLM tuning for KAI GPU-sharing workloads. Requires `spec.experimental.gpuKaiContract`. |
@@ -180,7 +187,7 @@ Example:
 ```yaml
 spec:
   experimental:
-    gpuKaiContract: v1alpha1-2026-04
+    gpuKaiContract: v1alpha1-2026-07
   kai:
     vllm:
       gpuMemoryUtilizationBufferPercent: 10

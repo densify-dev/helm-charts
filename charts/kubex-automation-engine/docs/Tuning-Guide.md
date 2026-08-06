@@ -50,6 +50,7 @@ Notes:
 ### Admission/Webhook Tolerance
 
 - `webhook.timeoutSeconds`
+- `webhook.podMutation.additionalWebhook.enabled`
 - `controllerManager.podAdmissionWebhookKubeAPIQPS`
 - `controllerManager.podAdmissionWebhookKubeAPIBurst`
 - `globalConfiguration.webhookOwnerResolutionRetryTimeout`
@@ -69,6 +70,9 @@ Notes:
 - `controllerManager.podAdmissionWebhookKubeAPIBurst` defaults to `0`; with QPS disabled, this is not acting as a practical cap by default
 - lowering the webhook client from the default unlimited behavior to a small positive QPS can introduce client-side throttling and increase missed mutation during API slowness
 - use these settings mainly when you intentionally want to cap or shape webhook API pressure, not as a default throughput optimization
+- most installations should leave `webhook.podMutation.additionalWebhook.enabled` disabled; enable it when another mutating webhook must see Kubex-updated resources to make its admission decision
+- enabling `webhook.podMutation.additionalWebhook.enabled` roughly doubles Pod admission traffic because both registrations call the same handler; dry-run health-probe Pods also invoke both registrations
+- keep defaults `webhook.podMutation.additionalWebhook.namePrefix: 000-` and `webhook.podMutation.namePrefix: zzz-` for intended early and late placement; ordering is best-effort because Kubernetes does not define mutating webhook order as a stable API contract
 
 ### Admission Webhook Fail-Open Semantics
 
