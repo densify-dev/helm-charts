@@ -29,7 +29,8 @@ resources:
   limits:
     memory: 256Mi
 
-nodeSelector: {}
+nodeSelector:
+  nvidia.com/gpu.present: "true"
 
 hostProcMount: null
 

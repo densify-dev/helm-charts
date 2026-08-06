@@ -20,7 +20,6 @@ spec:
       hostPID: true
       nodeSelector:
         kubernetes.io/os: linux
-        nvidia.com/gpu.present: "true"
         {{- with .Values.nodeSelector }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
