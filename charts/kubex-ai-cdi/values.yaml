@@ -1,0 +1,109 @@
+image:
+  repository: densify/kubex-ai-cdi
+  tag: 0.1.8
+  pullPolicy: IfNotPresent
+
+replicaCount: 1
+
+nameOverride: ""
+fullnameOverride: ""
+
+clusterRoleNameOverride: ""
+clusterRoleBindingNameOverride: ""
+
+service:
+  name: kubex-ai-cdi-service
+  type: ClusterIP
+  port: 8080
+
+extraLabels: {}
+
+extraAnnotations: {}
+
+worker:
+  toolTimeout: "20s"
+  maxPayloadBytes: 262144
+  enableClusterScopeOps: true
+  allowedNamespaces: ""
+
+rbac:
+  enabled: true
+  permissions:
+    core:
+      enabled: true
+      resources: ["pods", "services", "configmaps", "namespaces", "nodes", "events"]
+      verbs: ["get", "list"]
+    podLogs:
+      enabled: true
+      resources: ["pods/log"]
+      verbs: ["get"]
+    workloads:
+      enabled: true
+      resources: ["deployments", "daemonsets", "statefulsets", "replicasets"]
+      verbs: ["get", "list"]
+    rollouts:
+      enabled: true
+      resources: ["rollouts", "analysisruns", "experiments"]
+      verbs: ["get", "list"]
+    openshift:
+      enabled: false
+      resources: ["machines", "machinesets", "machinedeployments", "machinehealthchecks", "controlplanemachinesets"]
+      verbs: ["get", "list"]
+    karpenter:
+      enabled: false
+      resources: ["nodepools", "nodeclaims"]
+      verbs: ["get", "list"]
+    karpenterAWS:
+      enabled: false
+      resources: ["ec2nodeclasses"]
+      verbs: ["get", "list"]
+    karpenterAzure:
+      enabled: false
+      resources: ["nodeclasses"]
+      verbs: ["get", "list"]
+    kubexCRDs:
+      enabled: true
+      resources: ["automationstrategies", "clusterautomationstrategies", "clustergpurebalancingpolicies", "clusterproactivepolicies", "clusterrollbackpolicies", "clusterstaticpolicies", "globalconfigurations", "gpuconsolidationpolicies", "gpurebalancingpolicies", "podaffinitypolicies", "policyevaluations", "proactivepolicies", "rollbackpolicies", "staticpolicies"]
+      verbs: ["get", "list"]
+    selfSubjectReview:
+      enabled: true
+      resources: ["selfsubjectrulesreviews", "selfsubjectaccessreviews"]
+      verbs: ["create"]
+
+securityContext:
+  runAsUser: null
+  runAsGroup: null
+  fsGroup: null
+
+tolerations: []
+
+containerSecurityContext:
+  runAsNonRoot: true
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+
+serviceAccount:
+  name: kubex-ai-cdi-sa
+
+resources: {}
+
+livenessProbe:
+  enabled: true
+  path: /healthz
+  initialDelaySeconds: 15
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+readinessProbe:
+  enabled: true
+  path: /readyz
+  initialDelaySeconds: 5
+  periodSeconds: 5
+  timeoutSeconds: 3
+  failureThreshold: 3
+
+logging:
+  level: info
+
+extraEnv: []

@@ -45,10 +45,10 @@ spec:
                 description: automationEnabled controls whether automation is globally
                   enabled.
                 type: boolean
-              gpuRebalancingCheckInterval:
+              gpuReactiveCheckInterval:
                 default: 1m
                 description: |-
-                  gpuRebalancingCheckInterval controls how often GPU rebalancing policies reevaluate workloads.
+                  gpuReactiveCheckInterval controls how often GPU reactive policies reevaluate workloads.
                   EXPERIMENTAL: this field is subject to breaking changes or removal without notice.
                 type: string
                 x-kubernetes-validations:
@@ -76,7 +76,7 @@ spec:
                     type: string
                 type: object
               kubexAPIRequestTimeout:
-                default: 30s
+                default: 60s
                 description: kubexAPIRequestTimeout controls timeout for outbound
                   requests to the Kubex API.
                 type: string
@@ -94,7 +94,7 @@ spec:
               prometheus:
                 default: {}
                 description: |-
-                  prometheus configures Prometheus query behavior for GPU rebalancing policies.
+                  prometheus configures Prometheus query behavior for GPU reactive policies.
                   EXPERIMENTAL: this field is subject to breaking changes or removal without notice.
                 properties:
                   requestTimeout:

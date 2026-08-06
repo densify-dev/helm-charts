@@ -1,14 +1,9 @@
 apiVersion: v2
-name: gpu-process-exporter
-description: A Helm chart for gpu-process-exporter
+name: kubex-connector
+description: Stack-managed in-cluster connector used for the cluster data interface
 type: application
+version: 0.1.8
 icon: https://kubex.ai/wp-content/uploads/kubex-logo-landscape.svg
-version: 1.1.0
-keywords:
-- kubex
-- gpu
-- process
-- exporter
 maintainers:
 - email: support@kubex.ai
   name: support

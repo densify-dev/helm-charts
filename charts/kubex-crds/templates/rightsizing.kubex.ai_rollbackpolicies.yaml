@@ -71,6 +71,15 @@ spec:
                 - multiplyByTurn
                 - timePeriod
                 type: object
+              enableMonitoringReopen:
+                default: true
+                description: |-
+                  enableMonitoringReopen controls whether a completed (monitoringSucceeded) rollback
+                  turn reopens when a newer replacement pod appears carrying the same recommendation
+                  fingerprint and matching resources. Enabled by default; set to false to require a
+                  genuinely new recommendation before monitoring resumes for an owner that has
+                  already succeeded.
+                type: boolean
               monitoringPeriod:
                 description: monitoringPeriod bounds how long the controller observes
                   an active resize attempt before declaring failure.

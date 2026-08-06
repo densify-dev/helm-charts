@@ -27,6 +27,7 @@ Use them when you want the controller to monitor workloads after a resize is app
 | `spec.backoff.multiplyByTurn` | none (required) | Scales the base duration by the current turn number. Example: with `timePeriod: 1m` and `multiplyByTurn: 2`, turn 1 waits 2m and turn 2 waits 4m. |
 | `spec.backoff.maxAttempts` | none (required) | Maximum number of turns before the controller marks the rollback as permanently failed. |
 | `spec.weight` | `0` | Higher weight wins when multiple rollback policies match. When weights are equal, older policies win. |
+| `spec.enableMonitoringReopen` | `true` | Set to `false` to stop reopening a completed (`monitoringSucceeded`) turn when a newer replacement pod appears carrying the same recommendation and resources. When disabled, only a genuinely new recommendation starts a fresh monitoring turn for an owner that has already succeeded. |
 
 ## `ClusterRollbackPolicy.spec`
 
@@ -43,6 +44,7 @@ Use them when you want the controller to monitor workloads after a resize is app
 | `spec.backoff.multiplyByTurn` | none (required) | Scales the base duration by the current turn number. Example: with `timePeriod: 1m` and `multiplyByTurn: 2`, turn 1 waits 2m and turn 2 waits 4m. |
 | `spec.backoff.maxAttempts` | none (required) | Maximum number of turns before the controller marks the rollback as permanently failed. |
 | `spec.weight` | `0` | Higher weight wins when multiple rollback policies match. When weights are equal, older policies win. |
+| `spec.enableMonitoringReopen` | `true` | Set to `false` to stop reopening a completed (`monitoringSucceeded`) turn when a newer replacement pod appears carrying the same recommendation and resources. When disabled, only a genuinely new recommendation starts a fresh monitoring turn for an owner that has already succeeded. |
 
 ## Example: Namespaced Rollback Policy
 

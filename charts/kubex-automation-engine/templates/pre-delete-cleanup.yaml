@@ -43,13 +43,13 @@ rules:
   - rightsizing.kubex.ai
   resources:
   - clusterautomationstrategies
-  - clustergpurebalancingpolicies
+  - clustergpureactivepolicies
   - clusterproactivepolicies
   - clusterrollbackpolicies
   - clusterstaticpolicies
   - globalconfigurations
   - gpuconsolidationpolicies
-  - gpurebalancingpolicies
+  - gpureactivepolicies
   - podaffinitypolicies
   - policyevaluations
   - proactivepolicies

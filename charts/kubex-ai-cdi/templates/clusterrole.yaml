@@ -1,0 +1,108 @@
+{{- if .Values.rbac.enabled }}
+{{- $permissions := .Values.rbac.permissions | default dict -}}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "kubex-ai-cdi.clusterRoleName" . }}
+  labels:
+    app: {{ include "kubex-ai-cdi.name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    {{- if .Values.extraLabels }}
+    {{- toYaml .Values.extraLabels | nindent 4 }}
+    {{- end }}
+  {{- if .Values.extraAnnotations }}
+  annotations:
+    {{- toYaml .Values.extraAnnotations | nindent 4 }}
+  {{- end }}
+rules:
+{{- with $permissions.core }}
+{{- if .enabled }}
+- apiGroups: [""]
+  resources:
+    {{- toYaml .resources | nindent 4 }}
+  verbs:
+    {{- toYaml .verbs | nindent 4 }}
+{{- end }}
+{{- end }}
+{{- with $permissions.podLogs }}
+{{- if .enabled }}
+- apiGroups: [""]
+  resources:
+    {{- toYaml .resources | nindent 4 }}
+  verbs:
+    {{- toYaml .verbs | nindent 4 }}
+{{- end }}
+{{- end }}
+{{- with $permissions.workloads }}
+{{- if .enabled }}
+- apiGroups: ["apps"]
+  resources:
+    {{- toYaml .resources | nindent 4 }}
+  verbs:
+    {{- toYaml .verbs | nindent 4 }}
+{{- end }}
+{{- end }}
+{{- with $permissions.rollouts }}
+{{- if .enabled }}
+- apiGroups: ["argoproj.io"]
+  resources:
+    {{- toYaml .resources | nindent 4 }}
+  verbs:
+    {{- toYaml .verbs | nindent 4 }}
+{{- end }}
+{{- end }}
+{{- with $permissions.openshift }}
+{{- if .enabled }}
+- apiGroups: ["machine.openshift.io"]
+  resources:
+    {{- toYaml .resources | nindent 4 }}
+  verbs:
+    {{- toYaml .verbs | nindent 4 }}
+{{- end }}
+{{- end }}
+{{- with $permissions.karpenter }}
+{{- if .enabled }}
+- apiGroups: ["karpenter.sh"]
+  resources:
+    {{- toYaml .resources | nindent 4 }}
+  verbs:
+    {{- toYaml .verbs | nindent 4 }}
+{{- end }}
+{{- end }}
+{{- with $permissions.karpenterAWS }}
+{{- if .enabled }}
+- apiGroups: ["karpenter.k8s.aws"]
+  resources:
+    {{- toYaml .resources | nindent 4 }}
+  verbs:
+    {{- toYaml .verbs | nindent 4 }}
+{{- end }}
+{{- end }}
+{{- with $permissions.karpenterAzure }}
+{{- if .enabled }}
+- apiGroups: ["karpenter.azure.com"]
+  resources:
+    {{- toYaml .resources | nindent 4 }}
+  verbs:
+    {{- toYaml .verbs | nindent 4 }}
+{{- end }}
+{{- end }}
+{{- with $permissions.kubexCRDs }}
+{{- if .enabled }}
+- apiGroups: ["rightsizing.kubex.ai"]
+  resources:
+    {{- toYaml .resources | nindent 4 }}
+  verbs:
+    {{- toYaml .verbs | nindent 4 }}
+{{- end }}
+{{- end }}
+{{- with $permissions.selfSubjectReview }}
+{{- if .enabled }}
+- apiGroups: ["authorization.k8s.io"]
+  resources:
+    {{- toYaml .resources | nindent 4 }}
+  verbs:
+    {{- toYaml .verbs | nindent 4 }}
+{{- end }}
+{{- end }}
+{{- end }}

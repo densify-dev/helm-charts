@@ -95,6 +95,29 @@ For non-TLS upstream endpoints, set `kubex.url.scheme` to `http`.
 
 Note: `kubexCredentials.userSecretName` is currently not consumed by this chart. When `createSecrets=false`, set `gateway.configSecretName` instead.
 
+## Secondary/DR Cluster Mode
+
+Secondary/DR mode is intended for active/passive disaster-recovery deployments where the passive cluster should follow the same sizing guidance as the active cluster.
+
+Use Secondary/DR mode only when:
+
+- the deployment consists of an active/passive cluster pair
+- the passive cluster should consume the same sizing recommendations as the active cluster
+- workloads in both clusters have the same topology, including namespaces, workload types, workload names, and container names
+- the passive cluster is expected to apply recommendations locally, while the recommendations themselves are generated from the active cluster
+
+Do not use Secondary/DR mode when the two clusters are managing different workloads, use different naming, or have drifted topology. In those cases, the passive cluster should run with its own recommendations instead.
+
+Use these values to enable the feature:
+
+```yaml
+secondaryCluster:
+  enabled: true
+  primaryClusterName: primary-cluster
+```
+
+`secondaryCluster.enabled` defaults to `false`. `secondaryCluster.primaryClusterName` is required when secondary mode is enabled.
+
 ## Core Operational Values
 
 | Key | Default | Description |
@@ -108,7 +131,9 @@ Note: `kubexCredentials.userSecretName` is currently not consumed by this chart.
 | `webhook.enabled` | `true` | Enable webhook components |
 | `webhook.timeoutSeconds` | `10` | Admission webhook timeout in seconds |
 | `webhook.failurePolicy` | `Ignore` | Failure policy for validating webhooks; default is fail-open, but operators can change it |
-| `webhook.podMutation.namePrefix` | `zzz-` | Prefix added to mutating webhook object and webhook entry names; set `""` to remove prefix. Prefix may contain lowercase letters, digits, and hyphens, and must start with a letter or digit. **Warning:** changing this renames webhook objects on upgrade, and Helm applies that as delete-then-create, leaving brief window where pod mutation webhook is absent. |
+| `webhook.podMutation.namePrefix` | `zzz-` | Prefix added to the late mutating webhook object and webhook entry names; set `""` to remove prefix. Prefix may contain lowercase letters, digits, and hyphens, and must start with a letter or digit. **Warning:** changing this renames webhook objects on upgrade, and Helm applies that as delete-then-create, leaving brief window where pod mutation webhook is absent. |
+| `webhook.podMutation.additionalWebhook.enabled` | `false` | Register an additional early Pod mutation webhook so Kubex can restore selected resources after intervening mutators. |
+| `webhook.podMutation.additionalWebhook.namePrefix` | `000-` | Prefix added to the additional mutating webhook object and webhook entry name. Uses the same validation as `namePrefix`. |
 | `webhook.certManager.enabled` | `false` | Use cert-manager instead of self-signed TLS |
 | `selfSignedCert.validity` | `3650` | Self-signed certificate validity in days |
 | `controllerManager.globalConfigReconcileInterval` | `1m` | Base reconcile cadence for global config controller |
@@ -119,6 +144,8 @@ Note: `kubexCredentials.userSecretName` is currently not consumed by this chart.
 | `controllerManager.podAdmissionWebhookKubeAPIQPS` | `-1` | QPS limit for the pod admission webhook Kubernetes client; use `0` for client-go default `5 QPS`, or a negative value to disable client-side rate limiting |
 | `controllerManager.podAdmissionWebhookKubeAPIBurst` | `0` | Burst limit for the pod admission webhook Kubernetes client; `0` leaves burst at client-go default when webhook client rate limiting is active. With default `controllerManager.podAdmissionWebhookKubeAPIQPS: -1`, client-side rate limiting is disabled, so Burst is not practical cap |
 | `kubex.requestTimeout` | `30s` | Kubex API request timeout |
+| `secondaryCluster.enabled` | `false` | Enable secondary/DR mode for recommendation consumption from a primary cluster |
+| `secondaryCluster.primaryClusterName` | `""` | Primary Kubex cluster name used to fetch recommendations when secondary mode is enabled |
 | `podSecurityContext` | chart default | Pod-level security context for the controller Deployment; defaults to `65534` for `runAsUser`, `runAsGroup`, and `fsGroup`, plus `runAsNonRoot=true` and `seccompProfile.type=RuntimeDefault` |
 | `openshift.enabled` | `false` | Enable OpenShift-oriented pod security context defaults and cleanup job settings without changing the default Kubernetes installation path |
 | `openshift.fsGroup` | `null` | Optional `fsGroup` applied when `openshift.enabled=true` unless already set in `podSecurityContext` |
@@ -130,6 +157,22 @@ Note: `kubexCredentials.userSecretName` is currently not consumed by this chart.
 | `gateway.securityContext` | chart default | Gateway sidecar container security context |
 | `cleanup.podSecurityContext` | `{}` | Optional pod security context for the pre-delete cleanup job |
 | `cleanup.securityContext` | chart default | Container security context for the pre-delete cleanup job |
+
+### Additional Early Pod Mutation
+
+Most installations do not need the additional webhook and should leave it disabled. Enable it when another mutating webhook must see Kubex-updated resource requests or limits to make its admission decision. The early Kubex registration exposes those updates before other mutators run, while the normal late registration restores Kubex-selected resources if an intervening webhook changes them:
+
+```yaml
+webhook:
+  podMutation:
+    additionalWebhook:
+      enabled: true
+      namePrefix: 000-
+```
+
+The early registration uses `additionalWebhook.namePrefix` and the normal late registration uses `namePrefix`. Keep defaults `000-` and `zzz-` for intended early and late placement. Both registrations call the same idempotent handler with `failurePolicy: Ignore`.
+
+Webhook ordering is best-effort. Kubernetes does not define mutating webhook order as a stable API contract, so this setting must not be used when exact ordering is required. Enabling it roughly doubles Pod admission traffic, including dry-run health-probe Pods; size webhook capacity accordingly.
 
 ## High Availability and Replica Scaling
 
@@ -250,7 +293,7 @@ Use [Global Configuration Reference](./Global-Configuration.md) for the CR field
 | `globalConfiguration.snapshotInterval` | `30m` | Policy snapshot upload cadence |
 | `globalConfiguration.heartbeatInterval` | `5m` | Controller heartbeat upload cadence |
 | `globalConfiguration.proposalSyncEnabled` | `false` | Proposal sync disabled by default; set to `true` to opt in. When disabled, proposal-managed resources are deleted |
-| `globalConfiguration.kubexAPIRequestTimeout` | `30s` | Timeout for Kubex requests |
+| `globalConfiguration.kubexAPIRequestTimeout` | `60s` | Timeout for Kubex API requests. Also sets the gateway sidecar `API_REQUEST_TIMEOUT` env var at Helm install/upgrade time; live CR edits do not update the sidecar. |
 | `globalConfiguration.webhookOwnerResolutionRetryTimeout` | `1s` | Pod webhook owner-resolution retry budget |
 | `globalConfiguration.automationEnabled` | `true` | Global enable/disable switch |
 | `globalConfiguration.suppressFetchRecommendations` | `false` | Testing-only fetch suppression |
@@ -265,7 +308,7 @@ Use [Global Configuration Reference](./Global-Configuration.md) for the CR field
 | `globalConfiguration.webhookProbe.resources` | `{}` | Resource requests and limits for the dry-run webhook probe container |
 | `globalConfiguration.webhookProbe.podSecurityContext` | `{}` | Pod security context for the dry-run webhook probe Pod |
 | `globalConfiguration.webhookProbe.securityContext` | `{}` | Container security context for the dry-run webhook probe container |
-| `experimental.gpuKaiContract` | `v1alpha1-2026-04` | Required acknowledgement token for experimental GPU/KAI CR fields rendered by the chart |
+| `experimental.gpuKaiContract` | `v1alpha1-2026-07` | Required acknowledgement token for experimental GPU/KAI CR fields rendered by the chart |
 
 Webhook behavior notes:
 
