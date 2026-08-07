@@ -3,13 +3,25 @@
 All notable changes to the kubex-automation-stack chart will be documented in this file.
 
 
-## [1.0.19] - 2026-08-06
+## [1.0.20] - 2026-08-07
 
 ### Changed
 - Updated Prometheus chart dependency from v29.14.0 to v29.21.0
 - Updated Beyla chart dependency from v1.16.8 to v1.16.10
+- Updated gpu-process-exporter dependency from v1.1.0 to v1.1.1
+  - Updated values schema to include new scheduling configuration options
+
+## [1.0.19] - 2026-07-14
+
+### Added
+- Added RBAC Guide documentation for all components installed in the helm chart
+
+### Changed
+- Added `kubernetes.io/os: linux` node selector requirement to all components
+  - Applied to gpu-process-exporter, node-labeler, container-optimization-data-forwarder, kube-state-metrics, prometheus components, beyla, and k8s-ephemeral-storage-metrics
 - Updated gpu-process-exporter dependency from v1.0.0 to v1.1.0
   - Moved `nvidia.com/gpu.present` node selector from hard-coded template to configurable `values.yaml` default
+  - Added configurable `tolerations`, `affinity`, and `topologySpreadConstraints` scheduling options
   - Allows users to customize node selector behavior while maintaining GPU node targeting by default
 
 ## [1.0.18] - 2026-07-03
