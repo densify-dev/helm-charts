@@ -4,18 +4,18 @@ dependencies:
   version: 4.0.17
 - name: prometheus
   repository: https://prometheus-community.github.io/helm-charts
-  version: 29.14.0
+  version: 29.21.0
 - name: beyla
   repository: https://grafana.github.io/helm-charts
-  version: 1.16.8
+  version: 1.16.10
 - name: k8s-ephemeral-storage-metrics
   repository: https://densify-dev.github.io/helm-charts
   version: 1.22.1
 - name: gpu-process-exporter
   repository: https://densify-dev.github.io/helm-charts
-  version: 1.0.0
+  version: 1.1.1
 - name: node-labeler
   repository: https://densify-dev.github.io/helm-charts
   version: 0.1.2
-digest: sha256:194f1e0d9db23f20f3d0bcbd64944bc27795d67453f56ea24d527295fa8b17b6
-generated: "2026-08-05T15:58:09.405195716Z"
+digest: sha256:e47e0931438e49349f0083713334559cdaeb5aa067345dcb66abcbb25ae6514f
+generated: "2026-08-07T10:16:26.328638361+01:00"
