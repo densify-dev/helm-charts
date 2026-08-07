@@ -13,9 +13,9 @@ dependencies:
   version: 1.22.1
 - name: gpu-process-exporter
   repository: https://densify-dev.github.io/helm-charts
-  version: 1.1.0
+  version: 1.1.1
 - name: node-labeler
   repository: https://densify-dev.github.io/helm-charts
   version: 0.1.2
-digest: sha256:c8bb94367bb0d934676054f79d77a059fe58887325721b979f8e0c4eddb765df
-generated: "2026-08-06T18:36:33.800363925+01:00"
+digest: sha256:e47e0931438e49349f0083713334559cdaeb5aa067345dcb66abcbb25ae6514f
+generated: "2026-08-07T10:16:26.328638361+01:00"
