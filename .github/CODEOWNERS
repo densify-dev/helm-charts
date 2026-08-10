@@ -2,5 +2,5 @@
 * @densify-dev/cluster-kit
 
 # Kubex AI charts
-/charts/kubex-connector/ @gasarekubex @shsma
-/charts/kubex-ai-cdi/ @gasarekubex @shsma
+/charts/kubex-connector/ @densify-dev/cluster-kit @shsma
+/charts/kubex-ai-cdi/ @densify-dev/cluster-kit @shsma
