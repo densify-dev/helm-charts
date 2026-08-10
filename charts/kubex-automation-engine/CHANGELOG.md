@@ -2,6 +2,17 @@
 
 All notable changes to the Kubex Automation Engine Helm chart will be documented in this file.
 
+## [1.9.1] - 2026-08-06
+
+### Fixed
+- Rollback no longer gets stuck indefinitely when there's nothing to roll back to; it now stops with a clear error instead of looping forever.
+- Rollback now correctly restores the last known-good configuration, instead of reapplying the broken one that triggered it.
+- Fixed a safety check that could permanently block recovery for single-replica workloads.
+- A resize that triggered a rollback can no longer be immediately reapplied by another policy while the workload is recovering.
+- Improved reliability of rollback handling for workloads with deleted or missing owners.
+
+---
+
 ## [1.9.0] - 2026-07-28
 
 ### Breaking
