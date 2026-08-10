@@ -25,7 +25,7 @@ Then redeploy connector:
 ```bash
 helm upgrade --install kubex-connector ./charts/kubex-connector \
   --namespace kubex-ai \
-  -f ./charts/kubex-connector/values-dev.yaml
+  -f ./values-private.yaml
 ```
 
 ## Test via proxy

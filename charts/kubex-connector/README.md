@@ -2,7 +2,7 @@
 
 Deploys the customer-side connector that dials proxy `/tunnel/connect` and forwards traffic to local upstream.
 
-`values-dev.yaml` uses `connectorServices` (YAML list) to define one or more service IDs and upstream URLs.
+Set `connectorServices` (a YAML list) to define one or more service IDs and upstream URLs. Keep environment-specific values in a separate, private values file.
 
 `connectorServices` is required.
 
@@ -39,7 +39,7 @@ kubectl --context <KUBEX_CUSTOMER_CONTEXT> create namespace kubex-ai --dry-run=c
 
 helm upgrade --install kubex-connector ./charts/kubex-connector \
   --namespace kubex-ai \
-  -f ./charts/kubex-connector/values-dev.yaml
+  -f ./values-private.yaml
 ```
 
 ## Verify
