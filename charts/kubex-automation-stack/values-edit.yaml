@@ -18,11 +18,9 @@ container-optimization-data-forwarder:
       - name: '<changeme-cluster-name>' # mandatory
 
   # Optional: Additional labels to add to CronJob and Job resources
-  # extraLabels:
-  #   my-custom-label: my-value-1
+  extraLabels: {}
   # Optional: Additional annotations to add to CronJob and Job resources
-  # extraAnnotations:
-  #   my-custom-annotation: my-value-2
+  extraAnnotations: {}
 
 # Optional: Enable the connector and CDI tunnel path.
 # Keep these opt-in until the feature is generally available in production.
