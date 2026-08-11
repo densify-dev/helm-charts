@@ -10,7 +10,7 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: {{ default "kubex-ai-cdi-reader" (dig "name" "" $clusterRole) }}
+  name: {{ default (printf "%s-kubex-ai-cdi-reader" .Release.Name) (dig "name" "" $clusterRole) }}
   labels:
     app: kubex-ai-cdi
     chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}

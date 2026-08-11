@@ -15,10 +15,10 @@ rbac:
         name: kubex-ai-cdi-sa
       clusterRole:
         create: true
-        name: kubex-ai-cdi-reader
+        name: ""
       clusterRoleBinding:
         create: true
-        name: kubex-ai-cdi-reader
+        name: ""
       role:
         create: false
         name: kubex-ai-cdi-reader
@@ -101,8 +101,8 @@ kubex-ai-cdi:
   enabled: false
   extraLabels: {}
   extraAnnotations: {}
-  clusterRoleNameOverride: kubex-ai-cdi-reader
-  clusterRoleBindingNameOverride: kubex-ai-cdi-reader
+  clusterRoleNameOverride: ""
+  clusterRoleBindingNameOverride: ""
   service:
     name: kubex-ai-cdi-service
   worker:

@@ -12,6 +12,14 @@ All notable changes to the kubex-automation-stack chart will be documented in th
 ### Upgrade Notes
 - Enabling the 1.1.0 connector or CDI dependency replaces its 0.1.x Deployment with a release-qualified Deployment name. Plan for a brief rollout transition when upgrading an enabled component.
 
+## [1.0.20] - 2026-08-07
+
+### Changed
+- Updated Prometheus chart dependency from v29.14.0 to v29.21.0
+- Updated Beyla chart dependency from v1.16.8 to v1.16.10
+- Updated gpu-process-exporter dependency from v1.1.0 to v1.1.1
+  - Updated values schema to include new scheduling configuration options
+
 ## [1.0.19] - 2026-07-03
 
 ### Added
@@ -26,14 +34,6 @@ All notable changes to the kubex-automation-stack chart will be documented in th
 ### Fixed
 - Disabled the forwarder hook job in the OpenShift overlay so the cron-based collector path is used consistently
 - Added OpenShift security context defaults for stack-managed connector and CDI deployments
-
-## [1.0.20] - 2026-08-07
-
-### Changed
-- Updated Prometheus chart dependency from v29.14.0 to v29.21.0
-- Updated Beyla chart dependency from v1.16.8 to v1.16.10
-- Updated gpu-process-exporter dependency from v1.1.0 to v1.1.1
-  - Updated values schema to include new scheduling configuration options
 
 ## [1.0.19] - 2026-07-14
 
