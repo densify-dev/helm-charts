@@ -121,5 +121,6 @@ spec:
 
 - Use static policies when exact values matter more than recommendation-driven tuning.
 - `resources.containers."*"` applies a default to every container, and named containers can override it.
+- Container targets include regular containers and native sidecar init containers (`restartPolicy: Always`). One-shot init containers are not automated.
 - `Model` is included in default workload types. Use `spec.scope.workloadTypes: [Model]` when you want to restrict scope to KubeAI `Model` objects only. Recommendations and rollback state are stored on the `Model` owner, then inherited by model-owned pods.
 - When multiple static policies of the same kind match, higher `weight` wins, then older objects win on ties.
