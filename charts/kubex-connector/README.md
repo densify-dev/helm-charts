@@ -1,32 +1,36 @@
-# Kubex Connector Helm Chart
+# kubex-connector chart
 
-This chart deploys the in-cluster connector used for cluster data interface.
+Deploys the customer-side connector that dials proxy `/tunnel/connect` and forwards traffic to local upstream.
 
-It is intended to be installed through `kubex-automation-stack`.
+Set `connectorServices` (a YAML list) to define one or more service IDs and upstream URLs. Keep environment-specific values in a separate, private values file.
 
-It can deploy the websocket relay sidecar for connector traffic relaying. The connector talks to the local relay automatically when the relay sidecar is enabled, and the relay dials the public Kubex tunnel endpoint.
+`connectorServices` is required.
 
-The chart supports two configuration modes:
+## Architecture
 
-- Standalone mode via `kubex.*` values for host and cluster name, with credentials sourced from secrets
-- Stack-managed mode via the forwarder `ConfigMap` and `forwarderCredentialsSecretRef`
+The connector is a customer-cluster tunnel agent. It does not expose public ingress by itself.
 
-When installed through `kubex-automation-stack`, the chart reads the shared Kubex host, tenant, and cluster identity from the forwarder `ConfigMap` via `forwarderConfigMap.name`.
+- Establishes a persistent WebSocket tunnel to proxy at `/tunnel/connect`
+- Identifies itself with `CONNECTOR_TENANT_ID` and `CONNECTOR_CLUSTER_ID`
+- Registers one or more service IDs from `connectorServices` (rendered to `CONNECTOR_SERVICES_JSON` in the deployment)
+- Receives proxied requests for `/proxy/:tenant/:cluster/:service/*`
+- Forwards each request to the matching local upstream URL in the customer cluster
+- Returns status, headers, and body back through the same tunnel
 
-Stack-managed credentials are configured through `forwarderCredentialsSecretRef.name`.
+## Deploy
 
-Connector timing and relay wiring remain configurable:
+```bash
+kubectl config use-context <KUBEX_CUSTOMER_CONTEXT>
+kubectl --context <KUBEX_CUSTOMER_CONTEXT> create namespace kubex-ai --dry-run=client -o yaml | kubectl apply -f -
 
-- `heartbeatSeconds`
-- `requestTimeoutSeconds`
-- `kubex.url.host`
-- `kubex.clusterName`
-- `forwarderConfigMap.name`
-- `forwarderCredentialsSecretRef.name`
-- `forwarderCredentialsSecretRef.usernameKey`
-- `forwarderCredentialsSecretRef.epasswordKey`
-- `relay.enabled`
-- `relay.listenAddr`
-- `relay.connectPath`
-- `relay.tlsCaSecretName`
-- `relay.hostAliases`
+helm upgrade --install kubex-connector ./charts/kubex-connector \
+  --namespace kubex-ai \
+  -f ./values-private.yaml
+```
+
+## Verify
+
+```bash
+kubectl --context <KUBEX_CUSTOMER_CONTEXT> -n kubex-ai get pods
+kubectl --context <KUBEX_CUSTOMER_CONTEXT> -n kubex-ai logs deploy/kubex-connector-deployment
+```
