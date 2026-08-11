@@ -6,8 +6,6 @@ Set `connectorServices` (a YAML list) to define one or more service IDs and upst
 
 `connectorServices` is required.
 
-For an end-to-end tunnel smoke test using an echo app, see `charts/kubex-connector/examples/README.md`.
-
 ## Architecture
 
 The connector is a customer-cluster tunnel agent. It does not expose public ingress by itself.
@@ -18,18 +16,6 @@ The connector is a customer-cluster tunnel agent. It does not expose public ingr
 - Receives proxied requests for `/proxy/:tenant/:cluster/:service/*`
 - Forwards each request to the matching local upstream URL in the customer cluster
 - Returns status, headers, and body back through the same tunnel
-
-Routing contract:
-
-- Tenant + cluster select the connector session
-- Service ID selects the upstream within that connector
-- Path suffix after `/:service` is forwarded to the target upstream
-
-Example:
-
-- Proxy request: `/proxy/tenant-a/cluster-1/echo/hello?x=1`
-- Connector lookup: tenant `tenant-a`, cluster `cluster-1`, service `echo`
-- Upstream target: `http://kubex-echo:8080/hello?x=1`
 
 ## Deploy
 
