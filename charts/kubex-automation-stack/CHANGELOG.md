@@ -2,15 +2,15 @@
 
 All notable changes to the kubex-automation-stack chart will be documented in this file.
 
-## [1.0.20] - 2026-08-06
+## [1.0.21] - 2026-08-11
 
 ### Changed
-- Updated connector and CDI dependencies to 1.0.0
+- Updated connector and CDI dependencies to 1.1.0
 - Reused the data-forwarder cluster identity for CDI through the shared runtime ConfigMap
 - Added connector, relay, and CDI resource sizing to each cluster-size values overlay
 
 ### Upgrade Notes
-- Enabling the 1.0.0 connector or CDI dependency replaces its 0.1.x Deployment with a release-qualified Deployment name. Plan for a brief rollout transition when upgrading an enabled component.
+- Enabling the 1.1.0 connector or CDI dependency replaces its 0.1.x Deployment with a release-qualified Deployment name. Plan for a brief rollout transition when upgrading an enabled component.
 
 ## [1.0.19] - 2026-07-03
 
