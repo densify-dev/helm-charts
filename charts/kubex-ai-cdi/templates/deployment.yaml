@@ -5,8 +5,8 @@ metadata:
   labels:
     app: {{ include "kubex-ai-cdi.name" . }}
     chart: {{ .Chart.Name }}-{{ .Chart.Version }}
-    {{- with omit .Values.extraLabels "app" "app.kubernetes.io/name" "app.kubernetes.io/instance" }}
-    {{- toYaml . | nindent 4 }}
+    {{- if .Values.extraLabels }}
+    {{- toYaml .Values.extraLabels | nindent 4 }}
     {{- end }}
   {{- if .Values.extraAnnotations }}
   annotations:
@@ -16,14 +16,13 @@ spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ include "kubex-ai-cdi.name" . }}
+      {{- include "kubex-ai-cdi.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        app: {{ include "kubex-ai-cdi.name" . }}
         {{- include "kubex-ai-cdi.selectorLabels" . | nindent 8 }}
-        {{- with omit .Values.extraLabels "app" "app.kubernetes.io/name" "app.kubernetes.io/instance" }}
-        {{- toYaml . | nindent 8 }}
+        {{- if .Values.extraLabels }}
+        {{- toYaml .Values.extraLabels | nindent 8 }}
         {{- end }}
       {{- if .Values.extraAnnotations }}
       annotations:
@@ -81,12 +80,6 @@ spec:
         {{- if .Values.worker.clusterName }}
         - name: CLUSTER_NAME
           value: {{ .Values.worker.clusterName | quote }}
-        {{- else if .Values.worker.clusterNameConfigMap.name }}
-        - name: CLUSTER_NAME
-          valueFrom:
-            configMapKeyRef:
-              name: {{ .Values.worker.clusterNameConfigMap.name | quote }}
-              key: {{ .Values.worker.clusterNameConfigMap.key | quote }}
         {{- end }}
         - name: ALLOWED_NAMESPACES
           value: {{ .Values.worker.allowedNamespaces | quote }}

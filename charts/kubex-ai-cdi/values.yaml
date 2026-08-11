@@ -1,6 +1,6 @@
 image:
   repository: densify/kubex-ai-cdi
-  tag: 1.0.0
+  tag: 0.1.9-rc.3
   pullPolicy: IfNotPresent
 
 replicaCount: 1
@@ -25,9 +25,6 @@ worker:
   maxPayloadBytes: 262144
   enableClusterScopeOps: true
   clusterName: ""
-  clusterNameConfigMap:
-    name: ""
-    key: kubex_cluster_name
   allowedNamespaces: ""
 
 rbac:
@@ -105,10 +102,15 @@ containerSecurityContext:
   readOnlyRootFilesystem: true
 
 serviceAccount:
-  create: true
-  name: ""
+  name: kubex-ai-cdi-sa
 
-resources: {}
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
 
 livenessProbe:
   enabled: true

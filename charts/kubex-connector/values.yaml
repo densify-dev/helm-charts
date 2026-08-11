@@ -1,6 +1,6 @@
 image:
   repository: densify/kubex-connector
-  tag: 1.0.0
+  tag: 0.1.9-rc.3
   pullPolicy: IfNotPresent
 
 replicaCount: 1
@@ -32,9 +32,6 @@ forwarderCredentialsSecretRef:
   usernameKey: username
   epasswordKey: epassword
 
-# Direct connector environment overrides, primarily for standalone development.
-env: {}
-
 extraEnv: []
 
 relay:
@@ -51,7 +48,13 @@ relay:
   extraEnv: []
   resources: {}
 
-resources: {}
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
 
 securityContext:
   runAsUser: null
