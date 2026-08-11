@@ -1,0 +1,134 @@
+{{- if .Values.compactionScheduler.enabled -}}
+{{- $resourceName := "kubex-compaction-scheduler" -}}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ $resourceName }}
+  labels:
+    {{- include "kubex-automation-engine.labels" . | nindent 4 }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ $resourceName }}
+  labels:
+    {{- include "kubex-automation-engine.labels" . | nindent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ $resourceName }}
+    namespace: {{ include "kubex-automation-engine.namespace" . }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: system:kube-scheduler
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ printf "%s-volume-scheduler" $resourceName }}
+  labels:
+    {{- include "kubex-automation-engine.labels" . | nindent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ $resourceName }}
+    namespace: {{ include "kubex-automation-engine.namespace" . }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: system:volume-scheduler
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ printf "%s-resource-claims" $resourceName }}
+  labels:
+    {{- include "kubex-automation-engine.labels" . | nindent 4 }}
+rules:
+  - apiGroups:
+      - resource.k8s.io
+    resources:
+      - deviceclasses
+      - resourceslices
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - resource.k8s.io
+    resources:
+      - resourceclaims
+      - resourceclaims/status
+    verbs:
+      - get
+      - list
+      - watch
+      - update
+      - patch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ printf "%s-resource-claims" $resourceName }}
+  labels:
+    {{- include "kubex-automation-engine.labels" . | nindent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ $resourceName }}
+    namespace: {{ include "kubex-automation-engine.namespace" . }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ printf "%s-resource-claims" $resourceName }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ printf "%s-auth-reader" $resourceName }}
+  namespace: kube-system
+  labels:
+    {{- include "kubex-automation-engine.labels" . | nindent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ $resourceName }}
+    namespace: {{ include "kubex-automation-engine.namespace" . }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: extension-apiserver-authentication-reader
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ printf "%s-leader-election" $resourceName }}
+  namespace: {{ include "kubex-automation-engine.namespace" . }}
+  labels:
+    {{- include "kubex-automation-engine.labels" . | nindent 4 }}
+rules:
+  - apiGroups:
+      - coordination.k8s.io
+    resources:
+      - leases
+      - leasecandidates
+    verbs:
+      - create
+      - get
+      - list
+      - update
+      - watch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ printf "%s-leader-election" $resourceName }}
+  namespace: {{ include "kubex-automation-engine.namespace" . }}
+  labels:
+    {{- include "kubex-automation-engine.labels" . | nindent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ $resourceName }}
+    namespace: {{ include "kubex-automation-engine.namespace" . }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ printf "%s-leader-election" $resourceName }}
+{{- end -}}

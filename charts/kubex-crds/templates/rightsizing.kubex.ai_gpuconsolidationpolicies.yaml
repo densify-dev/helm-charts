@@ -59,7 +59,8 @@ spec:
               nodeSelector:
                 description: |-
                   nodeSelector selects the single compatibility pool this policy may evaluate.
-                  Selector semantics match Kubernetes/Cilium label selector behavior.
+                  Selector semantics match Kubernetes/Cilium label selector behavior, with shell-style
+                  "*" wildcards supported in matchExpressions values for In/NotIn requirements.
                   Only selected nodes are considered compatible for consolidation, so use multiple
                   policies to represent multiple node pools.
                 properties:

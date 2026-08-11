@@ -8,7 +8,35 @@
 {{- $localProposalsPath := printf "%s/%s" $localProposalsMountPath $localProposalsFileName -}}
 {{- $openshiftFsGroupConfigured := and .Values.openshift.enabled (not (empty .Values.openshift.fsGroup)) -}}
 {{- $hasPodFsGroup := hasKey .Values.podSecurityContext "fsGroup" -}}
-{{- $hasEffectiveFsGroup := or $hasPodFsGroup $openshiftFsGroupConfigured -}}
+{{- $hasEffectiveFsGroup := or (and (not .Values.openshift.enabled) $hasPodFsGroup) $openshiftFsGroupConfigured -}}
+{{- $controllerPodSecurityContext := deepCopy .Values.podSecurityContext -}}
+{{- $schedulerPodSecurityContext := deepCopy .Values.compactionScheduler.podSecurityContext -}}
+{{- $schedulerSecurityContext := deepCopy .Values.compactionScheduler.securityContext -}}
+{{- $deschedulerPodSecurityContext := deepCopy .Values.compactionDescheduler.podSecurityContext -}}
+{{- $deschedulerSecurityContext := deepCopy .Values.compactionDescheduler.securityContext -}}
+{{- $schedulerImage := "" -}}
+{{- if not (empty .Values.compactionScheduler.image.digest) -}}
+{{- $schedulerImage = printf "%s@%s" .Values.compactionScheduler.image.repository .Values.compactionScheduler.image.digest -}}
+{{- else if not (empty .Values.compactionScheduler.image.tag) -}}
+{{- $schedulerImage = printf "%s:%s" .Values.compactionScheduler.image.repository .Values.compactionScheduler.image.tag -}}
+{{- end -}}
+{{- $deschedulerImage := "" -}}
+{{- if not (empty .Values.compactionDescheduler.image.digest) -}}
+{{- $deschedulerImage = printf "%s@%s" .Values.compactionDescheduler.image.repository .Values.compactionDescheduler.image.digest -}}
+{{- else if not (empty .Values.compactionDescheduler.image.tag) -}}
+{{- $deschedulerImage = printf "%s:%s" .Values.compactionDescheduler.image.repository .Values.compactionDescheduler.image.tag -}}
+{{- end -}}
+{{- if .Values.openshift.enabled -}}
+{{- $controllerPodSecurityContext = omit $controllerPodSecurityContext "runAsUser" "runAsGroup" "fsGroup" -}}
+{{- $_ := set $schedulerPodSecurityContext "runAsNonRoot" true -}}
+{{- $_ := set $schedulerPodSecurityContext "seccompProfile" (dict "type" "RuntimeDefault") -}}
+{{- $_ := set $schedulerSecurityContext "allowPrivilegeEscalation" false -}}
+{{- $_ := set $schedulerSecurityContext "capabilities" (dict "drop" (list "ALL")) -}}
+{{- $_ := set $deschedulerPodSecurityContext "runAsNonRoot" true -}}
+{{- $_ := set $deschedulerPodSecurityContext "seccompProfile" (dict "type" "RuntimeDefault") -}}
+{{- $_ := set $deschedulerSecurityContext "allowPrivilegeEscalation" false -}}
+{{- $_ := set $deschedulerSecurityContext "capabilities" (dict "drop" (list "ALL")) -}}
+{{- end -}}
 {{- $kubexAPIRequestTimeout := include "kubex-automation-engine.kubexAPIRequestTimeout" . -}}
 apiVersion: apps/v1
 kind: Deployment
@@ -45,8 +73,8 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
-        {{- if and $openshiftFsGroupConfigured (not $hasPodFsGroup) }}
+        {{- toYaml $controllerPodSecurityContext | nindent 8 }}
+        {{- if $openshiftFsGroupConfigured }}
         fsGroup: {{ .Values.openshift.fsGroup }}
         {{- end }}
         {{- if and $hasEffectiveFsGroup .Values.openshift.enabled (not (hasKey .Values.podSecurityContext "fsGroupChangePolicy")) (not (empty .Values.openshift.fsGroupChangePolicy)) }}
@@ -95,12 +123,45 @@ spec:
         {{- end }}
         - name: IMAGE_TAG
           value: {{ .Values.image.tag | quote }}
+        - name: COMPACTION_SCHEDULER_IMAGE_REPOSITORY
+          value: {{ .Values.compactionScheduler.image.repository | quote }}
+        - name: COMPACTION_SCHEDULER_IMAGE
+          value: {{ $schedulerImage | quote }}
+        - name: COMPACTION_SCHEDULER_PULL_POLICY
+          value: {{ .Values.compactionScheduler.image.pullPolicy | quote }}
+        - name: COMPACTION_SCHEDULER_RESOURCES_JSON
+          value: {{ toJson .Values.compactionScheduler.resources | quote }}
+        - name: COMPACTION_SCHEDULER_POD_SECURITY_CONTEXT_JSON
+          value: {{ ternary (toJson $schedulerPodSecurityContext) "null" (not (empty $schedulerPodSecurityContext)) | quote }}
+        - name: COMPACTION_SCHEDULER_SECURITY_CONTEXT_JSON
+          value: {{ toJson $schedulerSecurityContext | quote }}
+        - name: COMPACTION_RUNTIME_IMAGE_PULL_SECRETS_JSON
+          value: {{ ternary (toJson .Values.imagePullSecrets) "null" (not (empty .Values.imagePullSecrets)) | quote }}
+        - name: COMPACTION_DESCHEDULER_IMAGE
+          value: {{ $deschedulerImage | quote }}
+        - name: COMPACTION_DESCHEDULER_PULL_POLICY
+          value: {{ .Values.compactionDescheduler.image.pullPolicy | quote }}
+        - name: COMPACTION_DESCHEDULER_RESOURCE_PREFIX
+          value: "kubex-compaction-descheduler"
+        - name: COMPACTION_DESCHEDULER_SERVICE_ACCOUNT_NAME
+          value: "kubex-compaction-descheduler"
+        - name: COMPACTION_DESCHEDULER_RESOURCES_JSON
+          value: {{ toJson .Values.compactionDescheduler.resources | quote }}
+        - name: COMPACTION_DESCHEDULER_POD_SECURITY_CONTEXT_JSON
+          value: {{ ternary (toJson $deschedulerPodSecurityContext) "null" (not (empty $deschedulerPodSecurityContext)) | quote }}
+        - name: COMPACTION_DESCHEDULER_SECURITY_CONTEXT_JSON
+          value: {{ ternary (toJson $deschedulerSecurityContext) "null" (not (empty $deschedulerSecurityContext)) | quote }}
         - name: POD_NAMESPACE
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
+        {{- if .Values.gateway.enabled }}
         - name: GATEWAY_URL
           value: "http://localhost:8181"
+        {{- else }}
+        - name: GATEWAY_URL
+          value: "http://kubex-stub.kubex.svc.cluster.local:8080"
+        {{- end }}
         {{- if $localRecommendationsEnabled }}
         - name: RECOMMENDATIONS_PATH
           value: {{ $localRecommendationsPath | quote }}
