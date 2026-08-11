@@ -90,7 +90,7 @@ This guide covers:
 
 - Prerequisites and required connection settings
 - Helm installation with generated default CRs
-- OpenShift note: install still requires cluster-scoped permissions for RBAC and admission webhook resources; set `openshift.enabled=true` for the chart's restricted-friendly OpenShift path, and only set `openshift.fsGroup` if your cluster policy requires it
+- OpenShift note: install still requires cluster-scoped permissions for RBAC and admission webhook resources; set `openshift.enabled=true` for arbitrary-UID-compatible controller, cleanup, scheduler, and descheduler Pods under `restricted-v2`, and only set `openshift.fsGroup` if your cluster policy requires it
 - Namespaced and cluster-scoped CR examples
 - How to verify webhook health, policy resolution, and recommendation application
 - How to uninstall cleanly, including manual finalizer cleanup for externally managed CRs
