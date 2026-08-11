@@ -1,16 +1,16 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Values.service.name }}
+  name: {{ include "kubex-ai-cdi.serviceName" . }}
   labels:
-    app: {{ include "kubex-ai-cdi.name" . }}
+    {{- include "kubex-ai-cdi.selectorLabels" . | nindent 4 }}
     chart: {{ .Chart.Name }}-{{ .Chart.Version }}
-    {{- if .Values.extraLabels }}
-    {{- toYaml .Values.extraLabels | nindent 4 }}
+    {{- with omit .Values.extraLabels "app" "app.kubernetes.io/name" "app.kubernetes.io/instance" }}
+    {{- toYaml . | nindent 4 }}
     {{- end }}
-  {{- if .Values.extraAnnotations }}
+  {{- with .Values.extraAnnotations }}
   annotations:
-    {{- toYaml .Values.extraAnnotations | nindent 4 }}
+    {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
   type: {{ .Values.service.type }}

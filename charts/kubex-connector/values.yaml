@@ -1,6 +1,6 @@
 image:
   repository: densify/kubex-connector
-  tag: 0.1.8
+  tag: 1.0.0
   pullPolicy: IfNotPresent
 
 replicaCount: 1
@@ -31,6 +31,9 @@ forwarderCredentialsSecretRef:
   name: ""
   usernameKey: username
   epasswordKey: epassword
+
+# Direct connector environment overrides, primarily for standalone development.
+env: {}
 
 extraEnv: []
 

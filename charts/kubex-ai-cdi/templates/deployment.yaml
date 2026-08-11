@@ -1,12 +1,12 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "kubex-ai-cdi.fullname" . }}
+  name: {{ include "kubex-ai-cdi.fullname" . }}-deployment
   labels:
     app: {{ include "kubex-ai-cdi.name" . }}
     chart: {{ .Chart.Name }}-{{ .Chart.Version }}
-    {{- if .Values.extraLabels }}
-    {{- toYaml .Values.extraLabels | nindent 4 }}
+    {{- with omit .Values.extraLabels "app" "app.kubernetes.io/name" "app.kubernetes.io/instance" }}
+    {{- toYaml . | nindent 4 }}
     {{- end }}
   {{- if .Values.extraAnnotations }}
   annotations:
@@ -21,8 +21,9 @@ spec:
     metadata:
       labels:
         app: {{ include "kubex-ai-cdi.name" . }}
-        {{- if .Values.extraLabels }}
-        {{- toYaml .Values.extraLabels | nindent 8 }}
+        {{- include "kubex-ai-cdi.selectorLabels" . | nindent 8 }}
+        {{- with omit .Values.extraLabels "app" "app.kubernetes.io/name" "app.kubernetes.io/instance" }}
+        {{- toYaml . | nindent 8 }}
         {{- end }}
       {{- if .Values.extraAnnotations }}
       annotations:
@@ -77,6 +78,16 @@ spec:
           value: "false"
         - name: ENABLE_CLUSTER_SCOPE_OPS
           value: {{ .Values.worker.enableClusterScopeOps | quote }}
+        {{- if .Values.worker.clusterName }}
+        - name: CLUSTER_NAME
+          value: {{ .Values.worker.clusterName | quote }}
+        {{- else if .Values.worker.clusterNameConfigMap.name }}
+        - name: CLUSTER_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Values.worker.clusterNameConfigMap.name | quote }}
+              key: {{ .Values.worker.clusterNameConfigMap.key | quote }}
+        {{- end }}
         - name: ALLOWED_NAMESPACES
           value: {{ .Values.worker.allowedNamespaces | quote }}
         {{- range .Values.extraEnv }}
