@@ -5,8 +5,8 @@ metadata:
   labels:
     app: {{ include "kubex-connector.name" . }}
     chart: {{ .Chart.Name }}-{{ .Chart.Version }}
-    {{- if .Values.extraLabels }}
-    {{- toYaml .Values.extraLabels | nindent 4 }}
+    {{- with omit .Values.extraLabels "app" "app.kubernetes.io/name" "app.kubernetes.io/instance" }}
+    {{- toYaml . | nindent 4 }}
     {{- end }}
   {{- if .Values.extraAnnotations }}
   annotations:
@@ -16,13 +16,14 @@ spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      {{- include "kubex-connector.selectorLabels" . | nindent 6 }}
+      app: {{ include "kubex-connector.name" . }}
   template:
     metadata:
       labels:
+        app: {{ include "kubex-connector.name" . }}
         {{- include "kubex-connector.selectorLabels" . | nindent 8 }}
-        {{- if .Values.extraLabels }}
-        {{- toYaml .Values.extraLabels | nindent 8 }}
+        {{- with omit .Values.extraLabels "app" "app.kubernetes.io/name" "app.kubernetes.io/instance" }}
+        {{- toYaml . | nindent 8 }}
         {{- end }}
       {{- if .Values.extraAnnotations }}
       annotations:
@@ -32,11 +33,16 @@ spec:
       {{- $kubexHost := include "kubex-connector.kubexHost" . }}
       {{- $kubexClusterName := include "kubex-connector.kubexClusterName" . }}
       {{- $localKubex := .Values.kubex | default dict }}
+      {{- $env := .Values.env | default dict }}
+      {{- $proxyWsURL := trim (toString (default "" (index $env "CONNECTOR_PROXY_WS_URL"))) }}
+      {{- $tenantID := trim (toString (default "" (index $env "CONNECTOR_TENANT_ID"))) }}
+      {{- $clusterID := trim (toString (default "" (index $env "CONNECTOR_CLUSTER_ID"))) }}
+      {{- $relayEnabled := and .Values.relay.enabled (eq $proxyWsURL "") }}
       {{- $forwarderConfigMapName := trim (default "" .Values.forwarderConfigMap.name) }}
       {{- $forwarderSecretName := trim (default "" .Values.forwarderCredentialsSecretRef.name) }}
       {{- $useForwarderConfigMap := and (eq $kubexHost "") (eq $kubexClusterName "") (ne $forwarderConfigMapName "") }}
       {{- $useForwarderSecretRef := ne $forwarderSecretName "" }}
-      {{- if and .Values.relay.enabled .Values.relay.hostAliases }}
+      {{- if and $relayEnabled .Values.relay.hostAliases }}
       hostAliases:
       {{- toYaml .Values.relay.hostAliases | nindent 6 }}
       {{- end }}
@@ -58,7 +64,7 @@ spec:
       tolerations:
         {{- toYaml . | nindent 6 }}
       {{- end }}
-      {{- if and .Values.relay.enabled .Values.relay.tlsCaSecretName }}
+      {{- if and $relayEnabled .Values.relay.tlsCaSecretName }}
       volumes:
       - name: relay-ca
         secret:
@@ -89,7 +95,9 @@ spec:
               key: kubex_host
         {{- end }}
         - name: CONNECTOR_PROXY_WS_URL
-          {{- if .Values.relay.enabled }}
+          {{- if $proxyWsURL }}
+          value: {{ $proxyWsURL | quote }}
+          {{- else if $relayEnabled }}
           value: {{ printf "ws://127.0.0.1%s/tunnel/connect" .Values.relay.listenAddr | quote }}
           {{- else if $useForwarderConfigMap }}
           value: "wss://$(KUBEX_HOST)/tunnel/connect"
@@ -97,7 +105,9 @@ spec:
           value: {{ include "kubex-connector.relayUpstreamWssUrl" . | quote }}
           {{- end }}
         - name: CONNECTOR_TENANT_ID
-          {{- if $useForwarderConfigMap }}
+          {{- if $tenantID }}
+          value: {{ $tenantID | quote }}
+          {{- else if $useForwarderConfigMap }}
           valueFrom:
             configMapKeyRef:
               name: {{ $forwarderConfigMapName | quote }}
@@ -106,7 +116,9 @@ spec:
           value: {{ include "kubex-connector.tenantID" . | quote }}
           {{- end }}
         - name: CONNECTOR_CLUSTER_ID
-          {{- if $useForwarderConfigMap }}
+          {{- if $clusterID }}
+          value: {{ $clusterID | quote }}
+          {{- else if $useForwarderConfigMap }}
           valueFrom:
             configMapKeyRef:
               name: {{ $forwarderConfigMapName | quote }}
@@ -115,11 +127,18 @@ spec:
           value: {{ include "kubex-connector.clusterID" . | quote }}
           {{- end }}
         - name: CONNECTOR_HEARTBEAT_SECONDS
-          value: {{ required "heartbeatSeconds is required" .Values.heartbeatSeconds | quote }}
+          value: {{ required "heartbeatSeconds is required" (default .Values.heartbeatSeconds (index $env "CONNECTOR_HEARTBEAT_SECONDS")) | quote }}
         - name: CONNECTOR_REQUEST_TIMEOUT_SECONDS
-          value: {{ required "requestTimeoutSeconds is required" .Values.requestTimeoutSeconds | quote }}
+          value: {{ required "requestTimeoutSeconds is required" (default .Values.requestTimeoutSeconds (index $env "CONNECTOR_REQUEST_TIMEOUT_SECONDS")) | quote }}
         - name: CONNECTOR_SERVICES_JSON
           value: {{ required "connectorServices is required and must contain at least one service" .Values.connectorServices | toJson | quote }}
+        {{- $managedEnv := list "CONNECTOR_PROXY_WS_URL" "CONNECTOR_TENANT_ID" "CONNECTOR_CLUSTER_ID" "CONNECTOR_HEARTBEAT_SECONDS" "CONNECTOR_REQUEST_TIMEOUT_SECONDS" "CONNECTOR_SERVICES_JSON" }}
+        {{- range $name, $value := $env }}
+        {{- if not (has $name $managedEnv) }}
+        - name: {{ $name }}
+          value: {{ $value | quote }}
+        {{- end }}
+        {{- end }}
         {{- range .Values.extraEnv }}
         - name: {{ .name }}
           value: {{ .value | quote }}
@@ -128,7 +147,7 @@ spec:
         resources:
           {{- toYaml .Values.resources | nindent 10 }}
         {{- end }}
-      {{- if .Values.relay.enabled }}
+      {{- if $relayEnabled }}
       - name: relay
         image: "{{ .Values.relay.image.repository }}:{{ .Values.relay.image.tag }}"
         imagePullPolicy: {{ .Values.relay.image.pullPolicy }}

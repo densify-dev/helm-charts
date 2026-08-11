@@ -4,9 +4,14 @@
 
 {{- define "kubex-connector.fullname" -}}
 {{- if .Values.fullnameOverride -}}
-{{- .Values.fullnameOverride -}}
+{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" -}}
 {{- else -}}
+{{- $name := include "kubex-connector.name" . -}}
+{{- if contains $name .Release.Name -}}
 {{- .Release.Name | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
 {{- end -}}
 {{- end -}}
 
@@ -81,6 +86,6 @@
 {{- end -}}
 
 {{- define "kubex-connector.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "kubex-connector.fullname" . }}
+app.kubernetes.io/name: {{ include "kubex-connector.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end -}}
