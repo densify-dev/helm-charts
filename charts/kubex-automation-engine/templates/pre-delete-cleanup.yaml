@@ -43,6 +43,7 @@ rules:
   - rightsizing.kubex.ai
   resources:
   - clusterautomationstrategies
+  - clustercompactionpolicies
   - clustergpureactivepolicies
   - clusterproactivepolicies
   - clusterrollbackpolicies
