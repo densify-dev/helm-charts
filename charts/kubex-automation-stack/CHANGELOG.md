@@ -4,13 +4,18 @@ All notable changes to the kubex-automation-stack chart will be documented in th
 
 ## [1.0.21] - 2026-08-11
 
+### Added
+- Added optional connector and CDI support to the stack
+- Added stack-managed CDI access and shared cluster identity configuration
+
 ### Changed
 - Updated connector and CDI dependencies to 1.1.0
-- Reused the data-forwarder cluster identity for CDI through the shared runtime ConfigMap
 - Added connector, relay, and CDI resource sizing to each cluster-size values overlay
+- Updated OpenShift support for the connector and CDI components
 
-### Upgrade Notes
-- Enabling the 1.1.0 connector or CDI dependency replaces its 0.1.x Deployment with a release-qualified Deployment name. Plan for a brief rollout transition when upgrading an enabled component.
+### Fixed
+- Disabled the forwarder hook job in the OpenShift overlay
+
 
 ## [1.0.20] - 2026-08-07
 
@@ -19,21 +24,6 @@ All notable changes to the kubex-automation-stack chart will be documented in th
 - Updated Beyla chart dependency from v1.16.8 to v1.16.10
 - Updated gpu-process-exporter dependency from v1.1.0 to v1.1.1
   - Updated values schema to include new scheduling configuration options
-
-## [1.0.19] - 2026-07-03
-
-### Added
-- Added optional `kubex-connector` and `kubex-ai-cdi` subchart support to the stack
-- Added stack-managed CDI service account, ClusterRole, and ClusterRoleBinding templates
-- Added forwarder `ConfigMap` keys for shared Kubex host, tenant, and cluster name consumption
-
-### Changed
-- Switched stack-managed connector tunnel wiring to `/tunnel/connect`
-- Documented stack-managed connector/CDI configuration and RBAC behavior
-
-### Fixed
-- Disabled the forwarder hook job in the OpenShift overlay so the cron-based collector path is used consistently
-- Added OpenShift security context defaults for stack-managed connector and CDI deployments
 
 ## [1.0.19] - 2026-07-14
 
