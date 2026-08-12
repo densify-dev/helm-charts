@@ -37,6 +37,22 @@ k8s-ephemeral-storage-metrics:
     interval: 30s
     scrapeTimeout: 10s
 
+kubex-connector:
+  containerSecurityContext:
+    capabilities:
+      drop:
+        - ALL
+    seccompProfile:
+      type: RuntimeDefault
+
+kubex-ai-cdi:
+  containerSecurityContext:
+    capabilities:
+      drop:
+        - ALL
+    seccompProfile:
+      type: RuntimeDefault
+
 gpu-process-exporter:
   enabled: false
 

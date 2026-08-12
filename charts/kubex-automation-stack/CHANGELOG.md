@@ -2,6 +2,17 @@
 
 All notable changes to the kubex-automation-stack chart will be documented in this file.
 
+## [1.0.21] - 2026-08-11
+
+### Added
+- Added optional connector and CDI support to the stack
+- Added stack-managed CDI access and shared cluster identity configuration
+
+### Changed
+- Updated connector and CDI dependencies to 1.1.1
+- Added connector, relay, and CDI resource sizing to each cluster-size values overlay
+- Updated OpenShift support for the connector and CDI components
+
 
 ## [1.0.20] - 2026-08-07
 

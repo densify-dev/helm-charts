@@ -8,12 +8,15 @@ metadata:
     chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
+{{- $densifyUrl := .Values.config.forwarder.densify.url | required ".Values.config.forwarder.densify.url is required." }}
+{{- $densifyHost := $densifyUrl.host | required ".Values.config.forwarder.densify.url.host is required." }}
 data:
+  kubex_host: {{ $densifyHost | quote }}
+  kubex_tenant_id: {{ index (splitList "." $densifyHost) 0 | quote }}
+  kubex_cluster_name: {{ (first .Values.config.clusters).name | quote }}
   config.yaml : |
     forwarder:
       densify:
-{{- $densifyUrl := .Values.config.forwarder.densify.url | required ".Values.config.forwarder.densify.url is required." }}
-{{- $densifyHost := $densifyUrl.host | required ".Values.config.forwarder.densify.url.host is required." }}
         url: {{- omit $densifyUrl "UserSecretName" | toYaml | trim | nindent 10 }}
 {{- if .Values.config.forwarder.densify.endpoint }}
         endpoint: {{ .Values.config.forwarder.densify.endpoint }}

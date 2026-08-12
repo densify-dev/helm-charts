@@ -32,6 +32,13 @@ container-optimization-data-forwarder:
     # ttlSecondsAfterFinished: <value> # applies for both the cronjob and the job
     # backoffLimit: <value> # applies for both the cronjob and the job, default: 4
 
+# Optional: Enable the connector and CDI tunnel path.
+# Keep these opt-in until the feature is generally available in production.
+# kubex-connector:
+#   enabled: true
+# kubex-ai-cdi:
+#   enabled: true
+
 # The following section is optional, and is required only in the following use-case:
 # 1. The persistent volume for Prometheus has to use an explicit storage class (not the default)
 

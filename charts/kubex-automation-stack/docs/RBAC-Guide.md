@@ -7,6 +7,7 @@ This guide explains the RBAC permissions specific to Kubex data collection compo
 The chart includes standard Prometheus and kube-state-metrics components (with their typical RBAC requirements), plus Kubex-specific components that require additional permissions:
 
 - **Kubex Data Collector** (container-optimization-data-forwarder) - collects and forwards metrics from Prometheus to Kubex
+- **Stack-managed Connector and CDI** - provide tunnel access and cluster data operations when enabled
 - **Ephemeral Storage Metrics Collector** - reads node and pod storage data
 - **Beyla** - Detects container application runtimes (Java, Go, Python, Node.js, etc.) (requires privileged mode)
 - **GPU Exporter** - collects GPU utilization metrics (requires GPU device access and privileged mode)
@@ -18,6 +19,7 @@ The chart includes standard Prometheus and kube-state-metrics components (with t
 | Component | Service Account Name | RBAC Type | Key Permissions | Enabled by Default | Special Privileges |
 |-----------|---------------------|-----------|-----------------|-------------------|-------------------|
 | Kubex Data Collector | `kubex-stack-kubex-forwarder` | ClusterRole | API discovery, token/subject reviews, namespaces (get) | ✅ Yes | None |
+| Stack-managed CDI | `kubex-ai-cdi-sa` | ClusterRole + ClusterRoleBinding | core resources, workloads, logs, rollout APIs, Kubex CRDs, self-subject reviews | ✅ When enabled | None |
 | Ephemeral Storage | `k8s-ephemeral-storage-metrics` | ClusterRole | nodes, nodes/proxy, nodes/stats, pods (get/list/watch) | ✅ Yes | None |
 | Beyla | `kubex-beyla` | ClusterRole | pods, services, nodes (get/list/watch), replicasets (list/watch) | ✅ Yes | privileged, hostPID |
 | GPU Exporter | `gpu-process-exporter` | ClusterRole | pods (get/list/watch) | ✅ Yes | privileged, hostPID, host mounts, device access |
@@ -55,6 +57,20 @@ The data collector needs minimal permissions to operate securely. It requires AP
   - namespaces - `get` verb (to read namespace information and enrich forwarded metrics with context)
 
 **Note:** The collector does not need permissions to read from Prometheus itself - it accesses Prometheus via the in-cluster service URL using Prometheus's own access controls.
+
+### Stack-managed Connector and CDI
+
+The stack-managed connector uses the forwarder ConfigMap and `densify-api-secret` for tunnel identity and credentials. It does not require a separate ClusterRole.
+
+When `kubex-connector.enabled=true` and `kubex-ai-cdi.enabled=true`, the stack owns the CDI RBAC resources and disables the CDI subchart RBAC:
+
+- ServiceAccount: `kubex-ai-cdi-sa`
+- ClusterRole: `<release>-kubex-ai-cdi-reader`
+- ClusterRoleBinding: `<release>-kubex-ai-cdi-reader`
+
+The ClusterRole and ClusterRoleBinding names can be overridden through `rbac.permissions.cdi.clusterRole.name` and `rbac.permissions.cdi.clusterRoleBinding.name`. Use explicit names only when coordinating ownership across releases.
+
+The CDI ClusterRole grants read access to the configured core, workload, rollout, OpenShift, Karpenter, and Kubex CRD resources, plus create access to self-subject review APIs. The exact rules are controlled under `rbac.permissions.cdi.rules`.
 
 ### Ephemeral Storage Metrics Collector
 
@@ -227,6 +243,11 @@ kubectl get clusterrole,clusterrolebinding | grep -E "(kubex|densify)"
 
 # Check permissions for data collector service account
 kubectl auth can-i --list --as=system:serviceaccount:<namespace>:kubex-stack-kubex-forwarder
+
+# Check permissions for stack-managed CDI
+kubectl get clusterrole <release>-kubex-ai-cdi-reader
+kubectl get clusterrolebinding <release>-kubex-ai-cdi-reader
+kubectl auth can-i --list --as=system:serviceaccount:<namespace>:kubex-ai-cdi-sa
 
 # Check permissions for ephemeral storage metrics service account
 kubectl auth can-i --list --as=system:serviceaccount:<namespace>:k8s-ephemeral-storage-metrics

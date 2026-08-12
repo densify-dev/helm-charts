@@ -1,4 +1,28 @@
 # Use this file for a large k8s cluster (10001+ containers):
+kubex-connector:
+  resources:
+    requests:
+      cpu: "500m"
+      memory: "512Mi"
+    limits:
+      cpu: "2"
+      memory: "2Gi"
+  relay:
+    resources:
+      requests:
+        cpu: "500m"
+        memory: "512Mi"
+      limits:
+        cpu: "2"
+        memory: "2Gi"
+kubex-ai-cdi:
+  resources:
+    requests:
+      cpu: "1"
+      memory: "1Gi"
+    limits:
+      cpu: "4"
+      memory: "4Gi"
 prometheus:
   server:
     resources:
