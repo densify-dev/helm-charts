@@ -9,7 +9,7 @@ All notable changes to the kubex-automation-stack chart will be documented in th
 - Added stack-managed CDI access and shared cluster identity configuration
 
 ### Changed
-- Updated connector and CDI dependencies to 1.1.0
+- Updated connector and CDI dependencies to 1.1.1
 - Added connector, relay, and CDI resource sizing to each cluster-size values overlay
 - Updated OpenShift support for the connector and CDI components
 
