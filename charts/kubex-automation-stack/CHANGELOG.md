@@ -13,9 +13,6 @@ All notable changes to the kubex-automation-stack chart will be documented in th
 - Added connector, relay, and CDI resource sizing to each cluster-size values overlay
 - Updated OpenShift support for the connector and CDI components
 
-### Fixed
-- Disabled the forwarder hook job in the OpenShift overlay
-
 
 ## [1.0.20] - 2026-08-07
 

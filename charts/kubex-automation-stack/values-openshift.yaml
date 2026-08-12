@@ -8,7 +8,6 @@ stack:
 container-optimization-data-forwarder:
   assignedUIDs: true
   job:
-    enable: false
     checkPrometheusReady: false
   config:
     prometheus:
