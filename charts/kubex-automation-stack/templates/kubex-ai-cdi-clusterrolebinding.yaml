@@ -1,5 +1,6 @@
 {{- $rbac := .Values.rbac | default dict -}}
-{{- $cdi := $rbac.permissions.cdi | default dict -}}
+{{- $permissions := $rbac.permissions | default dict -}}
+{{- $cdi := $permissions.cdi | default dict -}}
 {{- $clusterRole := $cdi.clusterRole | default dict -}}
 {{- $clusterRoleBinding := $cdi.clusterRoleBinding | default dict -}}
 {{- $serviceAccount := $cdi.serviceAccount | default dict -}}

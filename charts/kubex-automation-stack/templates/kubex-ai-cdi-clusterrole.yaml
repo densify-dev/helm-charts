@@ -1,5 +1,6 @@
 {{- $rbac := .Values.rbac | default dict -}}
-{{- $cdi := $rbac.permissions.cdi | default dict -}}
+{{- $permissions := $rbac.permissions | default dict -}}
+{{- $cdi := $permissions.cdi | default dict -}}
 {{- $rules := $cdi.rules | default dict -}}
 {{- $clusterRole := $cdi.clusterRole | default dict -}}
 {{- $cdiValues := index .Values "kubex-ai-cdi" | default dict -}}
