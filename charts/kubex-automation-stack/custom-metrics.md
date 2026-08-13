@@ -95,12 +95,12 @@ Note that the recording rules group interval has to match cadvisor's scrape inte
 ```yaml
 prometheus:
   scrapeConfigs:
-  	kubernetes-service-endpoints-base:
-  	  enabled: true
+    kubernetes-service-endpoints-base:
+      enabled: true
       job_name: ""
-	    honor_labels: true
-	    kubernetes_sd_configs:
-	      - role: endpointslice
+      honor_labels: true
+      kubernetes_sd_configs:
+        - role: endpointslice
       relabel_configs:
         - source_labels: [__meta_kubernetes_endpointslice_name]
           regex: '<regex matching the endpointslice name>'
