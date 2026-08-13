@@ -2,7 +2,7 @@
 
 All notable changes to the kubex-automation-stack chart will be documented in this file.
 
-## [1.0.22] - 2026-08-13
+## [1.0.23] - 2026-08-13
 
 ### Added
 - Added optional kubex-automation-engine as a dependency for automated workload rightsizing
