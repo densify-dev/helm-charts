@@ -68,8 +68,8 @@ To add a dedicated custom exporter, one needs to add a Prometheus scrape config 
 ```yaml
 prometheus:
   scrapeConfigs:
-  	kubernetes-service-endpoints-custom:
-  	  enabled: true
+    kubernetes-service-endpoints-custom:
+      enabled: true
       job_name: ""
       honor_labels: true
       kubernetes_sd_configs:
