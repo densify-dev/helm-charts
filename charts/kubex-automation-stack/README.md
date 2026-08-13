@@ -59,6 +59,16 @@ helm repo add kubex https://densify-dev.github.io/helm-charts
 helm repo update
 ```
 
+If the automation engine is enabled, install or upgrade the required CRDs before installing or upgrading this stack:
+
+```shell
+helm upgrade --install kubex-crds kubex/kubex-crds \
+  --namespace kubex \
+  --create-namespace
+```
+
+The `kubex-crds` chart must be installed before the stack creates automation-engine resources.
+
 6. If your cluster is not OpenShift, run this command:
 
 ```shell
@@ -118,8 +128,8 @@ The following table lists configuration parameters in `values-edit.yaml`.
 | `kubex-connector.enabled`                                                        |                    | Enable optional connector subchart (default: `false`) |
 | `kubex-ai-cdi.enabled`                                                           |                    | Enable optional kubex-ai-cdi subchart (default: `false`) |
 | `kubex-automation-engine.enabled`                                                |                    | Enable optional automation engine subchart for automated workload rightsizing (default: `false`) |
-| `kubex-automation-engine.kubex.clusterName`                                      |                    | Cluster name for automation engine (use YAML anchor to reference forwarder cluster name) |
-| `kubex-automation-engine.kubex.url.host`                                         |                    | Kubex instance hostname for automation engine (use YAML anchor to reference forwarder host) |
+| `kubex-automation-engine.kubex.clusterName`                                      |                    | Automatically populated from `container-optimization-data-forwarder.config.clusters[0].name` using the YAML anchor in `values-edit.yaml` |
+| `kubex-automation-engine.kubex.url.host`                                         |                    | Automatically populated from `container-optimization-data-forwarder.config.forwarder.densify.url.host` using the YAML anchor in `values-edit.yaml` |
 | `kubex-connector.heartbeatSeconds`                                               |                    | Connector heartbeat interval in seconds |
 | `kubex-connector.requestTimeoutSeconds`                                          |                    | Connector request timeout in seconds |
 
@@ -135,7 +145,7 @@ The Kubex Automation Engine provides automated workload rightsizing based on Kub
 
 ### For New Installations
 
-The automation engine automatically shares configuration with other stack components using YAML anchors. Simply uncomment the automation-engine section in your `values-edit.yaml`:
+The automation engine shares configuration with the other stack components using YAML anchors. The cluster name and Kubex host are populated from the forwarder configuration, so they only need to be entered once. Simply uncomment the automation-engine section in your `values-edit.yaml`:
 
 ```yaml
 # In values-edit.yaml, use YAML anchors to avoid repeating configuration:
@@ -166,7 +176,7 @@ helm install --create-namespace -n kubex \
   kubex kubex/kubex-automation-stack
 ```
 
-Alternatively, enable via command line (you must specify clusterName and host):
+Alternatively, enable via command line. When using `--set`, provide the cluster name and host explicitly because command-line values cannot reference YAML anchors:
 
 ```shell
 helm install --create-namespace -n kubex \
@@ -183,8 +193,9 @@ helm install --create-namespace -n kubex \
 For customers who previously installed kubex-automation-engine separately, you can continue to use the standalone installation without changes. To migrate to the stack-integrated version:
 
 1. Uninstall the standalone kubex-automation-engine
-2. Update your `values-edit.yaml` with the YAML anchors as shown above
-3. Upgrade the kubex-automation-stack with the automation engine enabled
+2. Install or upgrade the `kubex-crds` chart
+3. Update your `values-edit.yaml` with the YAML anchors as shown above
+4. Upgrade the kubex-automation-stack with the automation engine enabled
 
 ### Configuration
 
