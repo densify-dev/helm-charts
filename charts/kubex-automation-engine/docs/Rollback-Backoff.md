@@ -40,7 +40,7 @@ What you will see:
 
 ### 3. A failure starts a rollback turn
 
-If the workload fails during monitoring, the owner moves to `rollingBack`.
+If the workload has not adopted and become healthy enough by the end of monitoring, the owner moves to `rollingBack`. Transient failures during the window are allowed to recover.
 
 What you will see:
 
