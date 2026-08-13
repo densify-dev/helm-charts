@@ -2,6 +2,21 @@
 
 All notable changes to the kubex-automation-stack chart will be documented in this file.
 
+## [1.0.22] - 2026-08-13
+
+### Added
+- Added optional kubex-automation-engine as a dependency for automated workload rightsizing
+  - Disabled by default to maintain backward compatibility with existing standalone installations
+  - Shares Densify credentials via the `densify-api-secret` created by the stack
+  - Shares cluster configuration (cluster name and Kubex instance URL) with other stack components
+  - Updated kubex-connector-runtime ConfigMap to be created when automation-engine is enabled
+- Added comprehensive documentation for enabling and configuring the automation engine
+- Updated README with installation instructions and migration guidance
+
+### Changed
+- Enhanced `densify-api-secret` to include `url` field for compatibility with kubex-automation-engine
+- Updated ConfigMap creation logic to support automation-engine alongside connector and CDI
+
 ## [1.0.21] - 2026-08-11
 
 ### Added

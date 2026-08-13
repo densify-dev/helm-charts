@@ -8,14 +8,15 @@ stack:
 #   enabled: true
 
 # Kubex Data Collector
+# TIP: Use YAML anchors (&name) to avoid repeating cluster name and host for automation-engine
 container-optimization-data-forwarder:
   config:
     forwarder:
       densify:
         url:
-          host: '<changeme-kubex-host>' # mandatory: <instance>.kubex.ai
+          host: &kubexHost '<changeme-kubex-host>' # mandatory: <instance>.kubex.ai
     clusters:
-      - name: '<changeme-cluster-name>' # mandatory
+      - name: &clusterName '<changeme-cluster-name>' # mandatory
 
   # Optional: Additional labels to add to CronJob and Job resources
   #extraLabels:
@@ -38,6 +39,15 @@ container-optimization-data-forwarder:
 #   enabled: true
 # kubex-ai-cdi:
 #   enabled: true
+
+# Optional: Enable the Kubex Automation Engine for automated workload rightsizing
+# Automatically uses the same credentials, cluster name (*clusterName), and host (*kubexHost)
+# kubex-automation-engine:
+#   enabled: true
+#   kubex:
+#     clusterName: *clusterName  # References the anchor above
+#     url:
+#       host: *kubexHost  # References the anchor above
 
 # The following section is optional, and is required only in the following use-case:
 # 1. The persistent volume for Prometheus has to use an explicit storage class (not the default)

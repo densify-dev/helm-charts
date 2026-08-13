@@ -115,6 +115,38 @@ kubex-ai-cdi:
   rbac:
     enabled: false
 
+#################################################################
+# Kubex Automation Engine
+# kubex-automation-engine parameters for automated workload rightsizing
+# Disabled by default to maintain backward compatibility
+#
+# CONFIGURATION: Use YAML anchors in your values-edit.yaml to share
+# cluster name and Kubex host with the forwarder configuration.
+# See values-edit.yaml for example usage.
+#
+# The automation engine automatically uses:
+#   - credentials from: stack.densify (via shared densify-api-secret)
+#   - clusterName: reference from forwarder config using YAML anchor
+#   - url.host: reference from forwarder config using YAML anchor
+#################################################################
+
+kubex-automation-engine:
+  # -- Enable the kubex-automation-engine subchart for automated workload rightsizing
+  enabled: false
+  extraLabels: {}
+  extraAnnotations: {}
+  # -- Disable secret creation since stack already creates densify-api-secret
+  createSecrets: false
+  kubex:
+    # -- Cluster name - set using YAML anchor reference from container-optimization-data-forwarder config
+    clusterName: ""
+    url:
+      # -- Kubex instance hostname - set using YAML anchor reference from container-optimization-data-forwarder config
+      host: ""
+  gateway:
+    # -- Use the shared densify-api-secret created by kubex-automation-stack
+    configSecretName: densify-api-secret
+
 container-optimization-data-forwarder:
   nameOverride: kubex-stack
   tolerations:
