@@ -24,7 +24,7 @@ To deploy the Kubex Collection Stack, follow these steps below:
 
 3. If deploying on OpenShift, use the OpenShift overlay file: [values-openshift.yaml](https://raw.githubusercontent.com/densify-dev/helm-charts/master/charts/kubex-automation-stack/values-openshift.yaml).
 
-   User workload monitoring must be enabled in your OpenShift cluster to allow ephemeral storage data collection.
+   User workload monitoring must be enabled in your OpenShift cluster to allow ephemeral storage and/or custom metrics data collection.
 
    Update the `cluster-monitoring-config` ConfigMap:
 
