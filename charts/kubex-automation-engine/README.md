@@ -90,7 +90,7 @@ This guide covers:
 
 - Prerequisites and required connection settings
 - Helm installation with generated default CRs
-- OpenShift note: install still requires cluster-scoped permissions for RBAC and admission webhook resources; set `openshift.enabled=true` for the chart's restricted-friendly OpenShift path, and only set `openshift.fsGroup` if your cluster policy requires it
+- OpenShift note: install still requires cluster-scoped permissions for RBAC and admission webhook resources; set `openshift.enabled=true` for arbitrary-UID-compatible controller, cleanup, scheduler, and descheduler Pods under `restricted-v2`, and only set `openshift.fsGroup` if your cluster policy requires it
 - Namespaced and cluster-scoped CR examples
 - How to verify webhook health, policy resolution, and recommendation application
 - How to uninstall cleanly, including manual finalizer cleanup for externally managed CRs
@@ -108,6 +108,7 @@ This guide covers:
 | **[Global Configuration Reference](./docs/Global-Configuration.md)** | Field-by-field reference for the `GlobalConfiguration` custom resource |
 | **[Policy Configuration](./docs/Policy-Configuration.md)** | Configure strategies, policy scope, precedence, and Helm-managed policy generation |
 | **[Policy Evaluation Reference](./docs/Policy-Evaluation.md)** | Policy type precedence configuration via the `PolicyEvaluation` singleton |
+| **[Object Patches](./docs/Object-Patches.md)** | Apply one controlled JSON Merge Patch to arbitrary namespaced or cluster-scoped objects |
 | **[Rollback Backoff](./docs/Rollback-Backoff.md)** | Customer-facing guide to rollback retry windows, turn progression, and terminal outcomes |
 | **[GPU Sharing with KAI](./docs/GPU-Sharing-with-KAI.md)** | Configure KAI-backed GPU sharing, reactive rightsizing, and early consolidation |
 | **[Apply Updates](./docs/Getting-Started.md#apply-configuration-updates)** | Re-run `helm upgrade` after configuration changes |

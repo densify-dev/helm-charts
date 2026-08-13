@@ -21,7 +21,7 @@ Use it to control recommendation refresh timing, proactive rescans, heartbeat re
 | `spec.automationEnabled` | `true` | Global on or off switch for automation behavior. |
 | `spec.suppressFetchRecommendations` | `false` | Testing-oriented switch to suppress recommendation fetches. |
 | `spec.respectKubexAutomation` | `true` | Ignores recommendations marked with `KubexAutomation=false`. |
-| `spec.protectedNamespacePatterns` | `["kube-*","openshift-*"]` | Namespace glob patterns excluded from automation. |
+| `spec.protectedNamespacePatterns` | `["kube-*","openshift-*","gmp-*"]` | Namespace glob patterns protected from automation. |
 | `spec.webhookHealth.failureThreshold` | `2` | Failed probes required before webhook health becomes unhealthy. |
 | `spec.webhookHealth.successThreshold` | `3` | Successful probes required before webhook health becomes healthy. |
 | `spec.webhookHealth.transitionCheckInterval` | `10s` | Probe interval used during webhook health transitions. |
@@ -67,6 +67,7 @@ spec:
   protectedNamespacePatterns:
     - "kube-*"
     - "openshift-*"
+    - "gmp-*"
     - "kubex-*"
   webhookHealth:
     failureThreshold: 2

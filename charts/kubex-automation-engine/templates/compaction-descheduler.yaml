@@ -1,0 +1,64 @@
+{{- if .Values.compactionDescheduler.enabled -}}
+{{- $resourceName := "kubex-compaction-descheduler" -}}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ $resourceName }}
+  labels:
+    {{- include "kubex-automation-engine.labels" . | nindent 4 }}
+---
+# Dedicated, least-privilege ClusterRole for the controller-managed descheduler
+# deployments. The SIGs descheduler (HighNodeUtilization + DefaultEvictor) needs
+# to read nodes/pods/namespaces, read priorityclasses and PodDisruptionBudgets to
+# protect critical/PDB-guarded pods, and evict pods. This is intentionally separate
+# from the operator manager-role so the descheduler is not granted operator scope.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ $resourceName }}
+  labels:
+    {{- include "kubex-automation-engine.labels" . | nindent 4 }}
+rules:
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["create", "patch"]
+  - apiGroups: ["events.k8s.io"]
+    resources: ["events"]
+    verbs: ["create", "patch"]
+  - apiGroups: [""]
+    resources: ["nodes"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["namespaces"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "watch", "delete"]
+  - apiGroups: [""]
+    resources: ["persistentvolumeclaims"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["pods/eviction"]
+    verbs: ["create"]
+  - apiGroups: ["scheduling.k8s.io"]
+    resources: ["priorityclasses"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["policy"]
+    resources: ["poddisruptionbudgets"]
+    verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ $resourceName }}
+  labels:
+    {{- include "kubex-automation-engine.labels" . | nindent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: {{ $resourceName }}
+    namespace: {{ include "kubex-automation-engine.namespace" . }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ $resourceName }}
+{{- end -}}

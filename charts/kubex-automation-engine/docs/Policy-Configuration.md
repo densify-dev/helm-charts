@@ -11,6 +11,7 @@ For CR-specific field references and examples, see:
 - [Proactive Policies](./Proactive-Policies.md)
 - [Cluster Proactive Policies](./Cluster-Proactive-Policies.md)
 - [Static Policies](./Static-Policies.md)
+- [Cluster Compaction Policies](./Cluster-Compaction-Policies.md)
 - [Rollback Policies](./Rollback-Policies.md)
 
 ## Configuration Model
@@ -25,6 +26,7 @@ At the CRD level:
 - `AutomationStrategy` and `ClusterAutomationStrategy` define resize behavior.
 - `ProactivePolicy` and `ClusterProactivePolicy` apply recommendation-driven automation coming from Kubex.
 - `StaticPolicy` and `ClusterStaticPolicy` apply fixed request and limit values.
+- `ClusterCompactionPolicy` applies active bin-packing and descheduler/scheduler compaction behavior across namespaces.
 - `PodAffinityPolicy` applies preferred hostname-based node affinity to replacement pods and can force eviction-based rescheduling when its affinity rule must be enforced during evaluation.
 - `RollbackPolicy` and `ClusterRollbackPolicy` enable and configure rollback monitoring and backoff settings. **These policies are required for rollback functionality** - without a matching policy, workloads will not be monitored for health failures and rollback will not occur.
 
@@ -36,6 +38,7 @@ Reference rules:
 - `StaticPolicy` references a namespaced `AutomationStrategy` in the same namespace and also includes explicit `resources`.
 - `ClusterProactivePolicy` references a `ClusterAutomationStrategy`.
 - `ClusterStaticPolicy` references a `ClusterAutomationStrategy` and also includes explicit `resources`.
+- `ClusterCompactionPolicy` manages compaction implementation mode and scope for active bin-packing, including per-policy descheduler placement and node selectors.
 
 All of these CR types can be created outside Helm with manifests, GitOps, or `kubectl`.
 

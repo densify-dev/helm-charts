@@ -2,7 +2,7 @@
 
 This guide shows how to configure GPU sharing with KAI and Kubex Automation Engine.
 
-Tested with KAI `v0.12.16`.
+This guide was tested with KAI `v0.17.0` and HAMi-core `1.1.0-chart`.
 
 > [!IMPORTANT]
 > GPU/KAI fields and related custom resources are experimental and subject to breaking changes. Set `spec.experimental.gpuKaiContract: v1alpha1-2026-07` on GPU/KAI resources.
@@ -10,22 +10,22 @@ Tested with KAI `v0.12.16`.
 ## Prerequisites
 
 - KAI is already installed in the cluster. [KAI installation instructions](https://github.com/kai-scheduler/KAI-Scheduler#installation-methods)
-  - NOTE: Kubex has been tested with KAI version v0.12.16
-- `kubex-crds`, `kubex-automation-engine` and `kubex-automation-stack` are already installed
+  - Kubex has been tested with KAI version v0.17.0.
+- `kubex-crds`, `kubex-automation-engine`, and `kubex-automation-stack` are already installed.
   - The `kubex-automation-engine` release must enable `webhook.podMutation.additionalWebhook.enabled` as shown below.
   - When using `ClusterGpuReactivePolicy` or `GpuReactivePolicy`, Prometheus must be available for GPU metrics, typically via `kubex-automation-stack`.
-  - If Prometheus runs at different endpoint, set `globalConfiguration.prometheus.url` to custom URL.
+  - If Prometheus runs at a different endpoint, set `globalConfiguration.prometheus.url` to the custom URL.
 
-This guide works with either:
+This guide works with either of the following:
 
-- a new KAI installation
-- an existing KAI installation
+- A new KAI installation.
+- An existing KAI installation.
 
 For existing KAI-managed workloads, Kubex Automation Engine can update the `gpu-fraction` annotation without replacing the existing `kai.scheduler/queue` label.
 
 ### Required Kubex webhook values
 
-KAI relies on Kubex-updated resource information when making admission decisions. Before deploying KAI-managed workloads from this guide, configure the `kubex-automation-engine` Helm release with the additional webhook enabled:
+KAI relies on resource information updated by Kubex when making admission decisions. Before deploying the KAI-managed workloads described in this guide, configure the `kubex-automation-engine` Helm release with the additional webhook enabled:
 
 ```yaml
 webhook:
@@ -34,26 +34,75 @@ webhook:
       enabled: true
 ```
 
-This setting is required for the KAI integration. The early Kubex invocation applies selected resources and KAI metadata such as `gpu-fraction`, queue label, and scheduler selection before KAI makes its decision. The late invocation restores Kubex-selected resources after other mutators run while keeping metadata idempotent.
+This setting is required for the KAI integration. The early Kubex invocation applies selected resources and KAI metadata such as `gpu-fraction`, the queue label, and the scheduler selection before KAI makes its decision. The late invocation restores Kubex-selected resources after other mutators run while keeping the metadata idempotent.
 
 ### New KAI installation
 
-Depending on your cloud provider and nvidia configuration, KAI's configuration must be adjusted. 
+Depending on your cloud provider and NVIDIA configuration, you may need to adjust KAI's configuration.
 
-Here is an example of a minimal KAI installation tested with nvidia's GPU operator already running in the Kubernetes cluster. 
+The following example shows a minimal KAI installation tested with the NVIDIA GPU Operator already running in the Kubernetes cluster.
 
+It also installs HAMi-core to enforce GPU memory limits for CUDA workloads. The `kai-resource-isolator` chart deploys HAMi-core's GPU library synchronization components on selected GPU nodes.
+
+HAMi-core is optional but preferred: it enforces KAI fractions, while Kubex's [GPU Reactive Policies](./gpu-reactive-policies.md) can only increase fractions on a best-effort basis as pods approach their limits.
+
+Create `kai-resource-isolator.values.yaml`:
+
+```yaml
+librarySync:
+  nodeSelector:
+    "nvidia.com/gpu.present": "true"
 ```
-helm upgrade -i kai-scheduler oci://ghcr.io/kai-scheduler/kai-scheduler/kai-scheduler -n kai-scheduler --create-namespace \
-  --version v0.12.16 \
-  --set "global.gpuSharing=true" \
-  --set "global.clusterAutoscaling=true" --set binder.additionalArgs[0]="--cdi-enabled=true"
+
+Create `kai-scheduler.values.yaml`:
+
+```yaml
+binder:
+  additionalArgs:
+    - --cdi-enabled=true
+  plugins:
+    hamicore:
+      enabled: true
+global:
+  clusterAutoscaling: true
+  gpuSharing: true
 ```
+
+Install HAMi-core first:
+
+```bash
+helm upgrade --install kai-resource-isolator oci://docker.io/projecthami/kai-resource-isolator \
+  --namespace kai-resource-isolator \
+  --create-namespace \
+  --version 1.1.0-chart \
+  -f kai-resource-isolator.values.yaml
+```
+
+Then install the KAI scheduler:
+
+```bash
+helm upgrade --install kai-scheduler oci://ghcr.io/kai-scheduler/kai-scheduler/kai-scheduler \
+  --namespace kai-scheduler \
+  --create-namespace \
+  --version v0.17.0 \
+  -f kai-scheduler.values.yaml
+```
+
+### Verify HAMi-core
+
+If HAMi-core is used, verify that GPU nodes run pods from the following DaemonSet:
+
+```bash
+kubectl -n kai-resource-isolator get daemonset kai-resource-isolator-libsync
+```
+
+The DaemonSet's `DESIRED`, `CURRENT`, and `READY` counts should cover all eligible GPU nodes. If HAMi-core is unavailable or you do not want to use it, use `GpuReactivePolicy` or `ClusterGpuReactivePolicy` to monitor GPU memory utilization through Prometheus and upsize workloads when utilization crosses configured thresholds. Reactive policies resize GPU allocations; they do not enforce memory limits. Prefer HAMi-core when possible so memory is enforced instead of upsizing pods to accommodate higher usage. See [GPU Reactive Policies](./gpu-reactive-policies.md).
 
 ### Prometheus notes
 
 By default, the `kubex-automation-engine` chart configures GPU reactive policies to query Prometheus at `http://kubex-prometheus-server.kubex.svc`.
 
-That matches the default Prometheus service name used by `kubex-automation-stack`.
+This matches the default Prometheus service name used by `kubex-automation-stack`.
 
 If your Prometheus endpoint is different, override the controller-wide setting through the Helm value `globalConfiguration.prometheus.url`.
 
@@ -70,15 +119,13 @@ This creates the built-in Run:ai queue resources, including `kubex-unlimited-gpu
 
 ## Starter Example
 
-The following example creates:
+This example creates the following resources:
 
-- a `ClusterAutomationStrategy` for KAI-enabled workloads across the cluster
-- a `ClusterProactivePolicy` that makes matching `Deployment` workloads managed by that strategy
-- a `ClusterGpuReactivePolicy` that adjusts that shared GPU request based on Prometheus GPU metrics
+- A `ClusterAutomationStrategy` for KAI-enabled workloads across the cluster
+- A `ClusterProactivePolicy` that makes matching `Deployment` workloads managed by that strategy
+- A `ClusterGpuReactivePolicy` that adjusts the shared GPU request based on Prometheus GPU metrics
 
 Both policies target `Deployment` workloads in all namespaces that carry `nvidia.com/gpu.present: "true"`.
-
-If you run KubeAI `kubeai.org/v1` `Model` objects instead of plain Deployments, `Model` is now part of default workload scope when policy `workloadTypes` is omitted. Target those CRs explicitly only when you want scope restricted to models:
 
 ```yaml
 spec:
@@ -112,11 +159,11 @@ spec:
         setFromUnspecified: false
   kai:
     vllm:
-      # Keep vLLM below admitted gpu-fraction by 10%.
-      # Example: 0.5 gpu-fraction -> 0.45 gpu-memory-utilization.
+      # Keep vLLM's GPU memory utilization 10% below the admitted gpu-fraction.
+      # For example, 0.5 gpu-fraction produces 0.45 gpu-memory-utilization.
       gpuMemoryUtilizationBufferPercent: 10
   inPlaceResize:
-    # Use restart/eviction flow instead of in-place pod resize.
+    # Use the restart/eviction flow instead of in-place pod resize.
     enabled: false
   podEviction:
     # Permit the controller to evict pods when it needs to apply a new size.
@@ -174,7 +221,7 @@ spec:
         metricsWindow: 2m
         # Add 20% headroom above observed compute usage when increasing the request.
         headroomPercent: 20
-        # Cap a single increase at 2x the current requested GPU fraction.
+        # Cap each increase at 2x the current requested GPU fraction.
         maxPercent: 200
       scaleBack:
         # Reduce the GPU fraction only after compute usage stays below 75%.
@@ -199,7 +246,7 @@ spec:
         metricsWindow: 2m
         # Add 20% headroom above observed memory usage when increasing the request.
         headroomPercent: 20
-        # Cap a single increase at 2x the current requested GPU fraction.
+        # Cap each increase at 2x the current requested GPU fraction.
         maxPercent: 200
       scaleBack:
         # Reduce the GPU fraction only after memory usage stays below 75%.
@@ -212,7 +259,7 @@ spec:
         # Prometheus metric and label mapping used to join memory samples to containers.
         metric: kubex_gpu_container_memory_footprint_percent
         # Treat metric values as percentages of the container's current GPU allocation.
-        # Example: if current KAI allocation is 0.30 and pod uses 15% of the whole GPU, the metric will show 50% usage
+        # For example, if the current KAI allocation is 0.30 and the pod uses 15% of the whole GPU, the metric will show 50% usage.
         interpretation: currentAllocation
         namespaceLabel: namespace
         podLabel: pod
@@ -229,34 +276,33 @@ GPU metric interpretation defaults to `fullGPU`, which means Prometheus values a
 For KAI-enabled workloads, start with `spec.inPlaceResize.enabled: false`.
 
 - Eviction-based resize is the safer path today for KAI-enabled workloads.
-- In-place resizing for KAI-enabled workloads can be experimented with, but it is currently unstable.
+- In-place resizing for KAI-enabled workloads is experimental and currently unstable.
 
 ## vLLM tuning with KAI gpu-fraction
 
-If workload starts vLLM server, you can ask AutomationStrategy admission mutation to tune `--gpu-memory-utilization` from admitted KAI `gpu-fraction`.
+If a pod starts a vLLM server, AutomationStrategy admission mutation can tune `--gpu-memory-utilization` based on the admitted KAI `gpu-fraction`.
 
-Example math:
+For example:
 
-- admitted `gpu-fraction`: `0.5`
-- `spec.kai.vllm.gpuMemoryUtilizationBufferPercent`: `10`
-- resulting vLLM arg: `--gpu-memory-utilization=0.45`
+- The admitted `gpu-fraction` is `0.5`.
+- `spec.kai.vllm.gpuMemoryUtilizationBufferPercent` is `10`.
+- The resulting vLLM argument is `--gpu-memory-utilization=0.45`.
 
 Behavior:
 
-- requires experimental contract: `spec.experimental.gpuKaiContract: v1alpha1-2026-07`
-- only runs for KAI GPU request admission mutation
-- only mutates detected vLLM containers
-- updates existing `--gpu-memory-utilization=<value>`
-- updates existing split form `--gpu-memory-utilization <value>`
-- appends flag if missing
-- does not leave duplicate flag entries
+- Runs only during KAI GPU request admission mutation.
+- Mutates only detected vLLM containers.
+- Updates existing `--gpu-memory-utilization=<value>` flags.
+- Updates existing split-form `--gpu-memory-utilization <value>` flags.
+- Appends the flag when it is missing.
+- Does not create duplicate flag entries.
 
 ## Existing KAI Installations
 
 For workloads that are already scheduled through KAI, these policies will:
 
-- keep the existing `kai.scheduler/queue` label on the workload template
-- let Kubex Automation Engine update `gpu-fraction` as policies are applied
+- Keep the existing `kai.scheduler/queue` label on the workload template.
+- Allow Kubex Automation Engine to update `gpu-fraction` as policies are applied.
 
 That allows Kubex Automation Engine to participate in GPU sharing without taking over queue assignment.
 
@@ -264,12 +310,12 @@ If you want Kubex to overwrite an existing `kai.scheduler/queue` label, set `spe
 
 For workloads that are not currently scheduled through KAI, these policies will:
 
-- replace the `nvidia.com/gpu` resource allocation with KAI `gpu-fraction` annotations
-- apply the KAI queue `kubex-unlimited-gpu-queue` (Kubex built-in KAI queue that doesn't perform quota allocations)
+- Replace the `nvidia.com/gpu` resource allocation with KAI `gpu-fraction` annotations.
+- Apply the KAI queue `kubex-unlimited-gpu-queue` (the Kubex-built-in KAI queue that does not perform quota allocations).
 
 ## KAI node consolidation
 
-`GpuConsolidationPolicy` is cluster-scoped and works separately from `AutomationStrategy`. Use it to look for underutilized GPU nodes inside a single compatible node pool and evict pods from a node only when the controller believes all `gpu-fraction` pods on that node can fit elsewhere in the same pool.
+`GpuConsolidationPolicy` is cluster-scoped and works separately from `AutomationStrategy`. Use it to identify underutilized GPU nodes within a single compatible node pool and evict pods from a node only when the controller believes all `gpu-fraction` pods on that node can fit elsewhere in the same pool.
 
 Start with one narrowly scoped policy per compatibility pool:
 
@@ -292,7 +338,7 @@ If you have multiple GPU compatibility pools, create multiple policies instead o
 
 ### Node consolidation limitations
 
-GPU node consolidation is very early and has known limitations.
+GPU node consolidation is experimental and has known limitations.
 
 - It assumes pods will be schedulable on other nodes if they fit by GPU fraction.
 - It does not yet fully model all other scheduler constraints.
