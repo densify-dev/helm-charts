@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Kubex Data Collector added in version [v4.7.3-beta2](https://hub.docker.com/layers/densify/container-optimization-data-forwarder/4.7.3-beta2) optional collection of custom metrics for CPU and memory.
+Starting with version [v4.7.3-beta2](https://hub.docker.com/layers/densify/container-optimization-data-forwarder/4.7.3-beta2), Kubex Data Collector can optionally collect custom CPU and memory metrics.
 
 The motivation behind this feature is to allow users to provide for **specific workloads** other metrics to drive the sizing recommendations - alternative to the standard cadvisor metrics which are typically used for that. One example use-case is of message queue consumers, where the memory should be driven by a formula based on queue depth, average message size etc.
 
