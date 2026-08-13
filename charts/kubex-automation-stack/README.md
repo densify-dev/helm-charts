@@ -94,6 +94,11 @@ The following table indicates - depending on the cluster size - which sizing fil
 | Medium          | 5001-10000        | [values-medium.yaml](https://github.com/densify-dev/helm-charts/blob/master/charts/kubex-automation-stack/values-medium.yaml) |
 | Large           | 10001+            | [values-large.yaml](https://github.com/densify-dev/helm-charts/blob/master/charts/kubex-automation-stack/values-large.yaml) |
 
+
+## Custom Metrics (Optional)
+
+Kubex Data Collector can optionally collect custom container CPU and memory metrics. For details see see [docs/custom-metrics.md](docs/custom-metrics.md).
+
 ## Configuration
 
 The following table lists configuration parameters in `values-edit.yaml`.
