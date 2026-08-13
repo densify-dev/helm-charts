@@ -97,7 +97,7 @@ The following table indicates - depending on the cluster size - which sizing fil
 
 ## Custom Metrics (Optional)
 
-Kubex Data Collector can optionally collect custom container CPU and memory metrics. For details see see [docs/custom-metrics.md](docs/custom-metrics.md).
+Kubex Data Collector can optionally collect custom container CPU and memory metrics. For details see [docs/custom-metrics.md](docs/custom-metrics.md).
 
 ## Configuration
 
