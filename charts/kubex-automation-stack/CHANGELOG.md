@@ -17,7 +17,7 @@ All notable changes to the kubex-automation-stack chart will be documented in th
 - Added the URL configuration required for kubex-automation-engine compatibility
 - Updated ConfigMap creation logic to support automation-engine alongside connector and CDI
 
-## [1.0.21] - 2026-08-11
+## [1.0.22] - 2026-08-12
 
 ### Added
 - Added optional connector and CDI support to the stack

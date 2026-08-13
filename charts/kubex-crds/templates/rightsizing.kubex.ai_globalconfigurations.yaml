@@ -128,8 +128,9 @@ spec:
                 default:
                 - kube-*
                 - openshift-*
+                - gmp-*
                 description: |-
-                  protectedNamespacePatterns blocks resizing in matching namespaces.
+                  protectedNamespacePatterns protects matching namespaces from automation.
                   Values support shell-style "*" wildcards (e.g., "prod-*").
                 items:
                   minLength: 1

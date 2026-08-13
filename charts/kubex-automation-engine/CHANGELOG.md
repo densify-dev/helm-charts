@@ -2,6 +2,22 @@
 
 All notable changes to the Kubex Automation Engine Helm chart will be documented in this file.
 
+## [1.10.0] - 2026-08-11
+
+### Added
+- ObjectPatch and ClusterObjectPatch resources for applying controlled JSON merge patches to Kubernetes objects.
+- Cluster compaction policies for bin-packing workloads with Kubex-managed or external schedulers, per-policy descheduler settings, and eviction-loop suppression.
+
+### Changed
+- Resource and workload handling now preserves more Kubernetes state across resize, rollback, and controller-managed reconciliation paths.
+- Updated the KAI GPU-sharing guide for KAI v0.17.0 and optional HAMi-core 1.1.0 integration.
+
+### Fixed
+- In-place resize rollback monitoring now records the refreshed post-resize Pod state.
+- Compaction eviction convergence now reacts when replacement Pods are assigned to nodes.
+
+---
+
 ## [1.9.1] - 2026-08-06
 
 ### Fixed

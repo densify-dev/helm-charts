@@ -1,0 +1,512 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.19.0
+  name: clustercompactionpolicies.rightsizing.kubex.ai
+spec:
+  group: rightsizing.kubex.ai
+  names:
+    kind: ClusterCompactionPolicy
+    listKind: ClusterCompactionPolicyList
+    plural: clustercompactionpolicies
+    singular: clustercompactionpolicy
+  scope: Cluster
+  versions:
+  - name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: ClusterCompactionPolicy is the Schema for the clustercompactionpolicies
+          API.
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: spec defines the desired state of ClusterCompactionPolicy
+            properties:
+              descheduler:
+                description: descheduler controls whether matching workloads participate
+                  in descheduler-driven compaction.
+                properties:
+                  defaultEvictor:
+                    description: defaultEvictor configures safety and selection behavior
+                      for DefaultEvictor.
+                    properties:
+                      evictDaemonSetPods:
+                        default: false
+                        description: evictDaemonSetPods controls whether DaemonSet
+                          pods may be evicted.
+                        type: boolean
+                      evictLocalStoragePods:
+                        default: false
+                        description: evictLocalStoragePods controls whether pods using
+                          local storage may be evicted.
+                        type: boolean
+                      evictSystemCriticalPods:
+                        default: false
+                        description: evictSystemCriticalPods controls whether system-critical
+                          pods may be evicted.
+                        type: boolean
+                      ignorePvcPods:
+                        default: true
+                        description: ignorePvcPods controls whether PVC-backed pods
+                          are ignored.
+                        type: boolean
+                      labelSelector:
+                        description: labelSelector adds extra label filtering on top
+                          of the controller-managed compaction labels.
+                        properties:
+                          matchExpressions:
+                            description: matchExpressions is a list of label selector
+                              requirements. The requirements are ANDed.
+                            items:
+                              description: |-
+                                A label selector requirement is a selector that contains values, a key, and an operator that
+                                relates the key and values.
+                              properties:
+                                key:
+                                  description: key is the label key that the selector
+                                    applies to.
+                                  type: string
+                                operator:
+                                  description: |-
+                                    operator represents a key's relationship to a set of values.
+                                    Valid operators are In, NotIn, Exists and DoesNotExist.
+                                  type: string
+                                values:
+                                  description: |-
+                                    values is an array of string values. If the operator is In or NotIn,
+                                    the values array must be non-empty. If the operator is Exists or DoesNotExist,
+                                    the values array must be empty. This array is replaced during a strategic
+                                    merge patch.
+                                  items:
+                                    type: string
+                                  type: array
+                                  x-kubernetes-list-type: atomic
+                              required:
+                              - key
+                              - operator
+                              type: object
+                            type: array
+                            x-kubernetes-list-type: atomic
+                          matchLabels:
+                            additionalProperties:
+                              type: string
+                            description: |-
+                              matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+                              map is equivalent to an element of matchExpressions, whose key field is "key", the
+                              operator is "In", and the values array contains only "value". The requirements are ANDed.
+                            type: object
+                        type: object
+                        x-kubernetes-map-type: atomic
+                      nodeFit:
+                        default: true
+                        description: nodeFit requires that evicted pods appear to
+                          fit somewhere else before eviction.
+                        type: boolean
+                    type: object
+                  enabled:
+                    default: true
+                    description: enabled controls whether matching workloads participate
+                      in descheduler-driven compaction.
+                    type: boolean
+                  highNodeUtilization:
+                    description: highNodeUtilization configures the HighNodeUtilization
+                      plugin for this policy.
+                    properties:
+                      numberOfNodes:
+                        default: 0
+                        description: |-
+                          numberOfNodes is the number of underutilized nodes that may exist without acting.
+                          The strategy acts only when the underutilized node count is greater than this value.
+                        format: int32
+                        minimum: 0
+                        type: integer
+                      thresholds:
+                        description: |-
+                          thresholds defines the underutilization thresholds. Nodes whose request-based utilization
+                          falls below all of these values are considered underutilized and will have pods evicted.
+                        properties:
+                          cpu:
+                            default: 25
+                            description: cpu is the CPU utilization threshold percentage.
+                            format: int32
+                            maximum: 100
+                            minimum: 0
+                            type: integer
+                          memory:
+                            default: 25
+                            description: memory is the memory utilization threshold
+                              percentage.
+                            format: int32
+                            maximum: 100
+                            minimum: 0
+                            type: integer
+                          pods:
+                            default: 100
+                            description: pods is the pod utilization threshold percentage.
+                            format: int32
+                            maximum: 100
+                            minimum: 0
+                            type: integer
+                        type: object
+                    type: object
+                  interval:
+                    description: |-
+                      interval is the cron schedule for how often the descheduler runs for this policy
+                      (e.g. "*/30 * * * *" for every 30 minutes, "0 */2 * * *" for every 2 hours).
+                      Empty uses the system default ("*/30 * * * *").
+                    type: string
+                  loopDetectionThreshold:
+                    description: |-
+                      loopDetectionThreshold is the number of repeated same-fingerprint attempts within the window
+                      required to trigger suppression. Zero uses the system default (3).
+                    format: int32
+                    minimum: 0
+                    type: integer
+                  loopDetectionWindow:
+                    description: |-
+                      loopDetectionWindow is the time window in which repeated same-fingerprint attempts are counted.
+                      Zero uses the system default (15m).
+                    type: string
+                  maxNoOfPodsToEvictPerNamespace:
+                    default: 1
+                    description: maxNoOfPodsToEvictPerNamespace caps the number of
+                      compaction evictions per namespace.
+                    format: int32
+                    minimum: 0
+                    type: integer
+                  maxNoOfPodsToEvictPerNode:
+                    default: 1
+                    description: maxNoOfPodsToEvictPerNode caps the number of compaction
+                      evictions per node.
+                    format: int32
+                    minimum: 0
+                    type: integer
+                  maxNoOfPodsToEvictTotal:
+                    default: 1
+                    description: maxNoOfPodsToEvictTotal caps the total number of
+                      compaction evictions per descheduler run.
+                    format: int32
+                    minimum: 0
+                    type: integer
+                  nodeSelector:
+                    description: |-
+                      nodeSelector narrows this policy to nodes with matching labels.
+                      matchExpressions support In/NotIn/Exists/DoesNotExist, and values in In/NotIn
+                      may include shell-style "*" wildcards.
+                    properties:
+                      matchExpressions:
+                        description: matchExpressions is a list of label selector
+                          requirements. The requirements are ANDed.
+                        items:
+                          description: |-
+                            A label selector requirement is a selector that contains values, a key, and an operator that
+                            relates the key and values.
+                          properties:
+                            key:
+                              description: key is the label key that the selector
+                                applies to.
+                              type: string
+                            operator:
+                              description: |-
+                                operator represents a key's relationship to a set of values.
+                                Valid operators are In, NotIn, Exists and DoesNotExist.
+                              type: string
+                            values:
+                              description: |-
+                                values is an array of string values. If the operator is In or NotIn,
+                                the values array must be non-empty. If the operator is Exists or DoesNotExist,
+                                the values array must be empty. This array is replaced during a strategic
+                                merge patch.
+                              items:
+                                type: string
+                              type: array
+                              x-kubernetes-list-type: atomic
+                          required:
+                          - key
+                          - operator
+                          type: object
+                        type: array
+                        x-kubernetes-list-type: atomic
+                      matchLabels:
+                        additionalProperties:
+                          type: string
+                        description: |-
+                          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+                          map is equivalent to an element of matchExpressions, whose key field is "key", the
+                          operator is "In", and the values array contains only "value". The requirements are ANDed.
+                        type: object
+                    type: object
+                    x-kubernetes-map-type: atomic
+                  suppressionDuration:
+                    description: |-
+                      suppressionDuration is how long a workload is suppressed after a loop is detected.
+                      Zero uses the same value as loopDetectionWindow (or the system default if that is also zero).
+                    type: string
+                type: object
+              enabled:
+                default: true
+                description: enabled controls whether this policy participates in
+                  selection and enforcement.
+                type: boolean
+              scheduler:
+                description: scheduler controls whether matching workloads participate
+                  in the shared compaction scheduler.
+                properties:
+                  externalSchedulerName:
+                    description: externalSchedulerName names an external scheduler
+                      to target when useKubexScheduler is false.
+                    type: string
+                  useKubexScheduler:
+                    default: true
+                    description: useKubexScheduler controls whether Kubex should assign
+                      matching workloads to the Kubex-managed scheduler.
+                    type: boolean
+                type: object
+              scope:
+                description: scope narrows the workloads and namespaces this policy
+                  applies to.
+                properties:
+                  labelSelector:
+                    description: labelSelector limits the workload objects (e.g.,
+                      Deployments, CronJobs) this policy applies to.
+                    properties:
+                      matchExpressions:
+                        description: matchExpressions is a list of label selector
+                          requirements. The requirements are ANDed.
+                        items:
+                          description: |-
+                            A label selector requirement is a selector that contains values, a key, and an operator that
+                            relates the key and values.
+                          properties:
+                            key:
+                              description: key is the label key that the selector
+                                applies to.
+                              type: string
+                            operator:
+                              description: |-
+                                operator represents a key's relationship to a set of values.
+                                Valid operators are In, NotIn, Exists and DoesNotExist.
+                              type: string
+                            values:
+                              description: |-
+                                values is an array of string values. If the operator is In or NotIn,
+                                the values array must be non-empty. If the operator is Exists or DoesNotExist,
+                                the values array must be empty. This array is replaced during a strategic
+                                merge patch.
+                              items:
+                                type: string
+                              type: array
+                              x-kubernetes-list-type: atomic
+                          required:
+                          - key
+                          - operator
+                          type: object
+                        type: array
+                        x-kubernetes-list-type: atomic
+                      matchLabels:
+                        additionalProperties:
+                          type: string
+                        description: |-
+                          matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
+                          map is equivalent to an element of matchExpressions, whose key field is "key", the
+                          operator is "In", and the values array contains only "value". The requirements are ANDed.
+                        type: object
+                    type: object
+                    x-kubernetes-map-type: atomic
+                  namespaceSelector:
+                    description: namespaceSelector restricts the namespaces this policy
+                      applies to.
+                    properties:
+                      operator:
+                        description: operator determines how the listed values are
+                          evaluated.
+                        enum:
+                        - In
+                        - NotIn
+                        type: string
+                      values:
+                        description: values contains the namespace name patterns to
+                          match.
+                        items:
+                          type: string
+                        minItems: 1
+                        type: array
+                    required:
+                    - operator
+                    - values
+                    type: object
+                  workloadTypes:
+                    default:
+                    - Deployment
+                    - StatefulSet
+                    - CronJob
+                    - Rollout
+                    - Job
+                    - AnalysisRun
+                    - DaemonSet
+                    - Model
+                    description: workloadTypes limits the workload kinds this policy
+                      applies to. When omitted, the default workload types are targeted.
+                    items:
+                      description: WorkloadType enumerates the workload kinds a policy
+                        can target.
+                      enum:
+                      - Deployment
+                      - StatefulSet
+                      - DaemonSet
+                      - CronJob
+                      - Rollout
+                      - Job
+                      - AnalysisRun
+                      - StrimziPodSet
+                      - Model
+                      type: string
+                    type: array
+                required:
+                - namespaceSelector
+                type: object
+              setLabelsByEviction:
+                default: false
+                description: setLabelsByEviction controls whether existing Pods are
+                  replaced to converge with compaction scheduling intent.
+                type: boolean
+              weight:
+                default: 0
+                description: |-
+                  weight determines which policy wins when multiple compaction policies match.
+                  Higher weights take precedence. When weights are equal, older policies win.
+                format: int32
+                minimum: 0
+                type: integer
+            required:
+            - scope
+            type: object
+          status:
+            description: status defines the observed state of ClusterCompactionPolicy
+            properties:
+              conditions:
+                description: conditions represent the current state of the ClusterCompactionPolicy
+                  resource.
+                items:
+                  description: Condition contains details for one aspect of the current
+                    state of this API Resource.
+                  properties:
+                    lastTransitionTime:
+                      description: |-
+                        lastTransitionTime is the last time the condition transitioned from one status to another.
+                        This should be when the underlying condition changed.  If that is not known, then using the time when the API field changed is acceptable.
+                      format: date-time
+                      type: string
+                    message:
+                      description: |-
+                        message is a human readable message indicating details about the transition.
+                        This may be an empty string.
+                      maxLength: 32768
+                      type: string
+                    observedGeneration:
+                      description: |-
+                        observedGeneration represents the .metadata.generation that the condition was set based upon.
+                        For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date
+                        with respect to the current state of the instance.
+                      format: int64
+                      minimum: 0
+                      type: integer
+                    reason:
+                      description: |-
+                        reason contains a programmatic identifier indicating the reason for the condition's last transition.
+                        Producers of specific condition types may define expected values and meanings for this field,
+                        and whether the values are considered a guaranteed API.
+                        The value should be a CamelCase string.
+                        This field may not be empty.
+                      maxLength: 1024
+                      minLength: 1
+                      pattern: ^[A-Za-z]([A-Za-z0-9_,:]*[A-Za-z0-9_])?$
+                      type: string
+                    status:
+                      description: status of the condition, one of True, False, Unknown.
+                      enum:
+                      - "True"
+                      - "False"
+                      - Unknown
+                      type: string
+                    type:
+                      description: type of condition in CamelCase or in foo.example.com/CamelCase.
+                      maxLength: 316
+                      pattern: ^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$
+                      type: string
+                  required:
+                  - lastTransitionTime
+                  - message
+                  - reason
+                  - status
+                  - type
+                  type: object
+                type: array
+                x-kubernetes-list-map-keys:
+                - type
+                x-kubernetes-list-type: map
+              observedGeneration:
+                description: observedGeneration is the latest generation observed
+                  by the controller.
+                format: int64
+                type: integer
+              summary:
+                description: summary provides a small scalar snapshot suitable for
+                  status tables.
+                properties:
+                  deschedulerProfileName:
+                    description: deschedulerProfileName is the descheduler profile
+                      the policy expects the platform to provide.
+                    type: string
+                  effectivePolicyLabel:
+                    description: effectivePolicyLabel is the deterministic label value
+                      assigned to workloads for this policy.
+                    type: string
+                  enabled:
+                    description: enabled records whether the policy is active.
+                    type: boolean
+                  managedWorkloads:
+                    description: managedWorkloads reports how many workloads currently
+                      fall under this policy.
+                    format: int32
+                    type: integer
+                  overlappingPolicies:
+                    description: overlappingPolicies reports how many other policies
+                      overlap the same workload space.
+                    format: int32
+                    type: integer
+                  schedulerName:
+                    description: schedulerName is the shared scheduler name used by
+                      compaction workloads.
+                    type: string
+                  schedulerProfileName:
+                    description: schedulerProfileName is the shared scheduler profile
+                      the platform provides for compaction.
+                    type: string
+                type: object
+            type: object
+        required:
+        - spec
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}

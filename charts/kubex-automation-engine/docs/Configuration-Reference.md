@@ -147,8 +147,16 @@ secondaryCluster:
 | `secondaryCluster.enabled` | `false` | Enable secondary/DR mode for recommendation consumption from a primary cluster |
 | `secondaryCluster.primaryClusterName` | `""` | Primary Kubex cluster name used to fetch recommendations when secondary mode is enabled |
 | `podSecurityContext` | chart default | Pod-level security context for the controller Deployment; defaults to `65534` for `runAsUser`, `runAsGroup`, and `fsGroup`, plus `runAsNonRoot=true` and `seccompProfile.type=RuntimeDefault` |
-| `openshift.enabled` | `false` | Enable OpenShift-oriented pod security context defaults and cleanup job settings without changing the default Kubernetes installation path |
-| `openshift.fsGroup` | `null` | Optional `fsGroup` applied when `openshift.enabled=true` unless already set in `podSecurityContext` |
+| `openshift.enabled` | `false` | Enable arbitrary-UID-compatible security contexts for the controller, cleanup job, and controller-created compaction workloads without changing the default Kubernetes path |
+| `openshift.fsGroup` | `null` | Optional `fsGroup` applied when `openshift.enabled=true`; omit it to let OpenShift assign permitted IDs |
+| `compactionScheduler.image.tag` | `""` | Explicit scheduler tag; empty derives the tag from the cluster Kubernetes version |
+| `compactionScheduler.image.digest` | `""` | Optional immutable scheduler digest; takes precedence over `tag` |
+| `compactionScheduler.image.pullPolicy` | `IfNotPresent` | Pull policy for the controller-created scheduler Pod |
+| `compactionScheduler.podSecurityContext` | `{}` | Pod security context propagated to the controller-created scheduler; OpenShift mode adds `runAsNonRoot` and RuntimeDefault seccomp |
+| `compactionScheduler.securityContext` | chart default | Container security context propagated to the controller-created scheduler |
+| `compactionDescheduler.image.digest` | `""` | Optional immutable descheduler digest; takes precedence over `tag` |
+| `compactionDescheduler.podSecurityContext` | `{}` | Pod security context propagated to controller-created descheduler Jobs; OpenShift mode adds restricted-compatible defaults |
+| `compactionDescheduler.securityContext` | `{}` | Container security context propagated to controller-created descheduler Jobs; OpenShift mode drops capabilities and disables privilege escalation |
 | `metrics.serviceMonitor.enabled` | `false` | Create a Prometheus Operator `ServiceMonitor` for the metrics Service |
 | `metrics.port` | `8080` | Service port for the metrics Service |
 | `metrics.serviceMonitor.namespaceSelector` | `[]` | Namespace names to watch from the ServiceMonitor; empty means all namespaces |
@@ -276,7 +284,9 @@ kubectl logs -n kubex -l control-plane=controller-manager -c manager --tail=100 
 ## OpenShift Notes
 
 - Installing this chart still requires cluster-scoped permissions because it creates `ClusterRole`, `ClusterRoleBinding`, and admission webhook resources
-- If you deploy on OpenShift, enable `openshift.enabled=true` to apply restricted-friendly defaults for the cleanup job and optional supplemental groups; set `openshift.fsGroup` only when your storage class or SCC policy requires a fixed group
+- If you deploy on OpenShift, enable `openshift.enabled=true` to omit the controller's fixed UID/GID defaults and apply restricted-friendly contexts to the cleanup job and controller-created scheduler/descheduler Pods
+- OpenShift mode is designed for the built-in `restricted-v2` SCC and does not require `anyuid` or a custom SCC; set `openshift.fsGroup` only when your storage class or cluster policy requires a fixed group
+- `imagePullSecrets` are propagated to controller-created scheduler and descheduler Pods for mirrored or private registries
 - The OpenShift compatibility switch is opt-in so standard Kubernetes installs keep the existing defaults
 
 ## Global Configuration Values
@@ -298,7 +308,7 @@ Use [Global Configuration Reference](./Global-Configuration.md) for the CR field
 | `globalConfiguration.automationEnabled` | `true` | Global enable/disable switch |
 | `globalConfiguration.suppressFetchRecommendations` | `false` | Testing-only fetch suppression |
 | `globalConfiguration.respectKubexAutomation` | `true` | Respect recommendation-level disablement |
-| `globalConfiguration.protectedNamespacePatterns` | `["kube-*","openshift-*"]` plus chart defaults | Namespace patterns excluded from automation |
+| `globalConfiguration.protectedNamespacePatterns` | `["kube-*","openshift-*","gmp-*"]` | Namespace patterns protected from automation |
 | `globalConfiguration.webhookHealth.failureThreshold` | `2` | Failures before webhook is marked unhealthy |
 | `globalConfiguration.webhookHealth.successThreshold` | `3` | Successes before webhook is marked healthy |
 | `globalConfiguration.webhookHealth.transitionCheckInterval` | `10s` | Probe interval during state transitions |
