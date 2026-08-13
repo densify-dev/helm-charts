@@ -4,7 +4,7 @@ crdCheck:
   skip: false
   # Minimum version of the kubex-crds chart required before this chart can be installed/upgraded.
   # Bump this whenever a new CRD field or schema change is required.
-  minCRDsHelmVersion: "1.9.0"
+  minCRDsHelmVersion: "1.10.0"
 # -- Whether to create the kubex-gateway-config Secret automatically
 createSecrets: true
 
@@ -54,14 +54,14 @@ image:
   # -- Image pull policy
   pullPolicy: IfNotPresent
   # -- Image tag
-  tag: "1.9.1"
+  tag: "1.10.0"
 
 cleanup:
   image:
     # -- Image repository for the pre-delete cleanup job.
     repository: "densify/kubex-automation-cleanup"
     # -- Image tag for the pre-delete cleanup job. Defaults to the controller image tag.
-    tag: "1.9.1"
+    tag: "1.10.0"
     # -- Image pull policy for the pre-delete cleanup job.
     pullPolicy: "IfNotPresent"
   # -- Optional pod security context for the pre-delete cleanup job
@@ -190,7 +190,7 @@ gateway:
   enabled: true
   image:
     repository: "densify/automation-gateway"
-    tag: "1.4"
+    tag: "1.6"
     pullPolicy: "IfNotPresent"
   # Name of the secret containing gateway config (mounted at /densify/config/api)
   configSecretName: "kubex-gateway-config"
@@ -369,6 +369,7 @@ globalConfiguration:
   protectedNamespacePatterns:
     - "kube-*"
     - "openshift-*"
+    - "gmp-*"
   # -- Webhook probe health transition settings
   webhookHealth:
     # -- Consecutive failed probes required before webhook is considered unhealthy
@@ -405,6 +406,65 @@ globalConfiguration:
 kaiQueues:
   # -- Create built-in Run:ai Queue resources (`kubex-parent-queue` and `kubex-unlimited-gpu-queue`)
   enabled: false
+
+# Compaction scheduler configuration for the dedicated compaction scheduler.
+# NOTE: Helm installs only the ServiceAccount and RBAC here. The scheduler Deployment
+# and its ConfigMap are owned by the automation-controller, which creates and keeps
+# them in sync on first reconcile. The image/resource/security settings below are
+# passed to the controller as configuration — Helm does not render the Deployment itself.
+compactionScheduler:
+  # -- Deploy ServiceAccount and RBAC for the controller-managed compaction scheduler
+  enabled: false
+  image:
+    # -- Scheduler image repository
+    repository: registry.k8s.io/kube-scheduler
+    # -- Scheduler image tag
+    tag: ""
+    # -- Optional scheduler image digest (for example sha256:...); takes precedence over tag
+    digest: ""
+    # -- Scheduler image pull policy
+    pullPolicy: IfNotPresent
+  # -- Optional pod security context for the dedicated compaction scheduler pod
+  podSecurityContext: {}
+  # -- Container security context for the dedicated compaction scheduler container
+  securityContext:
+    readOnlyRootFilesystem: true
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - "ALL"
+  resources:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+    requests:
+      cpu: 25m
+      memory: 64Mi
+
+# Compaction descheduler configuration installed through Helm
+compactionDescheduler:
+  # -- Render shared RBAC and service account objects for controller-managed descheduler deployments.
+  enabled: false
+  image:
+    # -- Descheduler image repository
+    repository: registry.k8s.io/descheduler/descheduler
+    # -- Descheduler image tag
+    tag: v0.36.0
+    # -- Optional descheduler image digest (for example sha256:...); takes precedence over tag
+    digest: ""
+    # -- Descheduler image pull policy
+    pullPolicy: IfNotPresent
+  # -- Optional pod security context for controller-created descheduler pods
+  podSecurityContext: {}
+  # -- Optional container security context for controller-created descheduler containers
+  securityContext: {}
+  resources:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+    requests:
+      cpu: 25m
+      memory: 64Mi
 
 # ================================================================
 # BACKWARD COMPATIBILITY: Legacy environment variable configuration
