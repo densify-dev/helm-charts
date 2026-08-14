@@ -21,8 +21,10 @@
           }
         },
         "clusterName": {
-          "type": "string",
-          "minLength": 1
+          "type": "string"
+        },
+        "clusterNameFrom": {
+          "type": "object"
         },
         "recommendationsPath": {
           "type": "string"

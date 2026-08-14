@@ -128,12 +128,12 @@ The following table lists configuration parameters in `values-edit.yaml`.
 | `kubex-connector.enabled`                                                        |                    | Enable optional connector subchart (default: `false`) |
 | `kubex-ai-cdi.enabled`                                                           |                    | Enable optional kubex-ai-cdi subchart (default: `false`) |
 | `kubex-automation-engine.enabled`                                                |                    | Enable optional automation engine subchart for automated workload rightsizing (default: `false`) |
-| `kubex-automation-engine.kubex.clusterName`                                      |                    | Automatically populated from `container-optimization-data-forwarder.config.clusters[0].name` using the YAML anchor in `values-edit.yaml` |
-| `kubex-automation-engine.kubex.url.host`                                         |                    | Automatically populated from `container-optimization-data-forwarder.config.forwarder.densify.url.host` using the YAML anchor in `values-edit.yaml` |
+| `kubex-automation-engine.kubex.clusterNameFrom`                                  |                    | Defaults to `configMapKeyRef` on `kubex-stack-runtime/kubex_cluster_name` |
+| `kubex-automation-engine.gateway.configSecretName`                               |                    | Defaults to `densify-api-secret` created by the stack |
 | `kubex-connector.heartbeatSeconds`                                               |                    | Connector heartbeat interval in seconds |
 | `kubex-connector.requestTimeoutSeconds`                                          |                    | Connector request timeout in seconds |
 
-Connector, CDI, and Automation Engine use the shared Kubex host and cluster entered under `container-optimization-data-forwarder.config.*`. The stack publishes those runtime values in `kubex-connector-runtime`: the connector reads all connection identity from it, and CDI reads the cluster name from it. Credentials come from `stack.densify` through `densify-api-secret`, which the connector consumes through `forwarderCredentialsSecretRef.name` by default, and the automation engine consumes through `gateway.configSecretName`. The stack chart also owns the CDI service account and RBAC by rendering those manifests itself while disabling `kubex-ai-cdi.rbac.enabled` in the subchart. Component resources are selected by the `values-xsmall.yaml`, `values-small.yaml`, `values-medium.yaml`, and `values-large.yaml` overlays.
+Connector, CDI, and Automation Engine use the shared Kubex host and cluster entered under `container-optimization-data-forwarder.config.*`. The stack publishes those runtime values in `kubex-stack-runtime`: the connector reads all connection identity from it, CDI reads the cluster name from it, and the automation engine sources `CLUSTER_NAME` from it. Credentials come from `stack.densify` through `densify-api-secret`, which the connector consumes through `forwarderCredentialsSecretRef.name` by default, and the automation engine consumes through `gateway.configSecretName`. The stack chart also owns the CDI service account and RBAC by rendering those manifests itself while disabling `kubex-ai-cdi.rbac.enabled` in the subchart. Component resources are selected by the `values-xsmall.yaml`, `values-small.yaml`, `values-medium.yaml`, and `values-large.yaml` overlays.
 
 For the full stack RBAC shape and defaults, refer to `charts/kubex-automation-stack/values.yaml`.
 
@@ -141,30 +141,33 @@ For a guided explanation of the stack-managed CDI RBAC model, see [docs/RBAC-Gui
 
 ## Enabling Kubex Automation Engine
 
+> **Runtime ConfigMap rename (1.1.0):** the stack-managed runtime ConfigMap has
+> been renamed from `kubex-connector-runtime` to `kubex-stack-runtime`. Default
+> stack installs are updated automatically because the stack also updates the
+> connector, CDI, and automation-engine subchart wiring. If you explicitly
+> override `kubex-connector.forwarderConfigMap.name` or
+> `kubex-ai-cdi.worker.clusterNameConfigMap.name`, update those overrides to
+> `kubex-stack-runtime`.
+
 The Kubex Automation Engine provides automated workload rightsizing based on Kubex recommendations. It is disabled by default to support backward compatibility with customers who may have previously installed it separately.
 
 ### For New Installations
 
-The automation engine shares configuration with the other stack components using YAML anchors. The cluster name and Kubex host are populated from the forwarder configuration, so they only need to be entered once. Simply uncomment the automation-engine section in your `values-edit.yaml`:
+The automation engine reuses the stack-managed `densify-api-secret` and `kubex-stack-runtime` ConfigMap that are populated from the forwarder configuration, so no additional cluster name or Kubex host values are required. Simply uncomment the automation-engine section in your `values-edit.yaml`:
 
 ```yaml
-# In values-edit.yaml, use YAML anchors to avoid repeating configuration:
 container-optimization-data-forwarder:
   config:
     forwarder:
       densify:
         url:
-          host: &kubexHost 'customer.kubex.ai'  # Add & anchor
+          host: 'customer.kubex.ai'
     clusters:
-      - name: &clusterName 'my-cluster'  # Add & anchor
+      - name: 'my-cluster'
 
 # Then enable automation engine (uncomment these lines):
 kubex-automation-engine:
   enabled: true
-  kubex:
-    clusterName: *clusterName  # References the anchor above
-    url:
-      host: *kubexHost  # References the anchor above
 ```
 
 Then install normally:
@@ -176,15 +179,13 @@ helm install --create-namespace -n kubex \
   kubex kubex/kubex-automation-stack
 ```
 
-Alternatively, enable via command line. When using `--set`, provide the cluster name and host explicitly because command-line values cannot reference YAML anchors:
+Alternatively, enable via command line:
 
 ```shell
 helm install --create-namespace -n kubex \
   -f values-edit.yaml \
   -f <sizing file> \
   --set kubex-automation-engine.enabled=true \
-  --set-string kubex-automation-engine.kubex.clusterName="my-cluster" \
-  --set-string kubex-automation-engine.kubex.url.host="customer.kubex.ai" \
   kubex kubex/kubex-automation-stack
 ```
 
@@ -194,15 +195,14 @@ For customers who previously installed kubex-automation-engine separately, you c
 
 1. Uninstall the standalone kubex-automation-engine
 2. Install or upgrade the `kubex-crds` chart
-3. Update your `values-edit.yaml` with the YAML anchors as shown above
-4. Upgrade the kubex-automation-stack with the automation engine enabled
+3. Upgrade the kubex-automation-stack with the automation engine enabled
 
 ### Configuration
 
 The automation engine automatically shares configuration with other stack components:
-- **Credentials**: Uses the same `densify-api-secret` created by the stack (contains username, epassword, and url)
-- **Cluster Name**: Shared via YAML anchor from `container-optimization-data-forwarder.config.clusters[0].name`
-- **Kubex Instance URL**: Shared via YAML anchor from `container-optimization-data-forwarder.config.forwarder.densify.url.host`
+- **Credentials**: Uses the same `densify-api-secret` created by the stack (contains username, epassword, url, and DENSIFY_BASE_URL)
+- **Cluster Name**: Sourced from `kubex-stack-runtime/kubex_cluster_name` (populated from `container-optimization-data-forwarder.config.clusters[0].name`)
+- **Kubex Instance URL**: Sourced from `densify-api-secret/url` and `densify-api-secret/DENSIFY_BASE_URL` (populated from `container-optimization-data-forwarder.config.forwarder.densify.url.host`)
 
 This approach ensures configuration consistency and eliminates the risk of mismatched settings between components.
 

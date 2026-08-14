@@ -20,7 +20,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: kubex-connector-runtime
+  name: kubex-stack-runtime
   namespace: {{ template "common.namespace" . }}
   labels:
     app: kubex-runtime

@@ -15,8 +15,15 @@ kubex:
     host: ""
     # -- URL scheme used when deriving DENSIFY_BASE_URL from host
     scheme: "https"
-  # -- Cluster name to identify this cluster in Kubex (required)
+  # -- Cluster name to identify this cluster in Kubex (required unless clusterNameFrom is set)
   clusterName: ""
+  # -- Optional Kubernetes valueFrom source for CLUSTER_NAME. Takes precedence over clusterName.
+  # Example:
+  # clusterNameFrom:
+  #   configMapKeyRef:
+  #     name: kubex-stack-runtime
+  #     key: kubex_cluster_name
+  clusterNameFrom: {}
 
   # -- Path to local recommendations file (optional, for testing only - overrides gateway)
   recommendationsPath: "/densify/data/recommendations/recommendations.json"
