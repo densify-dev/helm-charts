@@ -24,7 +24,7 @@ To deploy the Kubex Collection Stack, follow these steps below:
 
 3. If deploying on OpenShift, use the OpenShift overlay file: [values-openshift.yaml](https://raw.githubusercontent.com/densify-dev/helm-charts/master/charts/kubex-automation-stack/values-openshift.yaml).
 
-   User workload monitoring must be enabled in your OpenShift cluster to allow ephemeral storage data collection.
+   User workload monitoring must be enabled in your OpenShift cluster to allow ephemeral storage and/or custom metrics data collection.
 
    Update the `cluster-monitoring-config` ConfigMap:
 
@@ -103,6 +103,11 @@ The following table indicates - depending on the cluster size - which sizing fil
 | Small           | 500-5000          | [values-small.yaml](https://github.com/densify-dev/helm-charts/blob/master/charts/kubex-automation-stack/values-small.yaml) |
 | Medium          | 5001-10000        | [values-medium.yaml](https://github.com/densify-dev/helm-charts/blob/master/charts/kubex-automation-stack/values-medium.yaml) |
 | Large           | 10001+            | [values-large.yaml](https://github.com/densify-dev/helm-charts/blob/master/charts/kubex-automation-stack/values-large.yaml) |
+
+
+## Custom Metrics (Optional)
+
+Kubex Data Collector can optionally collect custom container CPU and memory metrics. For details see [docs/custom-metrics.md](docs/custom-metrics.md).
 
 ## Configuration
 
