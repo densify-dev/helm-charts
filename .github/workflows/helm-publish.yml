@@ -108,6 +108,37 @@ jobs:
           echo "chart_count=${#packages[@]}" >> "${GITHUB_OUTPUT}"
           echo "readme_changed=${readme_changed}" >> "${GITHUB_OUTPUT}"
 
+          # Tag each packaged chart's release as <chart-name>/vX.Y.Z. We're
+          # already sitting on the exact commit being released (this
+          # checkout), so no need to hand version info to a downstream job -
+          # just read it straight back off what was just packaged.
+          if [ "${#packages[@]}" -gt 0 ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+            for pkg in "${packages[@]}"; do
+              chart_meta="$(helm show chart "${pkg}")"
+              chart_name="$(printf '%s\n' "${chart_meta}" | awk -F': ' '$1 == "name" { print $2; exit }')"
+              chart_version="$(printf '%s\n' "${chart_meta}" | awk -F': ' '$1 == "version" { print $2; exit }')"
+
+              if [ -z "${chart_name}" ] || [ -z "${chart_version}" ]; then
+                echo "Could not read chart name/version from ${pkg}; skipping tag." >&2
+                continue
+              fi
+
+              tag="${chart_name}/v${chart_version}"
+
+              if git ls-remote --exit-code --tags origin "refs/tags/${tag}" >/dev/null 2>&1; then
+                echo "Tag ${tag} already exists on origin. Skipping."
+                continue
+              fi
+
+              echo "Tagging ${tag} at ${{ github.sha }}"
+              git tag -a "${tag}" -m "${tag}" "${{ github.sha }}"
+              git push origin "refs/tags/${tag}"
+            done
+          fi
+
       - name: Checkout gh-pages
         uses: *checkout-action
         with:
