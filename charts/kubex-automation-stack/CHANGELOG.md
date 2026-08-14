@@ -5,7 +5,6 @@ All notable changes to the kubex-automation-stack chart will be documented in th
 ## [1.1.0] - 2026-08-14
 
 ### Added
-- Added documentation for custom container CPU and memory metrics
 - Added optional kubex-automation-engine as a dependency for automated workload rightsizing
   - Disabled by default to maintain backward compatibility with existing standalone installations
   - Shares Kubex credentials with the automation engine

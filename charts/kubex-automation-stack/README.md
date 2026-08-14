@@ -146,12 +146,11 @@ For a guided explanation of the stack-managed CDI RBAC model, see [docs/RBAC-Gui
 
 ## Enabling Kubex Automation Engine
 
-> **Runtime ConfigMap rename (1.1.0):** the stack-managed runtime ConfigMap has
-> been renamed from `kubex-connector-runtime` to `kubex-stack-runtime`. Default
-> stack installs are updated automatically because the stack also updates the
-> connector, CDI, and automation-engine subchart wiring. If you explicitly
-> override `kubex-connector.forwarderConfigMap.name` or
-> `kubex-ai-cdi.worker.clusterNameConfigMap.name`, update those overrides to
+> **Runtime defaults (1.1.0):** the stack-managed runtime ConfigMap is
+> `kubex-stack-runtime`. Default stack installs are updated automatically because
+> the stack also updates the connector, CDI, and automation-engine subchart
+> wiring. If you explicitly override `kubex-connector.forwarderConfigMap.name`
+> or `kubex-ai-cdi.worker.clusterNameConfigMap.name`, update those overrides to
 > `kubex-stack-runtime`.
 
 The Kubex Automation Engine provides automated workload rightsizing based on Kubex recommendations. It is disabled by default to support backward compatibility with customers who may have previously installed it separately.
@@ -202,12 +201,64 @@ For customers who previously installed kubex-automation-engine separately, you c
 2. Install or upgrade the `kubex-crds` chart
 3. Upgrade the kubex-automation-stack with the automation engine enabled
 
+### Using a Pre-Created Kubex API Secret
+
+By default, the stack creates a shared `densify-api-secret` from `stack.densify.username` and `stack.densify.encrypted_password`.
+
+To use a Secret managed outside of this chart, set:
+
+```yaml
+stack:
+  densify:
+    createSecret: false
+```
+
+When `createSecret: false` is set, the stack does not create `densify-api-secret`. You must either pre-create a Secret with that name in the release namespace, or override each component to use a different existing Secret.
+
+The default stack wiring expects these Secret references:
+
+```yaml
+container-optimization-data-forwarder:
+  config:
+    forwarder:
+      densify:
+        url:
+          UserSecretName: densify-api-secret
+
+kubex-connector:
+  forwarderCredentialsSecretRef:
+    name: densify-api-secret
+
+kubex-automation-engine:
+  gateway:
+    configSecretName: densify-api-secret
+```
+
+The Secret must contain these keys:
+
+| Key | Required By |
+| --- | --- |
+| `username` | data collection, connector, automation engine |
+| `epassword` | data collection, connector, automation engine |
+| `url` | automation engine |
+| `DENSIFY_BASE_URL` | automation engine |
+
+Example:
+
+```shell
+kubectl -n kubex create secret generic densify-api-secret \
+  --from-literal=username='<username>' \
+  --from-literal=epassword='<encrypted-password>' \
+  --from-literal=url='<instance>.kubex.ai' \
+  --from-literal=DENSIFY_BASE_URL='https://<instance>.kubex.ai'
+```
+
 ### Configuration
 
 The automation engine automatically shares configuration with other stack components:
 - **Credentials**: Uses the same `densify-api-secret` created by the stack (contains username, epassword, url, and DENSIFY_BASE_URL)
-- **Cluster Name**: Sourced from `kubex-stack-runtime/kubex_cluster_name` (populated from `container-optimization-data-forwarder.config.clusters[0].name`)
-- **Kubex Instance URL**: Sourced from `densify-api-secret/url` and `densify-api-secret/DENSIFY_BASE_URL` (populated from `container-optimization-data-forwarder.config.forwarder.densify.url.host`)
+- **Cluster Name**: Uses `kubex-automation-engine.kubex.clusterNameFrom`, which defaults to `kubex-stack-runtime/kubex_cluster_name`
+- **Kubex Instance URL**: Uses `gateway.configSecretName`, which defaults to `densify-api-secret`
 
 This approach ensures configuration consistency and eliminates the risk of mismatched settings between components.
 

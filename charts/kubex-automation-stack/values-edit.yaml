@@ -32,6 +32,14 @@ container-optimization-data-forwarder:
     # ttlSecondsAfterFinished: <value> # applies for both the cronjob and the job
     # backoffLimit: <value> # applies for both the cronjob and the job, default: 4
 
+# Set createSecret=false only when densify-api-secret is pre-created or when the
+# component secret references below are overridden to another existing Secret.
+# Required keys: username, epassword; automation engine also requires url and
+# DENSIFY_BASE_URL.
+# stack:
+#   densify:
+#     createSecret: false
+
 # Optional: Enable the connector and CDI tunnel path.
 # Keep these opt-in until the feature is generally available in production.
 # kubex-connector:
