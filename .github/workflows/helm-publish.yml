@@ -135,7 +135,7 @@ jobs:
 
               echo "Tagging ${tag} at ${{ github.sha }}"
               git tag -a "${tag}" -m "${tag}" "${{ github.sha }}"
-              git push origin "${tag}"
+              git push origin "refs/tags/${tag}"
             done
           fi
 
