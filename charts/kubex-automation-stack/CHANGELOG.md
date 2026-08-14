@@ -2,11 +2,6 @@
 
 All notable changes to the kubex-automation-stack chart will be documented in this file.
 
-## 2026-08-12
-
-### Added
-- custom-metrics.md
-
 ## [1.0.21] - 2026-08-11
 
 ### Added
