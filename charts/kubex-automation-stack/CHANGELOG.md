@@ -2,7 +2,7 @@
 
 All notable changes to the kubex-automation-stack chart will be documented in this file.
 
-## [1.1.0] - 2026-08-14
+## [1.1.0] - 2026-08-17
 
 ### Added
 - Added documentation for custom container CPU and memory metrics
