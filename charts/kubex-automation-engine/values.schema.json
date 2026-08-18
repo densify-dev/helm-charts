@@ -24,7 +24,78 @@
           "type": "string"
         },
         "clusterNameFrom": {
-          "type": "object"
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "oneOf": [
+                {
+                  "additionalProperties": false,
+                  "required": ["configMapKeyRef"],
+                  "properties": {
+                    "configMapKeyRef": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": ["name", "key"],
+                      "properties": {
+                        "name": {"type": "string", "minLength": 1},
+                        "key": {"type": "string", "minLength": 1},
+                        "optional": {"type": "boolean"}
+                      }
+                    }
+                  }
+                },
+                {
+                  "additionalProperties": false,
+                  "required": ["secretKeyRef"],
+                  "properties": {
+                    "secretKeyRef": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": ["name", "key"],
+                      "properties": {
+                        "name": {"type": "string", "minLength": 1},
+                        "key": {"type": "string", "minLength": 1},
+                        "optional": {"type": "boolean"}
+                      }
+                    }
+                  }
+                },
+                {
+                  "additionalProperties": false,
+                  "required": ["fieldRef"],
+                  "properties": {
+                    "fieldRef": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": ["fieldPath"],
+                      "properties": {
+                        "fieldPath": {"type": "string", "minLength": 1}
+                      }
+                    }
+                  }
+                },
+                {
+                  "additionalProperties": false,
+                  "required": ["resourceFieldRef"],
+                  "properties": {
+                    "resourceFieldRef": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": ["resource"],
+                      "properties": {
+                        "containerName": {"type": "string"},
+                        "resource": {"type": "string", "minLength": 1},
+                        "divisor": {"type": "string"}
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          ]
         },
         "recommendationsPath": {
           "type": "string"
@@ -32,7 +103,32 @@
         "requestTimeout": {
           "type": "string"
         }
-      }
+      },
+      "allOf": [
+        {
+          "if": {
+            "anyOf": [
+              {
+                "not": {"required": ["clusterNameFrom"]}
+              },
+              {
+                "properties": {
+                  "clusterNameFrom": {"type": "null"}
+                }
+              }
+            ]
+          },
+          "then": {
+            "required": ["clusterName"],
+            "properties": {
+              "clusterName": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      ]
     },
     "kubexCredentials": {
       "type": "object",
