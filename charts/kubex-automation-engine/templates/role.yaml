@@ -166,7 +166,6 @@ rules:
   - clusterproactivepolicies
   - clusterrollbackpolicies
   - clusterstaticpolicies
-  - containerargspolicies
   - globalconfigurations
   - gpuconsolidationpolicies
   - gpureactivepolicies
@@ -191,7 +190,6 @@ rules:
   - clusterproactivepolicies/finalizers
   - clusterrollbackpolicies/finalizers
   - clusterstaticpolicies/finalizers
-  - containerargspolicies/finalizers
   - globalconfigurations/finalizers
   - gpuconsolidationpolicies/finalizers
   - gpureactivepolicies/finalizers
@@ -211,7 +209,6 @@ rules:
   - clusterproactivepolicies/status
   - clusterrollbackpolicies/status
   - clusterstaticpolicies/status
-  - containerargspolicies/status
   - globalconfigurations/status
   - gpuconsolidationpolicies/status
   - gpureactivepolicies/status

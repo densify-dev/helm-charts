@@ -37,10 +37,9 @@ This document maps the current Helm chart values to the resources created by the
 
 - Helm-managed policy generation creates `ClusterAutomationStrategy` resources
 - Helm-managed scope generation creates `ClusterProactivePolicy` resources
-- `AutomationStrategy`, `ProactivePolicy`, `StaticPolicy`, `ClusterStaticPolicy`, `PodAffinityPolicy`, `ContainerArgsPolicy`, `ClusterAutomationStrategy`, and `ClusterProactivePolicy` can all be managed manually outside Helm
+- `AutomationStrategy`, `ProactivePolicy`, `StaticPolicy`, `ClusterStaticPolicy`, `PodAffinityPolicy`, `ClusterAutomationStrategy`, and `ClusterProactivePolicy` can all be managed manually outside Helm
 - `StaticPolicy` and `ClusterStaticPolicy` are supported by the controller, but this chart does not currently generate them from values
 - `PodAffinityPolicy` is also managed outside Helm; see [Policy Configuration](./Policy-Configuration.md#podaffinitypolicy-behavior) for behavior details and the eviction-loop warning for `spec.affinity.checkCurrentNodeSatisfiesAffinity`
-- `ContainerArgsPolicy` is managed outside Helm; see [Policy Configuration](./Policy-Configuration.md#containerargspolicy-behavior) for argument operations, replacement behavior, and KAI precedence
 
 ---
 

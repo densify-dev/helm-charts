@@ -144,30 +144,6 @@ webhooks:
     service:
       name: {{ include "kubex-automation-engine.fullname" . }}-webhook-service
       namespace: {{ include "kubex-automation-engine.namespace" . }}
-      path: /validate-rightsizing-kubex-ai-v1alpha1-containerargspolicy
-  failurePolicy: {{ .Values.webhook.failurePolicy }}
-  name: vcontainerargspolicy-v1alpha1.kb.io
-  rules:
-  - apiGroups:
-    - rightsizing.kubex.ai
-    apiVersions:
-    - v1alpha1
-    operations:
-    - CREATE
-    - UPDATE
-    resources:
-    - containerargspolicies
-  sideEffects: None
-  timeoutSeconds: {{ .Values.webhook.timeoutSeconds }}
-- admissionReviewVersions:
-  - v1
-  clientConfig:
-    {{- if not .Values.webhook.certManager.enabled }}
-    caBundle: {{ .caCert }}
-    {{- end }}
-    service:
-      name: {{ include "kubex-automation-engine.fullname" . }}-webhook-service
-      namespace: {{ include "kubex-automation-engine.namespace" . }}
       path: /validate-rightsizing-kubex-ai-v1alpha1-globalconfiguration
   failurePolicy: {{ .Values.webhook.failurePolicy }}
   name: vglobalconfiguration-v1alpha1.kb.io

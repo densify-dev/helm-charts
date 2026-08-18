@@ -47,8 +47,6 @@ How to interpret `retry` in the context of this document:
 | `too-many-requests` | execution retry guard | `spec.podEviction.retryPodDisruptionBudget` | Blocks when eviction is rejected with API `429 TooManyRequests`, for example PodDisruptionBudget rejection or API throttling | retryable when enabled: requeues using `spec.safetyChecks.resizeRetryInterval` | `resize blocked by too many requests (...)` |
 | `recommendation-too-old` | proactive recommendation guard | `ProactivePolicy.spec.safetyChecks.maxAnalysisAgeDays` / `ClusterProactivePolicy.spec.safetyChecks.maxAnalysisAgeDays` | Strips out recommendations coming from Kubex when they are too old | not a pod requeue check; summary guard | `recommendation too old` |
 
-For hook-only `ContainerArgsPolicy` convergence, when no `AutomationStrategy` resolves, the controller uses a 30-second fallback for `safetyChecks.resizeRetryInterval`. A resolved strategy interval remains authoritative.
-
 ## Filters
 
 | Runtime name | Stage | Controlled by | Behavior | Targets / metadata | Typical message |

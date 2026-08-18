@@ -16,10 +16,6 @@ spec:
     priority: 120
   - type: ClusterGpuReactivePolicy
     priority: 110
-  - type: ContainerArgsPolicy
-    priority: 100
-  - type: PodAffinityPolicy
-    priority: 100
   - type: StaticPolicy
     priority: 90
   - type: ClusterStaticPolicy
