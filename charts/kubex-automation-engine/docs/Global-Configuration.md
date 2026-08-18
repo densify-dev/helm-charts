@@ -153,6 +153,7 @@ Proposal sync supports these `rightsizing.kubex.ai/v1alpha1` kinds:
 - `ClusterStaticPolicy`
 - `ClusterProactivePolicy`
 - `PodAffinityPolicy`
+- `ContainerArgsPolicy`
 - `ClusterRollbackPolicy`
 - `ClusterGpuReactivePolicy`
 - `GpuConsolidationPolicy`
