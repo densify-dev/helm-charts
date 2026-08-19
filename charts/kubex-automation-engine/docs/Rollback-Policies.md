@@ -20,7 +20,7 @@ Use them when you want the controller to monitor workloads after a resize is app
 | `spec.scope` | none | Optional scope object for workload selection within the namespace. |
 | `spec.scope.labelSelector` | none | Kubernetes label selector for matching workloads. |
 | `spec.scope.workloadTypes` | `[Deployment, StatefulSet, CronJob, Rollout, Job, AnalysisRun, DaemonSet, Model]` | Workload kinds this policy applies to. Default excludes `StrimziPodSet` only. |
-| `spec.monitoringPeriod` | none (required) | How long the controller observes an active resize attempt before declaring failure. Example: `5m`, `10m`. |
+| `spec.monitoringPeriod` | none (required) | How long the controller observes an active resize attempt, including newly created pods, before declaring success or starting a rollback. Example: `5m`, `10m`. |
 | `spec.rollbackTarget` | none (required) | Whether rollback returns to `manifest` resources or `lastSuccessful` state. |
 | `spec.adoptionThresholdPercent` | none (required) | Percentage of the workload cohort that must adopt the target resources successfully (1-100). |
 | `spec.backoff.timePeriod` | none (required) | Base duration for a rollback turn. Example: `1m`, `5m`. |
@@ -37,7 +37,7 @@ Use them when you want the controller to monitor workloads after a resize is app
 | `spec.scope.workloadTypes` | `[Deployment, StatefulSet, CronJob, Rollout, Job, AnalysisRun, DaemonSet, Model]` | Workload kinds this policy applies to. Default excludes `StrimziPodSet` only. |
 | `spec.scope.namespaceSelector.operator` | none | Namespace selector operator: `In` or `NotIn`. |
 | `spec.scope.namespaceSelector.values` | none | Namespace patterns to include or exclude (supports `*` wildcards, e.g. `"prod-*"`). Wildcard patterns must be enclosed in double quotes. |
-| `spec.monitoringPeriod` | none (required) | How long the controller observes an active resize attempt before declaring failure. Example: `5m`, `10m`. |
+| `spec.monitoringPeriod` | none (required) | How long the controller observes an active resize attempt, including newly created pods, before declaring success or starting a rollback. Example: `5m`, `10m`. |
 | `spec.rollbackTarget` | none (required) | Whether rollback returns to `manifest` resources or `lastSuccessful` state. |
 | `spec.adoptionThresholdPercent` | none (required) | Percentage of the workload cohort that must adopt the target resources successfully (1-100). |
 | `spec.backoff.timePeriod` | none (required) | Base duration for a rollback turn. Example: `1m`, `5m`. |
@@ -129,7 +129,8 @@ The `adoptionThresholdPercent` field determines what percentage of the workload 
 
 - Setting `80` means at least 80% of the baseline workload cohort must be healthy on the targeted resources by the end of the monitoring window
 - Pods count toward the threshold only after they adopt the active recommendation fingerprint and become healthy
-- The controller evaluates the threshold at the end of the monitoring window, allowing transient restarts or hiccups to recover before deciding whether rollback is needed
+- The controller evaluates the threshold at the end of the monitoring window, allowing transient restarts or hiccups to recover before deciding whether the resize succeeds or rollback is needed
+- Newly created pods are monitored through the same window after admission and scheduling; they are not declared successful or rolled back immediately based on their initial health
 - Range: 1-100
 
 ## Backoff Turn Calculation
@@ -156,3 +157,67 @@ After `maxAttempts` turns are exhausted, the rollback moves to `failedPermanent`
 - When multiple rollback policies of the same kind match, higher `weight` wins, then older objects win on ties.
 - For behavioral details and operational expectations, see [Rollback Backoff](./Rollback-Backoff.md).
 - Rollback policies are independent of automation strategies and proactive/static policies - they work alongside those policies to add health monitoring and automatic rollback capabilities.
+
+---
+
+## Understanding Resize vs. Rollback Behavior
+
+Kubex handles how recommendations are applied differently depending on whether a pod is already running or being newly created. Both paths still go through the rollback policy monitoring period before success or rollback is declared:
+
+```
+Kubex receives a recommendation
+         │
+         ▼
+  Is the pod already running?
+         │
+    ┌────┴────┐
+    ▼         ▼
+EXISTING     NEW POD
+  POD
+    │         │
+    ▼         ▼
+Check node   Apply during
+capacity +   admission
+safety       (no node
+checks       assigned yet)
+    │         │
+    ├─────────┤
+    ▼         ▼
+Capacity    Kubernetes
+available   schedules pod
+or not         │
+    │          │
+    ▼          │
+Resize,        │
+evict, or      │
+filter         │
+    │          │
+    └─────┬────┘
+          │
+          ▼
+    No policy? ─────► Retain
+          │
+          ▼
+    Policy matches
+          │
+          ▼
+    Monitoring period
+          │
+          ▼
+  Evaluate health and
+  adoption threshold
+          │
+     ┌────┴────┐
+     ▼         ▼
+  Healthy  Unhealthy
+     │         │
+     ▼         ▼
+  Success  Rollback
+  (retain) to manifest
+           or last successful
+```
+
+**Key distinctions:**
+- **Existing pods**: Node capacity checked before action. Insufficient capacity filters the recommendation—the pod is not deleted. Not a rollback.
+- **New pods**: Applied during admission before node assignment, then scheduled by Kubernetes. When a rollback policy matches, the pod goes through the configured monitoring period just like an existing pod; only after that window does the controller declare success or start a rollback based on health and adoption results.
+- **Rollback monitoring requires**: A recommendation was successfully applied AND a matching rollback policy exists.
