@@ -17,13 +17,13 @@ kubex:
     scheme: "https"
   # -- Cluster name to identify this cluster in Kubex (required unless clusterNameFrom is set)
   clusterName: ""
-  # -- Optional Kubernetes valueFrom source for CLUSTER_NAME. Takes precedence over clusterName.
+  # -- Optional Kubernetes EnvVarSource for CLUSTER_NAME. Takes precedence over clusterName.
   # Example:
   # clusterNameFrom:
   #   configMapKeyRef:
   #     name: kubex-stack-runtime
   #     key: kubex_cluster_name
-  clusterNameFrom: {}
+  clusterNameFrom: null
 
   # -- Path to local recommendations file (optional, for testing only - overrides gateway)
   recommendationsPath: "/densify/data/recommendations/recommendations.json"
