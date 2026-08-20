@@ -1,9 +1,10 @@
-enabled: false
-
 image:
   repository: densify/kubex-connector
-  tag: 1.1.0
+  tag: 1.2.0
   pullPolicy: IfNotPresent
+
+imagePullSecrets: []
+# - name: registry-secret
 
 replicaCount: 1
 
@@ -27,7 +28,7 @@ kubex:
   clusterName: ""
 
 forwarderConfigMap:
-  name: kubex-connector-runtime
+  name: ""
 
 forwarderCredentialsSecretRef:
   name: ""
