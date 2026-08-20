@@ -10,7 +10,7 @@ dependencies:
   version: 1.1.1
 - name: kubex-automation-engine
   repository: https://densify-dev.github.io/helm-charts
-  version: 1.10.1
+  version: 1.11.0
 - name: prometheus
   repository: https://prometheus-community.github.io/helm-charts
   version: 29.21.0
@@ -26,5 +26,5 @@ dependencies:
 - name: node-labeler
   repository: https://densify-dev.github.io/helm-charts
   version: 0.1.2
-digest: sha256:481eca505fff1a05bc8df4283fadc6841e1d792b9597a5cbfd8480d547935cd9
-generated: "2026-08-20T10:24:01.658202813-04:00"
+digest: sha256:3f1c22e84955069f7f7385fe13ac349bc29da187c8a958029c07d564958d2a3d
+generated: "2026-08-20T16:32:53.996904536Z"
