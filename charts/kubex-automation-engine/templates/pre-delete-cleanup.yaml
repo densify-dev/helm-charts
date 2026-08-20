@@ -42,8 +42,10 @@ rules:
 - apiGroups:
   - rightsizing.kubex.ai
   resources:
+  - automationstrategies
   - clusterautomationstrategies
   - clustercompactionpolicies
+  - clusterobjectpatches
   - clustergpureactivepolicies
   - clusterproactivepolicies
   - clusterrollbackpolicies
@@ -51,7 +53,9 @@ rules:
   - globalconfigurations
   - gpuconsolidationpolicies
   - gpureactivepolicies
+  - objectpatches
   - podaffinitypolicies
+  - containerargspolicies
   - policyevaluations
   - proactivepolicies
   - rollbackpolicies

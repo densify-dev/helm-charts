@@ -15,6 +15,10 @@ metadata:
   name: policy-evaluation
 spec:
   precedence:
+  - type: ContainerArgsPolicy
+    priority: 100
+  - type: PodAffinityPolicy
+    priority: 100
   - type: RollbackPolicy
     priority: 130
   - type: ClusterRollbackPolicy
@@ -33,7 +37,7 @@ spec:
     priority: 70
 ```
 
-Higher priority values win. Within the same priority, the policy with the highest weight wins. If weights are also equal, the most recently created policy wins.
+Higher priority values win. Within the same priority, the policy with the highest weight wins. If weights are also equal, the most recently created policy wins. `ContainerArgsPolicy` uses this same selection order; its default priority is 100 and only one matching argument policy is selected.
 
 ### Priority Field
 

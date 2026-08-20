@@ -66,6 +66,14 @@ The controller filters or blocks actions based on webhook health, protected name
 
 For the complete safety model and where each control is configured, see [Safety Controls](./Safety-Controls.md).
 
+### When does Kubex resize, and when does it roll back?
+
+For existing pods, Kubex checks node capacity and safety controls before taking action—it can resize in place, evict and recreate, or filter the recommendation. Filtering due to insufficient capacity is not a rollback; the pod is not deleted and no resources are restored.
+
+For newly created pods, Kubex applies recommendations during admission, then Kubernetes schedules them. When a rollback policy matches, Kubex monitors health: healthy pods keep the new resources, while failing pods trigger a rollback turn to restore either `manifest` or `lastSuccessful` resources.
+
+See [Understanding Resize vs. Rollback Behavior](./Rollback-Policies.md#understanding-resize-vs-rollback-behavior) for detailed decision flows.
+
 ### Does the controller mutate system namespaces?
 
 Not by default. Protected namespace patterns exclude well-known platform namespaces unless you intentionally change that configuration.
