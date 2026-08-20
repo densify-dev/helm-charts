@@ -13,7 +13,7 @@ Use it to control recommendation refresh timing, proactive rescans, heartbeat re
 | `spec.recommendationReloadInterval` | `1h` | How often recommendations are reloaded from Kubex. |
 | `spec.rescanInterval` | `6h` | How often workloads are rescanned for proactive evaluation. |
 | `spec.mutationLogInterval` | `5m` | How often mutation logs are sent. |
-| `spec.snapshotInterval` | `30m` | How often policy snapshots are sent. |
+| `spec.snapshotInterval` | `30m` | How often snapshots containing all supported `rightsizing.kubex.ai` custom resources are sent. |
 | `spec.heartbeatInterval` | `5m` | How often controller heartbeat status is sent to Kubex. |
 | `spec.proposalSyncEnabled` | `false` | Controls proposal sync. Disabled by default behind feature flag. When set to `false`, controller stops syncing proposals and deletes proposal-managed resources. |
 | `spec.kubexAPIRequestTimeout` | `60s` | Timeout for Kubex API requests. |

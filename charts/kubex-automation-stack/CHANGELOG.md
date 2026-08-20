@@ -2,6 +2,24 @@
 
 All notable changes to the kubex-automation-stack chart will be documented in this file.
 
+## [1.1.0] - 2026-08-19
+
+### Added
+- Added documentation for custom container CPU and memory metrics
+- Added optional kubex-automation-engine as a dependency for automated workload rightsizing
+  - Disabled by default to maintain backward compatibility with existing standalone installations
+  - Shares Kubex credentials with the automation engine
+  - Shares cluster configuration (cluster name and Kubex instance URL) with other stack components
+  - Sources automation-engine `CLUSTER_NAME` from the stack-managed runtime ConfigMap via `kubex.clusterNameFrom`
+- Added comprehensive documentation for enabling and configuring the automation engine
+- Updated README with installation instructions and migration guidance
+
+### Changed
+- Added the URL configuration required for kubex-automation-engine compatibility
+- Renamed the stack runtime ConfigMap from `kubex-connector-runtime` to `kubex-stack-runtime`
+- Updated stack-managed connector, CDI, and automation-engine defaults to consume `kubex-stack-runtime`
+- Removed the YAML anchor requirement from `values-edit.yaml` and README for automation-engine enablement
+
 ## [1.0.22] - 2026-08-12
 
 ### Added
