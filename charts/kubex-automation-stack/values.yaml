@@ -93,7 +93,7 @@ kubex-connector:
   extraLabels: {}
   extraAnnotations: {}
   forwarderConfigMap:
-    name: kubex-connector-runtime
+    name: kubex-stack-runtime
   forwarderCredentialsSecretRef:
     name: densify-api-secret
 
@@ -107,13 +107,48 @@ kubex-ai-cdi:
     name: kubex-ai-cdi-service
   worker:
     clusterNameConfigMap:
-      name: kubex-connector-runtime
+      name: kubex-stack-runtime
       key: kubex_cluster_name
   serviceAccount:
     create: false
     name: kubex-ai-cdi-sa
   rbac:
     enabled: false
+
+#################################################################
+# Kubex Automation Engine
+# kubex-automation-engine parameters for automated workload rightsizing
+# Disabled by default to maintain backward compatibility
+#
+# The automation engine automatically uses:
+#   - credentials from: stack.densify (via shared densify-api-secret)
+#   - clusterName: from kubex-stack-runtime ConfigMap (populated from
+#     container-optimization-data-forwarder.config.clusters[0].name)
+#   - url.host: from densify-api-secret (populated from
+#     container-optimization-data-forwarder.config.forwarder.densify.url.host)
+#################################################################
+
+kubex-automation-engine:
+  # -- Enable the kubex-automation-engine subchart for automated workload rightsizing
+  enabled: false
+  extraLabels: {}
+  extraAnnotations: {}
+  # -- Disable secret creation since stack already creates densify-api-secret
+  createSecrets: false
+  kubex:
+    # -- Explicit cluster name; leave empty to source from clusterNameFrom below
+    clusterName: ""
+    # -- Source CLUSTER_NAME from the stack-managed kubex-stack-runtime ConfigMap
+    clusterNameFrom:
+      configMapKeyRef:
+        name: kubex-stack-runtime
+        key: kubex_cluster_name
+    url:
+      # -- Kubex instance hostname. When empty, the engine gateway reads DENSIFY_URL from densify-api-secret.
+      host: ""
+  gateway:
+    # -- Use the shared densify-api-secret created by kubex-automation-stack
+    configSecretName: densify-api-secret
 
 container-optimization-data-forwarder:
   nameOverride: kubex-stack
