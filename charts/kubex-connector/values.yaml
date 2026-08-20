@@ -1,3 +1,5 @@
+enabled: false
+
 image:
   repository: densify/kubex-connector
   tag: 1.2.0
@@ -28,7 +30,7 @@ kubex:
   clusterName: ""
 
 forwarderConfigMap:
-  name: ""
+  name: kubex-connector-runtime
 
 forwarderCredentialsSecretRef:
   name: ""

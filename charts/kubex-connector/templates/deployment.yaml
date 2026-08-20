@@ -1,3 +1,4 @@
+{{- if .Values.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -42,7 +43,7 @@ spec:
       {{- $tenantID := trim (toString (default "" (index $env "CONNECTOR_TENANT_ID"))) }}
       {{- $clusterID := trim (toString (default "" (index $env "CONNECTOR_CLUSTER_ID"))) }}
       {{- $relayEnabled := and .Values.relay.enabled (eq $proxyWsURL "") }}
-      {{- $forwarderConfigMapName := trim (default "" .Values.forwarderConfigMap.name) }}
+      {{- $forwarderConfigMapName := trim (default "kubex-connector-runtime" .Values.forwarderConfigMap.name) }}
       {{- $forwarderSecretName := trim (default "" .Values.forwarderCredentialsSecretRef.name) }}
       {{- $useForwarderConfigMap := and (eq $kubexHost "") (eq $kubexClusterName "") (ne $forwarderConfigMapName "") }}
       {{- $useForwarderSecretRef := ne $forwarderSecretName "" }}
@@ -239,3 +240,4 @@ spec:
           {{- toYaml .Values.relay.resources | nindent 10 }}
         {{- end }}
       {{- end }}
+{{- end }}

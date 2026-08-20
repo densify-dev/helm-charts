@@ -1,3 +1,4 @@
+{{- if .Values.enabled }}
 {{- if .Values.rbac.enabled }}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -21,4 +22,5 @@ roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
   name: {{ include "kubex-ai-cdi.clusterRoleName" . }}
+{{- end }}
 {{- end }}
