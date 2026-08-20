@@ -41,6 +41,9 @@ tolerations:
   - key: nvidia.com/gpu
     operator: Exists
     effect: NoSchedule
+  - key: kubernetes.io/arch
+    operator: Exists
+    effect: NoSchedule
 
 affinity: {}
 
