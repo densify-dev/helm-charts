@@ -12,7 +12,7 @@ All notable changes to the kubex-automation-stack chart will be documented in th
 ## [1.1.1] - 2026-08-20
 
 ### Changed
-- Updated gpu-process-exporter dependency from 1.1.1 to 1.1.2.
+- Updated gpu-process-exporter dependency to 1.1.2.
 
 ---
 
