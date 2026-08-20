@@ -1,7 +1,7 @@
 apiVersion: v2
 description: Kubex Collection Stack
 name: kubex-automation-stack
-version: 1.1.1
+version: 1.1.2
 type: application
 icon: https://kubex.ai/wp-content/uploads/kubex-logo-landscape.svg
 dependencies:
@@ -17,7 +17,7 @@ dependencies:
     repository: https://densify-dev.github.io/helm-charts
     condition: kubex-ai-cdi.enabled
   - name: kubex-automation-engine
-    version: "1.10.1"
+    version: "1.11.0"
     repository: https://densify-dev.github.io/helm-charts
     condition: kubex-automation-engine.enabled
   - name: prometheus
