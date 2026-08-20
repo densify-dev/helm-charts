@@ -2,7 +2,7 @@ apiVersion: v1
 entries:
   container-optimization-data-forwarder:
   - apiVersion: v2
-    created: "2026-08-20T15:26:50.993163253Z"
+    created: "2026-08-20T15:32:23.56805132Z"
     description: Kubex Data Collector
     digest: 35501b10d909d43f1299e3b8044ec00266d4c0c6ed63d2762a560d3a9f2bd4cd
     icon: https://kubex.ai/wp-content/uploads/kubex-logo-landscape.svg
@@ -20,7 +20,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/container-optimization-data-forwarder-4.0.17.tgz
     version: 4.0.17
   - apiVersion: v2
-    created: "2026-08-20T15:26:50.992475664Z"
+    created: "2026-08-20T15:32:23.567307409Z"
     description: Kubex Data Collector
     digest: 6a1087fdc929a9a509d9c83cd4eb4460a8c855eccc49de89559e511b8499bf4f
     icon: https://www.kubex.ai/wp-content/uploads/kubex-by-densify-logo.png
@@ -38,7 +38,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/container-optimization-data-forwarder-4.0.16.tgz
     version: 4.0.16
   - apiVersion: v2
-    created: "2026-08-20T15:26:50.991447505Z"
+    created: "2026-08-20T15:32:23.565758114Z"
     description: Kubex Data Collector
     digest: ac345be141f9e9f396f7c7dde5f7e94da7d70064f1cb00ec53145e32ffe29041
     icon: https://www.kubex.ai/wp-content/uploads/kubex-by-densify-logo.png
@@ -56,7 +56,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/container-optimization-data-forwarder-4.0.15.tgz
     version: 4.0.15
   - apiVersion: v2
-    created: "2026-08-20T15:26:50.990495906Z"
+    created: "2026-08-20T15:32:23.56503385Z"
     description: Kubex Data Collector
     digest: 4bcb3e83e77e2590e5bfaf921fb8e938b07eb2c4f8cdb1786f6a38e03cc000a4
     icon: https://www.kubex.ai/wp-content/uploads/kubex-by-densify-logo.png
@@ -74,7 +74,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/container-optimization-data-forwarder-4.0.14.tgz
     version: 4.0.14
   - apiVersion: v2
-    created: "2026-08-20T15:26:50.989982494Z"
+    created: "2026-08-20T15:32:23.564392421Z"
     description: Densify Container Optimization Data Forwarder Utility
     digest: 42a240715692e5d023bb3f03d083482b78417b14affad12a11a98cd7fffb2fc9
     icon: https://www.densify.com/wp-content/uploads/densify.png
@@ -91,7 +91,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/container-optimization-data-forwarder-4.0.13.tgz
     version: 4.0.13
   - apiVersion: v2
-    created: "2026-08-20T15:26:50.989489505Z"
+    created: "2026-08-20T15:32:23.563805625Z"
     description: Densify Container Optimization Data Forwarder Utility
     digest: 2077dd40be2e8732186ec0b6758619eef63d4a2451b64d72d157270ba084591a
     icon: https://www.densify.com/wp-content/uploads/densify.png
@@ -108,7 +108,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/container-optimization-data-forwarder-4.0.12.tgz
     version: 4.0.12
   - apiVersion: v2
-    created: "2026-08-20T15:26:50.989000497Z"
+    created: "2026-08-20T15:32:23.563153996Z"
     description: Densify Container Optimization Data Forwarder Utility
     digest: e4c615b28e764f0fbc565d57c0a5217bc60bd248aea41bc04d1bdd86f89896f9
     icon: https://www.densify.com/wp-content/uploads/densify.png
@@ -125,7 +125,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/container-optimization-data-forwarder-4.0.11.tgz
     version: 4.0.11
   - apiVersion: v2
-    created: "2026-08-20T15:26:50.988498865Z"
+    created: "2026-08-20T15:32:23.562581156Z"
     description: Densify Container Optimization Data Forwarder Utility
     digest: 53869b45181641241c72103bb589c082bfac000124c07f85985f3b052194e4b4
     icon: https://www.densify.com/wp-content/uploads/densify.png
@@ -142,7 +142,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/container-optimization-data-forwarder-4.0.10.tgz
     version: 4.0.10
   - apiVersion: v2
-    created: "2026-08-20T15:26:50.997559707Z"
+    created: "2026-08-20T15:32:23.573602472Z"
     description: Densify Container Optimization Data Forwarder Utility
     digest: c97cce46dba4d2f1f2562a424fc20bae275f7f88487925e4bcc3aa3e3edd42fb
     icon: https://www.densify.com/wp-content/uploads/densify.png
@@ -159,7 +159,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/container-optimization-data-forwarder-4.0.9.tgz
     version: 4.0.9
   - apiVersion: v2
-    created: "2026-08-20T15:26:50.99708513Z"
+    created: "2026-08-20T15:32:23.572916721Z"
     description: Densify Container Optimization Data Forwarder Utility
     digest: 289f3374f4d67ff9990f8bbdfc3ec0b6a22ce3e6ed726085c0d16a03b63d49f6
     icon: https://www.densify.com/wp-content/uploads/densify.png
@@ -176,7 +176,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/container-optimization-data-forwarder-4.0.8.tgz
     version: 4.0.8
   - apiVersion: v2
-    created: "2026-08-20T15:26:50.996465082Z"
+    created: "2026-08-20T15:32:23.571879625Z"
     description: Densify Container Optimization Data Forwarder Utility
     digest: 0d2c6d30d12a07022116c8e5d9d05c4e24f7fa31d4767d6486833783410747d0
     icon: https://www.densify.com/wp-content/uploads/densify.png
@@ -193,7 +193,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/container-optimization-data-forwarder-4.0.7.tgz
     version: 4.0.7
   - apiVersion: v2
-    created: "2026-08-20T15:26:50.995451908Z"
+    created: "2026-08-20T15:32:23.570905594Z"
     description: Densify Container Optimization Data Forwarder Utility
     digest: d1455e72d50d9d3f6377cbf0d9b8b949b3165a8d179e8c2290b273f7412e5764
     icon: https://www.densify.com/wp-content/uploads/densify.png
@@ -210,7 +210,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/container-optimization-data-forwarder-4.0.6.tgz
     version: 4.0.6
   - apiVersion: v2
-    created: "2026-08-20T15:26:50.994967708Z"
+    created: "2026-08-20T15:32:23.57030422Z"
     description: Densify Container Optimization Data Forwarder Utility
     digest: bf094d75a229627b5ff8015a1d11b848ce757ecb865d2bb9662430705d656554
     icon: https://www.densify.com/wp-content/uploads/densify.png
@@ -227,7 +227,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/container-optimization-data-forwarder-4.0.5.tgz
     version: 4.0.5
   - apiVersion: v2
-    created: "2026-08-20T15:26:50.994516621Z"
+    created: "2026-08-20T15:32:23.569745716Z"
     description: Densify Container Optimization Data Forwarder Utility
     digest: 811c572ae05b53d3c0f42c0347d4bb1a84a4468fc79adfe0f0e723d48e6b721e
     icon: https://www.densify.com/wp-content/uploads/densify.png
@@ -244,7 +244,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/container-optimization-data-forwarder-4.0.4.tgz
     version: 4.0.4
   - apiVersion: v2
-    created: "2026-08-20T15:26:50.994071264Z"
+    created: "2026-08-20T15:32:23.569164921Z"
     description: Densify Container Optimization Data Forwarder Utility
     digest: 19d0237c270937733c5dc307fd85cbe330a6ab60285448b450e5033849ed8ec3
     icon: https://www.densify.com/wp-content/uploads/densify.png
@@ -261,7 +261,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/container-optimization-data-forwarder-4.0.3.tgz
     version: 4.0.3
   - apiVersion: v2
-    created: "2026-08-20T15:26:50.993611148Z"
+    created: "2026-08-20T15:32:23.568622597Z"
     description: Densify Container Optimization Data Forwarder Utility
     digest: 1ae296171d008945a44f56aea737ca8983e3ce627dca2d4f1b1e3eb987a81841
     icon: https://www.densify.com/wp-content/uploads/densify.png
@@ -278,7 +278,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/container-optimization-data-forwarder-4.0.2.tgz
     version: 4.0.2
   - apiVersion: v2
-    created: "2026-08-20T15:26:50.988023092Z"
+    created: "2026-08-20T15:32:23.561937633Z"
     description: Densify Container Optimization Data Forwarder Utility
     digest: 2efce95190733063a99ec185a873511c931f6d0d86d220089cc4a3dc86e7d60a
     icon: https://www.densify.com/wp-content/uploads/densify.png
@@ -295,7 +295,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/container-optimization-data-forwarder-4.0.1.tgz
     version: 4.0.1
   - apiVersion: v2
-    created: "2026-08-20T15:26:50.987285271Z"
+    created: "2026-08-20T15:32:23.56058722Z"
     description: Densify Container Optimization Data Forwarder Utility
     digest: 9b0612352ed3cacea9bf410f077ddfa24fa4849fcf5e37ed8ebb20b8d02e8a94
     icon: https://www.densify.com/wp-content/uploads/densify.png
@@ -312,7 +312,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/container-optimization-data-forwarder-4.0.0.tgz
     version: 4.0.0
   - apiVersion: v2
-    created: "2026-08-20T15:26:50.986422218Z"
+    created: "2026-08-20T15:32:23.559980476Z"
     description: Densify Container Optimization Data Forwarder Utility
     digest: 6be70c54324e506fc54f01d34b38dadc3cfe1b4e453a86196607e6ec6f7d7d92
     keywords:
@@ -328,7 +328,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/container-optimization-data-forwarder-3.0.0.tgz
     version: 3.0.0
   - apiVersion: v2
-    created: "2026-08-20T15:26:50.986073635Z"
+    created: "2026-08-20T15:32:23.55945303Z"
     description: Densify Container Optimization Data Forwarder Utility
     digest: db133e38eb73964aa683289a843af1ce4b5169f77fe7d406bc77746135b6cf84
     keywords:
@@ -344,7 +344,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/container-optimization-data-forwarder-2.2.0.tgz
     version: 2.2.0
   - apiVersion: v2
-    created: "2026-08-20T15:26:50.985664696Z"
+    created: "2026-08-20T15:32:23.559005724Z"
     description: Densify Container Optimization Data Forwarder Utility
     digest: 06d31298dddd2827ea5d8f93bcf50b0e195df2fb433357afa60d32e686f4624a
     keywords:
@@ -360,7 +360,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/container-optimization-data-forwarder-2.1.0.tgz
     version: 2.1.0
   - apiVersion: v2
-    created: "2026-08-20T15:26:50.985268492Z"
+    created: "2026-08-20T15:32:23.558506832Z"
     description: Densify Container Optimization Data Forwarder Utility
     digest: 87d231bd23c1545ace907fe5435ecc9fe843503f5bf00da49dfaae2f546535d5
     keywords:
@@ -376,7 +376,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/container-optimization-data-forwarder-2.0.0.tgz
     version: 2.0.0
   - apiVersion: v1
-    created: "2026-08-20T15:26:50.984837073Z"
+    created: "2026-08-20T15:32:23.558022446Z"
     description: Densify Container Optimization Data Forwarder Utility
     digest: 4974032b868c23cd6bd02fa39d5dfeff0b9c78956f4122fa09f4d6b902572c2b
     keywords:
@@ -392,7 +392,7 @@ entries:
     version: 1.0.2
   gpu-process-exporter:
   - apiVersion: v2
-    created: "2026-08-20T15:26:50.99854079Z"
+    created: "2026-08-20T15:32:23.575049657Z"
     description: A Helm chart for gpu-process-exporter
     digest: 8b0951e2160fec0fdf0526a1c2740d1cf0507641527e0e3fc2c3faa03259428f
     icon: https://kubex.ai/wp-content/uploads/kubex-logo-landscape.svg
@@ -410,7 +410,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/gpu-process-exporter-1.1.2.tgz
     version: 1.1.2
   - apiVersion: v2
-    created: "2026-08-20T15:26:50.998303779Z"
+    created: "2026-08-20T15:32:23.574681369Z"
     description: A Helm chart for gpu-process-exporter
     digest: a77a73a792747d1bc311a775a586518dd3a5665698a91eae86f4b56e85b1c1dd
     icon: https://kubex.ai/wp-content/uploads/kubex-logo-landscape.svg
@@ -428,7 +428,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/gpu-process-exporter-1.1.1.tgz
     version: 1.1.1
   - apiVersion: v2
-    created: "2026-08-20T15:26:50.998057267Z"
+    created: "2026-08-20T15:32:23.574224124Z"
     description: A Helm chart for gpu-process-exporter
     digest: a9428fbaaae7f438b313a40d77218f9397bd56b2e5a0af4547aba044712e7631
     icon: https://kubex.ai/wp-content/uploads/kubex-logo-landscape.svg
@@ -446,7 +446,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/gpu-process-exporter-1.1.0.tgz
     version: 1.1.0
   - apiVersion: v2
-    created: "2026-08-20T15:26:50.997786001Z"
+    created: "2026-08-20T15:32:23.573912362Z"
     description: A Helm chart for gpu-process-exporter
     digest: bfa7ea461eee5482b9f4a50fbfd40285df87d7d4b5d403a92d19aafe081fc147
     icon: https://kubex.ai/wp-content/uploads/kubex-logo-landscape.svg
@@ -472,7 +472,7 @@ entries:
       artifacthub.io/prerelease: "false"
     apiVersion: v2
     appVersion: 1.22.1
-    created: "2026-08-20T15:26:51.001366636Z"
+    created: "2026-08-20T15:32:23.578588551Z"
     description: Ephemeral storage metrics for prometheus operator.
     digest: c360aaa569306bab83ee5bff720b2f0fe1d8c9a1ba142b586e9910dd05a6c0b6
     home: https://github.com/densify-dev/helm-charts/tree/master/charts/k8s-ephemeral-storage-metrics
@@ -493,7 +493,7 @@ entries:
           url: https://github.com/densify-dev/helm-charts/tree/master/charts/k8s-ephemeral-storage-metrics
       artifacthub.io/prerelease: "false"
     apiVersion: v2
-    created: "2026-08-20T15:26:51.000220529Z"
+    created: "2026-08-20T15:32:23.577447058Z"
     description: Ephemeral storage metrics for prometheus operator.
     digest: b18b4ce1b07a7f7c4578b55793d759969fd5f2dcfff70a27baa96ed1363c307c
     home: https://github.com/densify-dev/helm-charts/tree/master/charts/k8s-ephemeral-storage-metrics
@@ -514,7 +514,7 @@ entries:
           url: https://github.com/densify-dev/helm-charts/tree/master/charts/k8s-ephemeral-storage-metrics
       artifacthub.io/prerelease: "false"
     apiVersion: v2
-    created: "2026-08-20T15:26:50.999789815Z"
+    created: "2026-08-20T15:32:23.576889937Z"
     description: Ephemeral storage metrics for prometheus operator.
     digest: df7c6ed31663b1db1b5a75643a511905b11a8846956bc15d4c70a17e5c705891
     home: https://github.com/densify-dev/helm-charts/tree/master/charts/k8s-ephemeral-storage-metrics
@@ -535,7 +535,7 @@ entries:
           url: https://github.com/densify-dev/helm-charts/tree/master/charts/k8s-ephemeral-storage-metrics
       artifacthub.io/prerelease: "false"
     apiVersion: v2
-    created: "2026-08-20T15:26:50.999358895Z"
+    created: "2026-08-20T15:32:23.576162297Z"
     description: Ephemeral storage metrics for prometheus operator.
     digest: b12bf4755e173298de488997265bc78b13dab61dd0602991a1b3692c665df6b0
     home: https://github.com/densify-dev/helm-charts/tree/master/charts/k8s-ephemeral-storage-metrics
@@ -556,7 +556,7 @@ entries:
           url: https://github.com/densify-dev/helm-charts/tree/master/charts/k8s-ephemeral-storage-metrics
       artifacthub.io/prerelease: "false"
     apiVersion: v2
-    created: "2026-08-20T15:26:50.998937703Z"
+    created: "2026-08-20T15:32:23.5755968Z"
     description: Ephemeral storage metrics for prometheus operator.
     digest: 3b074a7def8d6b3e9c06df71dd070b5870cca4ace30a9c29aeeb67179f683ae8
     home: https://github.com/densify-dev/helm-charts/tree/master/charts/k8s-ephemeral-storage-metrics
@@ -573,7 +573,7 @@ entries:
   kubex-ai-cdi:
   - apiVersion: v2
     appVersion: 1.1.0
-    created: "2026-08-20T15:26:51.003062532Z"
+    created: "2026-08-20T15:32:23.580923778Z"
     description: In-cluster Kubex cluster data interface service exposed over HTTP
     digest: 0b846401664dc20e9636fe31d78decd5023d1b8deecf639a41cdca0318949992
     name: kubex-ai-cdi
@@ -583,7 +583,7 @@ entries:
     version: 1.1.1
   - apiVersion: v2
     appVersion: 1.1.0
-    created: "2026-08-20T15:26:51.002685473Z"
+    created: "2026-08-20T15:32:23.580386955Z"
     description: In-cluster Kubex cluster data interface service exposed over HTTP
     digest: fc0d8fb4595023a7a7f3e161b11b0ffe78512a9a3a5b7088e316da250b37193b
     name: kubex-ai-cdi
@@ -593,7 +593,7 @@ entries:
     version: 1.1.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2026-08-20T15:26:51.002225634Z"
+    created: "2026-08-20T15:32:23.579879767Z"
     description: In-cluster Kubex cluster data interface service exposed over HTTP
     digest: b1e6ad89dd241d2ba9b7ce15caaf35bcdfd67aca49947cb35ed0c1365c504b1b
     name: kubex-ai-cdi
@@ -602,7 +602,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-ai-cdi-1.0.0.tgz
     version: 1.0.0
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.001826554Z"
+    created: "2026-08-20T15:32:23.579317987Z"
     description: In-cluster Kubex cluster data interface service exposed over HTTP
     digest: f86150c3a5a07859a60a05ea7b83138f646f9111c27d0b2f02bf7fd687d737ad
     icon: https://kubex.ai/wp-content/uploads/kubex-logo-landscape.svg
@@ -616,7 +616,7 @@ entries:
     version: 0.1.8
   kubex-automation-controller:
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.030452038Z"
+    created: "2026-08-20T15:32:23.614526442Z"
     dependencies:
     - name: valkey
       repository: https://groundhog2k.github.io/helm-charts
@@ -633,7 +633,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-controller-1.0.21.tgz
     version: 1.0.21
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.028160963Z"
+    created: "2026-08-20T15:32:23.611706622Z"
     dependencies:
     - name: valkey
       repository: https://groundhog2k.github.io/helm-charts
@@ -650,7 +650,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-controller-1.0.20.tgz
     version: 1.0.20
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.023421813Z"
+    created: "2026-08-20T15:32:23.605533862Z"
     dependencies:
     - name: valkey
       repository: https://groundhog2k.github.io/helm-charts
@@ -667,7 +667,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-controller-1.0.17.tgz
     version: 1.0.17
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.021093124Z"
+    created: "2026-08-20T15:32:23.60276658Z"
     dependencies:
     - name: valkey
       repository: https://groundhog2k.github.io/helm-charts
@@ -684,7 +684,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-controller-1.0.16.tgz
     version: 1.0.16
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.018210503Z"
+    created: "2026-08-20T15:32:23.599988488Z"
     dependencies:
     - name: valkey
       repository: https://groundhog2k.github.io/helm-charts
@@ -701,7 +701,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-controller-1.0.15.tgz
     version: 1.0.15
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.015983508Z"
+    created: "2026-08-20T15:32:23.596395424Z"
     dependencies:
     - name: valkey
       repository: https://groundhog2k.github.io/helm-charts
@@ -718,7 +718,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-controller-1.0.14.tgz
     version: 1.0.14
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.013680345Z"
+    created: "2026-08-20T15:32:23.59367477Z"
     dependencies:
     - name: valkey
       repository: https://groundhog2k.github.io/helm-charts
@@ -735,7 +735,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-controller-1.0.13.tgz
     version: 1.0.13
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.010584065Z"
+    created: "2026-08-20T15:32:23.59028224Z"
     dependencies:
     - name: valkey
       repository: https://groundhog2k.github.io/helm-charts
@@ -752,7 +752,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-controller-1.0.12.tgz
     version: 1.0.12
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.008488481Z"
+    created: "2026-08-20T15:32:23.587760086Z"
     dependencies:
     - name: valkey
       repository: https://groundhog2k.github.io/helm-charts
@@ -769,7 +769,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-controller-1.0.11.tgz
     version: 1.0.11
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.005942278Z"
+    created: "2026-08-20T15:32:23.584348719Z"
     dependencies:
     - name: valkey
       repository: https://groundhog2k.github.io/helm-charts
@@ -786,7 +786,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-controller-1.0.10.tgz
     version: 1.0.10
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.046861161Z"
+    created: "2026-08-20T15:32:23.633415032Z"
     dependencies:
     - name: valkey
       repository: https://groundhog2k.github.io/helm-charts
@@ -803,7 +803,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-controller-1.0.9.tgz
     version: 1.0.9
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.044315289Z"
+    created: "2026-08-20T15:32:23.630226095Z"
     dependencies:
     - name: valkey
       repository: https://groundhog2k.github.io/helm-charts
@@ -820,7 +820,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-controller-1.0.8.tgz
     version: 1.0.8
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.042248229Z"
+    created: "2026-08-20T15:32:23.627845866Z"
     dependencies:
     - name: valkey
       repository: https://groundhog2k.github.io/helm-charts
@@ -837,7 +837,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-controller-1.0.7.tgz
     version: 1.0.7
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.040199622Z"
+    created: "2026-08-20T15:32:23.625351293Z"
     dependencies:
     - name: valkey
       repository: https://groundhog2k.github.io/helm-charts
@@ -854,7 +854,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-controller-1.0.6.tgz
     version: 1.0.6
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.037473386Z"
+    created: "2026-08-20T15:32:23.622267189Z"
     dependencies:
     - name: valkey
       repository: https://groundhog2k.github.io/helm-charts
@@ -871,7 +871,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-controller-1.0.5.tgz
     version: 1.0.5
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.035526492Z"
+    created: "2026-08-20T15:32:23.619901617Z"
     dependencies:
     - name: valkey
       repository: https://groundhog2k.github.io/helm-charts
@@ -888,7 +888,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-controller-1.0.4.tgz
     version: 1.0.4
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.033528286Z"
+    created: "2026-08-20T15:32:23.617501882Z"
     dependencies:
     - name: valkey
       repository: https://groundhog2k.github.io/helm-charts
@@ -905,7 +905,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-controller-1.0.3.tgz
     version: 1.0.3
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.025340681Z"
+    created: "2026-08-20T15:32:23.608808766Z"
     dependencies:
     - name: valkey
       repository: https://groundhog2k.github.io/helm-charts
@@ -923,7 +923,7 @@ entries:
     version: 1.0.2
   - apiVersion: v2
     appVersion: 1.2.1
-    created: "2026-08-20T15:26:51.003868966Z"
+    created: "2026-08-20T15:32:23.58195222Z"
     description: A Helm chart for deploying Kubex Automation Controller
     digest: 9b57ea6ca183ae61530640f54c9ca12133b80e1af213b2e42bfbf09cdb32f586
     icon: https://www.densify.com/wp-content/uploads/densify.png
@@ -937,7 +937,7 @@ entries:
     version: 1.0.1
   - apiVersion: v2
     appVersion: 1.2.1
-    created: "2026-08-20T15:26:51.003451617Z"
+    created: "2026-08-20T15:32:23.581413293Z"
     description: A Helm chart for deploying Kubex Automation Controller
     digest: e6b7032a106b705634433fcc0a5daa6a2a7def408ec1e864b889a5aa5eb6521f
     icon: https://www.densify.com/wp-content/uploads/densify.png
@@ -951,7 +951,28 @@ entries:
     version: 1.0.0
   kubex-automation-engine:
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.070796612Z"
+    created: "2026-08-20T15:32:23.665228581Z"
+    description: A Helm chart for deploying kubex-automation-engine for automated
+      workload rightsizing and resource optimization
+    digest: c2a187745435b427094533aa525a6728189dd620fb362fa6a76d6f8857276313
+    icon: https://kubex.ai/wp-content/uploads/kubex-logo-landscape.svg
+    keywords:
+    - kubex
+    - automation
+    - rightsizing
+    - optimization
+    - kubernetes
+    - resource-management
+    maintainers:
+    - email: support@kubex.ai
+      name: support
+    name: kubex-automation-engine
+    type: application
+    urls:
+    - https://densify-dev.github.io/helm-charts/kubex-automation-engine-1.11.0.tgz
+    version: 1.11.0
+  - apiVersion: v2
+    created: "2026-08-20T15:32:23.662141652Z"
     description: A Helm chart for deploying kubex-automation-engine for automated
       workload rightsizing and resource optimization
     digest: fae6f12edc81ee0659f30bba7cc4acdbc7aad1aef26304c18b3a9e936afa3bbc
@@ -972,7 +993,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-engine-1.10.1.tgz
     version: 1.10.1
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.067578727Z"
+    created: "2026-08-20T15:32:23.658278291Z"
     description: A Helm chart for deploying kubex-automation-engine for automated
       workload rightsizing and resource optimization
     digest: 2daf903adf1f3e6a9b7cf741db64a1316ec5a7ba34587ad2653fedf1a7a86166
@@ -993,7 +1014,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-engine-1.10.0.tgz
     version: 1.10.0
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.092324134Z"
+    created: "2026-08-20T15:32:23.704397778Z"
     description: A Helm chart for deploying kubex-automation-engine for automated
       workload rightsizing and resource optimization
     digest: 3ef6a8218744984daf0a8de7a39742cc04841e34d68862be83b5ed86cdd6c06a
@@ -1014,7 +1035,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-engine-1.9.1.tgz
     version: 1.9.1
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.089960198Z"
+    created: "2026-08-20T15:32:23.701692121Z"
     description: A Helm chart for deploying kubex-automation-engine for automated
       workload rightsizing and resource optimization
     digest: 2a488a2a5e59fb16815e979a904d872d7b5d766d4ffa49eee2b7cdcfe99ff1da
@@ -1035,7 +1056,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-engine-1.9.0.tgz
     version: 1.9.0
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.08713723Z"
+    created: "2026-08-20T15:32:23.698549972Z"
     description: A Helm chart for deploying kubex-automation-engine for automated
       workload rightsizing and resource optimization
     digest: 6c3c7d8183ed63874d6581fb111fe04bb43c745af274fca824e2a82db95d1798
@@ -1056,7 +1077,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-engine-1.8.0.tgz
     version: 1.8.0
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.085105914Z"
+    created: "2026-08-20T15:32:23.693772252Z"
     description: A Helm chart for deploying kubex-automation-engine for automated
       workload rightsizing and resource optimization
     digest: eab71d275762423f227906a7de83bf9909a2410455d52c7b997b3ccf4105e1fc
@@ -1077,7 +1098,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-engine-1.7.0.tgz
     version: 1.7.0
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.082443795Z"
+    created: "2026-08-20T15:32:23.689334818Z"
     description: A Helm chart for deploying kubex-automation-engine for automated
       workload rightsizing and resource optimization
     digest: 88f1f6196e61fc02eff8b8c4eb2254619aacd75412ecbbddf6f566dc5fd70918
@@ -1098,7 +1119,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-engine-1.6.0.tgz
     version: 1.6.0
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.080417453Z"
+    created: "2026-08-20T15:32:23.684267939Z"
     description: A Helm chart for deploying kubex-automation-engine for automated
       workload rightsizing and resource optimization
     digest: b6a31de5a13560b062eed9dfbf5aa1afcb6354531c252ab12f4f0f549e41315a
@@ -1119,7 +1140,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-engine-1.5.0.tgz
     version: 1.5.0
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.078332282Z"
+    created: "2026-08-20T15:32:23.679478487Z"
     description: A Helm chart for deploying kubex-automation-engine for automated
       workload rightsizing and resource optimization
     digest: ebc8748f955037177bad79a94638805e7eeb9b4438cdb39cc02d735d7f47c871
@@ -1140,7 +1161,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-engine-1.4.0.tgz
     version: 1.4.0
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.075958208Z"
+    created: "2026-08-20T15:32:23.675584038Z"
     description: A Helm chart for deploying kubex-automation-engine for automated
       workload rightsizing and resource optimization
     digest: e9f57c775ed515bac0bcc9bd7e58941220d03ff4b22954de2f8ea1d23334c0f8
@@ -1161,7 +1182,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-engine-1.3.1.tgz
     version: 1.3.1
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.074244441Z"
+    created: "2026-08-20T15:32:23.671867251Z"
     description: A Helm chart for deploying kubex-automation-engine for automated
       workload rightsizing and resource optimization
     digest: 3a43af97bc6af2b69361fdb10f43a74606a6443961ee320492089c6331ee77c6
@@ -1182,7 +1203,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-engine-1.3.0.tgz
     version: 1.3.0
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.072506582Z"
+    created: "2026-08-20T15:32:23.667534802Z"
     description: A Helm chart for deploying kubex-automation-engine for automated
       workload rightsizing and resource optimization
     digest: e6cf8c7e0a5d9df750d0c924250e617e070cbcb8560bd525f7683dc8ed77ee55
@@ -1203,7 +1224,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-engine-1.2.0.tgz
     version: 1.2.0
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.065055941Z"
+    created: "2026-08-20T15:32:23.655132852Z"
     description: A Helm chart for deploying kubex-automation-engine for automated
       workload rightsizing and resource optimization
     digest: a139f93b6ea6892247aef2aaee1e974c1d28ae8693c9128e3168c85011c9ff45
@@ -1224,7 +1245,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-engine-1.1.0.tgz
     version: 1.1.0
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.062863747Z"
+    created: "2026-08-20T15:32:23.652304929Z"
     description: A Helm chart for deploying kubex-automation-engine for automated
       workload rightsizing and resource optimization
     digest: be15996a3ef1ca3535f80a98008dc15428f6aeeed727111af404bacdb3ef8d54
@@ -1245,7 +1266,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-engine-1.0.1.tgz
     version: 1.0.1
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.061300187Z"
+    created: "2026-08-20T15:32:23.650428723Z"
     description: A Helm chart for deploying kubex-automation-engine for automated
       workload rightsizing and resource optimization
     digest: eb79f965164d775c53000e79d99b55ab0ca79fafcd5b1bc9cab10f8607f4f856
@@ -1266,7 +1287,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-engine-1.0.0.tgz
     version: 1.0.0
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.059967977Z"
+    created: "2026-08-20T15:32:23.648801561Z"
     description: A Helm chart for deploying kubex-automation-engine for automated
       workload rightsizing and resource optimization
     digest: 35837cb6ebaa7e13fad62d205a7639561787aa8db3891c4ecd247d7699b87b10
@@ -1287,7 +1308,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-engine-0.4.3.tgz
     version: 0.4.3
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.05851155Z"
+    created: "2026-08-20T15:32:23.647139836Z"
     description: A Helm chart for deploying kubex-automation-engine for automated
       workload rightsizing and resource optimization
     digest: 5e666502279bdce1c232576295ebe55abecbab4dce222171ea9880b15834c487
@@ -1308,7 +1329,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-engine-0.4.0.tgz
     version: 0.4.0
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.056423013Z"
+    created: "2026-08-20T15:32:23.644707367Z"
     description: A Helm chart for deploying kubex-automation-engine for automated
       workload rightsizing and resource optimization
     digest: c3e1b40ab95d3b5a5aa800cc8502b5d9774547f95b770bd04e80a08247b3ceb6
@@ -1329,7 +1350,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-engine-0.3.0.tgz
     version: 0.3.0
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.055117624Z"
+    created: "2026-08-20T15:32:23.643130751Z"
     description: A Helm chart for deploying kubex-automation-engine for automated
       workload rightsizing and resource optimization
     digest: b796a19b9afafc93c1eec6a5022e9030fc895f6156ddb31e041bde84d8269f5a
@@ -1350,7 +1371,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-engine-0.2.1.tgz
     version: 0.2.1
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.053792844Z"
+    created: "2026-08-20T15:32:23.641576896Z"
     description: A Helm chart for deploying kubex-automation-engine for automated
       workload rightsizing and resource optimization
     digest: fc331867ea7189c8b0565cc9bd7c15b3748326e74ff71e42a42fe96c2c1a3677
@@ -1371,7 +1392,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-engine-0.1.4.tgz
     version: 0.1.4
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.052505164Z"
+    created: "2026-08-20T15:32:23.640053399Z"
     description: A Helm chart for deploying kubex-automation-engine for automated
       workload rightsizing and resource optimization
     digest: 26c6a857b996212c712b8176bb48f4f75120be208a45c7fa1e6cbc57f50e8684
@@ -1392,7 +1413,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-engine-0.1.3.tgz
     version: 0.1.3
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.050550697Z"
+    created: "2026-08-20T15:32:23.638025992Z"
     description: A Helm chart for deploying kubex-automation-engine for automated
       workload rightsizing and resource optimization
     digest: e57a9261b06e1a18fe69775e0c8d4c6ad9c1685095028fbf0262c9d93a0baca9
@@ -1414,7 +1435,7 @@ entries:
     version: 0.1.2
   - apiVersion: v2
     appVersion: 0.1.1
-    created: "2026-08-20T15:26:51.049371828Z"
+    created: "2026-08-20T15:32:23.636370756Z"
     description: A Helm chart for deploying kubex-automation-engine for automated
       workload rightsizing and resource optimization
     digest: e0b0c3c2b0c6cee72702ef27d5fb01695079e01ae3a853eb72e0a073bc9f9af4
@@ -1436,7 +1457,7 @@ entries:
     version: 0.1.1
   - apiVersion: v2
     appVersion: "0.1"
-    created: "2026-08-20T15:26:51.0481564Z"
+    created: "2026-08-20T15:32:23.634897412Z"
     description: A Helm chart for deploying kubex-automation-engine for automated
       workload rightsizing and resource optimization
     digest: 62246d80687935da7f27d9108191d38e915aa36e6622017adb560e9964576558
@@ -1458,7 +1479,7 @@ entries:
     version: 0.1.0
   kubex-automation-stack:
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.358384832Z"
+    created: "2026-08-20T15:32:24.029271507Z"
     dependencies:
     - name: container-optimization-data-forwarder
       repository: https://densify-dev.github.io/helm-charts
@@ -1512,7 +1533,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-stack-1.1.1.tgz
     version: 1.1.1
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.346083662Z"
+    created: "2026-08-20T15:32:24.012753406Z"
     dependencies:
     - name: container-optimization-data-forwarder
       repository: https://densify-dev.github.io/helm-charts
@@ -1566,7 +1587,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-stack-1.1.0.tgz
     version: 1.1.0
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.287176815Z"
+    created: "2026-08-20T15:32:23.938593108Z"
     dependencies:
     - name: container-optimization-data-forwarder
       repository: https://densify-dev.github.io/helm-charts
@@ -1616,7 +1637,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-stack-1.0.22.tgz
     version: 1.0.22
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.277303965Z"
+    created: "2026-08-20T15:32:23.92673065Z"
     dependencies:
     - name: container-optimization-data-forwarder
       repository: https://densify-dev.github.io/helm-charts
@@ -1658,7 +1679,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-stack-1.0.20.tgz
     version: 1.0.20
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.261499882Z"
+    created: "2026-08-20T15:32:23.906454223Z"
     dependencies:
     - name: container-optimization-data-forwarder
       repository: https://densify-dev.github.io/helm-charts
@@ -1700,7 +1721,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-stack-1.0.19.tgz
     version: 1.0.19
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.252625234Z"
+    created: "2026-08-20T15:32:23.895750094Z"
     dependencies:
     - name: container-optimization-data-forwarder
       repository: https://densify-dev.github.io/helm-charts
@@ -1742,7 +1763,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-stack-1.0.18.tgz
     version: 1.0.18
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.243691381Z"
+    created: "2026-08-20T15:32:23.884531256Z"
     dependencies:
     - name: container-optimization-data-forwarder
       repository: https://densify-dev.github.io/helm-charts
@@ -1784,7 +1805,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-stack-1.0.17.tgz
     version: 1.0.17
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.234793444Z"
+    created: "2026-08-20T15:32:23.873568951Z"
     dependencies:
     - name: container-optimization-data-forwarder
       repository: https://densify-dev.github.io/helm-charts
@@ -1826,7 +1847,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-stack-1.0.16.tgz
     version: 1.0.16
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.222624222Z"
+    created: "2026-08-20T15:32:23.862621818Z"
     dependencies:
     - name: container-optimization-data-forwarder
       repository: https://densify-dev.github.io/helm-charts
@@ -1864,7 +1885,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-stack-1.0.14.tgz
     version: 1.0.14
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.211571717Z"
+    created: "2026-08-20T15:32:23.852623584Z"
     dependencies:
     - name: container-optimization-data-forwarder
       repository: https://densify-dev.github.io/helm-charts
@@ -1902,7 +1923,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-stack-1.0.13.tgz
     version: 1.0.13
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.203051242Z"
+    created: "2026-08-20T15:32:23.842555186Z"
     dependencies:
     - name: container-optimization-data-forwarder
       repository: https://densify-dev.github.io/helm-charts
@@ -1940,7 +1961,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-stack-1.0.12.tgz
     version: 1.0.12
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.194459833Z"
+    created: "2026-08-20T15:32:23.832323531Z"
     dependencies:
     - name: container-optimization-data-forwarder
       repository: https://densify-dev.github.io/helm-charts
@@ -1974,7 +1995,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-stack-1.0.11.tgz
     version: 1.0.11
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.333641966Z"
+    created: "2026-08-20T15:32:23.997298007Z"
     dependencies:
     - name: container-optimization-data-forwarder
       repository: https://densify-dev.github.io/helm-charts
@@ -2008,7 +2029,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-stack-1.0.8.tgz
     version: 1.0.8
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.325590739Z"
+    created: "2026-08-20T15:32:23.987393275Z"
     dependencies:
     - name: container-optimization-data-forwarder
       repository: https://densify-dev.github.io/helm-charts
@@ -2042,7 +2063,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-stack-1.0.7.tgz
     version: 1.0.7
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.317480876Z"
+    created: "2026-08-20T15:32:23.977500919Z"
     dependencies:
     - name: container-optimization-data-forwarder
       repository: https://densify-dev.github.io/helm-charts
@@ -2076,7 +2097,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-stack-1.0.6.tgz
     version: 1.0.6
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.310075454Z"
+    created: "2026-08-20T15:32:23.966965838Z"
     dependencies:
     - name: container-optimization-data-forwarder
       repository: https://densify-dev.github.io/helm-charts
@@ -2110,7 +2131,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-stack-1.0.5.tgz
     version: 1.0.5
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.301988533Z"
+    created: "2026-08-20T15:32:23.957460623Z"
     dependencies:
     - name: container-optimization-data-forwarder
       repository: https://densify-dev.github.io/helm-charts
@@ -2143,7 +2164,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-stack-1.0.4.tgz
     version: 1.0.4
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.294992809Z"
+    created: "2026-08-20T15:32:23.948079097Z"
     dependencies:
     - name: container-optimization-data-forwarder
       repository: https://densify-dev.github.io/helm-charts
@@ -2176,7 +2197,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-stack-1.0.3.tgz
     version: 1.0.3
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.267790103Z"
+    created: "2026-08-20T15:32:23.915059406Z"
     dependencies:
     - name: container-optimization-data-forwarder
       repository: https://densify-dev.github.io/helm-charts
@@ -2201,7 +2222,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-stack-1.0.2.tgz
     version: 1.0.2
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.185473034Z"
+    created: "2026-08-20T15:32:23.821527305Z"
     dependencies:
     - name: container-optimization-data-forwarder
       repository: https://densify-dev.github.io/helm-charts
@@ -2226,7 +2247,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-stack-1.0.1.tgz
     version: 1.0.1
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.178636599Z"
+    created: "2026-08-20T15:32:23.813178719Z"
     dependencies:
     - name: container-optimization-data-forwarder
       repository: https://densify-dev.github.io/helm-charts
@@ -2252,7 +2273,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-stack-1.0.0.tgz
     version: 1.0.0
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.119101921Z"
+    created: "2026-08-20T15:32:23.738820516Z"
     dependencies:
     - name: container-optimization-data-forwarder
       repository: https://densify-dev.github.io/helm-charts
@@ -2278,7 +2299,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-stack-0.9.11.tgz
     version: 0.9.11
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.112945285Z"
+    created: "2026-08-20T15:32:23.730095186Z"
     dependencies:
     - name: container-optimization-data-forwarder
       repository: https://densify-dev.github.io/helm-charts
@@ -2304,7 +2325,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-stack-0.9.10.tgz
     version: 0.9.10
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.171943634Z"
+    created: "2026-08-20T15:32:23.804452742Z"
     dependencies:
     - name: container-optimization-data-forwarder
       repository: https://densify-dev.github.io/helm-charts
@@ -2330,7 +2351,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-stack-0.9.9.tgz
     version: 0.9.9
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.165287718Z"
+    created: "2026-08-20T15:32:23.796166676Z"
     dependencies:
     - name: container-optimization-data-forwarder
       repository: https://densify-dev.github.io/helm-charts
@@ -2356,7 +2377,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-stack-0.9.8.tgz
     version: 0.9.8
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.158634758Z"
+    created: "2026-08-20T15:32:23.787820014Z"
     dependencies:
     - name: container-optimization-data-forwarder
       repository: https://densify-dev.github.io/helm-charts
@@ -2382,7 +2403,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-stack-0.9.7.tgz
     version: 0.9.7
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.151971833Z"
+    created: "2026-08-20T15:32:23.779469439Z"
     dependencies:
     - name: container-optimization-data-forwarder
       repository: https://densify-dev.github.io/helm-charts
@@ -2408,7 +2429,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-stack-0.9.6.tgz
     version: 0.9.6
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.145469989Z"
+    created: "2026-08-20T15:32:23.772158785Z"
     dependencies:
     - name: container-optimization-data-forwarder
       repository: https://densify-dev.github.io/helm-charts
@@ -2434,7 +2455,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-stack-0.9.5.tgz
     version: 0.9.5
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.138793174Z"
+    created: "2026-08-20T15:32:23.763955852Z"
     dependencies:
     - name: container-optimization-data-forwarder
       repository: https://densify-dev.github.io/helm-charts
@@ -2460,7 +2481,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-stack-0.9.4.tgz
     version: 0.9.4
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.132263789Z"
+    created: "2026-08-20T15:32:23.755768109Z"
     dependencies:
     - name: container-optimization-data-forwarder
       repository: https://densify-dev.github.io/helm-charts
@@ -2486,7 +2507,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-stack-0.9.3.tgz
     version: 0.9.3
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.125680273Z"
+    created: "2026-08-20T15:32:23.747444302Z"
     dependencies:
     - name: container-optimization-data-forwarder
       repository: https://densify-dev.github.io/helm-charts
@@ -2512,7 +2533,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-stack-0.9.2.tgz
     version: 0.9.2
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.105791263Z"
+    created: "2026-08-20T15:32:23.721603137Z"
     dependencies:
     - name: container-optimization-data-forwarder
       repository: https://densify-dev.github.io/helm-charts
@@ -2538,7 +2559,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-automation-stack-0.9.1.tgz
     version: 0.9.1
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.098850156Z"
+    created: "2026-08-20T15:32:23.712967936Z"
     dependencies:
     - name: container-optimization-data-forwarder
       repository: https://densify-dev.github.io/helm-charts
@@ -2565,7 +2586,7 @@ entries:
     version: 0.9.0
   kubex-collection-gke-autopilot:
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.369857474Z"
+    created: "2026-08-20T15:32:24.04383121Z"
     dependencies:
     - name: container-optimization-data-forwarder
       repository: https://densify-dev.github.io/helm-charts
@@ -2594,7 +2615,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-collection-gke-autopilot-1.0.7.tgz
     version: 1.0.7
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.368045736Z"
+    created: "2026-08-20T15:32:24.041550066Z"
     dependencies:
     - name: container-optimization-data-forwarder
       repository: https://densify-dev.github.io/helm-charts
@@ -2623,7 +2644,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-collection-gke-autopilot-1.0.6.tgz
     version: 1.0.6
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.365895025Z"
+    created: "2026-08-20T15:32:24.039103444Z"
     dependencies:
     - name: container-optimization-data-forwarder
       repository: https://densify-dev.github.io/helm-charts
@@ -2652,7 +2673,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-collection-gke-autopilot-1.0.3.tgz
     version: 1.0.3
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.363607171Z"
+    created: "2026-08-20T15:32:24.03598244Z"
     dependencies:
     - name: container-optimization-data-forwarder
       repository: https://densify-dev.github.io/helm-charts
@@ -2681,7 +2702,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-collection-gke-autopilot-1.0.2.tgz
     version: 1.0.2
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.361850719Z"
+    created: "2026-08-20T15:32:24.033747623Z"
     dependencies:
     - name: container-optimization-data-forwarder
       repository: https://densify-dev.github.io/helm-charts
@@ -2710,7 +2731,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-collection-gke-autopilot-1.0.1.tgz
     version: 1.0.1
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.36012502Z"
+    created: "2026-08-20T15:32:24.031482059Z"
     dependencies:
     - name: container-optimization-data-forwarder
       repository: https://densify-dev.github.io/helm-charts
@@ -2740,7 +2761,7 @@ entries:
     version: 1.0.0
   kubex-collection-openshift:
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.373586574Z"
+    created: "2026-08-20T15:32:24.048894751Z"
     dependencies:
     - name: container-optimization-data-forwarder
       repository: https://densify-dev.github.io/helm-charts
@@ -2772,7 +2793,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-collection-openshift-1.0.10.tgz
     version: 1.0.10
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.379893479Z"
+    created: "2026-08-20T15:32:24.056990853Z"
     dependencies:
     - name: container-optimization-data-forwarder
       repository: https://densify-dev.github.io/helm-charts
@@ -2804,7 +2825,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-collection-openshift-1.0.7.tgz
     version: 1.0.7
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.378610966Z"
+    created: "2026-08-20T15:32:24.055118954Z"
     dependencies:
     - name: container-optimization-data-forwarder
       repository: https://densify-dev.github.io/helm-charts
@@ -2836,7 +2857,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-collection-openshift-1.0.6.tgz
     version: 1.0.6
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.377165162Z"
+    created: "2026-08-20T15:32:24.052397036Z"
     dependencies:
     - name: container-optimization-data-forwarder
       repository: https://densify-dev.github.io/helm-charts
@@ -2864,7 +2885,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-collection-openshift-1.0.5.tgz
     version: 1.0.5
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.375073355Z"
+    created: "2026-08-20T15:32:24.050798449Z"
     dependencies:
     - name: container-optimization-data-forwarder
       repository: https://densify-dev.github.io/helm-charts
@@ -2888,7 +2909,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-collection-openshift-1.0.3.tgz
     version: 1.0.3
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.374341372Z"
+    created: "2026-08-20T15:32:24.049860987Z"
     dependencies:
     - name: container-optimization-data-forwarder
       repository: https://densify-dev.github.io/helm-charts
@@ -2912,7 +2933,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-collection-openshift-1.0.2.tgz
     version: 1.0.2
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.372004502Z"
+    created: "2026-08-20T15:32:24.046576108Z"
     dependencies:
     - name: container-optimization-data-forwarder
       repository: https://densify-dev.github.io/helm-charts
@@ -2936,7 +2957,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-collection-openshift-1.0.1.tgz
     version: 1.0.1
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.370578037Z"
+    created: "2026-08-20T15:32:24.044778511Z"
     dependencies:
     - name: container-optimization-data-forwarder
       repository: https://densify-dev.github.io/helm-charts
@@ -2962,7 +2983,7 @@ entries:
   kubex-connector:
   - apiVersion: v2
     appVersion: 1.1.0
-    created: "2026-08-20T15:26:51.380649988Z"
+    created: "2026-08-20T15:32:24.058215702Z"
     description: Stack-managed in-cluster connector used for the cluster data interface
     digest: b7383b5c7661b0e0ca240b8daedaf6e6f5c34a276b29e749ccc5108b8a53d02c
     name: kubex-connector
@@ -2972,7 +2993,7 @@ entries:
     version: 1.1.1
   - apiVersion: v2
     appVersion: 1.1.0
-    created: "2026-08-20T15:26:51.38047089Z"
+    created: "2026-08-20T15:32:24.057926782Z"
     description: Stack-managed in-cluster connector used for the cluster data interface
     digest: 4c7ea6908d8201f514f63d8e66ef181b00ab70674f77a3b24fb86dab0baaa2ed
     name: kubex-connector
@@ -2982,7 +3003,7 @@ entries:
     version: 1.1.0
   - apiVersion: v2
     appVersion: 1.0.0
-    created: "2026-08-20T15:26:51.380283279Z"
+    created: "2026-08-20T15:32:24.057637822Z"
     description: Stack-managed in-cluster connector used for the cluster data interface
     digest: d3b9d5cdaec22c8ed26769fcc3833285ef5988bbc070f0dc301b447638d2c339
     name: kubex-connector
@@ -2991,7 +3012,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-connector-1.0.0.tgz
     version: 1.0.0
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.380098231Z"
+    created: "2026-08-20T15:32:24.057291675Z"
     description: Stack-managed in-cluster connector used for the cluster data interface
     digest: c5084343b4b4e6e6ff16fb46314567e0c7c89a3d952ee5c00bfa795986367d2d
     icon: https://kubex.ai/wp-content/uploads/kubex-logo-landscape.svg
@@ -3005,7 +3026,20 @@ entries:
     version: 0.1.8
   kubex-crds:
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.386246018Z"
+    created: "2026-08-20T15:32:24.06623392Z"
+    description: CRDs for Kubex Automation Engine
+    digest: f241d84512d2bc1620b709b39630ab1d8b065d84ab8dbdb09c9844a299d7f3cb
+    icon: https://kubex.ai/wp-content/uploads/kubex-logo-landscape.svg
+    keywords:
+    - crd
+    - kubex
+    - automation
+    name: kubex-crds
+    urls:
+    - https://densify-dev.github.io/helm-charts/kubex-crds-1.11.0.tgz
+    version: 1.11.0
+  - apiVersion: v2
+    created: "2026-08-20T15:32:24.065328889Z"
     description: CRDs for Kubex Automation Engine
     digest: 9d7d55238d58b17ab19a0dca1b1af71ebfd8252df49acff7738914a7e59a692f
     icon: https://kubex.ai/wp-content/uploads/kubex-logo-landscape.svg
@@ -3018,7 +3052,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-crds-1.10.0.tgz
     version: 1.10.0
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.392740396Z"
+    created: "2026-08-20T15:32:24.074696637Z"
     description: CRDs for Kubex Automation Engine
     digest: 6426d267cd7a55d9f269231ac9b2b9c484bbd2b75fea70c35d0dd18996c82666
     icon: https://kubex.ai/wp-content/uploads/kubex-logo-landscape.svg
@@ -3031,7 +3065,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-crds-1.9.0.tgz
     version: 1.9.0
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.392154012Z"
+    created: "2026-08-20T15:32:24.07392779Z"
     description: CRDs for Kubex Automation Engine
     digest: e6832658833db6ad698fde71acbe28139c51ad9418aaa77cc1d6c50bee9d8331
     icon: https://kubex.ai/wp-content/uploads/kubex-logo-landscape.svg
@@ -3044,7 +3078,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-crds-1.8.0.tgz
     version: 1.8.0
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.391493529Z"
+    created: "2026-08-20T15:32:24.073120191Z"
     description: CRDs for Kubex Automation Engine
     digest: 211647148f48b37ccdd4124e216ab6abff267ee58b80c2c42707390972dc2b50
     icon: https://kubex.ai/wp-content/uploads/kubex-logo-landscape.svg
@@ -3057,7 +3091,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-crds-1.7.0.tgz
     version: 1.7.0
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.39032331Z"
+    created: "2026-08-20T15:32:24.072004335Z"
     description: CRDs for Kubex Automation Engine
     digest: 160c1d7156ab0d89231d2e31858bd118dbdf1f8de6d8d4350c11a30dbac28758
     icon: https://kubex.ai/wp-content/uploads/kubex-logo-landscape.svg
@@ -3070,7 +3104,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-crds-1.6.0.tgz
     version: 1.6.0
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.389720088Z"
+    created: "2026-08-20T15:32:24.070801266Z"
     description: CRDs for Kubex Automation Engine
     digest: 1a7a8791c2b01d483ccd00f6209f71fcbcebd04a52541d7d0e4ed774d605952f
     icon: https://kubex.ai/wp-content/uploads/kubex-logo-landscape.svg
@@ -3083,7 +3117,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-crds-1.5.0.tgz
     version: 1.5.0
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.389144152Z"
+    created: "2026-08-20T15:32:24.070027139Z"
     description: CRDs for Kubex Automation Engine
     digest: 308055bb309a0bbe513b5e14993cd97696e9eae26341fb6bd165ea0af2e46184
     icon: https://kubex.ai/wp-content/uploads/kubex-logo-landscape.svg
@@ -3096,7 +3130,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-crds-1.4.0.tgz
     version: 1.4.0
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.38853328Z"
+    created: "2026-08-20T15:32:24.069254125Z"
     description: CRDs for Kubex Automation Engine
     digest: 3e80daae0390a5bad7407495e979168f3e9b54542f8290bc92db04c9b345c3a8
     icon: https://kubex.ai/wp-content/uploads/kubex-logo-landscape.svg
@@ -3109,7 +3143,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-crds-1.3.1.tgz
     version: 1.3.1
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.387633929Z"
+    created: "2026-08-20T15:32:24.068456774Z"
     description: CRDs for Kubex Automation Engine
     digest: 030fe25ad36fa1b255fea542ba09e70a487547448df39d1a8f6a8f0417dd5c98
     icon: https://kubex.ai/wp-content/uploads/kubex-logo-landscape.svg
@@ -3122,7 +3156,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-crds-1.3.0.tgz
     version: 1.3.0
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.38678187Z"
+    created: "2026-08-20T15:32:24.066933518Z"
     description: CRDs for Kubex Automation Engine
     digest: 5c0fa425a174ae89a7618381e8c1260b9996efed8bc14fe867493670d1735f4a
     icon: https://kubex.ai/wp-content/uploads/kubex-logo-landscape.svg
@@ -3135,7 +3169,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-crds-1.2.0.tgz
     version: 1.2.0
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.385542138Z"
+    created: "2026-08-20T15:32:24.06437183Z"
     description: CRDs for Kubex Automation Engine
     digest: 8e50a427f7c4bd87d6a13b1d817b927160f08a6215f803ae23a0a24705b67535
     icon: https://kubex.ai/wp-content/uploads/kubex-logo-landscape.svg
@@ -3148,7 +3182,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/kubex-crds-1.1.0.tgz
     version: 1.1.0
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.38449938Z"
+    created: "2026-08-20T15:32:24.062829878Z"
     description: CRDs for Kubex Automation Engine
     digest: 50c3e387868e1a658168c06b19cd76313218a24b75ab5952bd2c5c17ee7b346f
     icon: https://kubex.ai/wp-content/uploads/kubex-logo-landscape.svg
@@ -3162,7 +3196,7 @@ entries:
     version: 1.0.1
   - apiVersion: v2
     appVersion: v0.1
-    created: "2026-08-20T15:26:51.383619412Z"
+    created: "2026-08-20T15:32:24.062141111Z"
     description: CRDs for Kubex Automation Engine
     digest: 748ead2304a69c659fef73e35d4afe3aa27b83b54c5e3c3a6b417b87927ffce1
     keywords:
@@ -3175,7 +3209,7 @@ entries:
     version: 1.0.0
   - apiVersion: v2
     appVersion: v0.1
-    created: "2026-08-20T15:26:51.383261902Z"
+    created: "2026-08-20T15:32:24.06165866Z"
     description: CRDs for Kubex Automation Engine early access releases
     digest: da63aee4727f5453ea3494ba1a1afc1ee1e00c802cc211947dfd24ef52de77d5
     keywords:
@@ -3188,7 +3222,7 @@ entries:
     version: 0.4.3
   - apiVersion: v2
     appVersion: v0.1
-    created: "2026-08-20T15:26:51.382894635Z"
+    created: "2026-08-20T15:32:24.061154457Z"
     description: CRDs for Kubex Automation Engine early access releases
     digest: 5c528c88a3a506dbbd164d1c670e5a6514a41494153140c2a7ac5c44c813de61
     keywords:
@@ -3201,7 +3235,7 @@ entries:
     version: 0.4.0
   - apiVersion: v2
     appVersion: v0.1
-    created: "2026-08-20T15:26:51.382523084Z"
+    created: "2026-08-20T15:32:24.060668238Z"
     description: CRDs for Kubex Automation Engine early access releases
     digest: a2fda9d060c6b7eed5f2a85afcba8edf7ed61a29b3faabd51e62424efa89d952
     keywords:
@@ -3214,7 +3248,7 @@ entries:
     version: 0.3.0
   - apiVersion: v2
     appVersion: v0.1
-    created: "2026-08-20T15:26:51.382147454Z"
+    created: "2026-08-20T15:32:24.059913167Z"
     description: CRDs for Kubex Automation Engine early access releases
     digest: 50bc9e7f715e28802c8e328b88357ff3f0686946506cff2c47231ebbe45bbdd3
     keywords:
@@ -3227,7 +3261,7 @@ entries:
     version: 0.2.1
   - apiVersion: v2
     appVersion: v0.1
-    created: "2026-08-20T15:26:51.381756267Z"
+    created: "2026-08-20T15:32:24.058921731Z"
     description: CRDs for Kubex Automation Engine early access releases
     digest: f9f2d80726e4a3ce6b7402c7cb364219c3d8783f95604bbcec6ecaa04afeab7a
     keywords:
@@ -3240,7 +3274,7 @@ entries:
     version: 0.1.1
   - apiVersion: v2
     appVersion: v0.1
-    created: "2026-08-20T15:26:51.381202493Z"
+    created: "2026-08-20T15:32:24.058581746Z"
     description: CRDs for Kubex Automation Engine early access releases
     digest: b593dddb3dde1e589450955efe68478388407dfb75200ecaf150c9427d961402
     keywords:
@@ -3253,7 +3287,7 @@ entries:
     version: 0.1.0
   node-labeler:
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.393570858Z"
+    created: "2026-08-20T15:32:24.076225855Z"
     description: A Helm chart for deploying the node-labeler controller
     digest: 7a42cbf478aa12d7e0524afdf61dcd295d405ec37430fd68a2c632d8c527e7cc
     icon: https://kubex.ai/wp-content/uploads/kubex-logo-landscape.svg
@@ -3270,7 +3304,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/node-labeler-0.1.2.tgz
     version: 0.1.2
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.393310078Z"
+    created: "2026-08-20T15:32:24.075662482Z"
     description: A Helm chart for deploying the node-labeler controller
     digest: 0be44f5817c63aebc699d4dc80d94fdc5ed92b2c89c73d2e4506dde510a7b7cc
     icon: https://www.kubex.ai/wp-content/uploads/kubex-by-densify-logo.png
@@ -3287,7 +3321,7 @@ entries:
     - https://densify-dev.github.io/helm-charts/node-labeler-0.1.1.tgz
     version: 0.1.1
   - apiVersion: v2
-    created: "2026-08-20T15:26:51.393040911Z"
+    created: "2026-08-20T15:32:24.075213002Z"
     description: A Helm chart for deploying the node-labeler controller
     digest: 75503a3c186cb25ba3aa87f3926a89c9da12f6725cf513f116722a0b17e0d814
     icon: https://www.kubex.ai/wp-content/uploads/kubex-by-densify-logo.png
@@ -3303,4 +3337,4 @@ entries:
     urls:
     - https://densify-dev.github.io/helm-charts/node-labeler-0.1.0.tgz
     version: 0.1.0
-generated: "2026-08-20T15:26:50.984371292Z"
+generated: "2026-08-20T15:32:23.557450147Z"
