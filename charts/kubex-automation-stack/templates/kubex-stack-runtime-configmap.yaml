@@ -1,8 +1,10 @@
 {{- $connectorValues := index .Values "kubex-connector" | default dict -}}
 {{- $cdiValues := index .Values "kubex-ai-cdi" | default dict -}}
+{{- $engineValues := index .Values "kubex-automation-engine" | default dict -}}
 {{- $connectorEnabled := $connectorValues.enabled | default false -}}
 {{- $cdiEnabled := $cdiValues.enabled | default false -}}
-{{- $enabled := or $connectorEnabled $cdiEnabled -}}
+{{- $engineEnabled := $engineValues.enabled | default false -}}
+{{- $enabled := or $connectorEnabled $cdiEnabled $engineEnabled -}}
 {{- $forwarder := index .Values "container-optimization-data-forwarder" | default dict -}}
 {{- $config := $forwarder.config | default dict -}}
 {{- $forwarderConfig := $config.forwarder | default dict -}}
@@ -18,7 +20,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: kubex-connector-runtime
+  name: kubex-stack-runtime
   namespace: {{ template "common.namespace" . }}
   labels:
     app: kubex-runtime

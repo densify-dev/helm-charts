@@ -31,6 +31,10 @@ spec:
         {{- toYaml .Values.extraAnnotations | nindent 8 }}
       {{- end }}
     spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       {{- $kubexHost := include "kubex-connector.kubexHost" . }}
       {{- $kubexClusterName := include "kubex-connector.kubexClusterName" . }}
       {{- $localKubex := .Values.kubex | default dict }}

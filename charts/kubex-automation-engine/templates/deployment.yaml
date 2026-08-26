@@ -114,7 +114,12 @@ spec:
           {{- toYaml .Values.resources | nindent 10 }}
         env:
         - name: CLUSTER_NAME
-          value: {{ required "kubex.clusterName must be set to the Kubex cluster identifier" .Values.kubex.clusterName | quote }}
+          {{- if .Values.kubex.clusterNameFrom }}
+          valueFrom:
+            {{- toYaml .Values.kubex.clusterNameFrom | nindent 12 }}
+          {{- else }}
+          value: {{ required "kubex.clusterName or kubex.clusterNameFrom must be set to the Kubex cluster identifier" .Values.kubex.clusterName | quote }}
+          {{- end }}
         {{- if ((.Values.secondaryCluster).enabled) }}
         - name: SECONDARY_CLUSTER_ENABLED
           value: "true"
