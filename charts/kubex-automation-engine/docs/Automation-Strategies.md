@@ -68,7 +68,7 @@ Usage-level `floor` and `ceiling` values apply to all containers by default. Add
 | `spec.kai.queue` | `kubex-unlimited-gpu-queue` | EXPERIMENTAL. Default KAI queue label applied for KAI GPU admission mutation. |
 | `spec.kai.setQueueWhenSpecified` | `false` | EXPERIMENTAL. Allows strategy queue value to overwrite an existing `kai.scheduler/queue` label. |
 | `spec.kai.vllm` | none | EXPERIMENTAL. Enables admission-time vLLM tuning for KAI GPU-sharing workloads. Requires `spec.experimental.gpuKaiContract`. |
-| `spec.kai.vllm.gpuMemoryUtilizationBufferPercent` | `0` | EXPERIMENTAL. Reduces vLLM `--gpu-memory-utilization` below admitted `gpu-fraction` by this percent. Effective target = `gpuFraction * (1 - bufferPercent/100)`. |
+| `spec.kai.vllm.gpuMemoryUtilizationBufferPercent` | `0` | EXPERIMENTAL. Sets the percentage of available GPU memory that vLLM should leave unused as a safety buffer. |
 | `spec.inPlaceResize.enabled` | `true` | Enables the in-place resize execution path. |
 | `spec.inPlaceResize.containerRestart` | `false` | Allows in-place resize operations that require container restart. |
 | `spec.podEviction.enabled` | `true` | Enables eviction-based fallback. |
@@ -166,21 +166,11 @@ When a proactive resize is blocked by scheduling, the controller keeps the recom
 
 ## KAI vLLM tuning
 
-When `spec.kai.vllm` is set, pod admission keeps KAI `gpu-fraction` as source value and tunes vLLM `--gpu-memory-utilization` from it.
+When `spec.kai.vllm` is set, Kubex configures vLLM's `--gpu-memory-utilization` setting for KAI-managed workloads.
 
-Formula:
+Set `gpuMemoryUtilizationBufferPercent` to leave a safety buffer below the workload's GPU allocation. For example, a value of `10` leaves 10% unused by vLLM. The setting works whether or not HAMi-core is enabled.
 
-- `effective = gpuFraction * (1 - bufferPercent/100)`
-- Example: `gpuFraction=0.5` and `gpuMemoryUtilizationBufferPercent=10` => `0.45`
-
-Admission behavior:
-
-- applies only to KAI GPU request admission mutation
-- mutates container `args` in place for detected vLLM containers
-- replaces existing `--gpu-memory-utilization=<value>`
-- replaces existing split form `--gpu-memory-utilization <value>`
-- appends flag when missing
-- never leaves duplicate `--gpu-memory-utilization` args behind
+Kubex updates the setting for vLLM containers when it applies a KAI GPU allocation. It updates an existing setting or adds it when needed.
 
 Example:
 
