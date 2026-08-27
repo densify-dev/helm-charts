@@ -34,7 +34,7 @@ webhook:
       enabled: true
 ```
 
-This setting is required for the KAI integration. The early Kubex invocation applies selected resources and KAI metadata such as `gpu-fraction`, the queue label, and the scheduler selection before KAI makes its decision. The late invocation restores Kubex-selected resources after other mutators run while keeping the metadata idempotent.
+This setting is required for the KAI integration. It allows Kubex to apply the workload's GPU allocation and scheduling settings during admission.
 
 ### New KAI installation
 
@@ -159,8 +159,7 @@ spec:
         setFromUnspecified: false
   kai:
     vllm:
-      # Keep vLLM's GPU memory utilization 10% below the admitted gpu-fraction.
-      # For example, 0.5 gpu-fraction produces 0.45 gpu-memory-utilization.
+      # Leave 10% of the workload's GPU allocation unused by vLLM.
       gpuMemoryUtilizationBufferPercent: 10
   inPlaceResize:
     # Use the restart/eviction flow instead of in-place pod resize.
@@ -280,22 +279,9 @@ For KAI-enabled workloads, start with `spec.inPlaceResize.enabled: false`.
 
 ## vLLM tuning with KAI gpu-fraction
 
-If a pod starts a vLLM server, AutomationStrategy admission mutation can tune `--gpu-memory-utilization` based on the admitted KAI `gpu-fraction`.
+If a pod runs vLLM, set `spec.kai.vllm.gpuMemoryUtilizationBufferPercent` to leave a safety buffer below its KAI GPU allocation. A value of `10` leaves 10% of the allocation unused by vLLM. This setting works whether or not HAMi-core is enabled.
 
-For example:
-
-- The admitted `gpu-fraction` is `0.5`.
-- `spec.kai.vllm.gpuMemoryUtilizationBufferPercent` is `10`.
-- The resulting vLLM argument is `--gpu-memory-utilization=0.45`.
-
-Behavior:
-
-- Runs only during KAI GPU request admission mutation.
-- Mutates only detected vLLM containers.
-- Updates existing `--gpu-memory-utilization=<value>` flags.
-- Updates existing split-form `--gpu-memory-utilization <value>` flags.
-- Appends the flag when it is missing.
-- Does not create duplicate flag entries.
+Kubex applies the setting to vLLM containers when it assigns a KAI GPU allocation. It updates an existing `--gpu-memory-utilization` argument or adds it when needed.
 
 ## Existing KAI Installations
 
