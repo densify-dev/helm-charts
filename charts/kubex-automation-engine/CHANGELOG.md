@@ -2,6 +2,14 @@
 
 All notable changes to the Kubex Automation Engine Helm chart will be documented in this file.
 
+## [1.11.2] - 2026-08-27
+
+### Changed
+- Proposal synchronization now handles every supported `rightsizing.kubex.ai/v1alpha1` custom resource, including `ObjectPatch` and `ClusterObjectPatch` resources and both namespaced and cluster-scoped objects.
+- Compaction scheduler and descheduler support objects are enabled by default, so `ClusterCompactionPolicy` setup no longer needs extra Helm values.
+
+---
+
 ## [1.11.1] - 2026-08-26
 
 ### Fixed
