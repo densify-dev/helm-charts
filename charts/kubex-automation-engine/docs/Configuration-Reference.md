@@ -150,6 +150,8 @@ secondaryCluster:
 | `podSecurityContext` | chart default | Pod-level security context for the controller Deployment; defaults to `65534` for `runAsUser`, `runAsGroup`, and `fsGroup`, plus `runAsNonRoot=true` and `seccompProfile.type=RuntimeDefault` |
 | `openshift.enabled` | `false` | Enable arbitrary-UID-compatible security contexts for the controller, cleanup job, and controller-created compaction workloads without changing the default Kubernetes path |
 | `openshift.fsGroup` | `null` | Optional `fsGroup` applied when `openshift.enabled=true`; omit it to let OpenShift assign permitted IDs |
+| `compactionScheduler.enabled` | `true` | Render the shared scheduler ServiceAccount and RBAC used by the controller-created compaction scheduler |
+| `compactionDescheduler.enabled` | `true` | Render the shared descheduler ServiceAccount and RBAC used by controller-created per-policy deschedulers |
 | `compactionScheduler.image.tag` | `""` | Explicit scheduler tag; empty derives the tag from the cluster Kubernetes version |
 | `compactionScheduler.image.digest` | `""` | Optional immutable scheduler digest; takes precedence over `tag` |
 | `compactionScheduler.image.pullPolicy` | `IfNotPresent` | Pull policy for the controller-created scheduler Pod |

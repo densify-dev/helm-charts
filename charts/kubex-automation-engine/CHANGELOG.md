@@ -2,6 +2,22 @@
 
 All notable changes to the Kubex Automation Engine Helm chart will be documented in this file.
 
+## [1.11.2] - 2026-08-27
+
+### Changed
+- Proposal synchronization now handles every supported `rightsizing.kubex.ai/v1alpha1` custom resource, including `ObjectPatch` and `ClusterObjectPatch` resources and both namespaced and cluster-scoped objects.
+- Compaction scheduler and descheduler support objects are enabled by default, so `ClusterCompactionPolicy` setup no longer needs extra Helm values.
+
+---
+
+## [1.11.1] - 2026-08-26
+
+### Fixed
+- KAI vLLM GPU memory tuning now accounts for HAMi's visible GPU memory instead of the raw device total, avoiding an incorrect double application of the GPU fraction on HAMi-backed clusters.
+- vLLM GPU memory tuning is now applied correctly in mixed resize plans and when the selected GPU recommendation is already applied (no-op resizes).
+
+---
+
 ## [1.11.0] - 2026-08-19
 
 ### Added

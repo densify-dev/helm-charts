@@ -141,24 +141,7 @@ Proposal sync disabled by default behind feature flag.
 - Re-enabling triggers immediate proposal sync on next reconcile.
 - For local dev, `PROPOSALS_PATH=... make local-deploy` opts proposal sync in automatically in helper flow.
 
-Proposal sync supports these `rightsizing.kubex.ai/v1alpha1` kinds:
-
-- `AutomationStrategy`
-
-- `StaticPolicy`
-- `ProactivePolicy`
-- `RollbackPolicy`
-- `GpuReactivePolicy`
-- `ClusterAutomationStrategy`
-- `ClusterStaticPolicy`
-- `ClusterProactivePolicy`
-- `PodAffinityPolicy`
-- `ContainerArgsPolicy`
-- `ClusterRollbackPolicy`
-- `ClusterGpuReactivePolicy`
-- `GpuConsolidationPolicy`
-
-Proposal sync does not manage `PolicyEvaluation` or any other unsupported CRs.
+Proposal sync accepts every CR registered in the controller's runtime scheme under `rightsizing.kubex.ai/v1alpha1`, including both namespaced and cluster-scoped resources.
 
 The controller periodically sends health and activity status to Kubex. This allows the Kubex platform to monitor controller health, display the running version, and track automation activity across your clusters.
 

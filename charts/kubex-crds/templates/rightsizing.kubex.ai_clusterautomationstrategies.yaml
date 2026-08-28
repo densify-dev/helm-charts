@@ -377,9 +377,8 @@ spec:
                     properties:
                       gpuMemoryUtilizationBufferPercent:
                         description: |-
-                          gpuMemoryUtilizationBufferPercent reduces the vLLM --gpu-memory-utilization target
-                          below the admitted gpu-fraction by this percentage.
-                          effective = gpuFraction * (1 - bufferPercent/100)
+                          gpuMemoryUtilizationBufferPercent sets the percentage of available GPU memory
+                          that vLLM should leave unused as a safety buffer.
                           EXPERIMENTAL: this field is subject to breaking changes or removal without notice.
                         format: int32
                         maximum: 100
