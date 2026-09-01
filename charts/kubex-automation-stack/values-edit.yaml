@@ -40,12 +40,11 @@ container-optimization-data-forwarder:
 #   densify:
 #     createSecret: false
 
-# Optional: Enable the connector and CDI tunnel path.
-# Keep these opt-in until the feature is generally available in production.
+# The connector and CDI are enabled by default. To disable both:
 # kubex-connector:
-#   enabled: true
+#   enabled: false
 # kubex-ai-cdi:
-#   enabled: true
+#   enabled: false
 
 # Optional: Enable the Kubex Automation Engine for automated workload rightsizing.
 # The stack wires credentials, cluster name, and Kubex host automatically:
