@@ -12,6 +12,7 @@ The current supported app-specific exporters are:
 | `vllm` | [vLLM Prometheus metrics exporters](https://docs.vllm.ai/en/stable/design/metrics/) |
 
 For JVM applications, configure the OpenTelemetry Java Agent so Prometheus pulls metrics from its exporter endpoint (e.g. by using the environment variables `OTEL_METRICS_EXPORTER=prometheus`, `OTEL_EXPORTER_PROMETHEUS_HOST=0.0.0.0`, `OTEL_EXPORTER_PROMETHEUS_PORT=...`). Sending metrics by the usual OpenTelemetry push mechanism is not supported by this scrape configuration.
+
 JMX Exporter must be v1.x; v0.x is not supported. Its rules must emit metric names accepted by the regex in `prometheus.appMetricNames.jvm`.
 
 ## Metric Filtering
