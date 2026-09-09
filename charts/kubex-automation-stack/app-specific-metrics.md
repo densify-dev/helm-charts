@@ -1,6 +1,6 @@
 # App-Specific Metrics
 
-When the bundled Prometheus is enabled, the chart can discover supported application metric exporters from Kubernetes Service or Pod labels. Configure selectors under `prometheus.appScrapeConfigs` in your custom values file. On OpenShift, where the bundled Prometheus is disabled, these values have no effect; configure user workload monitoring with a `ServiceMonitor` instead.
+When the bundled Prometheus is enabled, the chart can discover supported application metric exporters from Kubernetes Service or Pod labels. Configure selectors under `prometheus.appScrapeConfigs` in your custom values file. On OpenShift, where the bundled Prometheus is disabled, these values have no effect; configure user workload monitoring with a `ServiceMonitor` (or `PodMonitor`) instead.
 
 ## Supported Exporters
 
