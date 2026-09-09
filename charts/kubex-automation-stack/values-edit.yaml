@@ -61,10 +61,10 @@ container-optimization-data-forwarder:
   # server:
     # persistentVolume:
     #   storageClass: <changeme-storage-class>
-    # Optional: discover application metric exporters by Kubernetes labels.
-    # Label values are Prometheus RE2 regular expressions; "*" matches any present value.
-    # When both selectors match, pod discovery takes precedence over endpoint discovery.
-    # Matching pod-backed endpoint targets are dropped even when pod discovery does not expose the same port.
+  # Optional: discover application metric exporters by Kubernetes labels.
+  # Label values are Prometheus RE2 regular expressions; "*" matches any present value.
+  # When both selectors match, pod discovery takes precedence over endpoint discovery.
+  # Matching pod-backed endpoint targets are dropped even when pod discovery does not expose the same port.
   # appScrapeConfigs:
     # jvm:
       # serviceLabels: {}
