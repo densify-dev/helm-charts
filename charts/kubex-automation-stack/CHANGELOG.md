@@ -8,10 +8,14 @@ All notable changes to the kubex-automation-stack chart will be documented in th
 - Added app-specific scrape configs for JVM and vLLM workloads.
 - Added cluster-size resource settings for k8s-ephemeral-storage-metrics.
 
+---
+
 ## [1.1.8] - 2026-09-01
 
 ### Changed
 - Enabled the stack-managed connector and CDI components by default.
+
+---
 
 ## [1.1.7] - 2026-08-31
 
