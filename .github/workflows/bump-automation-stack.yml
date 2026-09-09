@@ -20,11 +20,10 @@ permissions:
 
 env:
   CHECKOUT_ACTION: &checkout-action actions/checkout@v6.0.2
-  SETUP_GO_ACTION: &setup-go-action actions/setup-go@v5
   SETUP_HELM_ACTION: &setup-helm-action azure/setup-helm@v5.0.0
   APP_TOKEN_ACTION: &app-token-action actions/create-github-app-token@v2
   HELM_VERSION: v3.20.2
-  GO_VERSION: "1.26"
+  YQ_VERSION: v4.47.1
   STACK_CHART_DIR: charts/kubex-automation-stack
   SELF_PUBLISHED_DEPS: >-
     container-optimization-data-forwarder
@@ -48,10 +47,11 @@ jobs:
           ref: master
           fetch-depth: 0
 
-      - name: Set up Go
-        uses: *setup-go-action
-        with:
-          go-version: ${{ env.GO_VERSION }}
+      - name: Set up yq
+        run: |
+          curl -sL "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64" -o /usr/local/bin/yq
+          chmod +x /usr/local/bin/yq
+          yq --version
 
       - name: Set up Helm
         uses: *setup-helm-action
@@ -73,8 +73,8 @@ jobs:
           bump_list=""
           summary=""
           for name in ${SELF_PUBLISHED_DEPS}; do
-            current="$(go run ./hack/cmd/chart-dependency -file "${chart_file}" -dependency "${name}" 2>/dev/null || true)"
-            if [[ -z "${current}" ]]; then
+            current="$(yq eval "(.dependencies[] | select(.name == \"${name}\")) | .version" "${chart_file}")"
+            if [[ -z "${current}" || "${current}" == "null" ]]; then
               echo "skip ${name}: not a dependency of ${chart_file}"
               continue
             fi
@@ -129,17 +129,17 @@ jobs:
 
           while IFS='=' read -r name version; do
             [[ -z "${name}" ]] && continue
-            go run ./hack/cmd/chart-dependency -file "${chart_file}" -dependency "${name}" -version "${version}"
+            yq eval -i "(.dependencies[] | select(.name == \"${name}\") | .version) = \"${version}\"" "${chart_file}"
           done <<< "${{ steps.detect.outputs.bump_list }}"
 
-          current_stack_version="$(go run ./hack/cmd/chart-dependency -file "${chart_file}" -top-level-key version)"
+          current_stack_version="$(yq eval '.version' "${chart_file}")"
           if [[ ! "${current_stack_version}" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
             echo "::error::unexpected stack chart version format: ${current_stack_version}"
             exit 1
           fi
           major="${BASH_REMATCH[1]}"; minor="${BASH_REMATCH[2]}"; patch="${BASH_REMATCH[3]}"
           next_stack_version="${major}.${minor}.$((patch + 1))"
-          go run ./hack/cmd/chart-dependency -file "${chart_file}" -top-level-key version -top-level-value "${next_stack_version}"
+          yq eval -i ".version = \"${next_stack_version}\"" "${chart_file}"
           echo "next_stack_version=${next_stack_version}" >> "$GITHUB_OUTPUT"
 
           helm_config_home="$(mktemp -d)/config"
