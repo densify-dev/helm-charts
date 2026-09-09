@@ -62,25 +62,23 @@ container-optimization-data-forwarder:
   # server:
     # persistentVolume:
     #   storageClass: <changeme-storage-class>
+    # Optional: discover application metric exporters by Kubernetes labels.
+    # Label values are Prometheus RE2 regular expressions; "*" matches any present value.
+    # When both selectors match, pod discovery takes precedence over endpoint discovery.
+    # Matching pod-backed endpoint targets are dropped even when pod discovery does not expose the same port.
+    # appScrapeConfigs:
+      # jvm:
+        # serviceLabels: {}
+        # podLabels: {}
+      # vllm:
+        # serviceLabels: {}
+        # podLabels: {}
 
 # Optional: Disable the bundled Prometheus deployment.
 # Required when deploying on OpenShift; the OpenShift overlay values file already sets this.
 # stack:
 #   prometheus:
 #     deploy: false
-
-# Optional: discover application metric exporters by Kubernetes labels.
-# Label values are Prometheus RE2 regular expressions; "*" matches any present value.
-# When both selectors match, pod discovery takes precedence over endpoint discovery.
-# Matching pod-backed endpoint targets are dropped even when pod discovery does not expose the same port.
-prometheus:
-  appScrapeConfigs:
-    jvm:
-      serviceLabels: {}
-      podLabels: {}
-    vllm:
-      serviceLabels: {}
-      podLabels: {}
 
 # Ephemeral Storage Metrics (optional)
 # Deploys k8s-ephemeral-storage-metrics to collect ephemeral storage metrics for containers
