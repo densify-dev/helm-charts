@@ -45,3 +45,11 @@ beyla:
       cpu: "50m"
     limits:
       memory: "512Mi"
+k8s-ephemeral-storage-metrics:
+  resources:
+    requests:
+      cpu: "400m"
+      memory: "1Gi"
+    limits:
+      cpu: "750m"
+      memory: "2Gi"
