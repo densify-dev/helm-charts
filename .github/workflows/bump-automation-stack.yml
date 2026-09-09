@@ -80,8 +80,8 @@ jobs:
             fi
             latest="$(helm search repo "kubex/${name}" -o json | jq -r '.[0].version // empty')"
             if [[ -z "${latest}" ]]; then
-              echo "::warning::could not resolve published version for ${name}, skipping"
-              continue
+              echo "::error::could not resolve published version for ${name}"
+              exit 1
             fi
             if [[ "${current}" != "${latest}" ]]; then
               echo "${name} out of date: ${current} -> ${latest}"
@@ -142,12 +142,6 @@ jobs:
           yq eval -i ".version = \"${next_stack_version}\"" "${chart_file}"
           echo "next_stack_version=${next_stack_version}" >> "$GITHUB_OUTPUT"
 
-          helm_config_home="$(mktemp -d)/config"
-          helm_cache_home="$(mktemp -d)/cache"
-          helm_data_home="$(mktemp -d)/data"
-          export HELM_CONFIG_HOME="${helm_config_home}"
-          export HELM_CACHE_HOME="${helm_cache_home}"
-          export HELM_DATA_HOME="${helm_data_home}"
           helm dependency update "${STACK_CHART_DIR}"
           helm lint "${STACK_CHART_DIR}" -f "${STACK_CHART_DIR}/values-edit.yaml"
 
@@ -188,7 +182,7 @@ jobs:
           git config user.email "${{ steps.bot-id.outputs.id }}+${{ steps.app-token.outputs.app-slug }}[bot]@users.noreply.github.com"
 
           short_sha="$(git rev-parse --short HEAD)"
-          branch_name="sync/kubex-automation-stack/main-${short_sha}"
+          branch_name="sync/kubex-automation-stack"
           git checkout -B "${branch_name}"
           git commit -m "Update kubex-automation-stack dependencies (${short_sha})"
           git remote set-url origin "https://x-access-token:${{ steps.app-token.outputs.token }}@github.com/${{ github.repository }}.git"
