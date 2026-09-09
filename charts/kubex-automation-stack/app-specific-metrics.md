@@ -93,7 +93,7 @@ This creates the `kubex-vllm-pod` scrape job using Kubernetes Pod discovery. Dec
 Add selectors to the values file used for the Kubex release, then upgrade:
 
 ```shell
-helm upgrade --install --reuse-values \
+helm upgrade --install --reset-then-reuse-values \
   -f values-edit.yaml \
   -n kubex \
   kubex kubex/kubex-automation-stack
