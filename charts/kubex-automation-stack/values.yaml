@@ -89,7 +89,7 @@ node-labeler:
   enabled: false
 
 kubex-connector:
-  enabled: false
+  enabled: true
   extraLabels: {}
   extraAnnotations: {}
   forwarderConfigMap:
@@ -98,7 +98,7 @@ kubex-connector:
     name: densify-api-secret
 
 kubex-ai-cdi:
-  enabled: false
+  enabled: true
   extraLabels: {}
   extraAnnotations: {}
   clusterRoleNameOverride: ""

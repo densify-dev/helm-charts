@@ -19,7 +19,7 @@ The chart includes standard Prometheus and kube-state-metrics components (with t
 | Component | Service Account Name | RBAC Type | Key Permissions | Enabled by Default | Special Privileges |
 |-----------|---------------------|-----------|-----------------|-------------------|-------------------|
 | Kubex Data Collector | `kubex-stack-kubex-forwarder` | ClusterRole | API discovery, token/subject reviews, namespaces (get) | ✅ Yes | None |
-| Stack-managed CDI | `kubex-ai-cdi-sa` | ClusterRole + ClusterRoleBinding | core resources, workloads, logs, rollout APIs, Kubex CRDs, self-subject reviews | ✅ When enabled | None |
+| Stack-managed CDI | `kubex-ai-cdi-sa` | ClusterRole + ClusterRoleBinding | core resources, workloads, logs, rollout APIs, Kubex CRDs, self-subject reviews | ✅ Yes | None |
 | Ephemeral Storage | `k8s-ephemeral-storage-metrics` | ClusterRole | nodes, nodes/proxy, nodes/stats, pods (get/list/watch) | ✅ Yes | None |
 | Beyla | `kubex-beyla` | ClusterRole | pods, services, nodes (get/list/watch), replicasets (list/watch) | ✅ Yes | privileged, hostPID |
 | GPU Exporter | `gpu-process-exporter` | ClusterRole | pods (get/list/watch) | ✅ Yes | privileged, hostPID, host mounts, device access |
