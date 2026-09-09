@@ -6,10 +6,6 @@ All notable changes to the kubex-automation-stack chart will be documented in th
 
 ### Changed
 - Added app-specific scrape configs for JVM and vLLM workloads.
-
-## [Unversioned changes] - 2026-09-09
-
-### Changed
 - Added cluster-size resource settings for k8s-ephemeral-storage-metrics.
 
 ## [1.1.7] - 2026-08-31
