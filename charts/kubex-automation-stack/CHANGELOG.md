@@ -2,7 +2,7 @@
 
 All notable changes to the kubex-automation-stack chart will be documented in this file.
 
-## [1.1.8] - 2026-09-09
+## [Unversioned changes]
 
 ### Changed
 - Added cluster-size resource settings for k8s-ephemeral-storage-metrics.
