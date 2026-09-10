@@ -4,8 +4,15 @@ All notable changes to the kubex-automation-stack chart will be documented in th
 
 ## [Unversioned changes]
 
+---
+
+## [1.1.10] - 2026-09-10
+
 ### Changed
 - Added cluster-size resource settings for k8s-ephemeral-storage-metrics.
+- Updated kubex-connector dependency to 1.4.0.
+- Updated kubex-ai-cdi dependency to 1.4.0.
+- Updated kubex-automation-engine dependency to 1.12.0.
 
 ---
 
