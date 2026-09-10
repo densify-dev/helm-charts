@@ -9,6 +9,8 @@ name: Bump Automation Stack
 # (prometheus, beyla) are on independent release schedules and out of scope
 # here; update SELF_PUBLISHED_DEPS if a new self-published subchart
 # dependency is added to charts/kubex-automation-stack/Chart.yaml.
+#
+# All logic lives in hack/*.sh — this file only wires steps together.
 on:
   workflow_run:
     workflows: ["Release Charts"]
@@ -48,10 +50,7 @@ jobs:
           fetch-depth: 0
 
       - name: Set up yq
-        run: |
-          curl -sL "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64" -o /usr/local/bin/yq
-          chmod +x /usr/local/bin/yq
-          yq --version
+        run: ./hack/setup-yq.sh
 
       - name: Set up Helm
         uses: *setup-helm-action
@@ -59,50 +58,11 @@ jobs:
           version: ${{ env.HELM_VERSION }}
 
       - name: Add Helm repos
-        run: |
-          helm repo add kubex https://densify-dev.github.io/helm-charts
-          helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-          helm repo add grafana https://grafana.github.io/helm-charts
-          helm repo update
+        run: ./hack/add-helm-repos.sh
 
       - name: Detect out-of-date self-published dependencies
         id: detect
-        run: |
-          set -euo pipefail
-          chart_file="${STACK_CHART_DIR}/Chart.yaml"
-          bump_list=""
-          summary=""
-          for name in ${SELF_PUBLISHED_DEPS}; do
-            current="$(yq eval "(.dependencies[] | select(.name == \"${name}\")) | .version" "${chart_file}")"
-            if [[ -z "${current}" || "${current}" == "null" ]]; then
-              echo "skip ${name}: not a dependency of ${chart_file}"
-              continue
-            fi
-            latest="$(helm search repo "kubex/${name}" -o json | jq -r '.[0].version // empty')"
-            if [[ -z "${latest}" ]]; then
-              echo "::warning::could not resolve published version for ${name}, skipping"
-              continue
-            fi
-            if [[ "${current}" != "${latest}" ]]; then
-              echo "${name} out of date: ${current} -> ${latest}"
-              bump_list="${bump_list}${name}=${latest}"$'\n'
-              summary="${summary}- Updated ${name} dependency to ${latest}."$'\n'
-            fi
-          done
-          if [[ -z "${bump_list}" ]]; then
-            echo "needs_bump=false" >> "$GITHUB_OUTPUT"
-            echo "no self-published dependency is out of date; nothing to do"
-            exit 0
-          fi
-          echo "needs_bump=true" >> "$GITHUB_OUTPUT"
-          {
-            echo "bump_list<<EOF_BUMP_LIST"
-            printf '%s' "${bump_list}"
-            echo "EOF_BUMP_LIST"
-            echo "changelog_bullets<<EOF_CHANGELOG"
-            printf '%s' "${summary}"
-            echo "EOF_CHANGELOG"
-          } >> "$GITHUB_OUTPUT"
+        run: ./hack/detect-stack-bumps.sh
 
       - name: Generate app token
         if: steps.detect.outputs.needs_bump == 'true'
@@ -116,107 +76,32 @@ jobs:
         if: steps.detect.outputs.needs_bump == 'true'
         id: bot-id
         env:
+          APP_SLUG: ${{ steps.app-token.outputs.app-slug }}
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
-        run: |
-          echo "id=$(gh api "/users/${{ steps.app-token.outputs.app-slug }}[bot]" --jq .id)" >> "$GITHUB_OUTPUT"
+        run: ./hack/get-app-bot-user-id.sh
 
       - name: Apply dependency bumps
         if: steps.detect.outputs.needs_bump == 'true'
         id: apply
-        run: |
-          set -euo pipefail
-          chart_file="${STACK_CHART_DIR}/Chart.yaml"
-
-          while IFS='=' read -r name version; do
-            [[ -z "${name}" ]] && continue
-            yq eval -i "(.dependencies[] | select(.name == \"${name}\") | .version) = \"${version}\"" "${chart_file}"
-          done <<< "${{ steps.detect.outputs.bump_list }}"
-
-          current_stack_version="$(yq eval '.version' "${chart_file}")"
-          if [[ ! "${current_stack_version}" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
-            echo "::error::unexpected stack chart version format: ${current_stack_version}"
-            exit 1
-          fi
-          major="${BASH_REMATCH[1]}"; minor="${BASH_REMATCH[2]}"; patch="${BASH_REMATCH[3]}"
-          next_stack_version="${major}.${minor}.$((patch + 1))"
-          yq eval -i ".version = \"${next_stack_version}\"" "${chart_file}"
-          echo "next_stack_version=${next_stack_version}" >> "$GITHUB_OUTPUT"
-
-          helm_config_home="$(mktemp -d)/config"
-          helm_cache_home="$(mktemp -d)/cache"
-          helm_data_home="$(mktemp -d)/data"
-          export HELM_CONFIG_HOME="${helm_config_home}"
-          export HELM_CACHE_HOME="${helm_cache_home}"
-          export HELM_DATA_HOME="${helm_data_home}"
-          helm dependency update "${STACK_CHART_DIR}"
-          helm lint "${STACK_CHART_DIR}" -f "${STACK_CHART_DIR}/values-edit.yaml"
-
-          changelog_date="$(date -u +%F)"
-          entry_file="$(mktemp)"
-          {
-            echo "## [${next_stack_version}] - ${changelog_date}"
-            echo
-            echo "### Changed"
-            printf '%s' "${{ steps.detect.outputs.changelog_bullets }}"
-            echo
-            echo "---"
-            echo
-          } > "${entry_file}"
-
-          awk -v entryfile="${entry_file}" '
-            BEGIN { while ((getline line < entryfile) > 0) entry = entry line "\n"; inserted = 0 }
-            /^## \[[0-9]/ && !inserted { printf "%s", entry; inserted = 1 }
-            { print }
-            END { if (!inserted) { print "ERROR: no versioned changelog entry found" > "/dev/stderr"; exit 1 } }
-          ' "${STACK_CHART_DIR}/CHANGELOG.md" > "${STACK_CHART_DIR}/CHANGELOG.md.new"
-          mv "${STACK_CHART_DIR}/CHANGELOG.md.new" "${STACK_CHART_DIR}/CHANGELOG.md"
-
-          git add "${STACK_CHART_DIR}/Chart.yaml" "${STACK_CHART_DIR}/Chart.lock" "${STACK_CHART_DIR}/CHANGELOG.md"
-          changed="$(git diff --cached --name-only | sort | tr '\n' ' ')"
-          expected="${STACK_CHART_DIR}/CHANGELOG.md ${STACK_CHART_DIR}/Chart.lock ${STACK_CHART_DIR}/Chart.yaml "
-          if [[ "${changed}" != "${expected}" ]]; then
-            echo "::error::unexpected file set staged: ${changed}"
-            exit 1
-          fi
+        env:
+          BUMP_LIST: ${{ steps.detect.outputs.bump_list }}
+          CHANGELOG_BULLETS: ${{ steps.detect.outputs.changelog_bullets }}
+        run: ./hack/apply-stack-bumps.sh
 
       - name: Commit and push
         if: steps.detect.outputs.needs_bump == 'true'
         id: push
-        run: |
-          set -euo pipefail
-          git config user.name "${{ steps.app-token.outputs.app-slug }}[bot]"
-          git config user.email "${{ steps.bot-id.outputs.id }}+${{ steps.app-token.outputs.app-slug }}[bot]@users.noreply.github.com"
-
-          short_sha="$(git rev-parse --short HEAD)"
-          branch_name="sync/kubex-automation-stack/main-${short_sha}"
-          git checkout -B "${branch_name}"
-          git commit -m "Update kubex-automation-stack dependencies (${short_sha})"
-          git remote set-url origin "https://x-access-token:${{ steps.app-token.outputs.token }}@github.com/${{ github.repository }}.git"
-          git push --force origin "HEAD:${branch_name}"
-          echo "branch=${branch_name}" >> "$GITHUB_OUTPUT"
+        env:
+          APP_SLUG: ${{ steps.app-token.outputs.app-slug }}
+          BOT_USER_ID: ${{ steps.bot-id.outputs.id }}
+          APP_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: ./hack/commit-and-push-stack-bump.sh
 
       - name: Create or update PR
         if: steps.detect.outputs.needs_bump == 'true'
         env:
+          BRANCH: ${{ steps.push.outputs.branch }}
+          NEXT_STACK_VERSION: ${{ steps.apply.outputs.next_stack_version }}
+          CHANGELOG_BULLETS: ${{ steps.detect.outputs.changelog_bullets }}
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
-        run: |
-          set -euo pipefail
-          branch="${{ steps.push.outputs.branch }}"
-          title="Update kubex-automation-stack dependencies"
-          body_file="$(mktemp)"
-          {
-            echo "This PR was created automatically after Release Charts published a new version of one or more subcharts used by kubex-automation-stack."
-            echo
-            echo "Changes:"
-            printf '%s' "${{ steps.detect.outputs.changelog_bullets }}"
-            echo "- Regenerated Chart.lock"
-            echo "- Bumped kubex-automation-stack to ${{ steps.apply.outputs.next_stack_version }}"
-          } > "${body_file}"
-
-          existing="$(gh pr list --repo "${{ github.repository }}" --head "${branch}" --state open --json number --jq '.[0].number // empty')"
-          if [[ -n "${existing}" ]]; then
-            gh pr edit "${existing}" --repo "${{ github.repository }}" --title "${title}" --body-file "${body_file}"
-            echo "updated PR #${existing}"
-          else
-            gh pr create --repo "${{ github.repository }}" --base master --head "${branch}" --title "${title}" --body-file "${body_file}"
-          fi
+        run: ./hack/create-stack-bump-pr.sh
