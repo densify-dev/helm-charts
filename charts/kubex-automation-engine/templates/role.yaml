@@ -186,25 +186,8 @@ rules:
 - apiGroups:
   - rightsizing.kubex.ai
   resources:
-  - clustercompactionpolicies/finalizers
-  - clustergpureactivepolicies/finalizers
-  - clusterproactivepolicies/finalizers
-  - clusterrollbackpolicies/finalizers
-  - clusterstaticpolicies/finalizers
-  - containerargspolicies/finalizers
-  - globalconfigurations/finalizers
-  - gpuconsolidationpolicies/finalizers
-  - gpureactivepolicies/finalizers
-  - podaffinitypolicies/finalizers
-  - policyevaluations/finalizers
-  - proactivepolicies/finalizers
-  - rollbackpolicies/finalizers
-  - staticpolicies/finalizers
-  verbs:
-  - update
-- apiGroups:
-  - rightsizing.kubex.ai
-  resources:
+  - automationstrategies/status
+  - clusterautomationstrategies/status
   - clustercompactionpolicies/status
   - clustergpureactivepolicies/status
   - clusterobjectpatches/status
@@ -224,6 +207,25 @@ rules:
   verbs:
   - get
   - patch
+  - update
+- apiGroups:
+  - rightsizing.kubex.ai
+  resources:
+  - clustercompactionpolicies/finalizers
+  - clustergpureactivepolicies/finalizers
+  - clusterproactivepolicies/finalizers
+  - clusterrollbackpolicies/finalizers
+  - clusterstaticpolicies/finalizers
+  - containerargspolicies/finalizers
+  - globalconfigurations/finalizers
+  - gpuconsolidationpolicies/finalizers
+  - gpureactivepolicies/finalizers
+  - podaffinitypolicies/finalizers
+  - policyevaluations/finalizers
+  - proactivepolicies/finalizers
+  - rollbackpolicies/finalizers
+  - staticpolicies/finalizers
+  verbs:
   - update
 - apiGroups:
   - rightsizing.kubex.ai

@@ -785,6 +785,18 @@ spec:
                 x-kubernetes-list-map-keys:
                 - type
                 x-kubernetes-list-type: map
+              observedGeneration:
+                description: observedGeneration is the latest resource generation
+                  processed by the controller.
+                format: int64
+                type: integer
+              outcome:
+                description: outcome is the result of reconciliation. An omitted outcome
+                  means reconciliation is pending.
+                enum:
+                - Success
+                - Failure
+                type: string
               proposalReload:
                 description: proposalReload captures the most recent proposal reload
                   status.
@@ -818,6 +830,10 @@ spec:
                     format: date-time
                     type: string
                 type: object
+              reason:
+                description: reason contains human-readable detail about the current
+                  outcome.
+                type: string
               recommendationReload:
                 description: recommendationReload captures the most recent recommendation
                   reload status.

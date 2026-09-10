@@ -100,6 +100,8 @@ but does not repair it until the reapply annotation is set. An externally
 restored target can return to `Applied` naturally. `Ready=True` means the
 requested patch is applied.
 
+The common status fields follow the patch state. `Pending` leaves `status.outcome` empty and keeps the proposal `IN_PROGRESS`; `Applied` sets `outcome: Success`; `NeedsUpdate` and `Error` set `outcome: Failure`. `status.reason` contains the current detail and `status.observedGeneration` identifies the generation that produced it. A proposal becomes `APPLIED` or `FAILED` only when that generation matches `metadata.generation`.
+
 Transient API errors during patch requests consume retry budget; target-read
 errors do not. `retryAmount` defaults to `3` and means retries after the first
 attempt: four total attempts by default. `retryAmount: 0` allows one attempt.
