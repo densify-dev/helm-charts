@@ -90,6 +90,7 @@ node-labeler:
 
 kubex-connector:
   enabled: true
+  nameOverride: connector
   extraLabels: {}
   extraAnnotations: {}
   forwarderConfigMap:
@@ -99,6 +100,7 @@ kubex-connector:
 
 kubex-ai-cdi:
   enabled: true
+  nameOverride: ai-cdi
   extraLabels: {}
   extraAnnotations: {}
   clusterRoleNameOverride: ""
@@ -131,6 +133,7 @@ kubex-ai-cdi:
 kubex-automation-engine:
   # -- Enable the kubex-automation-engine subchart for automated workload rightsizing
   enabled: false
+  nameOverride: automation-engine
   extraLabels: {}
   extraAnnotations: {}
   # -- Disable secret creation since stack already creates densify-api-secret
@@ -151,7 +154,7 @@ kubex-automation-engine:
     configSecretName: densify-api-secret
 
 container-optimization-data-forwarder:
-  nameOverride: kubex-stack
+  nameOverride: stack
   tolerations:
     - key: "kubernetes.io/arch"
       operator: "Exists"

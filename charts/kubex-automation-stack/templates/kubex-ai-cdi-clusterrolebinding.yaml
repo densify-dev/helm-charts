@@ -12,7 +12,7 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: {{ default (printf "%s-kubex-ai-cdi-reader" .Release.Name) (dig "name" "" $clusterRoleBinding) }}
+  name: {{ default (printf "%s-ai-cdi-reader" .Release.Name) (dig "name" "" $clusterRoleBinding) }}
   labels:
     app: kubex-ai-cdi
     chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
@@ -32,5 +32,5 @@ subjects:
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: {{ default (printf "%s-kubex-ai-cdi-reader" .Release.Name) (dig "name" "" $clusterRole) }}
+  name: {{ default (printf "%s-ai-cdi-reader" .Release.Name) (dig "name" "" $clusterRole) }}
 {{- end }}

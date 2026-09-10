@@ -83,6 +83,21 @@ helm install --create-namespace -n kubex -f values-edit.yaml -f <sizing file> -f
 
 To override any OpenShift defaults, add another values file or `--set` options after the OpenShift overlay.
 
+## Upgrading to 1.1.9
+
+Version 1.1.9 fixes default resource names that could produce `kubex-kubex-*`. Helm will recreate resources whose names change. Completed `kubex-kubex-stack-*` Job pods remain until Kubernetes removes them through the configured history or TTL settings.
+
+When upgrading with `--reuse-values`, pass the new name overrides explicitly because Helm may retain the 1.1.8 values:
+
+```shell
+helm upgrade -n kubex --reuse-values \
+  --set kubex-connector.nameOverride=connector \
+  --set kubex-ai-cdi.nameOverride=ai-cdi \
+  --set kubex-automation-engine.nameOverride=automation-engine \
+  --set container-optimization-data-forwarder.nameOverride=stack \
+  kubex kubex/kubex-automation-stack
+```
+
 ## Upgrading from 1.0.11 to 1.0.12
 
 Version 1.0.12 moves the bundled Prometheus jobs from `prometheus.serverFiles.prometheus.yml.scrape_configs` to `prometheus.scrapeConfigs`. If the old values are reused during upgrade, Prometheus can receive both copies and fail because of duplicate scrape job names.
