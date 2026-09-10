@@ -2,10 +2,6 @@
 
 All notable changes to the kubex-automation-stack chart will be documented in this file.
 
-## [Unversioned changes]
-
----
-
 ## [1.1.10] - 2026-09-10
 
 ### Changed
