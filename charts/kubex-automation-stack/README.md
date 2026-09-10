@@ -130,8 +130,8 @@ The following table lists configuration parameters in `values-edit.yaml`.
 | `beyla.enabled`                                                           |                    | Enable Grafana Beyla for application runtime detection (default: `true`) |
 | `k8s-ephemeral-storage-metrics.enabled`                                          |                    | Enable ephemeral storage metrics collection (default: `true`) |
 | `node-labeler.enabled`                                                           |                    | Enable optional node-labeler subchart to add Kubex Node Group labels to nodes; useful when nodes lack standard cloud provider node pool/group labels (default: `false`) |
-| `kubex-connector.enabled`                                                        |                    | Enable optional connector subchart (default: `false`) |
-| `kubex-ai-cdi.enabled`                                                           |                    | Enable optional kubex-ai-cdi subchart (default: `false`) |
+| `kubex-connector.enabled`                                                        |                    | Enable connector subchart (default: `true`) |
+| `kubex-ai-cdi.enabled`                                                           |                    | Enable kubex-ai-cdi subchart (default: `true`) |
 | `kubex-automation-engine.enabled`                                                |                    | Enable optional automation engine subchart for automated workload rightsizing (default: `false`) |
 | `kubex-automation-engine.kubex.clusterNameFrom`                                  |                    | Defaults to `configMapKeyRef` on `kubex-stack-runtime/kubex_cluster_name` |
 | `kubex-automation-engine.gateway.configSecretName`                               |                    | Defaults to `densify-api-secret` created by the stack |
@@ -288,9 +288,9 @@ This chart consists of the following subcharts:
   - Additional Kubex-specific grouping labels are needed beyond cloud provider labels
   - Enhanced node group visibility is desired in OpenShift environments (leverages Machine API)
 
-* [Kubex Connector](../kubex-connector) - Optional in-cluster connector used for the cluster data interface.
+* [Kubex Connector](../kubex-connector) - In-cluster connector used for the cluster data interface.
 
-* [kubex-ai-cdi](../kubex-ai-cdi) - Optional in-cluster Kubex cluster data interface service.
+* [kubex-ai-cdi](../kubex-ai-cdi) - In-cluster Kubex cluster data interface service.
 
 * [Kubex Automation Engine](../kubex-automation-engine) - Optional automated workload rightsizing engine that applies Kubex recommendations to optimize resource allocation. Disabled by default. Can be enabled for new installations as part of the stack or installed separately for backward compatibility with existing deployments.
 
