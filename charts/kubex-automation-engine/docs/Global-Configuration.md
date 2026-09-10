@@ -15,7 +15,7 @@ Use it to control recommendation refresh timing, proactive rescans, heartbeat re
 | `spec.mutationLogInterval` | `5m` | How often mutation logs are sent. |
 | `spec.snapshotInterval` | `30m` | How often snapshots containing all supported `rightsizing.kubex.ai` custom resources are sent. |
 | `spec.heartbeatInterval` | `5m` | How often controller heartbeat status is sent to Kubex. |
-| `spec.proposalSyncEnabled` | `false` | Controls proposal sync. Disabled by default behind feature flag. When set to `false`, controller stops syncing proposals and deletes proposal-managed resources. |
+| `spec.proposalSyncEnabled` | `false` | Controls proposal sync. When omitted or set to `false`, the controller stops syncing proposals and deletes proposal-managed resources. |
 | `spec.kubexAPIRequestTimeout` | `60s` | Timeout for Kubex API requests. |
 | `spec.webhookOwnerResolutionRetryTimeout` | `1s` | How long the pod admission webhook retries owner recommendation resolution before continuing without owner annotations. |
 | `spec.automationEnabled` | `true` | Global on or off switch for automation behavior. |
@@ -43,7 +43,12 @@ Use it to control recommendation refresh timing, proactive rescans, heartbeat re
 | `status.recommendationReload.proactiveRescanPending` | Whether a proactive rescan is pending because recommendations changed. |
 | `status.recommendationReload.proactiveRescanPendingTime` | When the pending proactive rescan was requested. |
 | `status.rescan.lastTime` | Timestamp of the most recent policy rescan. |
+| `status.outcome` | `Success` or `Failure` for the current `metadata.generation`. An omitted value means setup is still in progress. |
+| `status.reason` | Human-readable detail for the outcome. Proposal sync sends this as the proposal message. |
+| `status.observedGeneration` | Generation used to calculate the common outcome. |
 | `status.webhookHealth.*` | Current webhook probe streaks and last probe metadata. |
+
+Global configuration remains `IN_PROGRESS` while webhook health transitions or a required reload or rescan is pending. A completed setup reports `Success`; a failed required operation reports `Failure`. Proposal sync maps current `Success` to `APPLIED` and current `Failure` to `FAILED`.
 
 ## Example
 
@@ -101,7 +106,7 @@ The chart creates a default `GlobalConfiguration` when `globalConfiguration.enab
 | `globalConfiguration.mutationLogInterval` | `spec.mutationLogInterval` | Direct mapping |
 | `globalConfiguration.snapshotInterval` | `spec.snapshotInterval` | Direct mapping |
 | `globalConfiguration.heartbeatInterval` | `spec.heartbeatInterval` | Direct mapping |
-| `globalConfiguration.proposalSyncEnabled` | `spec.proposalSyncEnabled` | Disabled by default; set to `true` to opt in. Disabling also deletes proposal-managed resources |
+| `globalConfiguration.proposalSyncEnabled` | `spec.proposalSyncEnabled` | Enabled by default in the Helm chart. Set to `false` to disable it; disabling also deletes proposal-managed resources |
 | `globalConfiguration.kubexAPIRequestTimeout` | `spec.kubexAPIRequestTimeout` | Falls back to legacy value if unset |
 | `globalConfiguration.webhookOwnerResolutionRetryTimeout` | `spec.webhookOwnerResolutionRetryTimeout` | Direct mapping |
 | `globalConfiguration.automationEnabled` | `spec.automationEnabled` | Direct mapping |
@@ -134,10 +139,10 @@ If both the new `globalConfiguration.*` value and the legacy value are set, the 
 
 `spec.proposalSyncEnabled` is top-level operational switch for proposal-backed resource management.
 
-Proposal sync disabled by default behind feature flag.
+When the field is omitted from a directly managed `GlobalConfiguration`, proposal sync is disabled. The Helm chart sets it to `true` by default.
 
-- When `true`, controller continues syncing proposals on configured proposal sync interval.
-- When `false`, controller skips proposal sync and deletes all controller-managed proposal-backed resources.
+- When `true`, the controller continues syncing proposals on the configured proposal sync interval.
+- When `false`, the controller skips proposal sync and deletes all controller-managed proposal-backed resources.
 - Re-enabling triggers immediate proposal sync on next reconcile.
 - For local dev, `PROPOSALS_PATH=... make local-deploy` opts proposal sync in automatically in helper flow.
 

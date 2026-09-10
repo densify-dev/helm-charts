@@ -261,10 +261,21 @@ spec:
                   seen while reconciling this policy.
                 type: string
               observedGeneration:
-                description: observedGeneration is the latest generation observed
-                  by the controller.
+                description: observedGeneration is the latest resource generation
+                  processed by the controller.
                 format: int64
                 type: integer
+              outcome:
+                description: outcome is the result of reconciliation. An omitted outcome
+                  means reconciliation is pending.
+                enum:
+                - Success
+                - Failure
+                type: string
+              reason:
+                description: reason contains human-readable detail about the current
+                  outcome.
+                type: string
             type: object
         required:
         - spec
