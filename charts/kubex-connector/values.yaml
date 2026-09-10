@@ -46,7 +46,7 @@ relay:
   enabled: true
   image:
     repository: densify/automation-gateway
-    tag: 1.5
+    tag: 1.7
     pullPolicy: IfNotPresent
   listenAddr: ":18181"
   connectPath: "/tunnel/connect"
