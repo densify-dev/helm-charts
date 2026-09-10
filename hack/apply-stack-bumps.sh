@@ -36,12 +36,6 @@ next_stack_version="${major}.${minor}.$((patch + 1))"
 yq eval -i ".version = \"${next_stack_version}\"" "${chart_file}"
 echo "next_stack_version=${next_stack_version}" >> "$GITHUB_OUTPUT"
 
-helm_config_home="$(mktemp -d)/config"
-helm_cache_home="$(mktemp -d)/cache"
-helm_data_home="$(mktemp -d)/data"
-export HELM_CONFIG_HOME="${helm_config_home}"
-export HELM_CACHE_HOME="${helm_cache_home}"
-export HELM_DATA_HOME="${helm_data_home}"
 helm dependency update "${STACK_CHART_DIR}"
 helm lint "${STACK_CHART_DIR}" -f "${STACK_CHART_DIR}/values-edit.yaml"
 

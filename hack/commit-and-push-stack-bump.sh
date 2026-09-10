@@ -23,7 +23,7 @@ git config user.name "${APP_SLUG}[bot]"
 git config user.email "${BOT_USER_ID}+${APP_SLUG}[bot]@users.noreply.github.com"
 
 short_sha="$(git rev-parse --short HEAD)"
-branch_name="sync/kubex-automation-stack/main-${short_sha}"
+branch_name="sync/kubex-automation-stack"
 git checkout -B "${branch_name}"
 git commit -m "Update kubex-automation-stack dependencies (${short_sha})"
 git remote set-url origin "https://x-access-token:${APP_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"

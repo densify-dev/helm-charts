@@ -30,8 +30,8 @@ for name in ${SELF_PUBLISHED_DEPS}; do
   fi
   latest="$(helm search repo "kubex/${name}" -o json | jq -r '.[0].version // empty')"
   if [[ -z "${latest}" ]]; then
-    echo "::warning::could not resolve published version for ${name}, skipping"
-    continue
+    echo "::error::could not resolve published version for ${name}"
+    exit 1
   fi
   if [[ "${current}" != "${latest}" ]]; then
     echo "${name} out of date: ${current} -> ${latest}"
