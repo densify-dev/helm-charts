@@ -81,6 +81,10 @@ spec:
           value: {{ .Values.worker.maxPayloadBytes | quote }}
         - name: K8S_MCP_REQUIRE_AUTH
           value: "false"
+        {{- if .Values.prometheus.url }}
+        - name: PROMETHEUS_URL
+          value: {{ .Values.prometheus.url | quote }}
+        {{- end }}
         - name: ENABLE_CLUSTER_SCOPE_OPS
           value: {{ .Values.worker.enableClusterScopeOps | quote }}
         {{- if .Values.worker.clusterName }}
