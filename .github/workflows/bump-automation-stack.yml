@@ -53,9 +53,10 @@ jobs:
 
       - name: Set up yq
         run: |
-          curl -sL "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64" -o /usr/local/bin/yq
-          chmod +x /usr/local/bin/yq
-          yq --version
+curl -fsSL "https://github.com/mikefarah/yq/releases/download/${YQ_VERSION}/yq_linux_amd64" -o "${RUNNER_TEMP}/yq"
+chmod +x "${RUNNER_TEMP}/yq"
+echo "${RUNNER_TEMP}" >> "$GITHUB_PATH"
+"${RUNNER_TEMP}/yq" --version
 
       - name: Set up Helm
         uses: *setup-helm-action
