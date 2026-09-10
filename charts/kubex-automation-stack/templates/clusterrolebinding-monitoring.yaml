@@ -1,9 +1,10 @@
 {{- $forwarder := index .Values "container-optimization-data-forwarder" -}}
+{{- $forwarderName := default "container-optimization-data-forwarder" $forwarder.nameOverride -}}
 {{- if and .Values.openshift.enabled $forwarder.rbac.create }}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: {{ template "common.fullname" . }}-monitoring
+  name: {{ printf "%s-%s-monitoring" .Release.Name $forwarderName | trunc 63 | trimSuffix "-" }}
   labels:
     app: {{ template "common.name" . }}
     chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
