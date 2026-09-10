@@ -9,6 +9,14 @@ All notable changes to the kubex-automation-stack chart will be documented in th
 
 ---
 
+## [1.1.9] - 2026-09-10
+
+### Changed
+- Fixed default subchart names so release resources no longer use `kubex-kubex-*` names.
+- Changed the default stack-managed CDI ClusterRole and ClusterRoleBinding suffix to `ai-cdi-reader`.
+
+---
+
 ## [1.1.8] - 2026-09-01
 
 ### Changed

@@ -65,8 +65,8 @@ The stack-managed connector uses the forwarder ConfigMap and `densify-api-secret
 When `kubex-connector.enabled=true` and `kubex-ai-cdi.enabled=true`, the stack owns the CDI RBAC resources and disables the CDI subchart RBAC:
 
 - ServiceAccount: `kubex-ai-cdi-sa`
-- ClusterRole: `<release>-kubex-ai-cdi-reader`
-- ClusterRoleBinding: `<release>-kubex-ai-cdi-reader`
+- ClusterRole: `<release>-ai-cdi-reader`
+- ClusterRoleBinding: `<release>-ai-cdi-reader`
 
 The ClusterRole and ClusterRoleBinding names can be overridden through `rbac.permissions.cdi.clusterRole.name` and `rbac.permissions.cdi.clusterRoleBinding.name`. Use explicit names only when coordinating ownership across releases.
 
@@ -245,8 +245,8 @@ kubectl get clusterrole,clusterrolebinding | grep -E "(kubex|densify)"
 kubectl auth can-i --list --as=system:serviceaccount:<namespace>:kubex-stack-kubex-forwarder
 
 # Check permissions for stack-managed CDI
-kubectl get clusterrole <release>-kubex-ai-cdi-reader
-kubectl get clusterrolebinding <release>-kubex-ai-cdi-reader
+kubectl get clusterrole <release>-ai-cdi-reader
+kubectl get clusterrolebinding <release>-ai-cdi-reader
 kubectl auth can-i --list --as=system:serviceaccount:<namespace>:kubex-ai-cdi-sa
 
 # Check permissions for ephemeral storage metrics service account
