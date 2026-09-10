@@ -367,7 +367,7 @@ globalConfiguration:
   # -- Whether automation is globally enabled
   automationEnabled: true
   # -- Whether proposal sync runs; when false, proposal-managed resources are deleted
-  proposalSyncEnabled: false
+  proposalSyncEnabled: true
   # -- Suppress fetching recommendations from gateway (testing only)
   suppressFetchRecommendations: false
   # -- Respect KubexAutomation flag in recommendations
