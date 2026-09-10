@@ -155,6 +155,8 @@ spec:
         downsize: true
         # Allow raising the requested GPU fraction when usage increases.
         upsize: true
+        # Prevent KAI recommendations from allocating more than one GPU.
+        ceiling: "1"
         # Leave workloads that have no GPU request untouched.
         setFromUnspecified: false
   kai:
@@ -271,6 +273,8 @@ spec:
 ## Automation Strategy Notes
 
 GPU metric interpretation defaults to `fullGPU`, which means Prometheus values are treated as percentages of one whole GPU. Set `prometheus.interpretation: currentAllocation` when a metric reports utilization relative to the container's current GPU allocation, such as KAI GPU memory utilization.
+
+Every strategy using `overrideScheduler: "kai"` should set `spec.enablement.gpu.requests.ceiling: "1"`. The controller clamps larger recommendations to that ceiling before writing `gpu-fraction`.
 
 For KAI-enabled workloads, start with `spec.inPlaceResize.enabled: false`.
 
