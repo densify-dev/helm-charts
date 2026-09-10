@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# Commits the staged dependency bump and force-pushes it to a deterministic
-# per-commit branch, using the GitHub App's bot identity.
+# Commits the staged dependency bump and force-pushes it to the stable
+# sync/kubex-automation-stack branch (reused across runs, not per-commit),
+# using the GitHub App's bot identity.
 #
 # Env vars:
 #   APP_SLUG      - required, e.g. "kubexautomation"

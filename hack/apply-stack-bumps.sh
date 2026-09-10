@@ -36,6 +36,24 @@ next_stack_version="${major}.${minor}.$((patch + 1))"
 yq eval -i ".version = \"${next_stack_version}\"" "${chart_file}"
 echo "next_stack_version=${next_stack_version}" >> "$GITHUB_OUTPUT"
 
+# Publishing a new chart version ships everything currently on master,
+# including whatever is staged under "## [Unversioned changes]" — if that
+# section has real content, it would ship silently mislabeled as
+# unversioned under the new release. Fail loudly instead of guessing how
+# to merge it; a human needs to promote or clear it first.
+unversioned_content="$(awk '
+  /^## \[Unversioned changes\]/ { capture = 1; next }
+  capture && /^## \[/ { exit }
+  capture && /^---/ { exit }
+  capture && /^###/ { next }
+  capture && NF > 0 { print }
+' "${STACK_CHART_DIR}/CHANGELOG.md")"
+if [[ -n "${unversioned_content}" ]]; then
+  echo "::error::CHANGELOG.md has non-empty '## [Unversioned changes]' content, which would ship under the new version ${next_stack_version} while still being labeled unversioned. Promote or clear it manually before this workflow can run:" >&2
+  echo "${unversioned_content}" >&2
+  exit 1
+fi
+
 helm dependency update "${STACK_CHART_DIR}"
 helm lint "${STACK_CHART_DIR}" -f "${STACK_CHART_DIR}/values-edit.yaml"
 

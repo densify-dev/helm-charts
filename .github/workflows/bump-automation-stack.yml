@@ -52,6 +52,7 @@ jobs:
         with:
           ref: master
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Set up yq
         run: ./hack/setup-yq.sh
