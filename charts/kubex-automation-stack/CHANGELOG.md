@@ -7,6 +7,9 @@ All notable changes to the kubex-automation-stack chart will be documented in th
 ### Changed
 - Added app-specific scrape configs for JVM and vLLM workloads.
 - Added cluster-size resource settings for k8s-ephemeral-storage-metrics.
+- Updated kubex-connector dependency to 1.4.0.
+- Updated kubex-ai-cdi dependency to 1.4.0.
+- Updated kubex-automation-engine dependency to 1.12.0.
 
 ---
 

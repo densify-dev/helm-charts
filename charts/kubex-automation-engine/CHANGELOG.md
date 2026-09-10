@@ -2,6 +2,21 @@
 
 All notable changes to the Kubex Automation Engine Helm chart will be documented in this file.
 
+## [1.12.0] - 2026-09-10
+
+### Added
+- Managed custom resources (automation strategies, policies, and proposals) now report readiness and reconciliation outcomes directly on the resource.
+
+### Changed
+- Proposal sync to the Kubex SaaS is now enabled by default.
+- Automation state reporting to the Kubex SaaS is now always enabled, instead of requiring a manual opt-in setting.
+
+### Fixed
+- Reported resource values after a resize no longer fall back to a stale or missing pod snapshot; they now reflect the last known-good state.
+- Bundled gateway image updated to 1.7, resolving all CVEs reported against 1.4/1.6 (including a critical `golang.org/x/crypto` authentication bypass and an `echo` vulnerability not addressed by the earlier 1.6 update).
+
+---
+
 ## [1.11.2] - 2026-08-27
 
 ### Changed

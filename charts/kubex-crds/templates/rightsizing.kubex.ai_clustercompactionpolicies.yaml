@@ -464,10 +464,21 @@ spec:
                 - type
                 x-kubernetes-list-type: map
               observedGeneration:
-                description: observedGeneration is the latest generation observed
-                  by the controller.
+                description: observedGeneration is the latest resource generation
+                  processed by the controller.
                 format: int64
                 type: integer
+              outcome:
+                description: outcome is the result of reconciliation. An omitted outcome
+                  means reconciliation is pending.
+                enum:
+                - Success
+                - Failure
+                type: string
+              reason:
+                description: reason contains human-readable detail about the current
+                  outcome.
+                type: string
               summary:
                 description: summary provides a small scalar snapshot suitable for
                   status tables.

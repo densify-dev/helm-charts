@@ -314,29 +314,6 @@ kubectl get deployment <name> -o yaml | grep "skip-containers"
 kubectl get pod <pod-name> -o yaml | grep "skip-containers"
 ```
 
-## Automation Blockers in the Kubex UI
-
-Automation blockers explain why Kubex could not resize a workload. Reporting blockers in the Kubex UI is disabled by default and does not affect automation decisions. This capability is currently supported only in Kubex Rapid Release versions and should not be enabled if your cluster is connected to a Kubex Production Release.
-
-Enable it in your Helm values:
-
-```yaml
-controllerManager:
-  extraEnv:
-    - name: ENABLE_AUTOMATION_STATE
-      value: "true"
-```
-
-Apply the values during your next Helm install or upgrade. If `controllerManager.extraEnv` is currently empty, you can enable it after installation with (note: if you already have other `extraEnv` entries, add the new entry to the list instead of replacing it):
-
-```bash
-helm upgrade kubex-automation-engine kubex/kubex-automation-engine \
-  --namespace kubex \
-  --reuse-values \
-  --set 'controllerManager.extraEnv[0].name=ENABLE_AUTOMATION_STATE' \
-  --set-string 'controllerManager.extraEnv[0].value=true'
-```
-
 ## Understanding Pod Automation Constraints
 
 `rightsizing.kubex.ai/automation-constraints` explains why Kubex could not apply all or part of a rightsizing recommendation to a Pod. Check this annotation on the Pod when an expected resize does not happen.
