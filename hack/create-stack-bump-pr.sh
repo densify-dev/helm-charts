@@ -23,6 +23,10 @@ body_file="$(mktemp)"
   echo
   echo "Changes:"
   printf '%s' "${CHANGELOG_BULLETS}"
+  # GitHub Actions strips the trailing newline from a multiline step
+  # output, so CHANGELOG_BULLETS may not end with one — without this,
+  # the next line gets appended directly onto the last bullet.
+  echo
   echo "- Regenerated Chart.lock"
   echo "- Bumped kubex-automation-stack to ${NEXT_STACK_VERSION}"
 } > "${body_file}"
