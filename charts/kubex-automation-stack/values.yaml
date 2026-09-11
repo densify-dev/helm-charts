@@ -256,6 +256,18 @@ prometheus:
           - ALL
       seccompProfile:
         type: RuntimeDefault
+  appMetricNames:
+    jvm: '^(target_info|jvm_((buffer_(memory|pool)_used|memory_(init|limit|max|used(_after_last_gc)?))_bytes|gc_(collection|duration)_seconds_.*|runtime_info|thread_count|threads_current))$'
+    vllm: '^vllm:(e2e_request_latency|time_to_first_token)_seconds.*$'
+  appScrapeConfigs:
+    jvm:
+      serviceLabels: {}
+      podLabels: {}
+    vllm:
+      serviceLabels: {}
+      podLabels: {}
+  extraScrapeConfigs: |
+    {{ include "kubex-automation-stack.appScrapeConfigs" . }}
   scrapeConfigs:
     prometheus:
       enabled: true

@@ -2,6 +2,13 @@
 
 All notable changes to the kubex-automation-stack chart will be documented in this file.
 
+## [1.1.11] - 2026-09-10
+
+### Changed
+- Added app-specific scrape configs for JVM and vLLM workloads.
+
+---
+
 ## [1.1.10] - 2026-09-10
 
 ### Changed
