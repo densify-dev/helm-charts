@@ -33,6 +33,12 @@ metadata:
   name: deployment-patch
   namespace: patches-demo
 spec:
+  retryAmount: 3
+  requeueInterval: 5m
+  drift:
+    retryInterval: 5m
+    retryAmount: 3
+    stabilizationWindow: 15m
   targetRef:
     apiVersion: apps/v1
     kind: Deployment
@@ -51,6 +57,7 @@ kind: ClusterObjectPatch
 metadata:
   name: namespace-patch
 spec:
+  requeueInterval: 5m
   targetRef:
     apiVersion: v1
     kind: Namespace
@@ -89,24 +96,63 @@ metadata edits do not. An already-matching target still succeeds and reports
 cycles reset retry count to `0`.
 
 If the target is missing before first apply, status is `Pending`, reason
-`TargetNotFound`, and it is checked again every five minutes. If an applied
+`TargetNotFound`, and it is checked again after `requeueInterval`. If an applied
 target disappears, status is `NeedsUpdate`, reason `TargetMissing`; when it
 reappears, the patch is applied again. Deletion and recreation between checks is
 not detected.
 
-After apply, five-minute checks report ordinary drift only: status becomes
-`NeedsUpdate`, reason `Drifted`, and `Drifted=True`; the controller reports drift
-but does not repair it until the reapply annotation is set. An externally
-restored target can return to `Applied` naturally. `Ready=True` means the
-requested patch is applied.
+`requeueInterval` defaults to `5m` and must be positive. It controls ordinary
+target observation, missing-target checks, duplicate-claim checks, and drift
+stabilization observations. Reduce it for faster drift detection when the extra
+API reads are acceptable.
+
+After apply, the controller checks the target after each `requeueInterval`. Without
+`spec.drift`, status becomes `NeedsUpdate`, reason `Drifted`, and `Drifted=True`,
+but the controller does not repair the target until the reapply annotation is
+set. This preserves report-only behavior for existing resources.
+
+Set `spec.drift` to enable automatic repair. `retryInterval` defaults to `5m`,
+must be positive, and cannot exceed 24 hours. `retryAmount` defaults to `3`;
+`0` allows unlimited automatic repairs. `stabilizationWindow` defaults to
+`15m` and must be positive.
+
+When drift is found, the controller increments `status.driftRetryCount`, stores
+the repair deadline in `status.nextDriftRetryTime`, and waits before reading the
+target again. The delay doubles for each repair in the same streak and is capped
+at 24 hours. For `retryInterval: 5m`, repairs wait 5 minutes, 10 minutes, then
+20 minutes. If the target still differs at the deadline, the controller repairs
+it. If another actor restored it, no patch request is sent.
+
+After repair or external recovery, `nextDriftRetryTime` is cleared while
+`driftRetryCount` is retained. The controller observes the target after each
+`requeueInterval` through `stabilizationWindow`. With both defaults, three clean
+five-minute observations occur before the counter resets. Drift during this
+window continues the same exponential streak. Exhausting a finite drift retry
+amount sets terminal `Error`, reason `DriftRetryLimitExceeded`, and
+`Drifted=True`; polling stops until the spec changes or the reapply annotation
+is set.
+
+The relevant status fields are:
+
+| Field | Meaning |
+| --- | --- |
+| `outcome` | `Success` when applied, `Failure` for drift or errors, and omitted while pending. |
+| `reason` | Human-readable detail for the current outcome. |
+| `observedGeneration` | Latest ObjectPatch generation processed by the controller. |
+| `retryCount` | Transient patch-request retries in the current apply cycle. |
+| `driftRetryCount` | Automatic drift repairs consumed in the current drift streak. |
+| `nextDriftRetryTime` | Persisted deadline for the next target read and possible repair. Omitted during stabilization and ordinary observation. |
+| `lastAttemptTime` | Most recent patch attempt. |
+| `lastAppliedTime` | Most recent successful target patch. |
 
 The common status fields follow the patch state. `Pending` leaves `status.outcome` empty and keeps the proposal `IN_PROGRESS`; `Applied` sets `outcome: Success`; `NeedsUpdate` and `Error` set `outcome: Failure`. `status.reason` contains the current detail and `status.observedGeneration` identifies the generation that produced it. A proposal becomes `APPLIED` or `FAILED` only when that generation matches `metadata.generation`.
 
 Transient API errors during patch requests consume retry budget; target-read
 errors do not. `retryAmount` defaults to `3` and means retries after the first
-attempt: four total attempts by default. `retryAmount: 0` allows one attempt.
-Retrying is `Pending`, reason `Retrying`; exhaustion is `Error`, reason
-`RetryLimitExceeded`, and polling stops.
+attempt: four total attempts by default. `retryAmount: 0` retries indefinitely.
+This budget is independent of `drift.retryAmount`. Retrying is `Pending`, reason
+`Retrying`; finite exhaustion is `Error`, reason `RetryLimitExceeded`, and
+polling stops.
 
 ```bash
 kubectl get objectpatch deployment-patch -n patches-demo -o yaml
