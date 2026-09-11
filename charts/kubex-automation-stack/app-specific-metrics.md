@@ -38,7 +38,7 @@ This is done using the `appMetricNames` regex in `values.yaml`:
 ```yaml
 prometheus:
   appMetricNames:
-    jvm: '^(target_info|jvm_((buffer_(memory|pool)_used|memory_(init|limit|max|used(_after_last_gc)?))_bytes|gc_(collection|duration)_seconds_.*|runtime_info|thread_count|threads_current))$'
+    jvm: '^(target_info|jvm_((buffer_(memory|pool)_used|memory_(init|limit|max|pool_collection_used|used(_after_last_gc)?))_bytes|gc_(collection|duration)_seconds_.*|runtime_info|thread_count|threads_current))$'
     vllm: '^vllm:(e2e_request_latency|time_to_first_token)_seconds.*$'
 ```
 
