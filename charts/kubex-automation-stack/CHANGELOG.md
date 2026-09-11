@@ -5,7 +5,7 @@ All notable changes to the kubex-automation-stack chart will be documented in th
 ## [1.1.12] - 2026-09-11
 
 ### Changed
-- Fix JVM regex to accommodate for an additional metric.
+- Fixed the JVM regex to accommodate an additional metric.
 
 ---
 
