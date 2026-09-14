@@ -148,6 +148,13 @@ rules:
   - patch
   - watch
 - apiGroups:
+  - karpenter.sh
+  resources:
+  - nodepools
+  verbs:
+  - get
+  - patch
+- apiGroups:
   - kubeai.org
   resources:
   - models
