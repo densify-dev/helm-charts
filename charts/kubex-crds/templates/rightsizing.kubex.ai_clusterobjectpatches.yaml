@@ -40,16 +40,51 @@ spec:
           spec:
             description: spec defines the desired state of ClusterObjectPatch.
             properties:
+              drift:
+                description: drift configures retries for detected drift.
+                properties:
+                  retryAmount:
+                    default: 3
+                    description: retryAmount is the number of drift retries; zero
+                      means unlimited retries.
+                    format: int32
+                    minimum: 0
+                    type: integer
+                  retryInterval:
+                    default: 5m
+                    description: retryInterval is the interval between drift retries.
+                    type: string
+                    x-kubernetes-validations:
+                    - message: must be greater than 0 and at most 24 hours
+                      rule: duration(self) > duration('0s') && duration(self) <= duration('24h')
+                  stabilizationWindow:
+                    default: 15m
+                    description: stabilizationWindow is the time drift must remain
+                      stable before resetting the retry count.
+                    type: string
+                    x-kubernetes-validations:
+                    - message: must be greater than 0 seconds
+                      rule: duration(self) > duration('0s')
+                type: object
               patch:
                 description: patch is a non-empty JSON object patch. Nested fields
                   are preserved as unstructured JSON.
                 minProperties: 1
                 type: object
                 x-kubernetes-preserve-unknown-fields: true
+              requeueInterval:
+                default: 5m
+                description: requeueInterval is the polling interval used to observe
+                  the target when no watch is available.
+                type: string
+                x-kubernetes-validations:
+                - message: must be greater than 0 seconds
+                  rule: duration(self) > duration('0s')
               retryAmount:
                 default: 3
                 description: retryAmount is the number of retries after the initial
-                  patch attempt.
+                  patch attempt for transient patch-request failures only; zero means
+                  unlimited retries.
                 format: int32
                 minimum: 0
                 type: integer
@@ -150,6 +185,10 @@ spec:
                 x-kubernetes-list-map-keys:
                 - type
                 x-kubernetes-list-type: map
+              driftRetryCount:
+                description: driftRetryCount is the number of drift retries consumed.
+                format: int32
+                type: integer
               lastAppliedTime:
                 description: lastAppliedTime is the time of the most recent successful
                   patch.
@@ -158,6 +197,11 @@ spec:
               lastAttemptTime:
                 description: lastAttemptTime is the time of the most recent patch
                   attempt.
+                format: date-time
+                type: string
+              nextDriftRetryTime:
+                description: nextDriftRetryTime is the next scheduled drift retry
+                  time.
                 format: date-time
                 type: string
               observedGeneration:
