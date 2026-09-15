@@ -2,6 +2,13 @@
 
 All notable changes to the Kubex Automation Engine Helm chart will be documented in this file.
 
+## [1.13.1] - 2026-09-15
+
+### Fixed
+- Reduced memory usage from ClusterCompactionPolicy controllers.
+
+---
+
 ## [1.13.0] - 2026-09-14
 
 ### Added
