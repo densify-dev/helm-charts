@@ -2,6 +2,13 @@
 
 All notable changes to the Kubex Automation Engine Helm chart will be documented in this file.
 
+## [1.13.2] - 2026-09-16
+
+### Fixed
+- Rollback applies specific container resources instead of aggregation and applying to all containers.
+
+---
+
 ## [1.13.1] - 2026-09-15
 
 ### Fixed
