@@ -86,7 +86,7 @@ prometheus:
           action: keep
 ```
 
-Edit this, save as `dedicated-exporter.yaml` and run `helm upgrade -n kubex --reuse-values -f dedicated-exporter.yaml kubex kubex/kubex-automation-stack`.
+Edit this, save as `dedicated-exporter.yaml` and run `helm upgrade -n kubex --reset-then-reuse-values -f dedicated-exporter.yaml kubex kubex/kubex-automation-stack`.
 
 ### OpenShift clusters
 
@@ -152,7 +152,7 @@ prometheus:
               expr: '<PromQL expression to compute custom memory from base metrics>'
 ```
 
-Edit this, save as `3rd-party-exporter.yaml` and run `helm upgrade -n kubex --reuse-values -f 3rd-party-exporter.yaml kubex kubex/kubex-automation-stack`.
+Edit this, save as `3rd-party-exporter.yaml` and run `helm upgrade -n kubex --reset-then-reuse-values -f 3rd-party-exporter.yaml kubex kubex/kubex-automation-stack`.
 
 ### OpenShift clusters
 
