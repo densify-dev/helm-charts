@@ -16,6 +16,7 @@ spec:
   snapshotInterval: {{ .Values.globalConfiguration.snapshotInterval }}
   gpuReactiveCheckInterval: {{ .Values.globalConfiguration.gpuReactiveCheckInterval }}
   heartbeatInterval: {{ .Values.globalConfiguration.heartbeatInterval }}
+  proposalSyncInterval: {{ .Values.globalConfiguration.proposalSyncInterval }}
   kubexAPIRequestTimeout: {{ $kubexAPIRequestTimeout }}
   webhookOwnerResolutionRetryTimeout: {{ .Values.globalConfiguration.webhookOwnerResolutionRetryTimeout | quote }}
   
