@@ -1,0 +1,20 @@
+#################################################################
+# Upgrade overlay for releases from before Kubex Collection Stack 1.1.9
+#################################################################
+#
+# Chart version 1.1.9 changed the default subchart resource names to
+# prevent resources from being rendered with the kubex-kubex-* prefix.
+# Set these overrides explicitly when old values are reused during an
+# upgrade.
+
+kubex-connector:
+  nameOverride: connector
+
+kubex-ai-cdi:
+  nameOverride: ai-cdi
+
+kubex-automation-engine:
+  nameOverride: automation-engine
+
+container-optimization-data-forwarder:
+  nameOverride: stack
