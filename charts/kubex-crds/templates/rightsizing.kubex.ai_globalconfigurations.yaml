@@ -117,7 +117,7 @@ spec:
                   When false, proposal sync does not run and proposal-managed resources are deleted.
                 type: boolean
               proposalSyncInterval:
-                default: 5m
+                default: 1m
                 description: proposalSyncInterval controls how often proposal sync
                   runs.
                 type: string

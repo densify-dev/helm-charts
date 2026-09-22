@@ -364,6 +364,8 @@ globalConfiguration:
   snapshotInterval: "30m"
   # -- Controller heartbeat report interval
   heartbeatInterval: "5m"
+  # -- Proposal synchronization interval
+  proposalSyncInterval: "1m"
   # -- Whether automation is globally enabled
   automationEnabled: true
   # -- Whether proposal sync runs; when false, proposal-managed resources are deleted

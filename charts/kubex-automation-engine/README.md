@@ -118,6 +118,7 @@ This guide covers:
 | Document | Purpose |
 |----------|---------|
 | **[Advanced Configuration](./docs/Advanced-Configuration.md)** | Global configuration, pause controls, safety controls, and operating patterns |
+| **[Breaking Changes and Upgrade Migration](./BREAKING.md)** | Version-cutoff guidance and required migrations when upgrading to the latest release |
 | **[Tuning Guide](./docs/Tuning-Guide.md)** | Tune control plane tolerance, webhook behavior, external dependency timeouts, and resilient placement |
 | **[Global Configuration Reference](./docs/Global-Configuration.md)** | Detailed `GlobalConfiguration` fields, defaults, Helm mapping, and timing behavior |
 | **[Safety Controls Reference](./docs/Safety-Controls.md)** | Pre-checks, filters, evaluation order, and `failedChecks` / `appliedFilters` interpretation |
@@ -153,7 +154,7 @@ For the detailed safety runtime reference, see **[Safety Controls Reference](./d
 
 - **Documentation issues**: start with the [Troubleshooting Guide](./docs/Troubleshooting.md)
 - **Configuration questions**: compare your setup against the [Configuration Reference](./docs/Configuration-Reference.md)
-- **Upgrade and migration questions**: review the backward compatibility notes in [Advanced Configuration](./docs/Advanced-Configuration.md#backward-compatibility-and-migration)
+- **Upgrade and migration questions**: review the [Breaking Changes and Upgrade Migration](./BREAKING.md) guide and the backward compatibility notes in [Advanced Configuration](./docs/Advanced-Configuration.md#backward-compatibility-and-migration)
 
 ## Diagnostic Collection
 

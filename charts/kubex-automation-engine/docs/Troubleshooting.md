@@ -744,7 +744,7 @@ If you want the setting to persist across upgrades, use Helm instead:
 ```bash
 # Sets debug logging via Helm - persists across upgrades
 helm upgrade kubex-automation kubex/kubex-automation-engine -n kubex \
-  --reuse-values \
+  --reset-then-reuse-values \
   --set 'controllerManager.extraArgs[0]=--zap-log-level=debug'
 ```
 
@@ -753,6 +753,6 @@ helm upgrade kubex-automation kubex/kubex-automation-engine -n kubex \
 ```bash
 # Restores info-level logging via Helm
 helm upgrade kubex-automation kubex/kubex-automation-engine -n kubex \
-  --reuse-values \
+  --reset-then-reuse-values \
   --set 'controllerManager.extraArgs[0]=--zap-log-level=info'
 ```

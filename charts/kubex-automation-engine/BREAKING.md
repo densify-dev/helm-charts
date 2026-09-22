@@ -1,6 +1,6 @@
 # Breaking Changes
 
-## 2026-07-21 GPU reactive policy rename
+## Upgrading from versions earlier than 1.9.0 to the latest release: GPU reactive policy rename
 
 GPU policy resources and global setting were hard-renamed:
 
@@ -22,7 +22,7 @@ Kubernetes does not allow changing an established CRD's `spec.names.kind`. No co
 
 > **Warning:** Do not delete existing CRDs before old policy objects finish cleanup. Their finalizers lose their controller and can leave resources stuck terminating.
 
-## 2026-07-20 - GPU enablement defaults and experimental contract
+## Upgrading from versions earlier than 1.8.0 to the latest release: GPU enablement defaults and experimental contract
 
 GPU request actions now default to disabled. The following fields changed from `true` to `false`:
 
@@ -42,7 +42,7 @@ Affected resources:
 
 ### Migration
 
-After upgrading the CRDs:
+For upgrades from a version earlier than 1.8.0 to the latest release, after upgrading the CRDs:
 
 1. Replace the existing `spec.experimental.gpuKaiContract` value with `v1alpha1-2026-07` in every affected resource.
 2. For `AutomationStrategy` and `ClusterAutomationStrategy`, explicitly set each desired GPU action under `spec.enablement.gpu.requests` to `true`. The GPU policy kinds only require the contract update in step 1.
