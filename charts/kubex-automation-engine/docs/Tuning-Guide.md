@@ -470,7 +470,7 @@ After rollout:
 
 If tuning does not help:
 
-- revert to the previous Helm values file or use `helm upgrade --reuse-values` with the prior settings
+- revert to the previous Helm values file or use `helm upgrade --reset-then-reuse-values` with the prior settings
 - back out aggressive concurrency or QPS increases first
 - if webhook probe health is the issue, fix probe admission compatibility before changing broader automation settings
 - if the cluster remains unstable, prefer slower but predictable settings over aggressive throughput tuning
