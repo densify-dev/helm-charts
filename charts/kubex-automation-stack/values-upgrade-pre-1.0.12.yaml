@@ -1,8 +1,8 @@
 #################################################################
-# Upgrade overlay for Kubex Collection Stack 1.0.11 -> 1.0.12
+# Upgrade overlay for Kubex Collection Stack versions earlier than 1.0.12
 #################################################################
 #
-# Version 1.0.12 moves the bundled Prometheus scrape jobs from
+# Chart version 1.0.12 moved the bundled Prometheus scrape jobs from
 # prometheus.serverFiles.prometheus.yml.scrape_configs to
 # prometheus.scrapeConfigs. When upgrading a release whose old values
 # are reused, Helm can otherwise keep the legacy scrape_configs list and
