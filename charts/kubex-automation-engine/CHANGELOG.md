@@ -2,6 +2,19 @@
 
 All notable changes to the Kubex Automation Engine Helm chart will be documented in this file.
 
+## [1.14.0] - 2026-09-23
+
+### Added
+- ObjectPatch and ClusterObjectPatch support selector-aware JSON Patch operations (`add`, `remove`, `replace`) alongside JSON Merge Patch, letting a single patch target specific array elements (for example, a named container) using a CEL selector.
+- Multiple ObjectPatch/ClusterObjectPatch resources can now target the same object when their claims don't conflict (for example, different array elements), instead of only the oldest claim being allowed.
+- GlobalConfiguration `proposalSyncInterval` defaults to `1m` (reduced from the previous fixed `5m` interval).
+
+### Fixed
+- Deleting a policy or proposal-managed resource no longer skips cleanup of owned recommendations and inherited annotations when the target has no matching namespaces, has an empty scope, or fails readiness/deletion checks.
+- Proposal sync now waits until GlobalConfiguration is ready before running, avoiding sync attempts before global settings are available.
+
+---
+
 ## [1.13.2] - 2026-09-16
 
 ### Fixed
