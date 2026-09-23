@@ -83,29 +83,33 @@ helm install --create-namespace -n kubex -f values-edit.yaml -f <sizing file> -f
 
 To override any OpenShift defaults, add another values file or `--set` options after the OpenShift overlay.
 
-## Upgrading to 1.1.9
+## Upgrade guidance
 
-Version 1.1.9 fixes default resource names that could produce `kubex-kubex-*`. Helm will recreate resources whose names change. Completed `kubex-kubex-stack-*` Job pods remain until Kubernetes removes them through the configured history or TTL settings.
+If upgrading from a chart version earlier than `1.0.12`, follow both upgrade sections below. The [`values-upgrade-pre-1.1.9.yaml`](https://raw.githubusercontent.com/densify-dev/helm-charts/master/charts/kubex-automation-stack/values-upgrade-pre-1.1.9.yaml) overlay is only needed when the release being upgraded is from before `1.1.9`. Apply the `1.0.12` Prometheus configuration guidance first, then apply the `1.1.9` resource naming guidance. If upgrading from `1.0.12` through `1.1.8`, follow only the `1.1.9` section.
 
-When upgrading with `--reset-then-reuse-values`, pass the new name overrides explicitly because Helm may retain the 1.1.8 values:
+## Upgrading from pre-1.1.9 releases
+
+When upgrading a release originally installed with a chart version earlier than `1.1.9` to the latest chart, note that the default resource names have changed to prevent `kubex-kubex-*`. Helm will recreate resources whose names change. Completed `kubex-kubex-stack-*` Job pods remain until Kubernetes removes them through the configured history or TTL settings.
+
+When upgrading with `--reset-then-reuse-values`, add the upgrade overlay because Helm may retain the old values:
 
 ```shell
 helm upgrade -n kubex --reset-then-reuse-values \
-  --set kubex-connector.nameOverride=connector \
-  --set kubex-ai-cdi.nameOverride=ai-cdi \
-  --set kubex-automation-engine.nameOverride=automation-engine \
-  --set container-optimization-data-forwarder.nameOverride=stack \
+  -f https://raw.githubusercontent.com/densify-dev/helm-charts/master/charts/kubex-automation-stack/values-upgrade-pre-1.1.9.yaml \
   kubex kubex/kubex-automation-stack
 ```
 
-## Upgrading from 1.0.11 to 1.0.12
+## Upgrading from versions earlier than 1.0.12
 
-Version 1.0.12 moves the bundled Prometheus jobs from `prometheus.serverFiles.prometheus.yml.scrape_configs` to `prometheus.scrapeConfigs`. If the old values are reused during upgrade, Prometheus can receive both copies and fail because of duplicate scrape job names.
+When upgrading from a chart version earlier than `1.0.12` to the latest chart, the bundled Prometheus jobs must use `prometheus.scrapeConfigs` instead of the legacy `prometheus.serverFiles.prometheus.yml.scrape_configs` path. If the old values are reused during upgrade, Prometheus can receive both copies and fail because of duplicate scrape job names.
 
-When upgrading from `1.0.11`, add the upgrade overlay at the end:
+Add both upgrade overlays at the end of the command when upgrading from a version earlier than `1.0.12`:
 
 ```shell
-helm upgrade -n kubex --reset-then-reuse-values -f https://raw.githubusercontent.com/densify-dev/helm-charts/master/charts/kubex-automation-stack/values-upgrade-1.0.11-to-1.0.12.yaml kubex kubex/kubex-automation-stack
+helm upgrade -n kubex --reset-then-reuse-values \
+  -f https://raw.githubusercontent.com/densify-dev/helm-charts/master/charts/kubex-automation-stack/values-upgrade-pre-1.0.12.yaml \
+  -f https://raw.githubusercontent.com/densify-dev/helm-charts/master/charts/kubex-automation-stack/values-upgrade-pre-1.1.9.yaml \
+  kubex kubex/kubex-automation-stack
 ```
 
 ## Sizing

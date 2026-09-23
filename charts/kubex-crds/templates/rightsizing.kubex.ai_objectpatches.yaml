@@ -65,6 +65,54 @@ spec:
                     - message: must be greater than 0 seconds
                       rule: duration(self) > duration('0s')
                 type: object
+              jsonPatch:
+                description: jsonPatch is an ordered list of selector-aware JSON Patch
+                  operations.
+                items:
+                  description: ObjectPatchJSONPatch modifies values below CEL-selected
+                    array elements.
+                  properties:
+                    matchPolicy:
+                      default: ExactlyOne
+                      description: matchPolicy controls whether all or exactly one
+                        matching element is modified.
+                      enum:
+                      - ExactlyOne
+                      - All
+                      type: string
+                    op:
+                      description: op is the JSON Patch operation.
+                      enum:
+                      - add
+                      - remove
+                      - replace
+                      type: string
+                    path:
+                      description: path is an RFC 6901 JSON Pointer containing one
+                        array selector segment named @.
+                      maxLength: 1024
+                      minLength: 1
+                      pattern: ^(/(([^@~/]|~[01])|([^~/]|~[01])([^~/]|~[01])+))*/@(/(([^@~/]|~[01])|([^~/]|~[01])([^~/]|~[01])+))*$
+                      type: string
+                    selector:
+                      description: selector is a CEL expression evaluated with the
+                        current array element as item.
+                      maxLength: 1024
+                      minLength: 1
+                      type: string
+                    value:
+                      description: value is the complete non-null JSON value for add
+                        and replace. Omit it for remove.
+                      x-kubernetes-preserve-unknown-fields: true
+                  required:
+                  - op
+                  - path
+                  - selector
+                  type: object
+                maxItems: 100
+                minItems: 1
+                type: array
+                x-kubernetes-list-type: atomic
               patch:
                 description: patch is a non-empty JSON object patch. Nested fields
                   are preserved as unstructured JSON.
@@ -112,9 +160,11 @@ spec:
                 - message: targetRef is immutable
                   rule: self == oldSelf
             required:
-            - patch
             - targetRef
             type: object
+            x-kubernetes-validations:
+            - message: at least one of patch or jsonPatch must be specified
+              rule: has(self.patch) || has(self.jsonPatch)
           status:
             description: status defines the observed state of ObjectPatch
             properties:

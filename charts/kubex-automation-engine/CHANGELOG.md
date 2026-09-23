@@ -2,6 +2,19 @@
 
 All notable changes to the Kubex Automation Engine Helm chart will be documented in this file.
 
+## [1.14.0] - 2026-09-23
+
+### Added
+- ObjectPatch and ClusterObjectPatch support selector-aware JSON Patch operations (`add`, `remove`, `replace`) alongside JSON Merge Patch, letting a single patch target specific array elements (for example, a named container) using a CEL selector.
+- Multiple ObjectPatch/ClusterObjectPatch resources can now target the same object when their claims don't conflict (for example, different array elements), instead of only the oldest claim being allowed.
+- GlobalConfiguration `proposalSyncInterval` defaults to `1m` (reduced from the previous fixed `5m` interval).
+
+### Fixed
+- Deleting a policy or proposal-managed resource no longer skips cleanup of owned recommendations and inherited annotations when the target has no matching namespaces, has an empty scope, or fails readiness/deletion checks.
+- Proposal sync now waits until GlobalConfiguration is ready before running, avoiding sync attempts before global settings are available.
+
+---
+
 ## [1.13.2] - 2026-09-16
 
 ### Fixed
@@ -102,7 +115,7 @@ All notable changes to the Kubex Automation Engine Helm chart will be documented
 ## [1.9.0] - 2026-07-28
 
 ### Breaking
-- **[GPU policies renamed](./BREAKING.md#2026-07-21-gpu-reactive-policy-rename)**: `GpuRebalancingPolicy` and `ClusterGpuRebalancingPolicy` are renamed to `GpuReactivePolicy` and `ClusterGpuReactivePolicy`. Kubernetes doesn't support renaming a CRD in place, so existing GPU policies need to be recreated under the new names after upgrading - see the linked migration steps before upgrading.
+- **[GPU policies renamed](https://github.com/densify-dev/helm-charts/blob/master/charts/kubex-automation-engine/BREAKING.md#upgrading-from-versions-earlier-than-190-to-the-latest-release-gpu-reactive-policy-rename)**: When upgrading from a version earlier than 1.9.0 directly to the latest release, `GpuRebalancingPolicy` and `ClusterGpuRebalancingPolicy` must be recreated as `GpuReactivePolicy` and `ClusterGpuReactivePolicy`. Kubernetes doesn't support renaming a CRD in place; complete the linked migration steps before upgrading.
 
 ### Added
 - The pod rightsizing webhook can now optionally run at the beginning and end of admission, so it works correctly alongside the KAI GPU-sharing scheduler's own webhook. This is off by default and only needed if you're running other resource-mutating webhooks alongside Kubex.
@@ -116,8 +129,8 @@ All notable changes to the Kubex Automation Engine Helm chart will be documented
 ## [1.8.0] - 2026-07-22
 
 ### Breaking
-- **[GPU enablement defaults and experimental contract](./BREAKING.md#2026-07-20---gpu-enablement-defaults-and-experimental-contract)**: GPU request actions now default to disabled. `spec.enablement.gpu.requests.downsize`, `.upsize`, and `.setFromUnspecified` changed from `true` to `false`. The GPU/KAI experimental contract changed to `v1alpha1-2026-07`; the previous contract is no longer accepted. Affects `AutomationStrategy`, `ClusterAutomationStrategy`, `GpuRebalancingPolicy`, `ClusterGpuRebalancingPolicy`, and `GpuConsolidationPolicy`.
-  - After upgrading the CRDs, update `spec.experimental.gpuKaiContract` from `v1alpha1-2026-04` to `v1alpha1-2026-07` in every affected resource.
+- **[GPU enablement defaults and experimental contract](https://github.com/densify-dev/helm-charts/blob/master/charts/kubex-automation-engine/BREAKING.md#upgrading-from-versions-earlier-than-180-to-the-latest-release-gpu-enablement-defaults-and-experimental-contract)**: GPU request actions now default to disabled. `spec.enablement.gpu.requests.downsize`, `.upsize`, and `.setFromUnspecified` changed from `true` to `false`. The GPU/KAI experimental contract changed to `v1alpha1-2026-07`; the previous contract is no longer accepted. Affects `AutomationStrategy`, `ClusterAutomationStrategy`, `GpuRebalancingPolicy`, `ClusterGpuRebalancingPolicy`, and `GpuConsolidationPolicy`.
+  - When upgrading from a version earlier than 1.8.0 directly to the latest release, update `spec.experimental.gpuKaiContract` from `v1alpha1-2026-04` to `v1alpha1-2026-07` in every affected resource.
   - For `AutomationStrategy`/`ClusterAutomationStrategy`, explicitly set each desired GPU action under `spec.enablement.gpu.requests` to `true` if you rely on GPU request resizing. GPU policy kinds only need the contract update.
   - Reapply affected resources after making these changes.
 
