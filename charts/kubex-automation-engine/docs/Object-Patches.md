@@ -1,9 +1,9 @@
 # Object Patches
 
-Use object patches to apply one JSON Merge Patch to any permitted object in the
-same scope. A patch may update multiple fields: add a label or annotation, change
-a ConfigMap key, or remove one field. Deleting an object patch does not roll back
-its target.
+Use object patches to apply one JSON Merge Patch and optional selector-aware JSON
+Patch operations to any permitted object in the same scope. A patch may update
+multiple fields: add a label or annotation, change a ConfigMap key, or remove
+one field. Deleting an object patch does not roll back its target.
 
 ## Choose A Resource
 
@@ -72,6 +72,55 @@ spec:
 kubectl apply -f deployment-patch.yaml
 kubectl apply -f clusterobjectpatch.yaml
 ```
+
+### Selector-aware operations
+
+`jsonPatch` is optional and may be used alone or together with `patch`. When
+both are present, the merge patch is applied first and selector operations are
+applied afterward, in declaration order. Supported operations are `add`,
+`remove`, and `replace`.
+
+Each operation requires an RFC 6901 `path` containing exactly one `@` segment.
+That segment selects elements from the array at the path prefix. The `selector`
+is a CEL expression evaluated with the current element exposed as `item`.
+`matchPolicy` defaults to `ExactlyOne`; use `All` to modify every matching
+element. `add` and `replace` require a non-null `value`; `remove` must omit it.
+Each patch supports at most 100 operations. Paths and selectors are limited to
+1024 characters, and selectors that exceed the runtime CEL cost limit fail.
+
+```yaml
+spec:
+  patch:
+    metadata:
+      labels:
+        managed-by: kubex
+  jsonPatch:
+    - op: replace
+      path: /spec/template/spec/containers/@/args
+      selector: 'item.name == "app"'
+      matchPolicy: ExactlyOne
+      value:
+        - --serve
+    - op: add
+      path: /spec/template/spec/containers/@/workingDir
+      selector: 'item.name == "app"'
+      value: /work
+    - op: remove
+      path: /spec/template/spec/containers/@/stdin
+      selector: 'item.name == "app"'
+```
+
+`replace` supports the selected element itself or any existing descendant path.
+`add` and `remove` are intentionally limited to one direct object member below
+the selected element, such as `/containers/@/workingDir`. `add` creates or
+replaces that member. `remove` ensures the member is absent; because `value` is
+not used, omit it.
+Array insertion, append, and selected-element removal are not supported because
+they are not idempotent across reconciliation retries.
+
+Unmatched array elements and their order are preserved. Selectors must remain
+true after every operation and after later operations run. The complete plan
+must replay without errors or further changes before the controller sends it.
 
 ## Patch Semantics
 
@@ -185,10 +234,24 @@ Forbidden or Unauthorized target access produces `Error`, `Ready=False`, and
 reason `TargetAccessDenied`. Grant `get` and `patch`, then edit the patch or set
 the reapply annotation.
 
-Only one patch resource can claim a target. The oldest claimant wins; name
-breaks a creation-time tie. `ObjectPatch` claims are compared within their
-namespace; `ClusterObjectPatch` claims cluster-wide. A loser reports `Error`,
-reason `TargetAlreadyClaimed`, and rechecks ownership every five minutes.
+Patch resources may share a target when their static claims do not conflict. Claims
+are arbitrated oldest first by creation timestamp, then name. A claimant blocked by
+an accepted claimant does not reserve its other claims. `ObjectPatch` claims are
+compared within their namespace; `ClusterObjectPatch` claims cluster-wide. A loser
+reports `Error`, reason `TargetAlreadyClaimed`, and rechecks ownership after
+`requeueInterval`.
+
+Merge-patch claims recurse to leaf paths. Scalars, `null`, arrays, and empty
+objects claim their exact path; arrays are atomic. Parent and child paths conflict.
+For selector operations, `item.key == "literal"` and its reversed form claim the
+entire selected array item, so different keys can coexist and the same key conflicts
+even when child fields differ. Any other selector claims the entire array at the
+path before `@`.
+
+For example, two `ClusterObjectPatch` resources targeting the same Karpenter
+`NodePool` can select `item.key == "node.kubernetes.io/instance-type"` and
+`item.key == "karpenter.sh/capacity-type"` to update different requirement
+items without conflicting.
 
 ## Troubleshooting
 

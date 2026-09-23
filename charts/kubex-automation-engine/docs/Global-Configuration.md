@@ -15,6 +15,7 @@ Use it to control recommendation refresh timing, proactive rescans, heartbeat re
 | `spec.mutationLogInterval` | `5m` | How often mutation logs are sent. |
 | `spec.snapshotInterval` | `30m` | How often snapshots containing all supported `rightsizing.kubex.ai` custom resources are sent. |
 | `spec.heartbeatInterval` | `5m` | How often controller heartbeat status is sent to Kubex. |
+| `spec.proposalSyncInterval` | `1m` | How often proposal sync runs. |
 | `spec.proposalSyncEnabled` | `false` | Controls proposal sync. When omitted or set to `false`, the controller stops syncing proposals and deletes proposal-managed resources. |
 | `spec.kubexAPIRequestTimeout` | `60s` | Timeout for Kubex API requests. |
 | `spec.webhookOwnerResolutionRetryTimeout` | `1s` | How long the pod admission webhook retries owner recommendation resolution before continuing without owner annotations. |
@@ -63,6 +64,7 @@ spec:
   mutationLogInterval: 5m
   snapshotInterval: 30m
   heartbeatInterval: 5m
+  proposalSyncInterval: 1m
   proposalSyncEnabled: false
   kubexAPIRequestTimeout: 60s
   webhookOwnerResolutionRetryTimeout: 1s
@@ -106,6 +108,7 @@ The chart creates a default `GlobalConfiguration` when `globalConfiguration.enab
 | `globalConfiguration.mutationLogInterval` | `spec.mutationLogInterval` | Direct mapping |
 | `globalConfiguration.snapshotInterval` | `spec.snapshotInterval` | Direct mapping |
 | `globalConfiguration.heartbeatInterval` | `spec.heartbeatInterval` | Direct mapping |
+| `globalConfiguration.proposalSyncInterval` | `spec.proposalSyncInterval` | Defaults to `1m` and controls how often proposal sync runs |
 | `globalConfiguration.proposalSyncEnabled` | `spec.proposalSyncEnabled` | Enabled by default in the Helm chart. Set to `false` to disable it; disabling also deletes proposal-managed resources |
 | `globalConfiguration.kubexAPIRequestTimeout` | `spec.kubexAPIRequestTimeout` | Falls back to legacy value if unset |
 | `globalConfiguration.webhookOwnerResolutionRetryTimeout` | `spec.webhookOwnerResolutionRetryTimeout` | Direct mapping |
