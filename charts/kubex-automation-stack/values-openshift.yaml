@@ -59,21 +59,12 @@ gpu-process-exporter:
 beyla:
   enabled: true
   privileged: false
-  podSecurityContext:
-    runAsUser: 0
-  securityContext:
-    privileged: false
-    allowPrivilegeEscalation: false
-    readOnlyRootFilesystem: true
-    capabilities:
-      add:
-        - BPF
-        - SYS_PTRACE
-        - NET_RAW
-        - CHECKPOINT_RESTORE
-        - DAC_READ_SEARCH
-        - PERFMON
-        - SYS_ADMIN
-        - NET_ADMIN
-      drop:
-        - ALL
+  extraCapabilities:
+    - BPF
+    - SYS_PTRACE
+    - NET_RAW
+    - CHECKPOINT_RESTORE
+    - DAC_READ_SEARCH
+    - PERFMON
+    - SYS_ADMIN
+    - NET_ADMIN
