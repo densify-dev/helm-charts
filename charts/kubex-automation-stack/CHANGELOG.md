@@ -2,6 +2,13 @@
 
 All notable changes to the kubex-automation-stack chart will be documented in this file.
 
+## [1.1.18] - 2026-09-24
+
+### Changed
+- Updated kubex-connector and kubex-ai-cdi dependencies to 1.6.0.
+
+---
+
 ## [1.1.17] - 2026-09-23
 
 ### Changed
