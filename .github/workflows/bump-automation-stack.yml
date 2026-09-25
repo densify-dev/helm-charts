@@ -1,0 +1,112 @@
+name: Bump Automation Stack
+
+# Runs after "Release Charts" publishes, and keeps kubex-automation-stack's
+# Chart.yaml dependency pins in sync with whatever it just published.
+#
+# Scope: only dependencies whose `repository` is this repo's own published
+# index (https://densify-dev.github.io/helm-charts) are considered — these
+# are the charts SELF_PUBLISHED_DEPS below. External upstream deps
+# (prometheus, beyla) are on independent release schedules and out of scope
+# here; update SELF_PUBLISHED_DEPS if a new self-published subchart
+# dependency is added to charts/kubex-automation-stack/Chart.yaml.
+#
+# All logic lives in hack/*.sh — this file only wires steps together.
+on:
+  workflow_run:
+    workflows: ["Release Charts"]
+    types: [completed]
+  workflow_dispatch: {} # manual dry-run trigger; safe to remove once verified
+
+permissions:
+  contents: read
+
+env:
+  CHECKOUT_ACTION: &checkout-action actions/checkout@v6.0.2
+  SETUP_HELM_ACTION: &setup-helm-action azure/setup-helm@v5.0.0
+  APP_TOKEN_ACTION: &app-token-action actions/create-github-app-token@v2
+  HELM_VERSION: v3.20.2
+  YQ_VERSION: v4.47.1
+  STACK_CHART_DIR: charts/kubex-automation-stack
+  SELF_PUBLISHED_DEPS: >-
+    container-optimization-data-forwarder
+    kubex-connector
+    kubex-ai-cdi
+    kubex-automation-engine
+    k8s-ephemeral-storage-metrics
+    gpu-process-exporter
+    node-labeler
+
+concurrency:
+  group: bump-kubex-automation-stack
+  cancel-in-progress: false
+
+jobs:
+  bump:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: *checkout-action
+        with:
+          ref: master
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up yq
+        run: ./hack/setup-yq.sh
+
+      - name: Set up Helm
+        uses: *setup-helm-action
+        with:
+          version: ${{ env.HELM_VERSION }}
+
+      - name: Add Helm repos
+        run: ./hack/add-helm-repos.sh
+
+      - name: Detect out-of-date self-published dependencies
+        id: detect
+        run: ./hack/detect-stack-bumps.sh
+
+      - name: Generate app token
+        if: steps.detect.outputs.needs_bump == 'true'
+        id: app-token
+        uses: *app-token-action
+        with:
+          app-id: ${{ secrets.KUBEXAUTOMATION_APP_ID }}
+          private-key: ${{ secrets.KUBEXAUTOMATION_APP_PRIVATE_KEY }}
+
+      - name: Get app bot user id
+        if: steps.detect.outputs.needs_bump == 'true'
+        id: bot-id
+        env:
+          APP_SLUG: ${{ steps.app-token.outputs.app-slug }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: ./hack/get-app-bot-user-id.sh
+
+      - name: Apply dependency bumps
+        if: steps.detect.outputs.needs_bump == 'true'
+        id: apply
+        env:
+          BUMP_LIST: ${{ steps.detect.outputs.bump_list }}
+          CHANGELOG_BULLETS: ${{ steps.detect.outputs.changelog_bullets }}
+        run: ./hack/apply-stack-bumps.sh
+
+      - name: Commit and push
+        if: steps.detect.outputs.needs_bump == 'true'
+        id: push
+        env:
+          APP_SLUG: ${{ steps.app-token.outputs.app-slug }}
+          BOT_USER_ID: ${{ steps.bot-id.outputs.id }}
+          APP_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: ./hack/commit-and-push-stack-bump.sh
+
+      - name: Create or update PR
+        if: steps.detect.outputs.needs_bump == 'true'
+        env:
+          BRANCH: ${{ steps.push.outputs.branch }}
+          NEXT_STACK_VERSION: ${{ steps.apply.outputs.next_stack_version }}
+          CHANGELOG_BULLETS: ${{ steps.detect.outputs.changelog_bullets }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: ./hack/create-stack-bump-pr.sh
