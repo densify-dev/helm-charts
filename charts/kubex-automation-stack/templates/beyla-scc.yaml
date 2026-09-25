@@ -2,7 +2,7 @@
 apiVersion: security.openshift.io/v1
 kind: SecurityContextConstraints
 metadata:
-  name: kubex-beyla
+  name: {{ .Release.Name }}-beyla-scc
   labels:
     app.kubernetes.io/name: kubex-beyla
     app.kubernetes.io/instance: {{ .Release.Name }}
@@ -10,7 +10,6 @@ metadata:
   annotations:
     meta.helm.sh/release-name: {{ .Release.Name }}
     meta.helm.sh/release-namespace: {{ .Release.Namespace }}
-    helm.sh/resource-policy: keep
 allowHostDirVolumePlugin: true
 allowHostNetwork: true
 allowHostPID: true
@@ -38,11 +37,11 @@ supplementalGroups:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: kubex-beyla-scc
+  name: {{ .Release.Name }}-beyla-scc-binding
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: system:openshift:scc:kubex-beyla
+  name: system:openshift:scc:{{ .Release.Name }}-beyla-scc
 subjects:
   - kind: ServiceAccount
     name: {{ default "kubex-beyla" .Values.beyla.serviceAccount.name }}

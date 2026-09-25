@@ -55,20 +55,10 @@ kubex-ai-cdi:
 
 gpu-process-exporter:
   enabled: true
-  prometheusScrape:
-    annotate: true
 
 beyla:
   enabled: true
   privileged: false
-  extraCapabilities:
-    - BPF
-    - SYS_PTRACE
-    - NET_RAW
-    - CHECKPOINT_RESTORE
-    - DAC_READ_SEARCH
-    - PERFMON
-    - SYS_ADMIN
   serviceMonitor:
     enabled: true
     additionalLabels:
