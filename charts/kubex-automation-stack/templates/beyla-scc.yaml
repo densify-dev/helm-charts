@@ -10,10 +10,10 @@ metadata:
   annotations:
     meta.helm.sh/release-name: {{ .Release.Name }}
     meta.helm.sh/release-namespace: {{ .Release.Namespace }}
-allowHostDirVolumePlugin: true
-allowHostNetwork: true
+allowHostDirVolumePlugin: false
+allowHostNetwork: false
 allowHostPID: true
-allowHostPorts: true
+allowHostPorts: false
 allowPrivilegedContainer: false
 allowedCapabilities:
   - BPF
@@ -23,6 +23,9 @@ allowedCapabilities:
   - DAC_READ_SEARCH
   - PERFMON
   - SYS_ADMIN
+  {{- range .Values.beyla.extraCapabilities }}
+  - {{ . }}
+  {{- end }}
 readOnlyRootFilesystem: true
 runAsUser:
   type: MustRunAs
@@ -45,5 +48,5 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: {{ default "kubex-beyla" .Values.beyla.serviceAccount.name }}
-    namespace: {{ .Release.Namespace }}
+    namespace: {{ default .Release.Namespace .Values.beyla.namespaceOverride }}
 {{- end }}
