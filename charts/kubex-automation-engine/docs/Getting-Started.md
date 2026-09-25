@@ -213,7 +213,7 @@ A typical CR workflow looks like this:
 3. Create `ProactivePolicy`, `ClusterProactivePolicy`, `StaticPolicy`, or `ClusterStaticPolicy` objects that reference those strategies.
 4. Apply and reconcile those manifests through `kubectl`, GitOps, or another external workflow.
 
-For a minimal start-to-finish example, create a cluster strategy that allows request upsizing and downsizing but prevents limit downsizing, and a cluster proactive policy that targets a few namespaces:
+For a minimal start-to-finish example, use a cluster strategy that can resize requests and existing limits up or down, and a cluster proactive policy that targets a few namespaces:
 
 ```yaml
 apiVersion: rightsizing.kubex.ai/v1alpha1
@@ -223,11 +223,23 @@ metadata:
 spec:
   enablement:
     cpu:
+      requests:
+        downsize: true
+        upsize: true
+        setFromUnspecified: true
       limits:
-        downsize: false
+        downsize: true
+        upsize: true
+        setFromUnspecified: false
     memory:
+      requests:
+        downsize: true
+        upsize: true
+        setFromUnspecified: true
       limits:
-        downsize: false
+        downsize: true
+        upsize: true
+        setFromUnspecified: false
 ---
 apiVersion: rightsizing.kubex.ai/v1alpha1
 kind: ClusterProactivePolicy
@@ -253,7 +265,7 @@ kubectl get clusterautomationstrategy getting-started-strategy
 kubectl get clusterproactivepolicy getting-started-apps
 ```
 
-This gives you a working baseline without needing to set every field up front. Expand the strategy or narrow the policy scope later as you validate behavior in your cluster.
+The strategy can set requests when none are specified, but it only resizes limits that already exist. Add or remove values in the policy selector to change which namespaces it affects.
 
 This pattern lets you tune strategy behavior and policy scope independently from Helm upgrades.
 
