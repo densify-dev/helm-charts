@@ -139,9 +139,9 @@ Detects container application runtimes using eBPF instrumentation. Enabled by de
 **Service Account:** `kubex-beyla` (created when `beyla.serviceAccount.create: true`)
 
 **Special privileges:**
-- `hostPID: true` - access to host PID namespace for process instrumentation
-- `privileged: true` - required for eBPF program loading and kernel instrumentation
-- Context propagation capability (`NET_ADMIN`) available but disabled by default in this stack
+- Kubernetes: `hostPID: true` and `privileged: true` for eBPF program loading.
+- OpenShift: `hostPID: true` with the dedicated overlay SCC and the chart's unprivileged eBPF capability set; host network, host ports, and host directory mounts are not granted.
+- Context propagation capability (`NET_ADMIN`) is available but disabled by default in this stack.
 
 ### GPU Exporter (gpu-process-exporter)
 
@@ -164,6 +164,7 @@ Collects GPU utilization metrics for GPU-enabled workloads. Enabled by default.
 - `privileged: true` - runs as root with privileged container
 - Host path mounts: `/` and `/proc` (both read-only) - for NVML libraries and process information
 - Access to GPU device files on host (`/dev/nvidia*`)
+- On OpenShift, the stack overlay creates a release-qualified dedicated SCC and binds it only to the GPU exporter service account. The DaemonSet remains unscheduled unless NVIDIA GPU nodes are present.
 
 ## Standard Prometheus/KSM Components
 

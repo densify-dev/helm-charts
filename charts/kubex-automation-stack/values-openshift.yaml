@@ -54,7 +54,12 @@ kubex-ai-cdi:
       type: RuntimeDefault
 
 gpu-process-exporter:
-  enabled: false
+  enabled: true
 
 beyla:
-  enabled: false
+  enabled: true
+  privileged: false
+  serviceMonitor:
+    enabled: true
+    additionalLabels:
+      app.kubernetes.io/part-of: kubex-automation-stack
