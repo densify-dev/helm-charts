@@ -1,10 +1,10 @@
-{{- if and .Values.openshift.enabled .Values.beyla.enabled }}
+{{- if and .Values.openshift.enabled (index .Values "gpu-process-exporter" "enabled") }}
 apiVersion: security.openshift.io/v1
 kind: SecurityContextConstraints
 metadata:
-  name: kubex-beyla
+  name: {{ .Release.Name }}-gpu-exporter
   labels:
-    app.kubernetes.io/name: kubex-beyla
+    app.kubernetes.io/name: gpu-process-exporter
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/managed-by: Helm
   annotations:
@@ -12,39 +12,42 @@ metadata:
     meta.helm.sh/release-namespace: {{ .Release.Namespace }}
     helm.sh/resource-policy: keep
 allowHostDirVolumePlugin: true
-allowHostNetwork: true
 allowHostPID: true
-allowHostPorts: true
-allowPrivilegedContainer: false
+allowPrivilegedContainer: true
 allowedCapabilities:
-  - BPF
-  - SYS_PTRACE
-  - NET_RAW
-  - CHECKPOINT_RESTORE
-  - DAC_READ_SEARCH
-  - PERFMON
-  - SYS_ADMIN
-readOnlyRootFilesystem: true
+  - '*'
+readOnlyRootFilesystem: false
 runAsUser:
-  type: MustRunAs
-  uid: 0
+  type: RunAsAny
 seLinuxContext:
   type: RunAsAny
 fsGroup:
   type: RunAsAny
 supplementalGroups:
   type: RunAsAny
+volumes:
+  - hostPath
+  - emptyDir
+  - configMap
+  - projected
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: kubex-beyla-scc
+  name: {{ .Release.Name }}-gpu-exporter-scc
+  labels:
+    app.kubernetes.io/name: gpu-process-exporter
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    meta.helm.sh/release-name: {{ .Release.Name }}
+    meta.helm.sh/release-namespace: {{ .Release.Namespace }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: system:openshift:scc:kubex-beyla
+  name: system:openshift:scc:{{ .Release.Name }}-gpu-exporter
 subjects:
   - kind: ServiceAccount
-    name: {{ default "kubex-beyla" .Values.beyla.serviceAccount.name }}
+    name: gpu-process-exporter
     namespace: {{ .Release.Namespace }}
 {{- end }}

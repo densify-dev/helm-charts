@@ -54,7 +54,9 @@ kubex-ai-cdi:
       type: RuntimeDefault
 
 gpu-process-exporter:
-  enabled: false
+  enabled: true
+  prometheusScrape:
+    annotate: true
 
 beyla:
   enabled: true
@@ -67,4 +69,7 @@ beyla:
     - DAC_READ_SEARCH
     - PERFMON
     - SYS_ADMIN
-    - NET_ADMIN
+  serviceMonitor:
+    enabled: true
+    additionalLabels:
+      app.kubernetes.io/part-of: kubex-automation-stack
