@@ -36,6 +36,9 @@ fsGroup:
   type: RunAsAny
 supplementalGroups:
   type: RunAsAny
+volumes:
+  - configMap
+  - projected
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -47,6 +50,6 @@ roleRef:
   name: system:openshift:scc:{{ .Release.Name }}-beyla-scc
 subjects:
   - kind: ServiceAccount
-    name: {{ default "kubex-beyla" .Values.beyla.serviceAccount.name }}
-    namespace: {{ default .Release.Namespace .Values.beyla.namespaceOverride }}
+    name: {{ include "kubex-automation-stack.beylaServiceAccountName" . }}
+    namespace: {{ include "kubex-automation-stack.beylaNamespace" . }}
 {{- end }}

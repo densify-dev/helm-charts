@@ -2,6 +2,32 @@
   {{- default .Release.Namespace .Values.nsPrefix -}}
 {{- end -}}
 
+{{- define "kubex-automation-stack.beylaFullname" -}}
+{{- if .Values.beyla.fullnameOverride -}}
+{{- .Values.beyla.fullnameOverride | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+{{- $name := default "beyla" .Values.beyla.nameOverride -}}
+{{- if contains $name .Release.Name -}}
+{{- .Release.Name | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "kubex-automation-stack.beylaServiceAccountName" -}}
+{{- if .Values.beyla.serviceAccount.create -}}
+{{- default (include "kubex-automation-stack.beylaFullname" .) .Values.beyla.serviceAccount.name -}}
+{{- else -}}
+{{- /* Beyla 1.16.10 omits serviceAccountName when creation is disabled. */ -}}
+default
+{{- end -}}
+{{- end -}}
+
+{{- define "kubex-automation-stack.beylaNamespace" -}}
+{{- default .Release.Namespace .Values.beyla.namespaceOverride -}}
+{{- end -}}
+
 {{- define "kubex-automation-stack.appScrapeConfigs" -}}
 {{- $metricNames := .Values.appMetricNames | default dict -}}
 {{- range $app, $selectors := (.Values.appScrapeConfigs | default dict) -}}

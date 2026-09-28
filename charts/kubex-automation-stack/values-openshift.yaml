@@ -59,6 +59,9 @@ gpu-process-exporter:
 beyla:
   enabled: true
   privileged: false
+  resources:
+    limits:
+      memory: "1Gi"
   serviceMonitor:
     enabled: true
     additionalLabels:
