@@ -2,6 +2,13 @@
 
 All notable changes to the kubex-automation-stack chart will be documented in this file.
 
+## [1.1.19] - 2026-09-28
+
+### Changed
+- Allow node-exporter to schedule on nodes with any taint.
+
+---
+
 ## [1.1.18] - 2026-09-24
 
 ### Changed

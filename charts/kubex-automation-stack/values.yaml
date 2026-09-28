@@ -232,9 +232,7 @@ prometheus:
       seccompProfile:
         type: RuntimeDefault
     tolerations:
-      - key: "kubernetes.io/arch"
-        operator: "Exists"
-        effect: "NoSchedule"
+      - operator: Exists
   server:
     fullnameOverride: kubex-prometheus-server
     tolerations:
