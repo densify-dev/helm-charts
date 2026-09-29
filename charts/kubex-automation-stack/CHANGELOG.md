@@ -2,6 +2,13 @@
 
 All notable changes to the kubex-automation-stack chart will be documented in this file.
 
+## [1.1.20] - 2026-09-29
+
+### Fixed
+- Retain Prometheus targets for the `kubex-automation-stack` release name.
+
+---
+
 ## [1.1.19] - 2026-09-28
 
 ### Changed
