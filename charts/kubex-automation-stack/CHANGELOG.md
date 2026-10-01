@@ -2,12 +2,6 @@
 
 All notable changes to the kubex-automation-stack chart will be documented in this file.
 
-## [1.1.20] - 2026-10-01 
-
-### Changed
-- Updated the kubex-automation-engine dependency to 1.14.1, which removes its default CPU limit.
-- Removed default CPU limits from the stack sizing profiles to prevent CPU throttling.
-
 ## [1.1.19] - 2026-09-28
 
 ### Changed
