@@ -5,7 +5,6 @@ kubex-connector:
       cpu: "250m"
       memory: "256Mi"
     limits:
-      cpu: "1"
       memory: "1Gi"
   relay:
     resources:
@@ -13,7 +12,6 @@ kubex-connector:
         cpu: "250m"
         memory: "256Mi"
       limits:
-        cpu: "1"
         memory: "1Gi"
 kubex-ai-cdi:
   resources:
@@ -21,7 +19,6 @@ kubex-ai-cdi:
       cpu: "500m"
       memory: "512Mi"
     limits:
-      cpu: "2"
       memory: "2Gi"
 prometheus:
   server:
@@ -51,5 +48,4 @@ k8s-ephemeral-storage-metrics:
       cpu: "400m"
       memory: "1Gi"
     limits:
-      cpu: "750m"
       memory: "2Gi"

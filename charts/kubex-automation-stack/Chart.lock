@@ -10,7 +10,7 @@ dependencies:
   version: 1.6.0
 - name: kubex-automation-engine
   repository: https://densify-dev.github.io/helm-charts
-  version: 1.14.0
+  version: 1.14.1
 - name: prometheus
   repository: https://prometheus-community.github.io/helm-charts
   version: 29.21.0
