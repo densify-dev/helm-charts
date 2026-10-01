@@ -9,7 +9,7 @@ The chart includes standard Prometheus and kube-state-metrics components (with t
 - **Kubex Data Collector** (container-optimization-data-forwarder) - collects and forwards metrics from Prometheus to Kubex
 - **Stack-managed Connector and CDI** - provide tunnel access and cluster data operations when enabled
 - **Ephemeral Storage Metrics Collector** - reads node and pod storage data
-- **Beyla** - Detects container application runtimes (Java, Go, Python, Node.js, etc.) (requires privileged mode)
+- **Beyla** - Detects container application runtimes (Java, Go, Python, Node.js, etc.); Kubernetes uses privileged mode, while the OpenShift overlay uses an unprivileged eBPF capability set and dedicated SCC
 - **GPU Exporter** - collects GPU utilization metrics (requires GPU device access and privileged mode)
 - **Node Labeler** (optional) - writes labels to nodes and reads OpenShift machine resources
 - **Node Exporter** - collects hardware and OS metrics from nodes (requires host access)
@@ -21,7 +21,7 @@ The chart includes standard Prometheus and kube-state-metrics components (with t
 | Kubex Data Collector | `kubex-stack-kubex-forwarder` | ClusterRole | API discovery, token/subject reviews, namespaces (get) | ✅ Yes | None |
 | Stack-managed CDI | `kubex-ai-cdi-sa` | ClusterRole + ClusterRoleBinding | core resources, workloads, logs, rollout APIs, Kubex CRDs, self-subject reviews | ✅ Yes | None |
 | Ephemeral Storage | `k8s-ephemeral-storage-metrics` | ClusterRole | nodes, nodes/proxy, nodes/stats, pods (get/list/watch) | ✅ Yes | None |
-| Beyla | `kubex-beyla` | ClusterRole | pods, services, nodes (get/list/watch), replicasets (list/watch) | ✅ Yes | privileged, hostPID |
+| Beyla | `kubex-beyla` | ClusterRole | pods, services, nodes (get/list/watch), replicasets (list/watch) | ✅ Yes | Kubernetes: privileged, hostPID; OpenShift: hostPID and dedicated SCC |
 | GPU Exporter | `gpu-process-exporter` | ClusterRole | pods (get/list/watch) | ✅ Yes | privileged, hostPID, host mounts, device access |
 | Node Labeler | `kubex-node-labeler` | ClusterRole + Role | nodes (get/list/watch/patch/update), events, machines/machinesets (OpenShift) | ❌ No | None |
 | Node Exporter | `kubex-prometheus-node-exporter` | ClusterRole | token/subject reviews (when kube-rbac-proxy enabled) | ✅ Yes | hostNetwork, hostPID, host mounts |
@@ -139,9 +139,9 @@ Detects container application runtimes using eBPF instrumentation. Enabled by de
 **Service Account:** `kubex-beyla` (created when `beyla.serviceAccount.create: true`)
 
 **Special privileges:**
-- `hostPID: true` - access to host PID namespace for process instrumentation
-- `privileged: true` - required for eBPF program loading and kernel instrumentation
-- Context propagation capability (`NET_ADMIN`) available but disabled by default in this stack
+- Kubernetes: `hostPID: true` and `privileged: true` for eBPF program loading.
+- OpenShift: `hostPID: true` with the dedicated overlay SCC and the chart's unprivileged eBPF capability set; host network, host ports, and host directory mounts are not granted.
+- Context propagation is available on Kubernetes but unsupported by the OpenShift overlay because it requires host networking, hostPath mounts, and `NET_ADMIN`, which the OpenShift SCC denies.
 
 ### GPU Exporter (gpu-process-exporter)
 
@@ -164,6 +164,7 @@ Collects GPU utilization metrics for GPU-enabled workloads. Enabled by default.
 - `privileged: true` - runs as root with privileged container
 - Host path mounts: `/` and `/proc` (both read-only) - for NVML libraries and process information
 - Access to GPU device files on host (`/dev/nvidia*`)
+- On OpenShift, the stack overlay creates a release-qualified dedicated SCC and binds it only to the GPU exporter service account. The DaemonSet remains unscheduled unless NVIDIA GPU nodes are present.
 
 ## Standard Prometheus/KSM Components
 
@@ -225,7 +226,7 @@ For detailed upstream documentation:
 
 **Exporter components:**
 - Node Exporter requires host access (`hostNetwork`, `hostPID`) but all mounts are read-only
-- Beyla requires privileged mode and hostPID for runtime detection - enabled by default
+- Beyla requires privileged mode and hostPID on Kubernetes. On OpenShift, it uses hostPID plus the dedicated unprivileged SCC and capability set.
 - GPU exporter requires privileged mode, hostPID, and read-only filesystem access for container-level GPU metrics - enabled by default
 
 **Standard components:**
@@ -386,7 +387,8 @@ kubectl get clusterrolebinding | grep <component-name>
 - Verify access to kubelet stats API: `kubectl get --raw /api/v1/nodes/<node-name>/proxy/stats/summary`
 
 **3. Beyla not detecting application runtimes**
-- Verify privileged mode is enabled: `beyla.privileged: true`
+- Kubernetes: verify privileged mode is enabled with `beyla.privileged: true`.
+- OpenShift: verify the dedicated Beyla SCC is installed and bound to the effective Beyla service account.
 - Check hostPID access in pod spec
 - Review Beyla logs for permission errors
 
@@ -412,7 +414,7 @@ kubectl get clusterrolebinding | grep <component-name>
 3. **Namespace Isolation**: Use dedicated namespaces for monitoring components
 4. **Service Account per Component**: Each sub-chart uses its own service account
 5. **Audit RBAC Changes**: Review permissions before upgrading chart versions
-6. **Monitor Privileged Pods**: Beyla and GPU exporter run privileged - ensure node security policies allow this
+6. **Monitor Privileged Pods**: Beyla runs privileged on Kubernetes; OpenShift uses a dedicated unprivileged SCC. The GPU exporter remains privileged and requires its dedicated SCC.
 
 ### Restricting Permissions
 
@@ -421,7 +423,7 @@ If your environment requires stricter RBAC:
 ```yaml
 # Disable specific components
 beyla:
-  enabled: false  # Disable if privileged pods not allowed
+  enabled: false  # Disable if Beyla runtime detection is not allowed
 
 gpu-process-exporter:
   enabled: false  # Disable if no GPU workloads or privileged pods not allowed

@@ -297,9 +297,9 @@ This chart consists of the following subcharts:
 
 * [Prometheus Community Prometheus chart](https://github.com/prometheus-community/helm-charts/blob/main/charts/prometheus/) - Used on Kubernetes clusters; disabled for OpenShift installs via the OpenShift overlay values file
 
-* [Grafana Beyla chart](https://github.com/grafana/beyla/tree/main/charts/beyla) - Used on Kubernetes clusters to get application runtime information; requires elevated permissions; disabled for OpenShift installs via the OpenShift overlay values file
+* [Grafana Beyla chart](https://github.com/grafana/beyla/tree/main/charts/beyla) - Used on Kubernetes and OpenShift clusters to get application runtime information; OpenShift uses an unprivileged eBPF configuration and a dedicated SCC
 
-* [GPU Process Exporter](../gpu-process-exporter) - Collects container-level metrics for containers using Nvidia GPUs, to overcome the limitations of Nvidia's [DCGM Exporter](https://github.com/NVIDIA/dcgm-exporter) in providing those metrics for use-cases like GPU sharing strategies (e.g. time-slicing, MPS) or the [KAI scheduler](https://github.com/kai-scheduler/KAI-Scheduler); enabled by default and runs **only** on nodes with Nvidia GPUs; requires read-only access to the node and elevated permissions; disabled for OpenShift installs via the OpenShift overlay values file
+* [GPU Process Exporter](../gpu-process-exporter) - Collects container-level metrics for containers using Nvidia GPUs, to overcome the limitations of Nvidia's [DCGM Exporter](https://github.com/NVIDIA/dcgm-exporter) in providing those metrics for use-cases like GPU sharing strategies (e.g. time-slicing, MPS) or the [KAI scheduler](https://github.com/kai-scheduler/KAI-Scheduler); enabled by default and runs **only** on nodes with Nvidia GPUs; requires read-only access to the node and elevated permissions; enabled for OpenShift installs with the OpenShift overlay and its dedicated SCC
 
 * [k8s-ephemeral-storage-metrics](../k8s-ephemeral-storage-metrics) - Collects ephemeral storage metrics for containers.
 
