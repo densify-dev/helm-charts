@@ -12,6 +12,12 @@ metadata:
     {{- include "kubex-automation-engine.labels" $ | nindent 4 }}
 spec:
   scope:
+    {{- with $scopeConfig.containers }}
+    containers:
+      {{- range . }}
+      - {{ . | quote }}
+      {{- end }}
+    {{- end }}
     {{- if $scopeConfig.namespaces }}
     namespaceSelector:
       operator: {{ $scopeConfig.namespaces.operator }}

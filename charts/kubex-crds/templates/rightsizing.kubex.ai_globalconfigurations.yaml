@@ -83,6 +83,13 @@ spec:
                 x-kubernetes-validations:
                 - message: must be greater than 0 seconds
                   rule: duration(self) > duration('0s')
+              multiPolicyContainerRightsizingEnabled:
+                default: false
+                description: |-
+                  multiPolicyContainerRightsizingEnabled controls whether resource policies emit
+                  one recommendation key per policy. Consumers accept both formats regardless
+                  of this setting.
+                type: boolean
               mutationLogInterval:
                 default: 5m
                 description: mutationLogInterval controls how often mutation logs

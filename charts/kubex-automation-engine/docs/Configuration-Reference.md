@@ -8,6 +8,7 @@ This document maps the current Helm chart values to the resources created by the
 - Use [Tuning Guide](./Tuning-Guide.md) for slow-cluster and degraded-environment tuning patterns
 - Use this document to understand which values are required and which CRs Helm creates
 - Use [Policy Configuration](./Policy-Configuration.md) for detailed strategy and scope examples
+- See [Multi-Policy Container Rightsizing](./Multi-Policy-Container-Rightsizing.md) for how container-scoped policies of the same kind contribute to a workload
 - Use [Cluster Automation Strategies](./Cluster-Automation-Strategies.md) and [Cluster Proactive Policies](./Cluster-Proactive-Policies.md) for cluster-scoped CRD field references
 
 ---
@@ -338,6 +339,7 @@ Use [Global Configuration Reference](./Global-Configuration.md) for the CR field
 | `globalConfiguration.kubexAPIRequestTimeout` | `60s` | Timeout for Kubex API requests. Also sets the gateway sidecar `API_REQUEST_TIMEOUT` env var at Helm install/upgrade time; live CR edits do not update the sidecar. |
 | `globalConfiguration.webhookOwnerResolutionRetryTimeout` | `1s` | Pod webhook owner-resolution retry budget |
 | `globalConfiguration.automationEnabled` | `true` | Global enable/disable switch |
+| `globalConfiguration.multiPolicyContainerRightsizingEnabled` | `false` | Use separate recommendation keys so same-kind resource policies can contribute per container/resource. See [Multi-Policy Container Rightsizing](./Multi-Policy-Container-Rightsizing.md). |
 | `globalConfiguration.suppressFetchRecommendations` | `false` | Testing-only fetch suppression |
 | `globalConfiguration.respectKubexAutomation` | `true` | Respect recommendation-level disablement |
 | `globalConfiguration.protectedNamespacePatterns` | `["kube-*","openshift-*","gmp-*"]` | Namespace patterns protected from automation |
@@ -384,6 +386,7 @@ These values apply to Helm-managed recommendation-driven automation only. If you
 | `scope[].namespaces.values` | Namespace selection values |
 | `scope[].podLabels` | Label selector rules converted to `matchLabels` or `matchExpressions` |
 | `scope[].weight` | Policy weight for precedence resolution |
+| `scope[].containers` | Exact container names for the generated `ClusterProactivePolicy`; empty targets all automatable containers |
 
 For the generated resource fields behind these values, see [Cluster Automation Strategies](./Cluster-Automation-Strategies.md) and [Cluster Proactive Policies](./Cluster-Proactive-Policies.md).
 

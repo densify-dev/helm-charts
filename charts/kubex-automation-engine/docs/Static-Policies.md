@@ -18,8 +18,9 @@ Use them when you want deterministic resource values instead of recommendation-d
 | `spec.scope` | none | Optional scope object for workload selection in the same namespace. |
 | `spec.scope.labelSelector` | none | Kubernetes label selector for matching workloads. |
 | `spec.scope.workloadTypes` | `[Deployment, StatefulSet, CronJob, Rollout, Job, AnalysisRun, DaemonSet, Model]` | Workload kinds this policy applies to. Default excludes `StrimziPodSet` only. |
-| `spec.resources.containers` | none | Map of container names to requests and limits. Use `"*"` for all containers. |
-| `spec.weight` | `0` | Higher weight wins when multiple static policies match. |
+| `spec.scope.containers` | all automatable containers | Exact container names. Duplicates, `"*"`, and invalid Kubernetes container names are rejected. Unknown names are allowed. |
+| `spec.resources.containers` | none | Map of container names to requests and limits. Use `"*"` for all scoped containers. |
+| `spec.weight` | `0` | Higher weight takes precedence when same-kind policies compete. |
 | `spec.automationStrategyRef.name` | none | Required namespaced strategy name. |
 
 ## `ClusterStaticPolicy.spec`
@@ -30,8 +31,9 @@ Use them when you want deterministic resource values instead of recommendation-d
 | `spec.scope.workloadTypes` | `[Deployment, StatefulSet, CronJob, Rollout, Job, AnalysisRun, DaemonSet, Model]` | Workload kinds this policy applies to. Default excludes `StrimziPodSet` only. |
 | `spec.scope.namespaceSelector.operator` | none | Namespace selector operator: `In` or `NotIn`. |
 | `spec.scope.namespaceSelector.values` | none | Namespace patterns to include or exclude (supports `*` wildcards, e.g. "prod-*"). Wildcard patterns must be enclosed in double quotes. |
-| `spec.resources.containers` | none | Map of container names to requests and limits. Use `"*"` for all containers. |
-| `spec.weight` | `0` | Higher weight wins when multiple static policies match. |
+| `spec.scope.containers` | all automatable containers | Exact container names. Empty means all automatable containers. |
+| `spec.resources.containers` | none | Map of container names to requests and limits. Use `"*"` for all scoped containers. |
+| `spec.weight` | `0` | Higher weight takes precedence when same-kind policies compete. |
 | `spec.automationStrategyRef.name` | none | Required cluster strategy name. |
 
 ## Example: Namespaced Static Policy
@@ -44,6 +46,9 @@ metadata:
   namespace: team-a
 spec:
   scope:
+    containers:
+      - api
+      - metrics
     labelSelector:
       matchLabels:
         app.kubernetes.io/part-of: storefront
@@ -120,7 +125,8 @@ spec:
 ## Notes
 
 - Use static policies when exact values matter more than recommendation-driven tuning.
-- `resources.containers."*"` applies a default to every container, and named containers can override it.
+- `resources.containers."*"` applies a default to every scoped container, and named values override wildcard values for the same resource.
+- When `scope.containers` is set, entries for other containers are removed and wildcard values expand into each listed name.
 - Container targets include regular containers and native sidecar init containers (`restartPolicy: Always`). One-shot init containers are not automated.
 - `Model` is included in default workload types. Use `spec.scope.workloadTypes: [Model]` when you want to restrict scope to KubeAI `Model` objects only. Recommendations and rollback state are stored on the `Model` owner, then inherited by model-owned pods.
-- When multiple static policies of the same kind match, higher `weight` wins, then older objects win on ties.
+- By default, only one same-kind static policy contributes to a workload. With `globalConfiguration.multiPolicyContainerRightsizingEnabled: true`, separate container/resource targets can come from different policies; `PolicyEvaluation` resolves overlapping targets. See [Multi-Policy Container Rightsizing](./Multi-Policy-Container-Rightsizing.md).
