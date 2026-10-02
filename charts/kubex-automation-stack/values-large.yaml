@@ -1,11 +1,43 @@
 # Use this file for a large k8s cluster (10001+ containers):
+kubex-automation-engine:
+  resources:
+    requests:
+      cpu: "2000m"
+      memory: "4Gi"
+    limits:
+      cpu: null
+      memory: "6Gi"
+  gateway:
+    resources:
+      requests:
+        cpu: "25m"
+        memory: "90Mi"
+      limits:
+        cpu: null
+        memory: "500Mi"
+  compactionScheduler:
+    resources:
+      requests:
+        cpu: "250m"
+        memory: "512Mi"
+      limits:
+        cpu: null
+        memory: "1Gi"
+  compactionDescheduler:
+    resources:
+      requests:
+        cpu: "100m"
+        memory: "512Mi"
+      limits:
+        cpu: null
+        memory: "2Gi"
+
 kubex-connector:
   resources:
     requests:
       cpu: "500m"
       memory: "512Mi"
     limits:
-      cpu: "2"
       memory: "2Gi"
   relay:
     resources:
@@ -13,7 +45,6 @@ kubex-connector:
         cpu: "500m"
         memory: "512Mi"
       limits:
-        cpu: "2"
         memory: "2Gi"
 kubex-ai-cdi:
   resources:
@@ -21,7 +52,6 @@ kubex-ai-cdi:
       cpu: "1"
       memory: "1Gi"
     limits:
-      cpu: "4"
       memory: "4Gi"
 prometheus:
   server:
@@ -51,5 +81,4 @@ k8s-ephemeral-storage-metrics:
       cpu: "600m"
       memory: "2Gi"
     limits:
-      cpu: "1000m"
       memory: "3Gi"
