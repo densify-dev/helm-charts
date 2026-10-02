@@ -1,4 +1,37 @@
 # Use this file for a large k8s cluster (10001+ containers):
+kubex-automation-engine:
+  resources:
+    requests:
+      cpu: "400m"
+      memory: "4Gi"
+    limits:
+      cpu: null
+      memory: "6Gi"
+  gateway:
+    resources:
+      requests:
+        cpu: "25m"
+        memory: "90Mi"
+      limits:
+        cpu: null
+        memory: "500Mi"
+  compactionScheduler:
+    resources:
+      requests:
+        cpu: "250m"
+        memory: "512Mi"
+      limits:
+        cpu: null
+        memory: "1Gi"
+  compactionDescheduler:
+    resources:
+      requests:
+        cpu: "100m"
+        memory: "512Mi"
+      limits:
+        cpu: null
+        memory: "2Gi"
+
 kubex-connector:
   resources:
     requests:
