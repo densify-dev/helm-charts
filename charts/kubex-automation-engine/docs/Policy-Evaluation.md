@@ -6,7 +6,9 @@ This is a cluster-scoped singleton resource named `policy-evaluation`.
 
 ## Default Behavior
 
-By default, rollback policies take precedence over all other policy types:
+By default, rollback policies take precedence over all other policy types.
+
+The manifest below is the **complete chart-generated reference** for default policy precedence, not a usage example. `StaticPolicy` and `ClusterStaticPolicy` remain because they are actual chart defaults. Removing them would misrepresent the chart.
 
 ```yaml
 apiVersion: rightsizing.kubex.ai/v1alpha1
@@ -37,7 +39,9 @@ spec:
     priority: 70
 ```
 
-Higher priority values win. Within the same priority, the policy with the highest weight wins. If weights are also equal, the most recently created policy wins. `ContainerArgsPolicy` uses this same selection order; its default priority is 100 and only one matching argument policy is selected.
+Higher priority values win. Within the same priority, the policy with the highest weight wins. For a resource, an exact container target wins over the wildcard target `"*"`. If those values are equal, the older policy wins only when both recommendations come from the same policy kind. The annotation key breaks all remaining ties, with the lexically smaller key winning. `ContainerArgsPolicy` uses this same selection order; its default priority is 100 and only one matching argument policy is selected.
+
+Creation timestamps are added only to per-policy resource recommendations when multi-policy container rightsizing is enabled. Fixed-key resource recommendations and pod runtime hook recommendations keep their existing payload format.
 
 ### Priority Field
 
@@ -45,21 +49,18 @@ Higher priority values win. Within the same priority, the policy with the highes
 
 ## Common Configurations
 
-### Favor Rollback Policies Over Proactive, GPU, and Fixed Values
+### Favor Rollback Policies Over Proactive Policies
 
-To make rollback recommendation-driven automation take precedence, start from the **Default Behavior** manifest above and change the priorities:
+To prefer rollback recommendations over proactive recommendations, start from the **Default Behavior** reference above and set the priorities:
 
-- Set `RollbackPolicy` and `ClusterRollbackPolicy` to a value higher than all other policy types
-- Set `ProactivePolicy` and `ClusterProactivePolicy` below the rollback priority
-- Set `StaticPolicy` and `ClusterStaticPolicy` below the rollback priority
+- Set `RollbackPolicy` and `ClusterRollbackPolicy` to `priority: 130`
+- Set `ProactivePolicy` and `ClusterProactivePolicy` to `priority: 70`
 
 ### Favor Namespace Policies Over Cluster Policies
 
-To prefer namespace-scoped policies, start from the **Default Behavior** manifest above and change the priorities:
+To prefer namespace-scoped proactive policies over cluster-scoped proactive policies, start from the **Default Behavior** reference above and change the priorities:
 
-- Set `StaticPolicy` to `priority: 100`
 - Set `ProactivePolicy` to `priority: 90`
-- Set `ClusterStaticPolicy` to `priority: 80`
 - Set `ClusterProactivePolicy` to `priority: 70`
 
 ## Helm Configuration
@@ -88,15 +89,15 @@ kubectl apply -f custom-policy-evaluation.yaml
 
 ## Selection Examples
 
-Note: `priority` is set in the `PolicyEvaluation` CR and applies to all policies of that type. `weight` is set on each individual policy resource (e.g., `spec.weight` on a `StaticPolicy` or `ProactivePolicy`). See [Policy Configuration Guide](./Policy-Configuration.md) for how to set `weight` on policy resources.
+Note: `priority` is set in the `PolicyEvaluation` CR and applies to all policies of that type. `weight` is set on each individual policy resource, such as `spec.weight` on a `ProactivePolicy`. See [Policy Configuration Guide](./Policy-Configuration.md) for how to set `weight` on policy resources.
 
 **Example 1 - Default precedence:**
 - `RollbackPolicy` with `spec.weight: 50` (type has `priority: 130` in `PolicyEvaluation`)
 - `GpuReactivePolicy` with `spec.weight: 10` (type has `priority: 120` in `PolicyEvaluation`)
-- `StaticPolicy` with `spec.weight: 50` (type has `priority: 90` in `PolicyEvaluation`)
+- `ClusterProactivePolicy` with `spec.weight: 50` (type has `priority: 70` in `PolicyEvaluation`)
 - `ProactivePolicy` with `spec.weight: 100` (type has `priority: 70` in `PolicyEvaluation`)
 
-Winner: `RollbackPolicy` (policy-type priority 130 > 120 > 90 > 70, individual policy weight doesn't matter)
+Winner: `RollbackPolicy` because its policy-type priority of 130 exceeds 120 and 70, regardless of individual policy weight.
 
 **Example 2 - Same policy type, different weights:**
 - `ProactivePolicy` named `policy-a` with `spec.weight: 50`
@@ -106,30 +107,42 @@ Winner: `policy-b` (same policy-type priority, higher policy weight 100 > 50)
 
 **Example 3 - Equal priority (custom configuration):**
 
-If you've configured equal priority for static and proactive policies in `PolicyEvaluation`:
+If you've configured equal priority for cluster-scoped and namespaced proactive policies in `PolicyEvaluation`:
 
 ```yaml
 precedence:
-- type: StaticPolicy
+- type: ClusterProactivePolicy
   priority: 80
 - type: ProactivePolicy
   priority: 80
 ```
 
 And both match the same workload:
-- `StaticPolicy` with `spec.weight: 50`
+- `ClusterProactivePolicy` with `spec.weight: 50`
 - `ProactivePolicy` with `spec.weight: 100`
 
 Winner: `ProactivePolicy` (equal policy-type priority, so individual policy weight breaks the tie: 100 > 50)
 
-**Example 4 - Equal priority and equal weight (creation-time tiebreaker):**
+**Example 4 - Same policy kind, equal priority and equal weight:**
 
-If priorities and weights are both equal, selection falls back to creation time (based on `metadata.creationTimestamp`): the most recently created policy wins.
+If priorities, weights, and container targets are equal, selection uses creation time for recommendations from the same policy kind. The older policy wins. Legacy payloads without a timestamp rank as older than timestamped payloads.
 
-- `StaticPolicy` with `spec.weight: 80`, created at 10:00
-- `ProactivePolicy` with `spec.weight: 80`, created at 11:00
+With `multiPolicyContainerRightsizingEnabled: true`, both policies can publish recommendations for the same target:
 
-Winner: `ProactivePolicy` (equal priority, equal weight — most recently created policy wins)
+- `ProactivePolicy` named `policy-a` with `spec.weight: 80`, created at 10:00
+- `ProactivePolicy` named `policy-b` with `spec.weight: 80`, created at 11:00
+
+Winner: `policy-a` because it has the older creation time. Recommendations from different policy kinds use the annotation key instead of comparing creation times.
+
+## Multi-policy composition
+
+When `GlobalConfiguration.spec.multiPolicyContainerRightsizingEnabled` is true, resource policies write policy-owned recommendation keys. `PolicyEvaluation` selects each container, request or limit, and resource independently, so same-kind policies can contribute separate targets. Ranking is policy-type priority, policy weight, exact container target over `"*"`, older creation time for equal-ranked policies of the same kind, then the lexically smaller annotation key. This can combine CPU, memory, and GPU values from different policies in one plan.
+
+With the default setting (`false`), resource policies of the same kind share fixed annotation keys, so only one contributes to a workload. See [Multi-Policy Container Rightsizing](./Multi-Policy-Container-Rightsizing.md) for a two-container example and key-transition details.
+
+The controller executes the selected actions only when they share an allowed method. One scheduling-window rejection blocks the full controller plan until the earliest next allowed time. Admission uses the same selected resources and safety checks but does not evaluate scheduling windows.
+
+Combined requests and limits are validated without clamping. A request above a limit blocks the plan. Selected GPU actions also must agree on KAI mode, target container, allocation, and queue behavior.
 
 ## Verification
 

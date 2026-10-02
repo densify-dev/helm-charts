@@ -108,6 +108,7 @@ This guide covers:
 | **[Global Configuration Reference](./docs/Global-Configuration.md)** | Field-by-field reference for the `GlobalConfiguration` custom resource |
 | **[Policy Configuration](./docs/Policy-Configuration.md)** | Configure strategies, policy scope, precedence, and Helm-managed policy generation |
 | **[Policy Evaluation Reference](./docs/Policy-Evaluation.md)** | Policy type precedence configuration via the `PolicyEvaluation` singleton |
+| **[Multi-Policy Container Rightsizing](./docs/Multi-Policy-Container-Rightsizing.md)** | How same-kind resource policies contribute to separate container/resource targets |
 | **[Object Patches](./docs/Object-Patches.md)** | Apply JSON Merge Patch and selector-aware add, remove, or replace operations to arbitrary objects |
 | **[Rollback Backoff](./docs/Rollback-Backoff.md)** | Customer-facing guide to rollback retry windows, turn progression, and terminal outcomes |
 | **[GPU Sharing with KAI](./docs/GPU-Sharing-with-KAI.md)** | Configure KAI-backed GPU sharing, reactive rightsizing, and early consolidation |

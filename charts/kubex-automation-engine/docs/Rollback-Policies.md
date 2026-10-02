@@ -123,6 +123,10 @@ Restores the original resource settings defined in the workload manifest. This i
 
 Use when you want predictable, deterministic rollback behavior that always returns to the manifest values.
 
+## Recommendation key changes
+
+Rollback fingerprints include the physical recommendation annotation key. Enabling or disabling `GlobalConfiguration.spec.multiPolicyContainerRightsizingEnabled` can move an otherwise unchanged recommendation between a fixed key and a hashed policy-owned key. Rollback treats that conversion as a new recommendation and restarts its normal monitoring path. No rollback-state migration occurs.
+
 ## Adoption Threshold
 
 The `adoptionThresholdPercent` field determines what percentage of the workload cohort (e.g., all pods in a Deployment) must successfully adopt the active recommendation fingerprint before monitoring is considered successful.
