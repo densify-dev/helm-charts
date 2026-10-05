@@ -319,10 +319,10 @@ prometheus:
           target_label: namespace
         - source_labels: [__meta_kubernetes_service_name, __meta_kubernetes_pod_container_port_number]
           action: drop
-          regex: '(kubex|densify)-kube-state-metrics;8081'
+          regex: '(kubex|densify|kubex-automation-stack)-kube-state-metrics;8081'
         - source_labels: [__meta_kubernetes_endpointslice_name]
           action: keep
-          regex: '((kubex|densify)-(kube-state-metrics|prometheus-node-exporter|ephemeral-storage-collector|beyla)|gpu-process-exporter|.*dcgm|k8s-ephemeral-storage-metrics).*'
+          regex: '((kubex|densify|kubex-automation-stack)-(kube-state-metrics|prometheus-node-exporter|ephemeral-storage-collector|beyla)|gpu-process-exporter|.*dcgm|k8s-ephemeral-storage-metrics).*'
         - source_labels: [__meta_kubernetes_service_name]
           action: replace
           target_label: service
