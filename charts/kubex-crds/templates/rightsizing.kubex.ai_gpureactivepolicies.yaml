@@ -326,6 +326,16 @@ spec:
                 description: scope narrows the workloads and namespaces this policy
                   applies to.
                 properties:
+                  containers:
+                    description: containers limits the policy to exact Kubernetes
+                      container names. Empty means all automatable containers.
+                    items:
+                      maxLength: 63
+                      minLength: 1
+                      pattern: ^[a-z0-9]([-a-z0-9]*[a-z0-9])?$
+                      type: string
+                    type: array
+                    x-kubernetes-list-type: set
                   labelSelector:
                     description: labelSelector limits the workload objects (e.g.,
                       Deployments, CronJobs) this policy applies to.

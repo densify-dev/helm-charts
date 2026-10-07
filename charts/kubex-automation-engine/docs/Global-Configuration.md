@@ -20,6 +20,7 @@ Use it to control recommendation refresh timing, proactive rescans, heartbeat re
 | `spec.kubexAPIRequestTimeout` | `60s` | Timeout for Kubex API requests. |
 | `spec.webhookOwnerResolutionRetryTimeout` | `1s` | How long the pod admission webhook retries owner recommendation resolution before continuing without owner annotations. |
 | `spec.automationEnabled` | `true` | Global on or off switch for automation behavior. |
+| `spec.multiPolicyContainerRightsizingEnabled` | `false` | When true, same-kind resource policies use separate keys and can contribute to different container/resource targets. See [Multi-Policy Container Rightsizing](./Multi-Policy-Container-Rightsizing.md). |
 | `spec.suppressFetchRecommendations` | `false` | Testing-oriented switch to suppress recommendation fetches. |
 | `spec.respectKubexAutomation` | `true` | Ignores recommendations marked with `KubexAutomation=false`. |
 | `spec.protectedNamespacePatterns` | `["kube-*","openshift-*","gmp-*"]` | Namespace glob patterns protected from automation. |
@@ -69,6 +70,7 @@ spec:
   kubexAPIRequestTimeout: 60s
   webhookOwnerResolutionRetryTimeout: 1s
   automationEnabled: true
+  multiPolicyContainerRightsizingEnabled: false
   suppressFetchRecommendations: false
   respectKubexAutomation: true
   protectedNamespacePatterns:
@@ -113,6 +115,7 @@ The chart creates a default `GlobalConfiguration` when `globalConfiguration.enab
 | `globalConfiguration.kubexAPIRequestTimeout` | `spec.kubexAPIRequestTimeout` | Falls back to legacy value if unset |
 | `globalConfiguration.webhookOwnerResolutionRetryTimeout` | `spec.webhookOwnerResolutionRetryTimeout` | Direct mapping |
 | `globalConfiguration.automationEnabled` | `spec.automationEnabled` | Direct mapping |
+| `globalConfiguration.multiPolicyContainerRightsizingEnabled` | `spec.multiPolicyContainerRightsizingEnabled` | Disabled by default. Changing it rescans all static, proactive, and GPU reactive policies. |
 | `globalConfiguration.suppressFetchRecommendations` | `spec.suppressFetchRecommendations` | Direct mapping |
 | `globalConfiguration.respectKubexAutomation` | `spec.respectKubexAutomation` | Direct mapping |
 | `globalConfiguration.protectedNamespacePatterns` | `spec.protectedNamespacePatterns` | Supports `*` wildcard matching. Wildcard patterns must be enclosed in double quotes (e.g., "kube-*"). |
@@ -135,6 +138,14 @@ Legacy `deployment.controllerEnv` values still act as fallbacks for the default 
 | `deployment.controllerEnv.apiRequestTimeout` | `spec.kubexAPIRequestTimeout` |
 
 If both the new `globalConfiguration.*` value and the legacy value are set, the `globalConfiguration.*` value wins.
+
+## Multi-policy annotation keys
+
+When `multiPolicyContainerRightsizingEnabled` is false, resource policies use their fixed legacy request and limit annotation keys. When true, each policy writes keys shaped like `<policy-prefix>/h<digest>-desired-resource-requests` and `<policy-prefix>/h<digest>-desired-resource-limits`. GPU reactive policies use the same digest for baseline state.
+
+A flag change converts each workload in one Kubernetes patch. Conversion across the cluster is eventual because policy reconcilers process workloads independently. Readers accept fixed and hashed keys throughout the transition. A selected recommendation that changes key restarts rollback monitoring because rollback fingerprints remain key-sensitive.
+
+Each matching policy adds up to two annotations, or three for GPU reactive state. Kubernetes limits total annotation data on an object to 256 KiB. Keep the number and payload size of overlapping policies within that limit.
 
 ## Heartbeat Reporting
 
@@ -180,4 +191,5 @@ kubectl get globalconfiguration global-config -o yaml
 
 - For cluster-wide operating guidance, see [Advanced Configuration](./Advanced-Configuration.md).
 - For Helm values, see [Configuration Reference](./Configuration-Reference.md).
+- For same-kind policies with separate container scopes, see [Multi-Policy Container Rightsizing](./Multi-Policy-Container-Rightsizing.md).
 - For protected namespaces and recommendation filtering, see [Safety Controls Reference](./Safety-Controls.md).
