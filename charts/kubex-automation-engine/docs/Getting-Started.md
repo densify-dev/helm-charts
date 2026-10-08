@@ -94,7 +94,6 @@ Container resource requests and limits should be adjusted based on the number of
 | Resource       | Small (0-1K) | Medium (1K-10K) | Large (10K+) |
 |----------------|--------------|-----------------|--------------|
 | CPU Request    | 25m          | 200m            | 400m         |
-| CPU Limit      | -            | -               | -            |
 | Memory Request | 500Mi        | 2Gi             | 4Gi          |
 | Memory Limit   | 1Gi          | 4Gi             | 6Gi          |
 
@@ -103,7 +102,6 @@ Container resource requests and limits should be adjusted based on the number of
 | Resource       | Small (0-1K) | Medium (1K-10K) | Large (10K+) |
 |----------------|--------------|-----------------|--------------|
 | CPU Request    | 15m          | 15m             | 25m          |
-| CPU Limit      | -            | -               | -            |
 | Memory Request | 40Mi         | 60Mi            | 90Mi         |
 | Memory Limit   | 250Mi        | 350Mi           | 500Mi        |
 

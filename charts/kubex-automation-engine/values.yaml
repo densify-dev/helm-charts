@@ -79,6 +79,13 @@ cleanup:
     capabilities:
       drop:
         - "ALL"
+  # -- Resource requests and limits for the pre-delete cleanup job
+  resources:
+    requests:
+      cpu: 10m
+      memory: 32Mi
+    limits:
+      memory: 64Mi
 
 # -- Image pull secrets for private registries
 # Example:
@@ -211,7 +218,6 @@ gateway:
   # -- Resource limits and requests for the gateway sidecar
   resources:
     limits:
-      cpu: 200m
       memory: 256Mi
     requests:
       cpu: 10m
@@ -280,7 +286,6 @@ selfSignedCert:
 
 resources:
   limits:
-    cpu: 500m
     memory: 2Gi
   requests:
     cpu: 10m
@@ -446,7 +451,6 @@ compactionScheduler:
         - "ALL"
   resources:
     limits:
-      cpu: 200m
       memory: 256Mi
     requests:
       cpu: 25m
@@ -471,7 +475,6 @@ compactionDescheduler:
   securityContext: {}
   resources:
     limits:
-      cpu: 200m
       memory: 256Mi
     requests:
       cpu: 25m
