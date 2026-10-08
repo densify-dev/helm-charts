@@ -131,9 +131,4 @@ spec:
         - name: HELM_RELEASE_NAME
           value: {{ .Release.Name }}
         resources:
-          requests:
-            cpu: 10m
-            memory: 32Mi
-          limits:
-            cpu: 100m
-            memory: 64Mi
+          {{- toYaml .Values.cleanup.resources | nindent 10 }}
