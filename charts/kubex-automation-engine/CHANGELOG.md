@@ -2,7 +2,7 @@
 
 All notable changes to the Kubex Automation Engine Helm chart will be documented in this file.
 
-## [1.15.0] - 2026-10-05
+## [1.15.0] - 2026-10-08
 
 ### Added
 - Multi-policy container rightsizing: multiple policies of the same kind can now manage different containers of the same workload. Opt in with `globalConfiguration.multiPolicyContainerRightsizingEnabled`, and use the new `scope.containers` field to target specific containers.
