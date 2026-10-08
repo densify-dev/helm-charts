@@ -2,7 +2,15 @@
 
 All notable changes to the Kubex Automation Engine Helm chart will be documented in this file.
 
-## [1.15.0] - 2026-10-08
+## [1.15.1] - 2026-10-08
+
+### Changed
+- CPU limits are no longer set by default on the controller, gateway, and compaction components, so they are no longer CPU-throttled. Memory limits and CPU requests are unchanged.
+- The pre-delete cleanup job's resources are now configurable through `cleanup.resources`.
+
+---
+
+## [1.15.0] - 2026-10-05
 
 ### Added
 - Multi-policy container rightsizing: multiple policies of the same kind can now manage different containers of the same workload. Opt in with `globalConfiguration.multiPolicyContainerRightsizingEnabled`, and use the new `scope.containers` field to target specific containers.

@@ -197,6 +197,7 @@ secondaryCluster:
 | `gateway.securityContext` | chart default | Gateway sidecar container security context |
 | `cleanup.podSecurityContext` | `{}` | Optional pod security context for the pre-delete cleanup job |
 | `cleanup.securityContext` | chart default | Container security context for the pre-delete cleanup job |
+| `cleanup.resources` | requests `cpu: 10m`, `memory: 32Mi`; limits `memory: 64Mi` | Resource requests and limits for the pre-delete cleanup job |
 
 ### Additional Early Pod Mutation
 
