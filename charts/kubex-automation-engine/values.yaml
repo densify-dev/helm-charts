@@ -4,7 +4,7 @@ crdCheck:
   skip: false
   # Minimum version of the kubex-crds chart required before this chart can be installed/upgraded.
   # Bump this whenever a new CRD field or schema change is required.
-  minCRDsHelmVersion: "1.14.0"
+  minCRDsHelmVersion: "1.15.0"
 # -- Whether to create the kubex-gateway-config Secret automatically
 createSecrets: true
 
@@ -61,14 +61,14 @@ image:
   # -- Image pull policy
   pullPolicy: IfNotPresent
   # -- Image tag
-  tag: "1.14.0"
+  tag: "1.15.0"
 
 cleanup:
   image:
     # -- Image repository for the pre-delete cleanup job.
     repository: "densify/kubex-automation-cleanup"
     # -- Image tag for the pre-delete cleanup job. Defaults to the controller image tag.
-    tag: "1.14.0"
+    tag: "1.15.0"
     # -- Image pull policy for the pre-delete cleanup job.
     pullPolicy: "IfNotPresent"
   # -- Optional pod security context for the pre-delete cleanup job
@@ -368,6 +368,8 @@ globalConfiguration:
   proposalSyncInterval: "1m"
   # -- Whether automation is globally enabled
   automationEnabled: true
+  # -- Emit one rightsizing recommendation annotation per resource policy
+  multiPolicyContainerRightsizingEnabled: false
   # -- Whether proposal sync runs; when false, proposal-managed resources are deleted
   proposalSyncEnabled: true
   # -- Suppress fetching recommendations from gateway (testing only)
@@ -525,6 +527,7 @@ scope: []
   # - name: base-optimization-scope    # Unique scope name
   #   policy: base-optimization         # Policy name (optional - uses defaultPolicy if omitted)
   #   weight: 0                         # Policy weight (higher = higher priority)
+#   containers: ["app", "sidecar"]    # Exact container names; empty targets all automatable containers
   #   namespaces:                       # Mandatory - defines which namespaces to include/exclude
   #     operator: NotIn                 # Options: In | NotIn
   #     values:

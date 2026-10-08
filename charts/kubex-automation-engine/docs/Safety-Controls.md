@@ -41,10 +41,11 @@ How to interpret `retry` in the context of this document:
 | `pause-active` | pre-check | `spec.safetyChecks.enablePauseUntilAnnotationCheck` | Blocks whole pod when pod-scoped `rightsizing.kubex.ai/pause-until` is active (`infinite` or future RFC3339 time) on pod or pod namespace. New pods can inherit pod-scoped pause annotations from supported workload owners, and existing owned pods are reconciled to same inherited pause state. Namespace pause annotations are evaluated at runtime only and are not copied onto pods. Pod-local pause annotations remain valid and take precedence over namespace pauses. | no retry from check itself | `automation paused by annotation` or `automation paused: <pause-reason>` |
 | `resource-quota-exceeded` | pre-check | `spec.safetyChecks.enableResourceQuotaFilter` | Blocks if projected pod resources would exceed applicable `ResourceQuota` | no retry from check itself | `resource quota exceeded (ResourceQuota/<name>)` |
 | `requests-exceed-limits` | final plan consistency pre-check | always on | Blocks when the filtered resize plan would leave a desired request above the effective desired/current limit | no retry from check itself | `desired request <x> exceeds limit <y> (container=<name>, resource=<resource>)` |
+| `common-resize-method` | controller plan pre-check | always on (controller path) | Blocks the entire controller resize plan when its remaining actions share neither in-place resize nor eviction. For example, a remaining in-place-only action and an eviction-only action have no common method. | non-retryable; no requeue from check itself | `selected actions have no common in-place resize or eviction method` |
 | `min-ready-duration-not-met` | final health pre-check | `spec.safetyChecks.minReadyDuration` | Blocks until pod has been Ready for at least `minReadyDuration` | retryable: uses remaining ready time when pod is Ready but elapsed Ready time is below `spec.safetyChecks.minReadyDuration`; uses `spec.safetyChecks.resizeRetryInterval` when pod is not Ready or ready transition time is unknown | `pod not ready` or `pod ready for ... (<...)` |
 | `owner-pods-not-ready` | final health pre-check | `spec.safetyChecks.requireOwnerPodsReady` | Blocks when any owner pod is not Ready | retryable: uses `spec.safetyChecks.resizeRetryInterval` | `owner pod <name> not ready` |
 | `max-unavailable-exceeded` | final health pre-check | `spec.safetyChecks.respectWorkloadMaxUnavailable` | Blocks when another unavailable pod would exceed owner workload `maxUnavailable` | retryable: uses `spec.safetyChecks.resizeRetryInterval` | `maxUnavailable <n> exceeded` |
-| `too-many-requests` | execution retry guard | `spec.podEviction.retryPodDisruptionBudget` | Blocks when eviction is rejected with API `429 TooManyRequests`, for example PodDisruptionBudget rejection or API throttling | retryable when enabled: requeues using `spec.safetyChecks.resizeRetryInterval` | `resize blocked by too many requests (...)` |
+| `too-many-requests` | execution retry guard | `spec.podEviction.retryPodDisruptionBudget` | Blocks when eviction is rejected with API `429 TooManyRequests`, for example PodDisruptionBudget rejection or API throttling | retryable only when every strategy in the final eviction plan enables it | `resize blocked by too many requests (...)` |
 | `recommendation-too-old` | proactive recommendation guard | `ProactivePolicy.spec.safetyChecks.maxAnalysisAgeDays` / `ClusterProactivePolicy.spec.safetyChecks.maxAnalysisAgeDays` | Strips out recommendations coming from Kubex when they are too old | not a pod requeue check; summary guard | `recommendation too old` |
 
 For hook-only `ContainerArgsPolicy` convergence, when no `AutomationStrategy` resolves, the controller uses a 30-second fallback for `safetyChecks.resizeRetryInterval`. A resolved strategy interval remains authoritative.
@@ -72,15 +73,17 @@ For hook-only `ContainerArgsPolicy` convergence, when no `AutomationStrategy` re
 2. Apply `automation-strategy-disabled`.
 3. Run early pre-checks: `pod-terminating`, `namespace-protected`, optional `pause-active`, optional `resource-quota-exceeded`.
 4. Apply pod action filters: `change-below-threshold`, `container-skip-active`, `hpa-resource-managed`, `vpa-resource-managed`, `node-capacity-insufficient`, `pod-limit-range-violated`.
-5. Run final non-retryable plan consistency checks: `requests-exceed-limits`.
-6. Run final retryable health checks: `min-ready-duration-not-met`, `owner-pods-not-ready`, `max-unavailable-exceeded`.
-7. Execute in-place resize or eviction if actions remain.
+5. Run final non-retryable plan consistency checks: `requests-exceed-limits`, `gpu-plan-consistency`, and controller-only `common-resize-method`.
+6. If any remaining action is outside its scheduling window, retain the filter summary, block the full controller plan, and requeue for the earliest allowed time.
+7. Run final retryable health checks: `min-ready-duration-not-met`, `owner-pods-not-ready`, `max-unavailable-exceeded`.
+8. Execute in-place resize or eviction if actions remain.
 
 Notes:
 
 - Workload policy recommendation generation also applies `limit-range-violated` before owner annotations are written.
 - The webhook evaluation path runs `namespace-protected`, `pause-active`, and `resource-quota-exceeded`.
-- `pod-terminating` and the final retryable health checks are controller-side.
+- `pod-terminating`, scheduling windows, `common-resize-method`, and the final retryable health checks are controller-side.
+- Pod-wide safety settings use the strictest value among strategies that supplied selected actions. Boolean checks use logical OR, minimum percentages and readiness durations use the larger value, and losing candidates do not contribute.
 
 ## Reading `failedChecks` and `appliedFilters`
 

@@ -152,13 +152,16 @@ Recommendation annotations use **policy prefixes** to indicate their source:
 | `cwstatic.rightsizing.kubex.ai/desired-resource-requests` | From ClusterStaticPolicy (cluster-scoped) - cluster-wide static recommendations |
 | `proactive.rightsizing.kubex.ai/desired-resource-requests` | From ProactivePolicy (namespace-scoped) - recommendations from Kubex platform analysis |
 | `cwproactive.rightsizing.kubex.ai/desired-resource-requests` | From ClusterProactivePolicy (cluster-scoped) - cluster-wide proactive recommendations |
-| `gpureactive.rightsizing.kubex.ai/desired-resource-requests` | From GPU reactive policies - GPU-specific recommendations |
+| `gpureactive.rightsizing.kubex.ai/desired-resource-requests` | Fixed key from a GPU reactive policy |
+| `<type>.rightsizing.kubex.ai/h<digest>-desired-resource-requests` | Policy-owned key used when multi-policy container rightsizing is enabled |
 | `rollbackpolicy.rightsizing.kubex.ai/desired-resource-requests` | From RollbackPolicy - controller is rolling back to these values |
 
 **Naming convention**: 
 - No prefix = namespace-scoped policy
 - `cw` prefix (cluster-wide) = cluster-scoped policy
-- Same applies to `desired-resource-limits` annotations
+- The same fixed and hashed forms apply to `desired-resource-limits` annotations.
+- Consumers always read both forms. During a feature-flag transition, one workload may contain a mix while each policy converts its own annotations.
+- Treat exact annotation names as internal. Filter for `rightsizing.kubex.ai/` plus `desired-resource-requests` or `desired-resource-limits`, then inspect `policyKind`, `policyNamespace`, and `policyName` in the JSON payload.
 
 **Example on a pod:**
 ```bash
@@ -166,18 +169,25 @@ Recommendation annotations use **policy prefixes** to indicate their source:
 kubectl get pod my-app-abc123 -o jsonpath='{.metadata.annotations}' | jq 'with_entries(select(.key | contains("desired-resource")))'
 ```
 
-Output:
+#### Multi-policy container rightsizing disabled
+
 ```json
 {
-  "proactive.rightsizing.kubex.ai/desired-resource-requests": "{\"app\":{\"cpu\":\"500m\",\"memory\":\"1Gi\"}}",
-  "proactive.rightsizing.kubex.ai/desired-resource-limits": "{\"app\":{\"memory\":\"1Gi\"}}"
+  "proactive.rightsizing.kubex.ai/desired-resource-requests": "{\"policyName\":\"team-a\",\"policyNamespace\":\"production\",\"policyAPIVersion\":\"rightsizing.kubex.ai/v1alpha1\",\"policyKind\":\"ProactivePolicy\",\"containers\":{\"app\":{\"cpu\":\"500m\",\"memory\":\"1Gi\"}}}",
+  "proactive.rightsizing.kubex.ai/desired-resource-limits": "{\"policyName\":\"team-a\",\"policyNamespace\":\"production\",\"policyAPIVersion\":\"rightsizing.kubex.ai/v1alpha1\",\"policyKind\":\"ProactivePolicy\",\"containers\":{\"app\":{\"memory\":\"1Gi\"}}}"
 }
 ```
 
-**Interpretation**: 
-- A ProactivePolicy evaluated this pod and wants to set CPU to 500m and memory to 1Gi for the "app" container
-- Memory limit is also being managed
-- Missing annotations indicate either no policy matched the pod or recommendations haven't been generated
+#### Multi-policy container rightsizing enabled
+
+```json
+{
+  "proactive.rightsizing.kubex.ai/h0123456789abcdef0123456789abcdef-desired-resource-requests": "{\"policyName\":\"team-a\",\"policyNamespace\":\"production\",\"policyAPIVersion\":\"rightsizing.kubex.ai/v1alpha1\",\"policyKind\":\"ProactivePolicy\",\"containers\":{\"app\":{\"cpu\":\"500m\",\"memory\":\"1Gi\"}}}",
+  "proactive.rightsizing.kubex.ai/h0123456789abcdef0123456789abcdef-desired-resource-limits": "{\"policyName\":\"team-a\",\"policyNamespace\":\"production\",\"policyAPIVersion\":\"rightsizing.kubex.ai/v1alpha1\",\"policyKind\":\"ProactivePolicy\",\"containers\":{\"app\":{\"memory\":\"1Gi\"}}}"
+}
+```
+
+**Interpretation**: With multi-policy container rightsizing disabled, this ProactivePolicy uses fixed request and limit keys. When enabled, it uses policy-owned hashed keys for both. In either case, it recommends 500m CPU and 1Gi memory requests for the "app" container, plus a 1Gi memory limit. Missing annotations indicate that no policy matched the pod or recommendations haven't been generated.
 
 ### Interpreting Automation State Annotation
 
