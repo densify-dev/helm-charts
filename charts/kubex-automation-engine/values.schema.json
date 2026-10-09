@@ -204,6 +204,9 @@
         },
         "securityContext": {
           "type": "object"
+        },
+        "resources": {
+          "$ref": "#/definitions/resources"
         }
       }
     },
@@ -433,6 +436,22 @@
         }
       }
     },
+    "compactionScheduler": {
+      "type": "object",
+      "properties": {
+        "resources": {
+          "$ref": "#/definitions/resources"
+        }
+      }
+    },
+    "compactionDescheduler": {
+      "type": "object",
+      "properties": {
+        "resources": {
+          "$ref": "#/definitions/resources"
+        }
+      }
+    },
     "scope": {
       "type": "array",
       "items": {
@@ -497,10 +516,10 @@
       "type": "object",
       "properties": {
         "cpu": {
-          "type": "string"
+          "type": ["string", "null"]
         },
         "memory": {
-          "type": "string"
+          "type": ["string", "null"]
         }
       }
     }
