@@ -5,7 +5,6 @@ kubex-automation-engine:
       cpu: "25m"
       memory: "500Mi"
     limits:
-      cpu: null
       memory: "1Gi"
   gateway:
     resources:
@@ -13,7 +12,6 @@ kubex-automation-engine:
         cpu: "15m"
         memory: "40Mi"
       limits:
-        cpu: null
         memory: "250Mi"
   compactionScheduler:
     resources:
