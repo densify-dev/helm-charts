@@ -2,6 +2,14 @@
 
 All notable changes to the kubex-automation-stack chart will be documented in this file.
 
+## [1.1.22] - 2026-10-09
+
+### Changed
+- Updated kubex-automation-engine dependency to 1.15.2.
+- Removed the redundant `cpu: null` CPU-limit overrides for kubex-automation-engine from the xsmall, small, medium, and large sizing values files; CPU limits are now unset by default in the engine chart.
+
+---
+
 ## [1.1.21] - 2026-10-08
 
 ### Changed
