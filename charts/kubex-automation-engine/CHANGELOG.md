@@ -2,6 +2,11 @@
 
 All notable changes to the Kubex Automation Engine Helm chart will be documented in this file.
 
+## [1.15.2] - 2026-10-09
+
+### Fixed
+- Values schema now accepts `null` for CPU resource limits, preserving the option to explicitly disable CPU limits for the controller and gateway.
+
 ## [1.15.1] - 2026-10-08
 
 ### Changed
