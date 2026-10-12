@@ -15,6 +15,7 @@ allowHostNetwork: false
 allowHostPID: true
 allowHostPorts: false
 allowPrivilegedContainer: false
+userNamespaceLevel: AllowHostLevel
 allowedCapabilities:
   - BPF
   - SYS_PTRACE

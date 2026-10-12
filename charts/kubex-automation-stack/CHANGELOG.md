@@ -2,6 +2,13 @@
 
 All notable changes to the kubex-automation-stack chart will be documented in this file.
 
+## [1.1.23] - 2026-10-12
+
+### Fixed
+- Set `userNamespaceLevel: AllowHostLevel` on the GPU process exporter and Beyla OpenShift SCCs to prevent permanent ArgoCD OutOfSync status.
+
+---
+
 ## [1.1.22] - 2026-10-09
 
 ### Changed

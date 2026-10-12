@@ -13,6 +13,7 @@ metadata:
 allowHostDirVolumePlugin: true
 allowHostPID: true
 allowPrivilegedContainer: true
+userNamespaceLevel: AllowHostLevel
 allowedCapabilities:
   - '*'
 readOnlyRootFilesystem: false
