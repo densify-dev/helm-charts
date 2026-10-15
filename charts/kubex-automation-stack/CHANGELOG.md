@@ -2,6 +2,14 @@
 
 All notable changes to the kubex-automation-stack chart will be documented in this file.
 
+## [1.1.25] - 2026-10-15
+
+### Fixed
+- OpenShift: the Beyla and GPU process exporter SCCs can now be used by their service accounts (the chart now creates the required ClusterRoles).
+- OpenShift: the GPU process exporter SCC `volumes` list is now sorted, avoiding an ArgoCD OutOfSync diff.
+
+---
+
 ## [1.1.24] - 2026-10-15
 
 ### Changed
