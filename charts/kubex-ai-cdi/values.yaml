@@ -2,7 +2,7 @@ enabled: false
 
 image:
   repository: densify/kubex-ai-cdi
-  tag: 1.6.0
+  tag: 1.7.0
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
@@ -43,7 +43,95 @@ rbac:
   permissions:
     core:
       enabled: true
-      resources: ["pods", "services", "configmaps", "namespaces", "nodes", "events"]
+      resources: ["pods", "services", "configmaps", "namespaces", "nodes", "events", "resourcequotas", "limitranges", "endpoints"]
+      verbs: ["get", "list"]
+    hpa:
+      enabled: true
+      resources: ["horizontalpodautoscalers"]
+      verbs: ["get", "list"]
+    keda:
+      enabled: true
+      resources: ["scaledobjects", "scaledjobs"]
+      verbs: ["get", "list"]
+    vpa:
+      enabled: true
+      resources: ["verticalpodautoscalers"]
+      verbs: ["get", "list"]
+    disruptionBudgets:
+      enabled: true
+      resources: ["poddisruptionbudgets"]
+      verbs: ["get", "list"]
+    priorityClasses:
+      enabled: true
+      resources: ["priorityclasses"]
+      verbs: ["get", "list"]
+    endpointSlices:
+      enabled: true
+      resources: ["endpointslices"]
+      verbs: ["get", "list"]
+    # API registration and health configuration, not measurements.
+    apiServices:
+      enabled: true
+      resources: ["apiservices"]
+      verbs: ["get", "list"]
+    # Opt-in: authentication CRDs can contain inline credentials.
+    kedaAuthentication:
+      enabled: false
+      resources: ["triggerauthentications", "clustertriggerauthentications"]
+      verbs: ["get", "list"]
+    kedaHTTP:
+      enabled: false
+      resources: ["httpscaledobjects", "interceptorroutes"]
+      verbs: ["get", "list"]
+    kedaEventing:
+      enabled: false
+      resources: ["cloudeventsources", "clustercloudeventsources"]
+      verbs: ["get", "list"]
+    vpaCheckpoints:
+      enabled: false
+      resources: ["verticalpodautoscalercheckpoints"]
+      verbs: ["get", "list"]
+    serviceAccounts:
+      enabled: false
+      resources: ["serviceaccounts"]
+      verbs: ["get", "list"]
+    knativeServing:
+      enabled: false
+      resources: ["services", "configurations", "revisions", "routes"]
+      verbs: ["get", "list"]
+    # Metric is a configuration object, not a metrics API read.
+    knativeAutoscaling:
+      enabled: false
+      resources: ["podautoscalers", "metrics"]
+      verbs: ["get", "list"]
+    knativeNetworking:
+      enabled: false
+      resources: ["serverlessservices"]
+      verbs: ["get", "list"]
+    prometheusObjects:
+      enabled: false
+      resources: ["prometheuses", "prometheusagents", "servicemonitors", "podmonitors", "scrapeconfigs", "probes", "prometheusrules", "thanosrulers"]
+      verbs: ["get", "list"]
+    storageCore:
+      enabled: false
+      resources: ["persistentvolumeclaims", "persistentvolumes"]
+      verbs: ["get", "list"]
+    storage:
+      enabled: false
+      resources: ["storageclasses", "csinodes", "csistoragecapacities", "volumeattachments"]
+      verbs: ["get", "list"]
+    clusterAPI:
+      enabled: false
+      resources: ["clusters", "machines", "machinesets", "machinedeployments", "machinepools"]
+      verbs: ["get", "list"]
+    # MachinePools on older Cluster API installations.
+    clusterAPIExperimental:
+      enabled: false
+      resources: ["machinepools"]
+      verbs: ["get", "list"]
+    openshiftAutoscaling:
+      enabled: false
+      resources: ["machineautoscalers", "clusterautoscalers"]
       verbs: ["get", "list"]
     podLogs:
       enabled: true

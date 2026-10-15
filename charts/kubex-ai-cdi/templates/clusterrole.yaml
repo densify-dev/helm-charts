@@ -25,6 +25,195 @@ rules:
     {{- toYaml .verbs | nindent 4 }}
 {{- end }}
 {{- end }}
+{{- with $permissions.hpa }}
+{{- if .enabled }}
+- apiGroups: ["autoscaling"]
+  resources:
+    {{- toYaml .resources | nindent 4 }}
+  verbs:
+    {{- toYaml .verbs | nindent 4 }}
+{{- end }}
+{{- end }}
+{{- with $permissions.keda }}
+{{- if .enabled }}
+- apiGroups: ["keda.sh"]
+  resources:
+    {{- toYaml .resources | nindent 4 }}
+  verbs:
+    {{- toYaml .verbs | nindent 4 }}
+{{- end }}
+{{- end }}
+{{- with $permissions.vpa }}
+{{- if .enabled }}
+- apiGroups: ["autoscaling.k8s.io"]
+  resources:
+    {{- toYaml .resources | nindent 4 }}
+  verbs:
+    {{- toYaml .verbs | nindent 4 }}
+{{- end }}
+{{- end }}
+{{- with $permissions.disruptionBudgets }}
+{{- if .enabled }}
+- apiGroups: ["policy"]
+  resources:
+    {{- toYaml .resources | nindent 4 }}
+  verbs:
+    {{- toYaml .verbs | nindent 4 }}
+{{- end }}
+{{- end }}
+{{- with $permissions.priorityClasses }}
+{{- if .enabled }}
+- apiGroups: ["scheduling.k8s.io"]
+  resources:
+    {{- toYaml .resources | nindent 4 }}
+  verbs:
+    {{- toYaml .verbs | nindent 4 }}
+{{- end }}
+{{- end }}
+{{- with $permissions.endpointSlices }}
+{{- if .enabled }}
+- apiGroups: ["discovery.k8s.io"]
+  resources:
+    {{- toYaml .resources | nindent 4 }}
+  verbs:
+    {{- toYaml .verbs | nindent 4 }}
+{{- end }}
+{{- end }}
+{{- with $permissions.apiServices }}
+{{- if .enabled }}
+- apiGroups: ["apiregistration.k8s.io"]
+  resources:
+    {{- toYaml .resources | nindent 4 }}
+  verbs:
+    {{- toYaml .verbs | nindent 4 }}
+{{- end }}
+{{- end }}
+{{- with $permissions.kedaAuthentication }}
+{{- if .enabled }}
+- apiGroups: ["keda.sh"]
+  resources:
+    {{- toYaml .resources | nindent 4 }}
+  verbs:
+    {{- toYaml .verbs | nindent 4 }}
+{{- end }}
+{{- end }}
+{{- with $permissions.kedaHTTP }}
+{{- if .enabled }}
+- apiGroups: ["http.keda.sh"]
+  resources:
+    {{- toYaml .resources | nindent 4 }}
+  verbs:
+    {{- toYaml .verbs | nindent 4 }}
+{{- end }}
+{{- end }}
+{{- with $permissions.kedaEventing }}
+{{- if .enabled }}
+- apiGroups: ["eventing.keda.sh"]
+  resources:
+    {{- toYaml .resources | nindent 4 }}
+  verbs:
+    {{- toYaml .verbs | nindent 4 }}
+{{- end }}
+{{- end }}
+{{- with $permissions.vpaCheckpoints }}
+{{- if .enabled }}
+- apiGroups: ["autoscaling.k8s.io"]
+  resources:
+    {{- toYaml .resources | nindent 4 }}
+  verbs:
+    {{- toYaml .verbs | nindent 4 }}
+{{- end }}
+{{- end }}
+{{- with $permissions.serviceAccounts }}
+{{- if .enabled }}
+- apiGroups: [""]
+  resources:
+    {{- toYaml .resources | nindent 4 }}
+  verbs:
+    {{- toYaml .verbs | nindent 4 }}
+{{- end }}
+{{- end }}
+{{- with $permissions.knativeServing }}
+{{- if .enabled }}
+- apiGroups: ["serving.knative.dev"]
+  resources:
+    {{- toYaml .resources | nindent 4 }}
+  verbs:
+    {{- toYaml .verbs | nindent 4 }}
+{{- end }}
+{{- end }}
+{{- with $permissions.knativeAutoscaling }}
+{{- if .enabled }}
+- apiGroups: ["autoscaling.internal.knative.dev"]
+  resources:
+    {{- toYaml .resources | nindent 4 }}
+  verbs:
+    {{- toYaml .verbs | nindent 4 }}
+{{- end }}
+{{- end }}
+{{- with $permissions.knativeNetworking }}
+{{- if .enabled }}
+- apiGroups: ["networking.internal.knative.dev"]
+  resources:
+    {{- toYaml .resources | nindent 4 }}
+  verbs:
+    {{- toYaml .verbs | nindent 4 }}
+{{- end }}
+{{- end }}
+{{- with $permissions.prometheusObjects }}
+{{- if .enabled }}
+- apiGroups: ["monitoring.coreos.com"]
+  resources:
+    {{- toYaml .resources | nindent 4 }}
+  verbs:
+    {{- toYaml .verbs | nindent 4 }}
+{{- end }}
+{{- end }}
+{{- with $permissions.storageCore }}
+{{- if .enabled }}
+- apiGroups: [""]
+  resources:
+    {{- toYaml .resources | nindent 4 }}
+  verbs:
+    {{- toYaml .verbs | nindent 4 }}
+{{- end }}
+{{- end }}
+{{- with $permissions.storage }}
+{{- if .enabled }}
+- apiGroups: ["storage.k8s.io"]
+  resources:
+    {{- toYaml .resources | nindent 4 }}
+  verbs:
+    {{- toYaml .verbs | nindent 4 }}
+{{- end }}
+{{- end }}
+{{- with $permissions.clusterAPI }}
+{{- if .enabled }}
+- apiGroups: ["cluster.x-k8s.io"]
+  resources:
+    {{- toYaml .resources | nindent 4 }}
+  verbs:
+    {{- toYaml .verbs | nindent 4 }}
+{{- end }}
+{{- end }}
+{{- with $permissions.clusterAPIExperimental }}
+{{- if .enabled }}
+- apiGroups: ["exp.cluster.x-k8s.io"]
+  resources:
+    {{- toYaml .resources | nindent 4 }}
+  verbs:
+    {{- toYaml .verbs | nindent 4 }}
+{{- end }}
+{{- end }}
+{{- with $permissions.openshiftAutoscaling }}
+{{- if .enabled }}
+- apiGroups: ["autoscaling.openshift.io"]
+  resources:
+    {{- toYaml .resources | nindent 4 }}
+  verbs:
+    {{- toYaml .verbs | nindent 4 }}
+{{- end }}
+{{- end }}
 {{- with $permissions.podLogs }}
 {{- if .enabled }}
 - apiGroups: [""]
