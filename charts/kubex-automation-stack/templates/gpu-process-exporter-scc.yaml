@@ -25,11 +25,34 @@ fsGroup:
   type: RunAsAny
 supplementalGroups:
   type: RunAsAny
+# Keep sorted alphabetically: the API server stores SCC volumes sorted, and an
+# unsorted list shows up as a permanent diff in GitOps tools such as Argo CD.
 volumes:
-  - hostPath
-  - emptyDir
   - configMap
+  - emptyDir
+  - hostPath
   - projected
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: system:openshift:scc:{{ .Release.Name }}-gpu-exporter
+  labels:
+    app.kubernetes.io/name: gpu-process-exporter
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    meta.helm.sh/release-name: {{ .Release.Name }}
+    meta.helm.sh/release-namespace: {{ .Release.Namespace }}
+rules:
+  - apiGroups:
+      - security.openshift.io
+    resources:
+      - securitycontextconstraints
+    resourceNames:
+      - {{ .Release.Name }}-gpu-exporter
+    verbs:
+      - use
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
