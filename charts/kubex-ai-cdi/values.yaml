@@ -2,7 +2,7 @@ enabled: false
 
 image:
   repository: densify/kubex-ai-cdi
-  tag: 1.7.0
+  tag: 1.9.0
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
@@ -69,12 +69,10 @@ rbac:
       enabled: true
       resources: ["endpointslices"]
       verbs: ["get", "list"]
-    # API registration and health configuration, not measurements.
     apiServices:
       enabled: true
       resources: ["apiservices"]
       verbs: ["get", "list"]
-    # Opt-in: authentication CRDs can contain inline credentials.
     kedaAuthentication:
       enabled: false
       resources: ["triggerauthentications", "clustertriggerauthentications"]
@@ -99,7 +97,6 @@ rbac:
       enabled: false
       resources: ["services", "configurations", "revisions", "routes"]
       verbs: ["get", "list"]
-    # Metric is a configuration object, not a metrics API read.
     knativeAutoscaling:
       enabled: false
       resources: ["podautoscalers", "metrics"]
@@ -176,12 +173,16 @@ rbac:
       resources: ["ec2nodeclasses"]
       verbs: ["get", "list"]
     karpenterAzure:
-      enabled: false
+      enabled: true
       resources: ["nodeclasses"]
+      verbs: ["get", "list"]
+    karpenterClusterAPI:
+      enabled: true
+      resources: ["clusterapinodeclasses"]
       verbs: ["get", "list"]
     kubexCRDs:
       enabled: true
-      resources: ["automationstrategies", "clusterautomationstrategies", "clustergpurebalancingpolicies", "clusterproactivepolicies", "clusterrollbackpolicies", "clusterstaticpolicies", "globalconfigurations", "gpuconsolidationpolicies", "gpurebalancingpolicies", "podaffinitypolicies", "policyevaluations", "proactivepolicies", "rollbackpolicies", "staticpolicies"]
+      resources: ["automationstrategies", "clusterautomationstrategies", "clustercompactionpolicies", "clustergpureactivepolicies", "clustergpurebalancingpolicies", "clusterobjectpatches", "clusterproactivepolicies", "clusterrollbackpolicies", "clusterstaticpolicies", "containerargspolicies", "globalconfigurations", "gpuconsolidationpolicies", "gpureactivepolicies", "gpurebalancingpolicies", "objectpatches", "podaffinitypolicies", "policyevaluations", "proactivepolicies", "rollbackpolicies", "staticpolicies"]
       verbs: ["get", "list"]
     selfSubjectReview:
       enabled: true
