@@ -351,9 +351,11 @@ Use [Global Configuration Reference](./Global-Configuration.md) for the CR field
 | `globalConfiguration.webhookProbe.labels` | `{}` | Additional labels applied to the dry-run webhook probe Pod |
 | `globalConfiguration.webhookProbe.annotations` | `{}` | Additional annotations applied to the dry-run webhook probe Pod |
 | `globalConfiguration.webhookProbe.resources` | `{}` | Resource requests and limits for the dry-run webhook probe container |
-| `globalConfiguration.webhookProbe.podSecurityContext` | `{}` | Pod security context for the dry-run webhook probe Pod |
-| `globalConfiguration.webhookProbe.securityContext` | `{}` | Container security context for the dry-run webhook probe container |
+| `globalConfiguration.webhookProbe.podSecurityContext` | `{"runAsNonRoot":true,"seccompProfile":{"type":"RuntimeDefault"}}` | Pod security context for the dry-run webhook probe Pod |
+| `globalConfiguration.webhookProbe.securityContext` | `{"allowPrivilegeEscalation":false,"readOnlyRootFilesystem":true,"capabilities":{"drop":["ALL"]}}` | Container security context for the dry-run webhook probe container |
 | `experimental.gpuKaiContract` | `v1alpha1-2026-07` | Required acknowledgement token for experimental GPU/KAI CR fields rendered by the chart |
+
+The probe uses dry-run Pod admission; no container runs. Probe security defaults come from the chart only. Partial security context values retain the other chart defaults, and explicit values override them. Directly managed `GlobalConfiguration` resources must specify these controls themselves under `spec.webhookProbe`.
 
 Webhook behavior notes:
 
