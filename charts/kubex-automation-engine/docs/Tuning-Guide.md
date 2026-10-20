@@ -198,6 +198,8 @@ globalConfiguration:
 
 ### Restrictive Admission Environment Blocking Webhook Probe Pods
 
+The probe submits a dry-run Pod for admission; no container runs. Helm defaults set `runAsNonRoot: true`, `seccompProfile.type: RuntimeDefault`, `allowPrivilegeEscalation: false`, `readOnlyRootFilesystem: true`, and `capabilities.drop: [ALL]`. Partial security settings retain other chart defaults; explicit overrides remain supported. Directly managed `GlobalConfiguration` resources must set these controls themselves under `spec.webhookProbe`.
+
 Symptoms:
 
 - webhook health stays unhealthy
@@ -232,7 +234,12 @@ globalConfiguration:
     securityContext:
       allowPrivilegeEscalation: false
       readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+          - ALL
 ```
+
+Before removing probe policy exceptions, apply the settings in staging and inspect the live `GlobalConfiguration`, especially after upgrades with retained Helm values or custom overrides. Disable the four probe exceptions while keeping Kyverno policies enforced. Confirm repeated probe success and `PodAdmissionWebhookHealthy=True`. Then apply the verified configuration in SAP's environment and remove the exceptions there. Successful rendering alone does not prove admission under SAP's actual policies.
 
 ### Controller CPU/Memory Starvation
 
@@ -394,9 +401,14 @@ globalConfiguration:
         memory: 32Mi
     podSecurityContext:
       runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
     securityContext:
       allowPrivilegeEscalation: false
       readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+          - ALL
 ```
 
 ### Large-Cluster Throttling

@@ -31,8 +31,10 @@ Use it to control recommendation refresh timing, proactive rescans, heartbeat re
 | `spec.webhookProbe.labels` | `{}` | Additional labels applied to the dry-run webhook probe Pod. |
 | `spec.webhookProbe.annotations` | `{}` | Additional annotations applied to the dry-run webhook probe Pod. |
 | `spec.webhookProbe.resources` | `{}` | Resource requests and limits for the dry-run webhook probe container. |
-| `spec.webhookProbe.podSecurityContext` | `{}` | Pod security context for the dry-run webhook probe Pod. |
-| `spec.webhookProbe.securityContext` | `{}` | Container security context for the dry-run webhook probe container. |
+| `spec.webhookProbe.podSecurityContext` | `{}`; Helm sets `runAsNonRoot: true` and `seccompProfile.type: RuntimeDefault` | Pod security context for the dry-run webhook probe Pod. |
+| `spec.webhookProbe.securityContext` | `{}`; Helm sets `allowPrivilegeEscalation: false`, `readOnlyRootFilesystem: true`, and `capabilities.drop: ["ALL"]` | Container security context for the dry-run webhook probe container. |
+
+The probe uses dry-run Pod admission, so no container runs. The secure probe defaults are supplied by Helm, not by the CRD or controller. Directly managed `GlobalConfiguration` resources must specify them under `spec.webhookProbe`, as in the example below. Partial Helm security settings retain other chart defaults; explicit overrides remain supported.
 
 ## Status Reference
 
@@ -94,8 +96,14 @@ spec:
         memory: 16Mi
     podSecurityContext:
       runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
     securityContext:
       allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+          - ALL
 ```
 
 ## Helm-Managed Mapping

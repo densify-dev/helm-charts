@@ -405,10 +405,18 @@ globalConfiguration:
     annotations: {}
     # -- Resource requests and limits for the webhook probe container.
     resources: {}
-    # -- Pod security context for the webhook probe pod.
-    podSecurityContext: {}
-    # -- Container security context for the webhook probe container.
-    securityContext: {}
+    # -- Pod security context for the dry-run webhook probe pod.
+    podSecurityContext:
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+    # -- Container security context for the dry-run webhook probe container.
+    securityContext:
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+          - ALL
   kai:
     # -- Scheduler name set on pods when Kai GPU mutation is applied by the webhook
     schedulerName: "kai-scheduler"
