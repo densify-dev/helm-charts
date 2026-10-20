@@ -42,6 +42,24 @@ volumes:
   - projected
 ---
 apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: system:openshift:scc:{{ .Release.Name }}-beyla-scc
+  labels:
+    app.kubernetes.io/name: kubex-beyla
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: Helm
+rules:
+  - apiGroups:
+      - security.openshift.io
+    resources:
+      - securitycontextconstraints
+    resourceNames:
+      - {{ .Release.Name }}-beyla-scc
+    verbs:
+      - use
+---
+apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: {{ .Release.Name }}-beyla-scc-binding
