@@ -232,6 +232,7 @@ Common reason codes include:
 - `resource-quota-exceeded`
 - `automation-strategy-disabled`
 - `scheduling-window-blocked`
+- `ephemeral-storage-restart-pending`
 
 **Example - HPA managing specific resources:**
 ```json
@@ -326,6 +327,7 @@ kubectl logs -n kubex -l control-plane=controller-manager -c manager --since=10m
 |--------|---------|---------------|
 | `RESIZED` | ✅ Success | In-place resize was applied to the pod. Resources updated without restart. |
 | `EVICTED` | ✅ Success | Eviction path was used. Pod was deleted and will be recreated with new resources. |
+| `PENDING_RESTART` | ⏳ Waiting for restart | Only ephemeral-storage changes remain, and they will be applied the next time the pod is recreated (for example a rollout, scale-up, or node drain). A container crash restart does not apply them. Set `restartStrategy: Evict` under `enablement.ephemeralStorage` to restart the pod to apply them. |
 | `BLOCKED_RETRYING` | ⏸️ Temporary block | Blocked by a temporary condition (e.g., pod not ready). Will retry automatically. |
 | `BLOCKED` | 🛑 Permanent block | Blocked or failed without retry. Check `failedChecks` to see why. |
 | `SKIPPED` | ⏭️ Nothing to do | Nothing actionable remained after evaluation. May indicate filters removed all actions. |
