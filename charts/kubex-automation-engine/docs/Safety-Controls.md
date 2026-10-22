@@ -2,6 +2,8 @@
 
 Use this reference to interpret pre-checks and filters shown in logs, events, and recommendation payload summaries.
 
+Until global configuration is ready, ordinary pod admission skips all automation mutations, including compaction, recommendation inheritance, runtime hooks, and resizing. Pod creation and webhook health probes continue normally.
+
 # Quick Links
 
 - [Safety Controls Reference](#safety-controls-reference)
