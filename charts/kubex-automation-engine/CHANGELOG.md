@@ -2,6 +2,21 @@
 
 All notable changes to the Kubex Automation Engine Helm chart will be documented in this file.
 
+## [1.16.0] - 2026-10-22
+
+### Added
+- Ephemeral-storage right-sizing automation for container requests and limits. It is off by default. See [Proactive Policies](./docs/Proactive-Policies.md#ephemeral-storage) for more details.
+
+### Changed
+- The dry-run webhook probe Pod now runs with secure default security contexts that satisfy restricted pod security settings; see the configuration reference for the new values.
+
+### Fixed
+- A resize that leaves a workload crash-looping can now be rolled back. Rollback restore no longer waits on readiness and max-unavailable checks for pods that are already unavailable, so a single-replica workload stuck in CrashLoopBackOff recovers instead of staying blocked.
+- Proposals for managed resources can now change proposal IDs without being blocked by the reconciler.
+
+### Security
+- The controller is built with Go 1.27.3 to pick up updated certificate distrust handling.
+
 ## [1.15.2] - 2026-10-09
 
 ### Fixed
