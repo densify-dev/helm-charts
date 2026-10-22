@@ -147,6 +147,120 @@ spec:
                           rule: '!has(self.floor) || !has(self.ceiling) || quantity(self.floor).compareTo(quantity(self.ceiling))
                             <= 0'
                     type: object
+                  ephemeralStorage:
+                    default: {}
+                    description: ephemeralStorage controls enablement rules for container
+                      ephemeral-storage resources.
+                    properties:
+                      limits:
+                        default: {}
+                        description: limits controls enablement for ephemeral-storage
+                          limits. Off unless enabled.
+                        properties:
+                          ceiling:
+                            description: ceiling is the maximum allowed resource quantity
+                              for this usage.
+                            type: string
+                          containers:
+                            additionalProperties:
+                              properties:
+                                ceiling:
+                                  description: ceiling is the maximum allowed resource
+                                    quantity for this usage.
+                                  type: string
+                                floor:
+                                  description: floor is the minimum allowed resource
+                                    quantity for this usage.
+                                  type: string
+                              type: object
+                            description: |-
+                              containers maps exact container names to floor/ceiling overrides for this usage.
+                              Any bound omitted for a specific container falls back to the usage-level floor/ceiling.
+                            type: object
+                          downsize:
+                            default: false
+                            description: downsize controls whether resource downsizing
+                              actions are permitted.
+                            type: boolean
+                          floor:
+                            description: floor is the minimum allowed resource quantity
+                              for this usage.
+                            type: string
+                          setFromUnspecified:
+                            default: false
+                            description: setFromUnspecified controls whether an unspecified
+                              resource value may be set.
+                            type: boolean
+                          upsize:
+                            default: false
+                            description: upsize controls whether resource upsizing
+                              actions are permitted.
+                            type: boolean
+                        type: object
+                        x-kubernetes-validations:
+                        - message: floor must be less than or equal to ceiling
+                          rule: '!has(self.floor) || !has(self.ceiling) || quantity(self.floor).compareTo(quantity(self.ceiling))
+                            <= 0'
+                      requests:
+                        default: {}
+                        description: requests controls enablement for ephemeral-storage
+                          requests. Off unless enabled.
+                        properties:
+                          ceiling:
+                            description: ceiling is the maximum allowed resource quantity
+                              for this usage.
+                            type: string
+                          containers:
+                            additionalProperties:
+                              properties:
+                                ceiling:
+                                  description: ceiling is the maximum allowed resource
+                                    quantity for this usage.
+                                  type: string
+                                floor:
+                                  description: floor is the minimum allowed resource
+                                    quantity for this usage.
+                                  type: string
+                              type: object
+                            description: |-
+                              containers maps exact container names to floor/ceiling overrides for this usage.
+                              Any bound omitted for a specific container falls back to the usage-level floor/ceiling.
+                            type: object
+                          downsize:
+                            default: false
+                            description: downsize controls whether resource downsizing
+                              actions are permitted.
+                            type: boolean
+                          floor:
+                            description: floor is the minimum allowed resource quantity
+                              for this usage.
+                            type: string
+                          setFromUnspecified:
+                            default: false
+                            description: setFromUnspecified controls whether an unspecified
+                              resource value may be set.
+                            type: boolean
+                          upsize:
+                            default: false
+                            description: upsize controls whether resource upsizing
+                              actions are permitted.
+                            type: boolean
+                        type: object
+                        x-kubernetes-validations:
+                        - message: floor must be less than or equal to ceiling
+                          rule: '!has(self.floor) || !has(self.ceiling) || quantity(self.floor).compareTo(quantity(self.ceiling))
+                            <= 0'
+                      restartStrategy:
+                        default: OnNextRestart
+                        description: |-
+                          restartStrategy controls how ephemeral-storage changes reach running pods.
+                          OnNextRestart applies them when the pod is next created (rollout, scale-up, node drain) and never evicts.
+                          Evict restarts the pod to apply them when podEviction is enabled.
+                        enum:
+                        - OnNextRestart
+                        - Evict
+                        type: string
+                    type: object
                   gpu:
                     default: {}
                     description: |-
@@ -181,7 +295,7 @@ spec:
                             type: object
                           downsize:
                             default: false
-                            description: downsize controls whether GPU request downsizing
+                            description: downsize controls whether resource downsizing
                               actions are permitted.
                             type: boolean
                           floor:
@@ -191,11 +305,11 @@ spec:
                           setFromUnspecified:
                             default: false
                             description: setFromUnspecified controls whether an unspecified
-                              GPU request may be set.
+                              resource value may be set.
                             type: boolean
                           upsize:
                             default: false
-                            description: upsize controls whether GPU request upsizing
+                            description: upsize controls whether resource upsizing
                               actions are permitted.
                             type: boolean
                         type: object

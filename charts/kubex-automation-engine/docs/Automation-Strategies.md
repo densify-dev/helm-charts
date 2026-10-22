@@ -10,7 +10,7 @@ For the cluster-scoped variant, see [Cluster Automation Strategies](./Cluster-Au
 
 Automation strategies control:
 
-- which CPU and memory changes are allowed
+- which CPU, memory, and ephemeral-storage changes are allowed
 - whether in-place resize is permitted
 - whether eviction fallback is permitted
 - which safety checks run before actions are executed
@@ -58,6 +58,21 @@ Usage-level `floor` and `ceiling` values apply to all containers by default. Add
 | `spec.enablement.memory.limits.ceiling` | none | Maximum memory limit target. |
 | `spec.enablement.memory.limits.containers.<name>.floor` | none | Container-specific memory limit minimum that overrides the usage-level floor for that container only. |
 | `spec.enablement.memory.limits.containers.<name>.ceiling` | none | Container-specific memory limit maximum that overrides the usage-level ceiling for that container only. |
+| `spec.enablement.ephemeralStorage.restartStrategy` | `OnNextRestart` | How storage changes reach running pods. `OnNextRestart` applies them the next time the pod is recreated (for example a rollout, scale-up, or node drain) and never evicts. `Evict` restarts the pod to apply them and requires `podEviction.enabled: true`. |
+| `spec.enablement.ephemeralStorage.requests.downsize` | `false` | Allows reducing ephemeral-storage requests. |
+| `spec.enablement.ephemeralStorage.requests.upsize` | `false` | Allows increasing ephemeral-storage requests. |
+| `spec.enablement.ephemeralStorage.requests.setFromUnspecified` | `false` | Allows setting ephemeral-storage requests when currently unset. |
+| `spec.enablement.ephemeralStorage.requests.floor` | none | Minimum ephemeral-storage request target. |
+| `spec.enablement.ephemeralStorage.requests.ceiling` | none | Maximum ephemeral-storage request target. |
+| `spec.enablement.ephemeralStorage.requests.containers.<name>.floor` | none | Container-specific ephemeral-storage request minimum that overrides the usage-level floor for that container only. |
+| `spec.enablement.ephemeralStorage.requests.containers.<name>.ceiling` | none | Container-specific ephemeral-storage request maximum that overrides the usage-level ceiling for that container only. |
+| `spec.enablement.ephemeralStorage.limits.downsize` | `false` | Allows reducing ephemeral-storage limits. |
+| `spec.enablement.ephemeralStorage.limits.upsize` | `false` | Allows increasing ephemeral-storage limits. |
+| `spec.enablement.ephemeralStorage.limits.setFromUnspecified` | `false` | Allows setting ephemeral-storage limits when currently unset. |
+| `spec.enablement.ephemeralStorage.limits.floor` | none | Minimum ephemeral-storage limit target. |
+| `spec.enablement.ephemeralStorage.limits.ceiling` | none | Maximum ephemeral-storage limit target. |
+| `spec.enablement.ephemeralStorage.limits.containers.<name>.floor` | none | Container-specific ephemeral-storage limit minimum that overrides the usage-level floor for that container only. |
+| `spec.enablement.ephemeralStorage.limits.containers.<name>.ceiling` | none | Container-specific ephemeral-storage limit maximum that overrides the usage-level ceiling for that container only. |
 | `spec.enablement.gpu.requests.downsize` | `false` | EXPERIMENTAL. Allows reducing GPU requests. |
 | `spec.enablement.gpu.requests.upsize` | `false` | EXPERIMENTAL. Allows increasing GPU requests. |
 | `spec.enablement.gpu.requests.setFromUnspecified` | `false` | EXPERIMENTAL. Allows setting GPU requests when currently unset. |
@@ -192,6 +207,34 @@ For Helm-based installs, that means:
 - Use `policy.policies` for the Helm-managed subset of strategy settings.
 - Manage `AutomationStrategy` or `ClusterAutomationStrategy` manifests directly when you need scheduling windows.
 - Point Helm-managed policy scopes at that externally managed strategy by name when needed.
+
+## Ephemeral Storage
+
+`spec.enablement.ephemeralStorage` uses the same fields as `spec.enablement.memory`, plus `restartStrategy`. Unlike memory, every storage change is off by default. Set `upsize`, `downsize`, or `setFromUnspecified` to `true` for the changes you want. Example that allows storage changes with a floor, keeps limits from shrinking, and sets a per-container ceiling:
+
+```yaml
+spec:
+  enablement:
+    ephemeralStorage:
+      restartStrategy: OnNextRestart
+      requests:
+        upsize: true
+        downsize: true
+        setFromUnspecified: true
+        floor: 1Gi
+        containers:
+          worker:
+            ceiling: 20Gi
+      limits:
+        upsize: true
+        setFromUnspecified: true
+        floor: 1Gi
+        containers:
+          worker:
+            ceiling: 40Gi
+```
+
+By default, storage changes are applied the next time the pod is recreated (for example a rollout, scale-up, or node drain). Set `restartStrategy: Evict` to let Kubex restart the pod to apply them. See [Proactive Policies](./Proactive-Policies.md#ephemeral-storage) for how to turn them on, how they are applied, and how to turn them off.
 
 ## Guaranteed QoS Behavior
 
