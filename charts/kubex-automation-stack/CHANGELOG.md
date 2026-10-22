@@ -2,6 +2,14 @@
 
 All notable changes to the kubex-automation-stack chart will be documented in this file.
 
+## [1.1.27] - 2026-10-22
+
+### Changed
+- Updated kubex-automation-engine dependency to 1.16.1.
+- Updated kubex-connector dependency to 1.11.1 (relay uses automation-gateway 1.9) and kubex-ai-cdi to 1.11.0.
+
+---
+
 ## [1.1.26] - 2026-10-22
 
 ### Changed
