@@ -2,6 +2,19 @@
 
 All notable changes to the Kubex Automation Engine Helm chart will be documented in this file.
 
+## [1.16.1] - 2026-10-22
+
+### Changed
+- The gateway image is updated from 1.7 to 1.9.
+
+### Fixed
+- Pod admission no longer applies automation changes before the global configuration is ready.
+
+### Security
+- The gateway 1.9 image is built with Go 1.27.3 and updated `golang.org/x/net` and `klauspost/compress` dependencies that fix published CVEs.
+
+---
+
 ## [1.16.0] - 2026-10-22
 
 ### Added
