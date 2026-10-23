@@ -5,7 +5,7 @@ replicaCount: 1
 
 image:
   repository: densify/node-labeler
-  tag: 0.0.3
+  tag: "0.0.5"
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
