@@ -13,10 +13,10 @@ dependencies:
   version: 1.16.1
 - name: prometheus
   repository: https://prometheus-community.github.io/helm-charts
-  version: 29.21.0
+  version: 29.37.2
 - name: beyla
   repository: https://grafana.github.io/helm-charts
-  version: 1.16.10
+  version: 1.16.15
 - name: k8s-ephemeral-storage-metrics
   repository: https://densify-dev.github.io/helm-charts
   version: 1.22.1
@@ -26,5 +26,5 @@ dependencies:
 - name: node-labeler
   repository: https://densify-dev.github.io/helm-charts
   version: 0.1.3
-digest: sha256:a1adb7733c2f46c08c2d9ada293d11c03f1d7891446f45d1dd82e8af27866b95
-generated: "2026-10-23T09:41:13.497938918-04:00"
+digest: sha256:8b7d72d77a5341391353b30f427b8ad848d781c4a6a5c4aa00ec7439a062d234
+generated: "2026-10-23T11:15:45.336061143-04:00"

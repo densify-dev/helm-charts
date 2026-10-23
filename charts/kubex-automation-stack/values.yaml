@@ -360,6 +360,8 @@ prometheus:
 beyla:
   enabled: true
   fullnameOverride: kubex-beyla
+  image:
+    tag: "3.39.1"
   preset: application
   privileged: true
   contextPropagation:
