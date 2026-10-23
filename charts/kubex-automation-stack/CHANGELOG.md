@@ -2,6 +2,14 @@
 
 All notable changes to the kubex-automation-stack chart will be documented in this file.
 
+## [1.1.29] - 2026-10-23
+
+### Changed
+- Updated prometheus dependency to 29.37.2.
+- Updated beyla dependency to 1.16.16.
+
+---
+
 ## [1.1.28] - 2026-10-23
 
 ### Changed
