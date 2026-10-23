@@ -25,7 +25,7 @@ dependencies:
     repository: https://prometheus-community.github.io/helm-charts
     condition: stack.prometheus.deploy
   - name: beyla
-    version: "1.16.15"
+    version: "1.16.16"
     repository: https://grafana.github.io/helm-charts
     condition: beyla.enabled
   - name: k8s-ephemeral-storage-metrics

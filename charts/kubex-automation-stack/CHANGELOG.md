@@ -6,7 +6,7 @@ All notable changes to the kubex-automation-stack chart will be documented in th
 
 ### Changed
 - Updated prometheus dependency to 29.37.2.
-- Updated beyla dependency to 1.16.15 with specific image tag 3.39.1 (CVE-2026-111943); the image tag is temporary and should be removed in the next dependency update of beyla.
+- Updated beyla dependency to 1.16.16.
 
 ---
 
