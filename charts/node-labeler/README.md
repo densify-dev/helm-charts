@@ -31,7 +31,7 @@ helm upgrade node-labeler ./charts/node-labeler -n kubex
 | Key | Type | Default | Description |
 | --- | --- | --- | --- |
 | `image.repository` | string | `densify/node-labeler` | Controller image repository |
-| `image.tag` | string | `latest` | Controller image tag |
+| `image.tag` | string | `0.0.5` | Controller image tag |
 | `image.pullPolicy` | string | `IfNotPresent` | Image pull policy |
 | `serviceAccount.create` | bool | `true` | Create service account |
 | `serviceAccount.name` | string | `""` | Existing service account name when create is false |
