@@ -8,7 +8,8 @@ All notable changes to the kubex-automation-stack chart will be documented in th
 - The CDI subchart now creates its own ServiceAccount, ClusterRole and ClusterRoleBinding (`kubex-ai-cdi.rbac.enabled: true`, `kubex-ai-cdi.serviceAccount.create: true`). The stack no longer renders a separate CDI ClusterRole, so the stack and the CDI chart share one permission list. Resource names are unchanged (`kubex-ai-cdi-sa`, `<release>-ai-cdi-reader`).
 - Removed `rbac.permissions.cdi` from the values. Set CDI permissions under `kubex-ai-cdi.rbac.permissions` instead.
 - The OpenShift-specific CDI RBAC groups stay gated on OpenShift mode: `values-openshift.yaml` sets `kubex-ai-cdi.openshift.enabled: true`.
-- Requires a `kubex-ai-cdi` chart release that enables the non-sensitive RBAC groups by default and has the `openshift.enabled` switch.
+- Extra CDI ClusterRole rules can be added with `kubex-ai-cdi.rbac.additionalRules`, which is rendered with `tpl`.
+- Requires a `kubex-ai-cdi` chart release that enables the non-sensitive RBAC groups by default and has the `openshift.enabled` switch and templated `rbac.additionalRules`.
 
 ---
 

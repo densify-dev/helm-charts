@@ -72,6 +72,20 @@ The ClusterRole and ClusterRoleBinding names can be overridden through `kubex-ai
 
 The CDI ClusterRole grants read-only (`get`, `list`) access to the non-sensitive resource groups defined in the `kubex-ai-cdi` chart's `rbac.permissions` values, plus create access to self-subject review APIs. Groups are enabled by default. Set `kubex-ai-cdi.rbac.permissions.<group>.enabled=false` to withhold one, or override its `resources` and `verbs`. `kedaAuthentication` is off by default because TriggerAuthentications point at credential Secrets. The OpenShift-specific groups are added only when `kubex-ai-cdi.openshift.enabled=true`, which `values-openshift.yaml` sets.
 
+To add your own CDI rules, set `kubex-ai-cdi.rbac.additionalRules`. The rules are appended to the ClusterRole and rendered with `tpl`, so they can use Helm template expressions:
+
+```yaml
+kubex-ai-cdi:
+  rbac:
+    additionalRules:
+      - apiGroups: ["example.com"]
+        resources: ["widgets"]
+        verbs: ["get", "list"]
+      - apiGroups: ["example.com"]
+        resources: ["{{ .Release.Name }}-gadgets"]
+        verbs: ["get"]
+```
+
 ### Ephemeral Storage Metrics Collector
 
 Collects ephemeral storage usage metrics for containers, which is critical for Kubex rightsizing recommendations. Enabled by default.
