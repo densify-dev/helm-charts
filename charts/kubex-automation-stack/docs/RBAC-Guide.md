@@ -70,7 +70,7 @@ When `kubex-ai-cdi.enabled=true`, the CDI subchart creates its own RBAC resource
 
 The ClusterRole and ClusterRoleBinding names can be overridden through `kubex-ai-cdi.clusterRoleNameOverride` and `kubex-ai-cdi.clusterRoleBindingNameOverride`. Use explicit names only when coordinating ownership across releases.
 
-The CDI ClusterRole grants read-only (`get`, `list`) access to the non-sensitive resource groups defined in the `kubex-ai-cdi` chart's `rbac.permissions` values, plus create access to self-subject review APIs. Groups are enabled by default. Set `kubex-ai-cdi.rbac.permissions.<group>.enabled=false` to withhold one, or override its `resources` and `verbs`. `kedaAuthentication` is off by default because TriggerAuthentications point at credential Secrets.
+The CDI ClusterRole grants read-only (`get`, `list`) access to the non-sensitive resource groups defined in the `kubex-ai-cdi` chart's `rbac.permissions` values, plus create access to self-subject review APIs. Groups are enabled by default. Set `kubex-ai-cdi.rbac.permissions.<group>.enabled=false` to withhold one, or override its `resources` and `verbs`. `kedaAuthentication` is off by default because TriggerAuthentications point at credential Secrets. The OpenShift-specific groups are added only when `kubex-ai-cdi.openshift.enabled=true`, which `values-openshift.yaml` sets.
 
 ### Ephemeral Storage Metrics Collector
 
