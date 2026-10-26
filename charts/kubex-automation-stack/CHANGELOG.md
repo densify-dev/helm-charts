@@ -2,6 +2,15 @@
 
 All notable changes to the kubex-automation-stack chart will be documented in this file.
 
+## [1.1.31] - 2026-10-26
+
+### Changed
+- The CDI subchart now creates its own ServiceAccount, ClusterRole and ClusterRoleBinding (`kubex-ai-cdi.rbac.enabled: true`, `kubex-ai-cdi.serviceAccount.create: true`). The stack no longer renders a separate CDI ClusterRole, so the stack and the CDI chart share one permission list. Resource names are unchanged (`kubex-ai-cdi-sa`, `<release>-ai-cdi-reader`).
+- Removed `rbac.permissions.cdi` from the values. Set CDI permissions under `kubex-ai-cdi.rbac.permissions` instead.
+- Requires a `kubex-ai-cdi` chart release that enables the non-sensitive RBAC groups by default.
+
+---
+
 ## [1.1.30] - 2026-10-23
 
 ### Changed

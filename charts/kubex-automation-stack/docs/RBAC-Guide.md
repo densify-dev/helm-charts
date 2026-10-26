@@ -62,15 +62,15 @@ The data collector needs minimal permissions to operate securely. It requires AP
 
 The stack-managed connector uses the forwarder ConfigMap and `densify-api-secret` for tunnel identity and credentials. It does not require a separate ClusterRole.
 
-When `kubex-connector.enabled=true` and `kubex-ai-cdi.enabled=true`, the stack owns the CDI RBAC resources and disables the CDI subchart RBAC:
+When `kubex-ai-cdi.enabled=true`, the CDI subchart creates its own RBAC resources:
 
 - ServiceAccount: `kubex-ai-cdi-sa`
 - ClusterRole: `<release>-ai-cdi-reader`
 - ClusterRoleBinding: `<release>-ai-cdi-reader`
 
-The ClusterRole and ClusterRoleBinding names can be overridden through `rbac.permissions.cdi.clusterRole.name` and `rbac.permissions.cdi.clusterRoleBinding.name`. Use explicit names only when coordinating ownership across releases.
+The ClusterRole and ClusterRoleBinding names can be overridden through `kubex-ai-cdi.clusterRoleNameOverride` and `kubex-ai-cdi.clusterRoleBindingNameOverride`. Use explicit names only when coordinating ownership across releases.
 
-The CDI ClusterRole grants read access to the configured core, workload, rollout, OpenShift, Karpenter, and Kubex CRD resources, plus create access to self-subject review APIs. The exact rules are controlled under `rbac.permissions.cdi.rules`.
+The CDI ClusterRole grants read-only (`get`, `list`) access to the non-sensitive resource groups defined in the `kubex-ai-cdi` chart's `rbac.permissions` values, plus create access to self-subject review APIs. Groups are enabled by default. Set `kubex-ai-cdi.rbac.permissions.<group>.enabled=false` to withhold one, or override its `resources` and `verbs`. `kedaAuthentication` is off by default because TriggerAuthentications point at credential Secrets.
 
 ### Ephemeral Storage Metrics Collector
 
@@ -245,7 +245,7 @@ kubectl get clusterrole,clusterrolebinding | grep -E "(kubex|densify)"
 # Check permissions for data collector service account
 kubectl auth can-i --list --as=system:serviceaccount:<namespace>:kubex-stack-kubex-forwarder
 
-# Check permissions for stack-managed CDI
+# Check permissions for the CDI
 kubectl get clusterrole <release>-ai-cdi-reader
 kubectl get clusterrolebinding <release>-ai-cdi-reader
 kubectl auth can-i --list --as=system:serviceaccount:<namespace>:kubex-ai-cdi-sa

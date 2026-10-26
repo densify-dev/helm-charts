@@ -9,60 +9,6 @@ openshift:
 rbac:
   create: true
   permissions:
-    cdi:
-      serviceAccount:
-        create: true
-        name: kubex-ai-cdi-sa
-      clusterRole:
-        create: true
-        name: ""
-      clusterRoleBinding:
-        create: true
-        name: ""
-      role:
-        create: false
-        name: kubex-ai-cdi-reader
-      roleBinding:
-        create: false
-        name: kubex-ai-cdi-reader
-      rules:
-        core:
-          enabled: true
-          resources: ["pods", "services", "configmaps", "namespaces", "nodes", "events"]
-          verbs: ["get", "list"]
-        podLogs:
-          enabled: true
-          resources: ["pods/log"]
-          verbs: ["get"]
-        workloads:
-          enabled: true
-          resources: ["deployments", "daemonsets", "statefulsets", "replicasets"]
-          verbs: ["get", "list"]
-        # Automatically enable OpenShift permissions when openshift mode is on.
-        openshift:
-          enabled: null
-          resources: ["machines", "machinesets", "machinedeployments", "machinehealthchecks", "controlplanemachinesets"]
-          verbs: ["get", "list"]
-        karpenter:
-          enabled: true
-          resources: ["nodepools", "nodeclaims"]
-          verbs: ["get", "list"]
-        karpenterAWS:
-          enabled: true
-          resources: ["ec2nodeclasses"]
-          verbs: ["get", "list"]
-        rollouts:
-          enabled: true
-          resources: ["rollouts", "analysisruns", "experiments"]
-          verbs: ["get", "list"]
-        kubexCRDs:
-          enabled: true
-          resources: ["automationstrategies", "clusterautomationstrategies", "clustergpurebalancingpolicies", "clusterproactivepolicies", "clusterrollbackpolicies", "clusterstaticpolicies", "globalconfigurations", "gpuconsolidationpolicies", "gpurebalancingpolicies", "podaffinitypolicies", "policyevaluations", "proactivepolicies", "rollbackpolicies", "staticpolicies"]
-          verbs: ["get", "list"]
-        selfSubjectReview:
-          enabled: true
-          resources: ["selfsubjectrulesreviews", "selfsubjectaccessreviews"]
-          verbs: ["create"]
     connector:
       serviceAccount:
         create: false
@@ -111,11 +57,13 @@ kubex-ai-cdi:
     clusterNameConfigMap:
       name: kubex-stack-runtime
       key: kubex_cluster_name
+  # The CDI subchart owns its ServiceAccount, ClusterRole and ClusterRoleBinding.
+  # Tune permissions under kubex-ai-cdi.rbac.permissions.
   serviceAccount:
-    create: false
+    create: true
     name: kubex-ai-cdi-sa
   rbac:
-    enabled: false
+    enabled: true
 
 #################################################################
 # Kubex Automation Engine
