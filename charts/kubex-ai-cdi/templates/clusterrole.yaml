@@ -88,6 +88,15 @@ rules:
     {{- toYaml .verbs | nindent 4 }}
 {{- end }}
 {{- end }}
+{{- with $permissions.customResourceDefinitions }}
+{{- if .enabled }}
+- apiGroups: ["apiextensions.k8s.io"]
+  resources:
+    {{- toYaml .resources | nindent 4 }}
+  verbs:
+    {{- toYaml .verbs | nindent 4 }}
+{{- end }}
+{{- end }}
 {{- with $permissions.kedaAuthentication }}
 {{- if .enabled }}
 - apiGroups: ["keda.sh"]
@@ -206,8 +215,35 @@ rules:
 {{- end }}
 {{- end }}
 {{- with $permissions.openshiftAutoscaling }}
-{{- if .enabled }}
+{{- if include "kubex-ai-cdi.openshiftGroup" (dict "enabled" .enabled "openshift" ($.Values.openshift | default dict).enabled) }}
 - apiGroups: ["autoscaling.openshift.io"]
+  resources:
+    {{- toYaml .resources | nindent 4 }}
+  verbs:
+    {{- toYaml .verbs | nindent 4 }}
+{{- end }}
+{{- end }}
+{{- with $permissions.openshiftConfig }}
+{{- if include "kubex-ai-cdi.openshiftGroup" (dict "enabled" .enabled "openshift" ($.Values.openshift | default dict).enabled) }}
+- apiGroups: ["config.openshift.io"]
+  resources:
+    {{- toYaml .resources | nindent 4 }}
+  verbs:
+    {{- toYaml .verbs | nindent 4 }}
+{{- end }}
+{{- end }}
+{{- with $permissions.openshiftOperator }}
+{{- if include "kubex-ai-cdi.openshiftGroup" (dict "enabled" .enabled "openshift" ($.Values.openshift | default dict).enabled) }}
+- apiGroups: ["operator.openshift.io"]
+  resources:
+    {{- toYaml .resources | nindent 4 }}
+  verbs:
+    {{- toYaml .verbs | nindent 4 }}
+{{- end }}
+{{- end }}
+{{- with $permissions.openshiftMachineConfig }}
+{{- if include "kubex-ai-cdi.openshiftGroup" (dict "enabled" .enabled "openshift" ($.Values.openshift | default dict).enabled) }}
+- apiGroups: ["machineconfiguration.openshift.io"]
   resources:
     {{- toYaml .resources | nindent 4 }}
   verbs:
@@ -260,7 +296,7 @@ rules:
 {{- end }}
 {{- end }}
 {{- with $permissions.openshiftApps }}
-{{- if .enabled }}
+{{- if include "kubex-ai-cdi.openshiftGroup" (dict "enabled" .enabled "openshift" ($.Values.openshift | default dict).enabled) }}
 - apiGroups: ["apps.openshift.io"]
   resources:
     {{- toYaml .resources | nindent 4 }}
@@ -286,7 +322,7 @@ rules:
 {{- end }}
 {{- end }}
 {{- with $permissions.openshift }}
-{{- if .enabled }}
+{{- if include "kubex-ai-cdi.openshiftGroup" (dict "enabled" .enabled "openshift" ($.Values.openshift | default dict).enabled) }}
 - apiGroups: ["machine.openshift.io"]
   resources:
     {{- toYaml .resources | nindent 4 }}
@@ -349,7 +385,7 @@ rules:
 {{- end }}
 {{- end }}
 {{- with .Values.rbac.additionalRules }}
-{{ toYaml . }}
+{{ tpl (ternary . (toYaml .) (kindIs "string" .)) $ }}
 {{- end }}
 {{- end }}
 {{- end }}
