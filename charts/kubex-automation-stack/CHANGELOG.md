@@ -9,7 +9,7 @@ All notable changes to the kubex-automation-stack chart will be documented in th
 - Removed `rbac.permissions.cdi` from the values. Set CDI permissions under `kubex-ai-cdi.rbac.permissions` instead.
 - The OpenShift-specific CDI RBAC groups stay gated on OpenShift mode: `values-openshift.yaml` sets `kubex-ai-cdi.openshift.enabled: true`.
 - Extra CDI ClusterRole rules can be added with `kubex-ai-cdi.rbac.additionalRules`, which is rendered with `tpl`.
-- Requires a `kubex-ai-cdi` chart release that enables the non-sensitive RBAC groups by default and has the `openshift.enabled` switch and templated `rbac.additionalRules`.
+- Updated kubex-ai-cdi dependency to 1.13.0, which enables the non-sensitive RBAC groups by default and adds the `openshift.enabled` switch and templated `rbac.additionalRules`.
 
 ---
 
