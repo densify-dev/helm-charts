@@ -47,3 +47,15 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- required "serviceAccount.name is required when serviceAccount.create is false" .Values.serviceAccount.name | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 {{- end -}}
+
+{{/*
+OpenShift-specific RBAC groups follow openshift.enabled unless the group sets enabled explicitly.
+Renders "true" when the group is on, nothing otherwise.
+*/}}
+{{- define "kubex-ai-cdi.openshiftGroup" -}}
+{{- $on := .enabled -}}
+{{- if kindIs "invalid" $on -}}
+{{- $on = .openshift -}}
+{{- end -}}
+{{- if $on -}}true{{- end -}}
+{{- end -}}

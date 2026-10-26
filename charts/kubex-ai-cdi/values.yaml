@@ -2,7 +2,7 @@ enabled: false
 
 image:
   repository: densify/kubex-ai-cdi
-  tag: 1.12.0
+  tag: 1.13.0
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
@@ -38,8 +38,18 @@ worker:
     key: kubex_cluster_name
   allowedNamespaces: ""
 
+# OpenShift mode. The OpenShift-specific RBAC groups below (openshift, openshiftApps,
+# openshiftAutoscaling, openshiftConfig, openshiftOperator, openshiftMachineConfig) have
+# enabled: null, which follows this switch. Set a group's enabled to true or false to override it.
+openshift:
+  enabled: false
+
 rbac:
   enabled: true
+  # Read-only access to non-sensitive objects is on by default. Groups for CRDs that are absent
+  # from a cluster are harmless: the rule just matches nothing. Left off on purpose:
+  #   kedaAuthentication  TriggerAuthentications point at credential Secrets and secret stores.
+  #   models              no apiGroups by default; supply them to use it.
   permissions:
     core:
       enabled: true
@@ -73,62 +83,78 @@ rbac:
       enabled: true
       resources: ["apiservices"]
       verbs: ["get", "list"]
+    customResourceDefinitions:
+      enabled: true
+      resources: ["customresourcedefinitions"]
+      verbs: ["get", "list"]
     kedaAuthentication:
       enabled: false
       resources: ["triggerauthentications", "clustertriggerauthentications"]
       verbs: ["get", "list"]
     kedaHTTP:
-      enabled: false
+      enabled: true
       resources: ["httpscaledobjects", "interceptorroutes"]
       verbs: ["get", "list"]
     kedaEventing:
-      enabled: false
+      enabled: true
       resources: ["cloudeventsources", "clustercloudeventsources"]
       verbs: ["get", "list"]
     vpaCheckpoints:
-      enabled: false
+      enabled: true
       resources: ["verticalpodautoscalercheckpoints"]
       verbs: ["get", "list"]
     serviceAccounts:
-      enabled: false
+      enabled: true
       resources: ["serviceaccounts"]
       verbs: ["get", "list"]
     knativeServing:
-      enabled: false
+      enabled: true
       resources: ["services", "configurations", "revisions", "routes"]
       verbs: ["get", "list"]
     knativeAutoscaling:
-      enabled: false
+      enabled: true
       resources: ["podautoscalers", "metrics"]
       verbs: ["get", "list"]
     knativeNetworking:
-      enabled: false
+      enabled: true
       resources: ["serverlessservices"]
       verbs: ["get", "list"]
     prometheusObjects:
-      enabled: false
+      enabled: true
       resources: ["prometheuses", "prometheusagents", "servicemonitors", "podmonitors", "scrapeconfigs", "probes", "prometheusrules", "thanosrulers"]
       verbs: ["get", "list"]
     storageCore:
-      enabled: false
+      enabled: true
       resources: ["persistentvolumeclaims", "persistentvolumes"]
       verbs: ["get", "list"]
     storage:
-      enabled: false
+      enabled: true
       resources: ["storageclasses", "csinodes", "csistoragecapacities", "volumeattachments"]
       verbs: ["get", "list"]
     clusterAPI:
-      enabled: false
+      enabled: true
       resources: ["clusters", "machines", "machinesets", "machinedeployments", "machinepools"]
       verbs: ["get", "list"]
     # MachinePools on older Cluster API installations.
     clusterAPIExperimental:
-      enabled: false
+      enabled: true
       resources: ["machinepools"]
       verbs: ["get", "list"]
     openshiftAutoscaling:
-      enabled: false
+      enabled: null
       resources: ["machineautoscalers", "clusterautoscalers"]
+      verbs: ["get", "list"]
+    openshiftConfig:
+      enabled: null
+      resources: ["schedulers", "clusterversions", "clusteroperators"]
+      verbs: ["get", "list"]
+    openshiftOperator:
+      enabled: null
+      resources: ["kubeschedulers"]
+      verbs: ["get", "list"]
+    openshiftMachineConfig:
+      enabled: null
+      resources: ["machineconfigpools"]
       verbs: ["get", "list"]
     podLogs:
       enabled: true
@@ -151,7 +177,7 @@ rbac:
       resources: ["strimzipodsets"]
       verbs: ["get", "list"]
     openshiftApps:
-      enabled: true
+      enabled: null
       resources: ["deploymentconfigs"]
       coreResources: ["replicationcontrollers"]
       verbs: ["get", "list"]
@@ -161,15 +187,15 @@ rbac:
       resources: ["models"]
       verbs: ["get", "list"]
     openshift:
-      enabled: false
+      enabled: null
       resources: ["machines", "machinesets", "machinedeployments", "machinehealthchecks", "controlplanemachinesets"]
       verbs: ["get", "list"]
     karpenter:
-      enabled: false
-      resources: ["nodepools", "nodeclaims"]
+      enabled: true
+      resources: ["nodepools", "nodeclaims", "nodeoverlays"]
       verbs: ["get", "list"]
     karpenterAWS:
-      enabled: false
+      enabled: true
       resources: ["ec2nodeclasses"]
       verbs: ["get", "list"]
     karpenterAzure:
@@ -182,12 +208,20 @@ rbac:
       verbs: ["get", "list"]
     kubexCRDs:
       enabled: true
-      resources: ["automationstrategies", "clusterautomationstrategies", "clustercompactionpolicies", "clustergpureactivepolicies", "clustergpurebalancingpolicies", "clusterobjectpatches", "clusterproactivepolicies", "clusterrollbackpolicies", "clusterstaticpolicies", "containerargspolicies", "globalconfigurations", "gpuconsolidationpolicies", "gpureactivepolicies", "gpurebalancingpolicies", "objectpatches", "podaffinitypolicies", "policyevaluations", "proactivepolicies", "rollbackpolicies", "staticpolicies"]
+      # Every resource in the rightsizing.kubex.ai API group, including ones added later.
+      resources: ["*"]
       verbs: ["get", "list"]
     selfSubjectReview:
       enabled: true
       resources: ["selfsubjectrulesreviews", "selfsubjectaccessreviews"]
       verbs: ["create"]
+  # Extra ClusterRole rules, appended after the permission groups above. Accepts a list of rules or a
+  # string, and is rendered with tpl, so it can use Helm template expressions, for example:
+  #   additionalRules:
+  #     - apiGroups: ["example.com"]
+  #       resources: ["{{ .Release.Name }}-widgets"]
+  #       verbs: ["get", "list"]
+  additionalRules: []
 
 securityContext:
   runAsUser: null
