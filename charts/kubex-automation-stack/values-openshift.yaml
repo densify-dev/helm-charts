@@ -46,6 +46,8 @@ kubex-connector:
       type: RuntimeDefault
 
 kubex-ai-cdi:
+  openshift:
+    enabled: true
   containerSecurityContext:
     capabilities:
       drop:
