@@ -166,6 +166,7 @@ prometheus:
       - resourcequotas
       - statefulsets
   prometheus-node-exporter:
+    prometheusScrape: false
     service:
       port: 9191
       targetPort: 9191
