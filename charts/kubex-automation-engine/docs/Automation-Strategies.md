@@ -111,6 +111,7 @@ Usage-level `floor` and `ceiling` values apply to all containers by default. Add
 | `spec.safetyChecks.retainGuaranteedQOS` | `false` | Keeps Guaranteed QoS pods at request=limit by treating limits as the source of truth for CPU and memory when enabled. |
 | `spec.safetyChecks.minCpuChangePercent` | `5` | Ignores CPU changes below this threshold. |
 | `spec.safetyChecks.minMemoryChangePercent` | `5` | Ignores memory changes below this threshold. |
+| `spec.safetyChecks.minEphemeralStorageChangePercent` | `10` | Ignores ephemeral-storage changes below this threshold. |
 | `spec.safetyChecks.minReadyDuration` | `10s` | Requires pods to be Ready for at least this duration. |
 | `spec.safetyChecks.requireOwnerPodsReady` | `false` | Requires all pods in the owner workload to be Ready. |
 | `spec.safetyChecks.respectWorkloadMaxUnavailable` | `true` | Prevents actions that exceed workload `maxUnavailable`. |
@@ -235,6 +236,8 @@ spec:
 ```
 
 By default, storage changes are applied the next time the pod is recreated (for example a rollout, scale-up, or node drain). Set `restartStrategy: Evict` to let Kubex restart the pod to apply them. See [Proactive Policies](./Proactive-Policies.md#ephemeral-storage) for how to turn them on, how they are applied, and how to turn them off.
+
+Storage changes smaller than `spec.safetyChecks.minEphemeralStorageChangePercent` (default `10`) are ignored. It is set separately from `minMemoryChangePercent`, so storage can use a higher threshold than memory.
 
 ## Guaranteed QoS Behavior
 
