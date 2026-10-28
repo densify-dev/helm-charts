@@ -101,6 +101,7 @@ Usage-level `floor` and `ceiling` values apply to all containers by default. Add
 | `spec.safetyChecks.retainGuaranteedQOS` | `false` | Keeps Guaranteed QoS pods at request=limit by treating limits as the source of truth for CPU and memory when enabled. |
 | `spec.safetyChecks.minCpuChangePercent` | `5` | Ignores CPU changes below this threshold. |
 | `spec.safetyChecks.minMemoryChangePercent` | `5` | Ignores memory changes below this threshold. |
+| `spec.safetyChecks.minEphemeralStorageChangePercent` | `10` | Ignores ephemeral-storage changes below this threshold. |
 | `spec.safetyChecks.minReadyDuration` | `10s` | Requires pods to be Ready for at least this duration. |
 | `spec.safetyChecks.requireOwnerPodsReady` | `false` | Requires all pods in the owner workload to be Ready. |
 | `spec.safetyChecks.respectWorkloadMaxUnavailable` | `true` | Prevents actions that exceed workload `maxUnavailable`. |

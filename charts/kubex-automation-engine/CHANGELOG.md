@@ -2,6 +2,19 @@
 
 All notable changes to the Kubex Automation Engine Helm chart will be documented in this file.
 
+## [1.17.0] - 2026-10-28
+
+### Added
+- `minEphemeralStorageChangePercent` (default `10`) on `AutomationStrategy` and `ClusterAutomationStrategy` skips ephemeral-storage changes below that percentage.
+- Policy scope (the containers each policy covers) is now reported to Kubex.
+
+### Fixed
+- Pods are no longer left in "Pending Restart" or evicted over negligible ephemeral-storage differences.
+- A policy's status no longer changes when a recommendation can't be built.
+- Fixed bug where `pause-until` wouldn't be consistently honored.
+
+---
+
 ## [1.16.1] - 2026-10-22
 
 ### Changed
