@@ -2,6 +2,13 @@
 
 All notable changes to the kubex-automation-stack chart will be documented in this file.
 
+## [1.1.33] - 2026-10-28
+
+### Changed
+- Updated kubex-automation-engine dependency to 1.17.0.
+
+---
+
 ## [1.1.31] - 2026-10-26
 
 ### Changed
