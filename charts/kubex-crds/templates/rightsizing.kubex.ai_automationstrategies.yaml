@@ -561,6 +561,12 @@ spec:
                       below the percent delta threshold.
                     minimum: 0
                     type: integer
+                  minEphemeralStorageChangePercent:
+                    default: 10
+                    description: minEphemeralStorageChangePercent filters out ephemeral-storage
+                      resize actions below the percent delta threshold.
+                    minimum: 0
+                    type: integer
                   minMemoryChangePercent:
                     default: 5
                     description: minMemoryChangePercent filters out memory resize
