@@ -334,6 +334,16 @@ topologySpreadConstraints: []
 rbac:
   # -- Create RBAC resources
   create: true
+  # Optional get/patch grants for ObjectPatch and ClusterObjectPatch targets.
+  objectPatches:
+    # -- Allow patching Karpenter NodePools
+    nodePools: true
+    # -- Allow patching HorizontalPodAutoscalers; safety-check reads remain enabled
+    horizontalPodAutoscalers: true
+    # -- Allow patching PodDisruptionBudgets
+    podDisruptionBudgets: true
+    # -- Allow patching OpenShift ClusterAutoscalers
+    clusterAutoscalers: true
 
 # CRD installation
 crds: {}

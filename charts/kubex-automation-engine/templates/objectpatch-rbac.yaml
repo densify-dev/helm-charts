@@ -1,0 +1,40 @@
+{{- if .Values.rbac.create }}
+{{- $targets := list
+  (dict "flag" "nodePools" "group" "karpenter.sh" "resource" "nodepools")
+  (dict "flag" "horizontalPodAutoscalers" "group" "autoscaling" "resource" "horizontalpodautoscalers")
+  (dict "flag" "podDisruptionBudgets" "group" "policy" "resource" "poddisruptionbudgets")
+  (dict "flag" "clusterAutoscalers" "group" "autoscaling.openshift.io" "resource" "clusterautoscalers")
+}}
+{{- $objectPatches := .Values.rbac.objectPatches | default dict }}
+{{- range $target := $targets }}
+{{- if or (not (hasKey $objectPatches $target.flag)) (index $objectPatches $target.flag) }}
+{{- $name := printf "%s-objectpatch-%s" (include "kubex-automation-engine.fullname" $) $target.resource }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "kubex-automation-engine.labels" $ | nindent 4 }}
+rules:
+- apiGroups: [{{ $target.group | quote }}]
+  resources: [{{ $target.resource | quote }}]
+  verbs: ["get", "patch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ $name }}
+  labels:
+    {{- include "kubex-automation-engine.labels" $ | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ $name }}
+subjects:
+- kind: ServiceAccount
+  name: {{ include "kubex-automation-engine.serviceAccountName" $ }}
+  namespace: {{ include "kubex-automation-engine.namespace" $ }}
+{{- end }}
+{{- end }}
+{{- end }}
