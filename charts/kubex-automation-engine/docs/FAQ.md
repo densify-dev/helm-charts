@@ -48,7 +48,11 @@ Rollback recommendation state is scoped to a single turn. The controller keeps t
 
 ### Can Helm-managed and manual CRs coexist?
 
-Yes. A common pattern is Helm for the baseline and manual CRs for workload-specific exceptions.
+Yes. A common pattern is Helm for the baseline and externally managed CRs for workload-specific automation. This includes managing strategy and policy resources through GitOps. See [GitOps Integration](./GitOps-Integration.md) for the ownership model and how pod-level resizing avoids changing workload templates.
+
+### Does Kubex conflict with GitOps when it resizes workloads?
+
+No, not with the workload template. Kubex resizes individual live pods and does not modify the resource requests or limits in the owner workload's `spec.template`. GitOps continues to reconcile the declared workload baseline. Replacement pods are created from that unchanged template and can receive the recommendation again during admission. See [GitOps Integration](./GitOps-Integration.md).
 
 ### How do I stop automation quickly?
 
