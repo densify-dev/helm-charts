@@ -2,6 +2,21 @@
   "$schema": "https://json-schema.org/draft-07/schema#",
   "type": "object",
   "properties": {
+    "rbac": {
+      "type": "object",
+      "properties": {
+        "create": {"type": "boolean"},
+        "objectPatches": {
+          "type": "object",
+          "properties": {
+            "nodePools": {"type": "boolean"},
+            "horizontalPodAutoscalers": {"type": "boolean"},
+            "podDisruptionBudgets": {"type": "boolean"},
+            "clusterAutoscalers": {"type": "boolean"}
+          }
+        }
+      }
+    },
     "createSecrets": {
       "type": "boolean"
     },

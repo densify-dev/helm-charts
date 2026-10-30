@@ -73,6 +73,68 @@ kubectl apply -f deployment-patch.yaml
 kubectl apply -f clusterobjectpatch.yaml
 ```
 
+### Autoscaling and disruption budget examples
+
+These targets must already exist and their APIs must be installed. The Helm chart
+supplies optional `get` and `patch` grants by default. See
+[optional object patch permissions](RBAC-Guide.md#optional-object-patch-permissions)
+for the independent opt-out flags.
+
+Use namespaced `ObjectPatch` resources to update an HPA's replica limits or allow
+unhealthy pod eviction through a PDB. Each target is in `patches-demo`, the same
+namespace as its patch.
+
+```yaml
+apiVersion: rightsizing.kubex.ai/v1alpha1
+kind: ObjectPatch
+metadata:
+  name: hpa-patch
+  namespace: patches-demo
+spec:
+  targetRef:
+    apiVersion: autoscaling/v2
+    kind: HorizontalPodAutoscaler
+    name: application
+  patch:
+    spec:
+      minReplicas: 2
+      maxReplicas: 10
+---
+apiVersion: rightsizing.kubex.ai/v1alpha1
+kind: ObjectPatch
+metadata:
+  name: pdb-patch
+  namespace: patches-demo
+spec:
+  targetRef:
+    apiVersion: policy/v1
+    kind: PodDisruptionBudget
+    name: application
+  patch:
+    spec:
+      unhealthyPodEvictionPolicy: AlwaysAllow
+```
+
+OpenShift `autoscaling.openshift.io/v1` ClusterAutoscalers are cluster-scoped.
+Use `ClusterObjectPatch` without a namespace, for example to disable scale-down
+on the existing `default` ClusterAutoscaler:
+
+```yaml
+apiVersion: rightsizing.kubex.ai/v1alpha1
+kind: ClusterObjectPatch
+metadata:
+  name: clusterautoscaler-patch
+spec:
+  targetRef:
+    apiVersion: autoscaling.openshift.io/v1
+    kind: ClusterAutoscaler
+    name: default
+  patch:
+    spec:
+      scaleDown:
+        enabled: false
+```
+
 ### Selector-aware operations
 
 `jsonPatch` is optional and may be used alone or together with `patch`. When
@@ -227,12 +289,22 @@ keep it in a GitOps manifest, or reconciliation may authorize repeated cycles.
 ## Permissions And Claims
 
 The automation-controller service account needs `get` and `patch` on every
-target API resource. Add RBAC only when the existing controller role does not
-cover the target.
+target API resource. Helm enables independent optional grants through
+`rbac.objectPatches.nodePools`, `rbac.objectPatches.horizontalPodAutoscalers`,
+`rbac.objectPatches.podDisruptionBudgets`, and
+`rbac.objectPatches.clusterAutoscalers`, all defaulting to `true`. Each creates a
+separate ClusterRole and binding granting only `get` and `patch` on its target
+resource. Set a flag to `false` to omit that grant; `rbac.create: false` suppresses
+all chart-created RBAC. HPA reads used by safety checks remain in the main role.
+
+Flags do not revoke permissions from external roles. Non-Helm deployments must
+supply target permissions separately. Add RBAC for other targets only when the
+existing controller permissions do not cover them. See the
+[RBAC guide](RBAC-Guide.md#optional-object-patch-permissions) for configuration.
 
 Forbidden or Unauthorized target access produces `Error`, `Ready=False`, and
-reason `TargetAccessDenied`. Grant `get` and `patch`, then edit the patch or set
-the reapply annotation.
+reason `TargetAccessDenied`. After restoring `get` and `patch`, change the patch's
+`spec` or set the [reapply annotation](#reapply-a-patch) to start a new apply cycle.
 
 Patch resources may share a target when their static claims do not conflict. Claims
 are arbitrated oldest first by creation timestamp, then name. A claimant blocked by
