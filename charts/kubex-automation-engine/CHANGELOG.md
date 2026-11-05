@@ -2,6 +2,11 @@
 
 All notable changes to the Kubex Automation Engine Helm chart will be documented in this file.
 
+## [Unreleased]
+
+### Breaking Changes
+- During rollback recovery, pods that have not applied the rollback target are recreated one at a time, overriding in-place preference, strategy eviction disablement, and controller-side `maxUnavailable` checks. The Eviction API is attempted first; if a PodDisruptionBudget specifically rejects it, the controller gracefully deletes the pod to proceed, bypassing the PDB while honoring the pod termination grace period. See [Breaking Changes](./BREAKING.md#upgrading-to-1180-or-later-rollback-recovery-may-bypass-poddisruptionbudgets) and [Rollback Policies](./docs/Rollback-Policies.md#rollback-recovery-behavior-breaking-change).
+
 ## [1.17.0] - 2026-10-28
 
 ### Added
