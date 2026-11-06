@@ -69,6 +69,12 @@ jobs:
         id: detect
         run: ./hack/detect-stack-bumps.sh
 
+      - name: Wait for published Helm repo index
+        if: steps.detect.outputs.needs_bump == 'true'
+        env:
+          BUMP_LIST: ${{ steps.detect.outputs.bump_list }}
+        run: ./hack/wait-for-published-index.sh
+
       - name: Generate app token
         if: steps.detect.outputs.needs_bump == 'true'
         id: app-token
