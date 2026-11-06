@@ -2,6 +2,22 @@
 
 All notable changes to the Kubex Automation Engine Helm chart will be documented in this file.
 
+## [1.18.0] - 2026-11-06
+
+### Breaking
+- **[Rollback recovery may bypass PodDisruptionBudgets](./BREAKING.md#upgrading-to-1180-or-later-rollback-recovery-may-bypass-poddisruptionbudgets)**: when a resize fails and a rollback policy restores the previous resources, pods still running the failed resize are recreated one at a time. If a PodDisruptionBudget would block that eviction and leave the workload stuck on the failed resize, the pod is deleted gracefully so the rollback can finish. This applies only to rollback recovery; normal automation still respects PodDisruptionBudgets. See [Rollback Policies](./docs/Rollback-Policies.md#rollback-recovery-behavior-breaking-change).
+
+### Added
+- `ObjectPatch` and `ClusterObjectPatch` can patch HorizontalPodAutoscalers, PodDisruptionBudgets and OpenShift ClusterAutoscalers, as well as Karpenter NodePools. Each permission can be turned off under `rbac.objectPatches`.
+
+### Changed
+- In-place resizes that don't restart a container are no longer blocked by `respectWorkloadMaxUnavailable`.
+
+### Fixed
+- A rollback now completes only after every replica of the workload is running the rollback target.
+
+---
+
 ## [1.17.0] - 2026-10-28
 
 ### Added
