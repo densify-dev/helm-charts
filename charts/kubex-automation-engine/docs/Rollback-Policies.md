@@ -6,6 +6,16 @@ Use them when you want the controller to monitor workloads after a resize is app
 
 **Important**: Without a matching rollback policy, the controller will not monitor, rollback, or retry failed resizes. The rollback mechanism is disabled by default until you create a policy.
 
+## Rollback Recovery Behavior (Breaking Change)
+
+When a rollback enters `rollingBack`, the controller now recreates pods that have not applied the persisted rollback target. This is the default recovery behavior and can restart workloads even when their normal automation settings prefer in-place resizing, disable eviction, or set controller-side `maxUnavailable` to `0`.
+
+Recovery processes one pod at a time and waits for an existing pod termination before starting another recreation. Pods that have applied the rollback target are not restarted just because they remain unhealthy. In that case the owner remains in `rollingBack`; bounded handling for persistently unhealthy pods is tracked separately in PD-60915.
+
+The controller first uses the Kubernetes Eviction API. PodDisruptionBudgets are honored when they allow eviction. If a PDB specifically rejects the eviction, the controller falls back to a normal graceful pod deletion so rollback can proceed. This fallback bypasses the PDB, but honors the pod's termination grace period. Other eviction errors do not trigger deletion fallback and are retried.
+
+This behavior is intentionally disruptive: a PDB rejection no longer blocks restoration indefinitely. Review PDBs and termination grace periods before upgrading if rollback-triggered restarts are not acceptable for a workload.
+
 ## Scope Mapping
 
 - `RollbackPolicy` is namespaced and applies to workloads within a single namespace.

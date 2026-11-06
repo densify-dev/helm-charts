@@ -605,8 +605,9 @@ spec:
                     type: string
                   respectWorkloadMaxUnavailable:
                     default: true
-                    description: respectWorkloadMaxUnavailable blocks resizing if
-                      it would exceed maxUnavailable.
+                    description: |-
+                      respectWorkloadMaxUnavailable blocks resizing if it would exceed maxUnavailable.
+                      In-place resizes that don't restart a container proceed anyway and never fall back to eviction.
                     type: boolean
                   retainGuaranteedQOS:
                     default: false

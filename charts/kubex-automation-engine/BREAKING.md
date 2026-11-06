@@ -1,5 +1,18 @@
 # Breaking Changes
 
+## Upgrading to 1.18.0 or later: rollback recovery may bypass PodDisruptionBudgets
+
+When a resize rollback is recovering a workload, the controller recreates pods that have not
+adopted the persisted rollback target, one at a time. It first uses the Kubernetes Eviction API.
+If the API explicitly reports that a PodDisruptionBudget blocked that eviction, the controller
+deletes the pod gracefully so the workload can replace it with one running the rollback target.
+This fallback can temporarily take the workload below its PDB's availability allowance; the pod's
+termination grace period is still honored. Other eviction errors, including generic API throttling,
+do not trigger deletion.
+
+Review PDBs for workloads that use automatic resize rollback and account for this recovery behavior
+in availability expectations. No manifest migration is required.
+
 ## Upgrading from versions earlier than 1.9.0 to the latest release: GPU reactive policy rename
 
 GPU policy resources and global setting were hard-renamed:

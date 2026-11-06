@@ -14,6 +14,7 @@ This guide walks through installing the chart and validating the current CRD-bas
   - [Step 3: Install the Helm Chart](#step-3-install-the-helm-chart)
   - [Step 4: Verify Controller Health](#step-4-verify-controller-health)
   - [Step 5: Create Your First Strategy and Policy](#step-5-create-your-first-strategy-and-policy)
+  - [GitOps Integration](./GitOps-Integration.md)
   - [Step 6: Validate Recommendation Application](#step-6-validate-recommendation-application)
   - [Apply Configuration Updates](#apply-configuration-updates)
   - [Uninstall](#uninstall)
@@ -183,6 +184,8 @@ If webhook health is not ready, automation stays paused until probe success reac
 ## Step 5: Create Your First Strategy and Policy
 
 Strategy and policy CRs should be managed separately from the Helm chart using `kubectl`, GitOps, or another external delivery workflow. This approach keeps the chart focused on installing and operating the controller while allowing strategy and policy configurations to evolve independently of chart upgrades.
+
+For a detailed explanation of GitOps ownership and why pod-level resizing does not create drift in the original workload manifest, see [GitOps Integration](./GitOps-Integration.md).
 
 The main CR patterns are:
 

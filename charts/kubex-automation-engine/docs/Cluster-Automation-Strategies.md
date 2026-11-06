@@ -104,7 +104,7 @@ Usage-level `floor` and `ceiling` values apply to all containers by default. Add
 | `spec.safetyChecks.minEphemeralStorageChangePercent` | `10` | Ignores ephemeral-storage changes below this threshold. |
 | `spec.safetyChecks.minReadyDuration` | `10s` | Requires pods to be Ready for at least this duration. |
 | `spec.safetyChecks.requireOwnerPodsReady` | `false` | Requires all pods in the owner workload to be Ready. |
-| `spec.safetyChecks.respectWorkloadMaxUnavailable` | `true` | Prevents actions that exceed workload `maxUnavailable`. |
+| `spec.safetyChecks.respectWorkloadMaxUnavailable` | `true` | Prevents actions that exceed workload `maxUnavailable`. In-place resizes that don't restart a container don't count against it. |
 | `spec.safetyChecks.resizeRetryInterval` | `30s` | Requeue interval for temporarily blocked actions. |
 | `spec.safetyChecks.requireNodeAllocatable` | `true` | Filters request increases that exceed node allocatable capacity. |
 | `spec.safetyChecks.nodeCpuHeadroom` | `10%` | CPU headroom reserved before node allocatable checks. |
