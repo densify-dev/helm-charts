@@ -32,8 +32,17 @@ rules:
   - ""
   resources:
   - namespaces
+  verbs:
+  - get
+  - list
+  - patch
+  - watch
+- apiGroups:
+  - ""
+  resources:
   - pods
   verbs:
+  - delete
   - get
   - list
   - patch
@@ -147,13 +156,6 @@ rules:
   - list
   - patch
   - watch
-- apiGroups:
-  - karpenter.sh
-  resources:
-  - nodepools
-  verbs:
-  - get
-  - patch
 - apiGroups:
   - kubeai.org
   resources:
