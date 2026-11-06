@@ -123,7 +123,6 @@ The following table indicates - depending on the cluster size - which sizing fil
 | Medium          | 5001-10000        | [values-medium.yaml](https://github.com/densify-dev/helm-charts/blob/master/charts/kubex-automation-stack/values-medium.yaml) |
 | Large           | 10001+            | [values-large.yaml](https://github.com/densify-dev/helm-charts/blob/master/charts/kubex-automation-stack/values-large.yaml) |
 
-
 ## Custom Metrics (Optional)
 
 Kubex Data Collector can optionally collect custom container CPU and memory metrics. For details see [docs/custom-metrics.md](docs/custom-metrics.md).
@@ -297,7 +296,7 @@ This chart consists of the following subcharts:
 
 * [Prometheus Community Prometheus chart](https://github.com/prometheus-community/helm-charts/blob/main/charts/prometheus/) - Used on Kubernetes clusters; disabled for OpenShift installs via the OpenShift overlay values file
 
-* [Grafana Beyla chart](https://github.com/grafana/beyla/tree/main/charts/beyla) - Used on Kubernetes and OpenShift clusters to get application runtime information; OpenShift uses an unprivileged eBPF configuration and a dedicated SCC
+* [Grafana Beyla chart](https://github.com/grafana/beyla/tree/main/charts/beyla) - Used on Kubernetes and OpenShift clusters to get application runtime information; OpenShift uses an unprivileged eBPF configuration and a dedicated SCC; like node-exporter, Beyla tolerates all taints by default, including control-plane and dedicated-node taints (this also tolerates `NoExecute` taints indefinitely); this can be overridden by supplying `beyla.tolerations` with a narrower list
 
 * [GPU Process Exporter](../gpu-process-exporter) - Collects container-level metrics for containers using Nvidia GPUs, to overcome the limitations of Nvidia's [DCGM Exporter](https://github.com/NVIDIA/dcgm-exporter) in providing those metrics for use-cases like GPU sharing strategies (e.g. time-slicing, MPS) or the [KAI scheduler](https://github.com/kai-scheduler/KAI-Scheduler); enabled by default and runs **only** on nodes with Nvidia GPUs; requires read-only access to the node and elevated permissions; enabled for OpenShift installs with the OpenShift overlay and its dedicated SCC
 

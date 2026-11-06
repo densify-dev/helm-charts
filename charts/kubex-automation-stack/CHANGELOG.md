@@ -2,6 +2,11 @@
 
 All notable changes to the kubex-automation-stack chart will be documented in this file.
 
+## [Unreleased]
+
+### Fixed
+- Beyla now tolerates all node taints (same as node exporter), so taints alone do not prevent survey coverage.
+
 ## [1.1.33] - 2026-10-28
 
 ### Changed
