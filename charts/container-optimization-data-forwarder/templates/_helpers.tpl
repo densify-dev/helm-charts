@@ -86,6 +86,13 @@
 {{- define "common.imageFromParts" -}}
 {{- $repository := .repository | default "" -}}
 {{- $tag := .tag | default "" -}}
+{{- if not $tag -}}
+{{- if .useFloatingTag -}}
+{{- $tag = .floatingTag | default "" -}}
+{{- else -}}
+{{- $tag = .specificTag | default "" -}}
+{{- end -}}
+{{- end -}}
 {{- if and $repository $tag -}}
 {{- printf "%s:%s" $repository $tag -}}
 {{- else -}}
@@ -106,7 +113,7 @@
 {{- $legacyImage := index $root.Values $legacyKey | default "" -}}
 {{- $images := $root.Values.images | default dict -}}
 {{- $parts := get $images $role | default dict -}}
-{{- $partsImage := include "common.imageFromParts" (dict "repository" (get $parts "repository") "tag" (get $parts "tag")) | trim -}}
+{{- $partsImage := include "common.imageFromParts" $parts | trim -}}
 {{- if $legacyImage -}}
 {{- $legacyImage -}}
 {{- else if $partsImage -}}
