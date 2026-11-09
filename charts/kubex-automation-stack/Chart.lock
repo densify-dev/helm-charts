@@ -1,7 +1,7 @@
 dependencies:
 - name: container-optimization-data-forwarder
   repository: https://densify-dev.github.io/helm-charts
-  version: 4.0.17
+  version: 4.0.18
 - name: kubex-connector
   repository: https://densify-dev.github.io/helm-charts
   version: 1.13.0
@@ -26,5 +26,5 @@ dependencies:
 - name: node-labeler
   repository: https://densify-dev.github.io/helm-charts
   version: 0.1.3
-digest: sha256:90da53b8e125213c86caa9538fdeae23b57c19b5c9c2e845c411d2686c5bf82a
-generated: "2026-11-06T18:21:45.261860857Z"
+digest: sha256:ed550948daac9bfb4ee0d2c80dfdb115516383e0578c7d01067354f29cf3dea9
+generated: "2026-11-09T16:07:15.720694501Z"
