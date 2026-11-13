@@ -42,7 +42,7 @@ The following table lists configuration parameters in values.yaml and their defa
 | Parameter | Mandatory | Description | Default |
 | --- | --- | --- | --- |
 | `image.repository` |  | Exporter image repository. | `densify/gpu-process-exporter` |
-| `image.tag` | :white_check_mark: | Exporter image tag. | `1.1.3` |
+| `image.tag` | :white_check_mark: | Exporter image tag. | `1.1.4` |
 | `image.pullPolicy` |  | Exporter image pull policy. | `Always` |
 | `serviceAccount.create` |  | Create a service account for the exporter. |  |
 | `serviceAccount.name` | Required when `serviceAccount.create` is `false`. | Service account name to use. | `gpu-process-exporter` |
