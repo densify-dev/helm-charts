@@ -4,10 +4,10 @@ dependencies:
   version: 4.0.18
 - name: kubex-connector
   repository: https://densify-dev.github.io/helm-charts
-  version: 1.15.0
+  version: 1.16.0
 - name: kubex-ai-cdi
   repository: https://densify-dev.github.io/helm-charts
-  version: 1.15.0
+  version: 1.16.0
 - name: kubex-automation-engine
   repository: https://densify-dev.github.io/helm-charts
   version: 1.18.0
@@ -22,9 +22,9 @@ dependencies:
   version: 1.22.1
 - name: gpu-process-exporter
   repository: https://densify-dev.github.io/helm-charts
-  version: 1.1.6
+  version: 1.1.7
 - name: node-labeler
   repository: https://densify-dev.github.io/helm-charts
   version: 0.1.3
-digest: sha256:11cfc804c86870e161a96a3001e51e2e4685ad935fda56640e931ab23ae8bb96
-generated: "2026-11-12T13:23:50.893674175Z"
+digest: sha256:4c1b59e07854ccaec887858e9be0a5737fa23c994e25efa20333c57471fad37e
+generated: "2026-11-13T22:02:25.36783733Z"
