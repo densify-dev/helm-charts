@@ -104,9 +104,12 @@ This guide covers:
 | Document | Purpose |
 |----------|---------|
 | **[Getting Started](./docs/Getting-Started.md)** | Step-by-step install, first strategy/policy, and validation workflow |
+| **[GitOps Integration](./docs/GitOps-Integration.md)** | Manage workloads and strategy/policy CRs with clear GitOps ownership boundaries |
 | **[Configuration Reference](./docs/Configuration-Reference.md)** | Current Helm values, generated resources, and CR mapping reference |
 | **[Global Configuration Reference](./docs/Global-Configuration.md)** | Field-by-field reference for the `GlobalConfiguration` custom resource |
 | **[Policy Configuration](./docs/Policy-Configuration.md)** | Configure strategies, policy scope, precedence, and Helm-managed policy generation |
+| **[Cluster Automation Strategies](./docs/Cluster-Automation-Strategies.md)** | Configure cluster-scoped resize permissions and safety behavior |
+| **[Cluster Proactive Policies](./docs/Cluster-Proactive-Policies.md)** | Apply recommendation-driven automation across selected namespaces and workloads |
 | **[Policy Evaluation Reference](./docs/Policy-Evaluation.md)** | Policy type precedence configuration via the `PolicyEvaluation` singleton |
 | **[Multi-Policy Container Rightsizing](./docs/Multi-Policy-Container-Rightsizing.md)** | How same-kind resource policies contribute to separate container/resource targets |
 | **[Object Patches](./docs/Object-Patches.md)** | Apply JSON Merge Patch and selector-aware add, remove, or replace operations to arbitrary objects |
@@ -123,6 +126,7 @@ This guide covers:
 | **[Tuning Guide](./docs/Tuning-Guide.md)** | Tune control plane tolerance, webhook behavior, external dependency timeouts, and resilient placement |
 | **[Global Configuration Reference](./docs/Global-Configuration.md)** | Detailed `GlobalConfiguration` fields, defaults, Helm mapping, and timing behavior |
 | **[Safety Controls Reference](./docs/Safety-Controls.md)** | Pre-checks, filters, evaluation order, and `failedChecks` / `appliedFilters` interpretation |
+| **[Rollback Policies](./docs/Rollback-Policies.md)** | Monitor workload health and automatically restore resources after failed resizes |
 | **[RBAC Permissions](./docs/RBAC-Guide.md)** | Controller and webhook permission model |
 
 ## Reference

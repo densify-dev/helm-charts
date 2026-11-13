@@ -735,7 +735,7 @@ Most of the time you only want debug logs briefly. The quickest way is to update
 
 ```bash
 # Patches the controller deployment to enable debug logging
-kubectl -n kubex patch deploy/$(kubectl -n kubex get deploy -l app.kubernetes.io/name=kubex-automation-engine -o jsonpath='{.items[0].metadata.name}') \
+kubectl -n kubex patch deploy/$(kubectl -n kubex get deploy -l app.kubernetes.io/name=automation-engine -o jsonpath='{.items[0].metadata.name}') \
   --type='json' \
   -p='[{"op":"replace","path":"/spec/template/spec/containers/0/args/3","value":"--zap-log-level=debug"}]'
 ```
@@ -744,7 +744,7 @@ kubectl -n kubex patch deploy/$(kubectl -n kubex get deploy -l app.kubernetes.io
 
 ```bash
 # Restores info-level logging
-kubectl -n kubex patch deploy/$(kubectl -n kubex get deploy -l app.kubernetes.io/name=kubex-automation-engine -o jsonpath='{.items[0].metadata.name}') \
+kubectl -n kubex patch deploy/$(kubectl -n kubex get deploy -l app.kubernetes.io/name=automation-engine -o jsonpath='{.items[0].metadata.name}') \
   --type='json' \
   -p='[{"op":"replace","path":"/spec/template/spec/containers/0/args/3","value":"--zap-log-level=info"}]'
 ```
