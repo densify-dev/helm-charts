@@ -63,3 +63,9 @@ Create the host proc mount to use by the container
 {{- define "gpu-process-exporter.hostProcMount" -}}
 {{- default "/proc" .Values.hostProcMount }}
 {{- end }}
+{{/*
+Create chart name and version as used by the chart label.
+*/}}
+{{- define "gpu-process-exporter.chart" -}}
+{{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
+{{- end }}
