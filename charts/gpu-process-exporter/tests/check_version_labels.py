@@ -8,8 +8,10 @@ import yaml
 
 
 chart = Path(__file__).resolve().parents[1]
+chart_version = yaml.safe_load((chart / "Chart.yaml").read_text())["version"]
 cases = [
     ("1.1.4", "1.1.4"),
+    ("1.1.4@sha256:" + "0" * 64, "1.1.4"),
     ("_release", "release"),
     ("release._-", "release"),
     ("a" * 128, "a" * 63),
@@ -21,8 +23,18 @@ for tag, expected in cases:
         ["helm", "template", "kubex", str(chart), "--set-string", f"image.tag={tag}"],
         text=True,
     )
+    objects = list(yaml.safe_load_all(rendered))
+    rbac = [
+        obj for obj in objects
+        if obj and obj.get("kind") in {"ServiceAccount", "ClusterRole", "ClusterRoleBinding"}
+    ]
+    assert len(rbac) == 3
+    for obj in rbac:
+        labels = obj["metadata"]["labels"]
+        assert labels["helm.sh/chart"] == f"gpu-process-exporter-{chart_version}"
+        assert labels["app.kubernetes.io/managed-by"] == "Helm"
     daemonset = next(
-        obj for obj in yaml.safe_load_all(rendered)
+        obj for obj in objects
         if obj and obj.get("kind") == "DaemonSet"
     )
     pod = daemonset["spec"]["template"]
