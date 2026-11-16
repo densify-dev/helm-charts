@@ -200,6 +200,11 @@
         "configSecretName": {
           "type": "string"
         },
+        "metricsPort": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65535
+        },
         "securityContext": {
           "type": "object"
         },
@@ -355,6 +360,11 @@
     "webhook": {
       "type": "object",
       "properties": {
+        "port": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65535
+        },
         "timeoutSeconds": {
           "type": "integer",
           "minimum": 1,

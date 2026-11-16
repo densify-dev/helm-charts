@@ -159,6 +159,7 @@ secondaryCluster:
 | `gateway.image.repository` | `densify/automation-gateway` | Gateway sidecar image |
 | `createSecrets` | `true` | Create required gateway and TLS secrets |
 | `webhook.enabled` | `true` | Enable webhook components |
+| `webhook.port` | `9443` | Port the controller's webhook server binds to; sets the controller's `--webhook-port` flag and the `webhook` container port |
 | `webhook.timeoutSeconds` | `10` | Admission webhook timeout in seconds |
 | `webhook.failurePolicy` | `Ignore` | Failure policy for validating webhooks; default is fail-open, but operators can change it |
 | `webhook.podMutation.namePrefix` | `zzz-` | Prefix added to the late mutating webhook object and webhook entry names; set `""` to remove prefix. Prefix may contain lowercase letters, digits, and hyphens, and must start with a letter or digit. **Warning:** changing this renames webhook objects on upgrade, and Helm applies that as delete-then-create, leaving brief window where pod mutation webhook is absent. |
@@ -194,10 +195,24 @@ secondaryCluster:
 | `metrics.serviceMonitor.namespaceSelector` | `[]` | Namespace names to watch from the ServiceMonitor; empty means all namespaces |
 | `metrics.serviceMonitor.scheme` | `http` | Scrape scheme for the controller metrics endpoint; HTTP pairs with `--metrics-secure=false` in the manager args |
 | `metrics.serviceMonitor.scrapeTimeout` | `""` | Optional scrape timeout; must be less than or equal to `metrics.serviceMonitor.interval` when set |
+| `gateway.metricsPort` | `8182` | Port for the gateway sidecar's `/metrics` endpoint; sets the gateway's `METRICS_ADDR`, the `gateway-metrics` container port and the matching metrics Service port. The gateway shares the pod's network namespace, so the chart rejects a port that collides with the gateway proxy port (`8181`), `controllerManager.metricsBindAddress`, `controllerManager.healthProbeBindAddress` or `webhook.port`, or that matches `metrics.port` (both share the metrics Service) when `metrics.enabled` |
 | `gateway.securityContext` | chart default | Gateway sidecar container security context |
 | `cleanup.podSecurityContext` | `{}` | Optional pod security context for the pre-delete cleanup job |
 | `cleanup.securityContext` | chart default | Container security context for the pre-delete cleanup job |
 | `cleanup.resources` | requests `cpu: 10m`, `memory: 32Mi`; limits `memory: 64Mi` | Resource requests and limits for the pre-delete cleanup job |
+
+### Build Information Metrics
+
+The controller and the gateway sidecar each expose a build information gauge with a constant value of `1`:
+
+| Metric | Container | Container port | Metrics Service port |
+| ------ | --------- | -------------- | -------------------- |
+| `kubex_automation_controller_build_info` | `manager` | `metrics` (`controllerManager.metricsBindAddress`, default `8080`) | `metrics` (`metrics.port`) |
+| `kubex_automation_gateway_build_info` | `automation-gateway` | `gateway-metrics` (`gateway.metricsPort`, default `8182`) | `gateway-metrics` (`gateway.metricsPort`) |
+
+Both carry the labels `version`, `revision` (full Git commit), `branch`, `goversion`, `goos`, `goarch` and `tags`. The controller's `version` is its image tag, for example `1.18.0`, and the gateway's is its release tag, for example `v1.10`. `branch` is empty, and `tags` lists the Go build tags, or `unknown` when there are none.
+
+When `metrics.serviceMonitor.enabled` is `true`, the ServiceMonitor scrapes both ports; the gateway endpoint always uses HTTP. The `prometheus.io/*` annotations on the metrics Service name only the controller port, so annotation-based scrapers reach the gateway metric only through a pod or Service-port based scrape config.
 
 ### Additional Early Pod Mutation
 
