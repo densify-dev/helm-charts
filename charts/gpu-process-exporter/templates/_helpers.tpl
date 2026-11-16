@@ -11,6 +11,12 @@ Create the image tag to use
 {{- required "image.tag is required" .Values.image.tag }}
 {{- end }}
 {{/*
+Keep valid container tags within Kubernetes label length and boundary rules.
+*/}}
+{{- define "gpu-process-exporter.versionLabel" -}}
+{{- include "gpu-process-exporter.imageTag" . | trunc 63 | trimAll "._-" }}
+{{- end }}
+{{/*
 Create the image pull policy to use
 */}}
 {{- define "gpu-process-exporter.imagePullPolicy" -}}
