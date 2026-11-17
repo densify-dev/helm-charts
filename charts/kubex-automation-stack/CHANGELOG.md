@@ -2,11 +2,50 @@
 
 All notable changes to the kubex-automation-stack chart will be documented in this file.
 
-## [Unreleased]
+## [1.1.41] - 2026-11-17
 
 ### Changed
 - Beyla now tolerates all node taints (same as node exporter), so taints alone do not prevent survey coverage.
+---
 
+## [1.1.40] - 2026-11-17
+
+### Changed
+- Updated gpu-process-exporter dependency to 1.1.8.
+---
+
+## [1.1.39] - 2026-11-13
+
+### Changed
+- Updated kubex-connector dependency to 1.16.0.
+- Updated kubex-ai-cdi dependency to 1.16.0.
+- Updated gpu-process-exporter dependency to 1.1.7.
+---
+
+## [1.1.38] - 2026-11-12
+
+### Changed
+- Updated kubex-connector dependency to 1.15.0.
+- Updated kubex-ai-cdi dependency to 1.15.0.
+---
+
+## [1.1.37] - 2026-11-11
+
+### Changed
+- Updated gpu-process-exporter dependency to 1.1.6.
+---
+
+## [1.1.36] - 2026-11-09
+
+### Changed
+- Updated kubex-connector dependency to 1.14.0.
+- Updated kubex-ai-cdi dependency to 1.14.0.
+---
+
+## [1.1.35] - 2026-11-09
+
+### Changed
+- Updated container-optimization-data-forwarder dependency to 4.0.18.
 ---
 
 ## [1.1.34] - 2026-11-06

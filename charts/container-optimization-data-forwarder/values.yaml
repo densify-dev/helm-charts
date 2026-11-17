@@ -15,20 +15,22 @@ imageCheckPrometheusReady: ""
 images:
   dataCollection:
     repository: densify/container-optimization-data-forwarder
-    tag: "4"
+    useFloatingTag: true
+    floatingTag: "4"
+    specificTag: "4.8.1"
     pullPolicy: Always
   azureToken:
     repository: densify/azure-rest-api-token
     tag: "latest"
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
   gcpOAuth2Token:
     repository: densify/gcp-oauth2-token
     tag: "latest"
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
   checkPrometheusReady:
     repository: busybox
     tag: "latest"
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
 # Legacy global pull policy fallback (applies to all images only when set).
 pullPolicy: ""
 

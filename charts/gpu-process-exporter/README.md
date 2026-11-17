@@ -25,6 +25,14 @@ The Kubex GPU process exporter addresses these limitations.
 * A k8s cluster with at least one Nvidia GPU
 * All nodes with Nvidia GPUs have to be labeled `nvidia.com/gpu.present=true` (typically done by the [Nvidia GPU OPerator](https://github.com/nvidia/gpu-operator))
 
+## Upgrade notes
+
+### 1.1.8
+
+This release adds version and Helm ownership labels to the Pod template. Upgrading
+from an earlier chart version rolls all exporter Pods once. The chart-version label
+is only on resource metadata, so later chart-only version bumps do not trigger a rollout.
+
 ## Details
 
 Deploys a DaemonSet with the following requirements:
@@ -42,7 +50,7 @@ The following table lists configuration parameters in values.yaml and their defa
 | Parameter | Mandatory | Description | Default |
 | --- | --- | --- | --- |
 | `image.repository` |  | Exporter image repository. | `densify/gpu-process-exporter` |
-| `image.tag` | :white_check_mark: | Exporter image tag. |  |
+| `image.tag` | :white_check_mark: | Exporter image tag. | `1.1.4` |
 | `image.pullPolicy` |  | Exporter image pull policy. | `Always` |
 | `serviceAccount.create` |  | Create a service account for the exporter. |  |
 | `serviceAccount.name` | Required when `serviceAccount.create` is `false`. | Service account name to use. | `gpu-process-exporter` |
