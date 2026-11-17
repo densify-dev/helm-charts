@@ -69,10 +69,10 @@ prometheus:
 beyla:
   resources:
     requests:
-      memory: "512Mi"
-      cpu: "50m"
+      memory: "400Mi"
+      cpu: "200m"
     limits:
-      memory: "1Gi"
+      memory: "5Gi"
 k8s-ephemeral-storage-metrics:
   resources:
     requests:

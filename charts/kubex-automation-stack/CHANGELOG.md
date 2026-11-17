@@ -2,6 +2,14 @@
 
 All notable changes to the kubex-automation-stack chart will be documented in this file.
 
+## [1.1.41] - 2026-11-17
+
+### Changed
+- Beyla now tolerates all node taints (same as node exporter), so taints alone do not prevent survey coverage.
+- Modified Beyla requests and limits for different cluster sizes.
+- Updated Beyla chart dependency to 1.16.19.
+---
+
 ## [1.1.40] - 2026-11-17
 
 ### Changed
@@ -53,7 +61,6 @@ All notable changes to the kubex-automation-stack chart will be documented in th
 
 ### Changed
 - Updated kubex-automation-engine dependency to 1.17.0.
-
 ---
 
 ## [1.1.31] - 2026-10-26

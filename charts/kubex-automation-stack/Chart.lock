@@ -16,7 +16,7 @@ dependencies:
   version: 29.37.2
 - name: beyla
   repository: https://grafana.github.io/helm-charts
-  version: 1.16.16
+  version: 1.16.19
 - name: k8s-ephemeral-storage-metrics
   repository: https://densify-dev.github.io/helm-charts
   version: 1.22.1
@@ -26,5 +26,5 @@ dependencies:
 - name: node-labeler
   repository: https://densify-dev.github.io/helm-charts
   version: 0.1.3
-digest: sha256:d7dc2ed6e777abf447c0b7a1f731e67d9be8574088028606159ef3c1fa76760a
-generated: "2026-11-17T17:14:00.487228202Z"
+digest: sha256:b34d712138a90e382594a67d8209740eefd9fbfff9480ae6caa0574dac40620f
+generated: "2026-11-17T12:26:28.723634479-05:00"

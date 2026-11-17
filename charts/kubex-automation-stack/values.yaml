@@ -314,9 +314,7 @@ beyla:
   contextPropagation:
     enabled: false # Survey only - no context propagation needed
   tolerations:
-    - key: "kubernetes.io/arch"
-      operator: "Exists"
-      effect: "NoSchedule"
+    - operator: Exists
   service:
     enabled: true
     port: 8999
