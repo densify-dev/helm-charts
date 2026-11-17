@@ -5,6 +5,8 @@ metadata:
   name: {{ include "gpu-process-exporter.serviceAccountName" . }}
   namespace: {{ .Release.Namespace }}
   labels:
+    helm.sh/chart: {{ include "gpu-process-exporter.chart" . }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
     app.kubernetes.io/name: {{ .Chart.Name }}
     app.kubernetes.io/instance: {{ .Release.Name }}
 ---
@@ -15,6 +17,8 @@ kind: ClusterRole
 metadata:
   name: {{ include "gpu-process-exporter.clusterRoleName" . }}
   labels:
+    helm.sh/chart: {{ include "gpu-process-exporter.chart" . }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
     app.kubernetes.io/name: {{ .Chart.Name }}
     app.kubernetes.io/instance: {{ .Release.Name }}
 rules:
@@ -27,6 +31,8 @@ kind: ClusterRoleBinding
 metadata:
   name: {{ include "gpu-process-exporter.clusterRoleBindingName" . }}
   labels:
+    helm.sh/chart: {{ include "gpu-process-exporter.chart" . }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
     app.kubernetes.io/name: {{ .Chart.Name }}
     app.kubernetes.io/instance: {{ .Release.Name }}
 subjects:
