@@ -2,6 +2,12 @@
 
 All notable changes to the kubex-automation-stack chart will be documented in this file.
 
+## [1.1.42] - 2026-11-19
+
+### Changed
+- Updated container-optimization-data-forwarder dependency to 4.0.19.
+---
+
 ## [1.1.41] - 2026-11-17
 
 ### Changed
