@@ -17,7 +17,7 @@ images:
     repository: densify/container-optimization-data-forwarder
     useFloatingTag: true
     floatingTag: "4"
-    specificTag: "4.8.1"
+    specificTag: "4.8.2"
     pullPolicy: Always
   azureToken:
     repository: densify/azure-rest-api-token
