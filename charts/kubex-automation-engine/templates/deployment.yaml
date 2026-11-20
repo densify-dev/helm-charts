@@ -38,6 +38,18 @@
 {{- $_ := set $deschedulerSecurityContext "capabilities" (dict "drop" (list "ALL")) -}}
 {{- end -}}
 {{- $kubexAPIRequestTimeout := include "kubex-automation-engine.kubexAPIRequestTimeout" . -}}
+{{- if .Values.gateway.enabled -}}
+{{- /* The gateway shares the pod network namespace and the metrics Service, so its metrics port must not collide with another listener in the pod or with the controller's Service port. */ -}}
+{{- $podPorts := dict "8181" "the gateway proxy port" (trimPrefix ":" .Values.controllerManager.healthProbeBindAddress) "controllerManager.healthProbeBindAddress" (toString (int .Values.webhook.port)) "webhook.port" -}}
+{{- if .Values.metrics.enabled -}}
+{{- $_ := set $podPorts (toString (int .Values.metrics.port)) "metrics.port" -}}
+{{- $_ := set $podPorts (trimPrefix ":" .Values.controllerManager.metricsBindAddress) "controllerManager.metricsBindAddress" -}}
+{{- end -}}
+{{- $gatewayMetricsPort := toString (int .Values.gateway.metricsPort) -}}
+{{- if hasKey $podPorts $gatewayMetricsPort -}}
+{{- fail (printf "gateway.metricsPort %s collides with %s; choose a port not used by another listener in the pod or by the metrics Service" $gatewayMetricsPort (get $podPorts $gatewayMetricsPort)) -}}
+{{- end -}}
+{{- end -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -221,6 +233,8 @@ spec:
           value: /densify/data/spool
         - name: API_REQUEST_TIMEOUT
           value: {{ $kubexAPIRequestTimeout | quote }}
+        - name: METRICS_ADDR
+          value: {{ printf ":%v" .Values.gateway.metricsPort | quote }}
         - name: DENSIFY_USERNAME
           valueFrom:
             secretKeyRef:
@@ -239,6 +253,9 @@ spec:
         ports:
         - containerPort: 8181
           name: gateway
+          protocol: TCP
+        - containerPort: {{ .Values.gateway.metricsPort }}
+          name: gateway-metrics
           protocol: TCP
         securityContext:
           {{- toYaml .Values.gateway.securityContext | nindent 10 }}
