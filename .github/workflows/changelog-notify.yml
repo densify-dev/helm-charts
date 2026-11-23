@@ -1,0 +1,47 @@
+# Save as: .github/workflows/changelog-notify.yml
+name: Email chart changelog updates
+
+on:
+  push:
+    branches: [main, master]          # keep whichever is your default branch
+    paths:
+      - '**/CHANGELOG.md'
+  workflow_dispatch:                  # lets you run it by hand to test
+    inputs:
+      before:
+        description: 'Compare from this commit (default: previous commit)'
+        default: 'HEAD~1'
+      dry_run:
+        description: 'Only print what would be sent (no emails)'
+        type: boolean
+        default: true
+      test_mode:
+        description: 'Send to the SUBSCRIBERS_TEST secret instead of real subscribers'
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0              # full history so we can diff the whole push
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - run: pip install markdown==3.7
+
+      - name: Send changelog emails
+        env:
+          ALL_SECRETS: ${{ toJSON(secrets) }}   # script picks SENDGRID_API_KEY + SUBSCRIBERS_* from here
+          BEFORE_SHA: ${{ github.event.before || inputs.before }}
+          AFTER_SHA: ${{ github.sha }}
+          DRY_RUN: ${{ inputs.dry_run || 'false' }}
+          TEST_MODE: ${{ inputs.test_mode || 'false' }}
+        run: python .github/scripts/notify_changelog.py
