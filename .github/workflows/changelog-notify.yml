@@ -73,7 +73,7 @@ jobs:
         run: python3 .github/scripts/notify_changelog.py
 
       - name: Save successful delivery checkpoint
-        if: github.event_name == 'schedule' || (inputs.dry_run == false && inputs.test_mode == false)
+        if: github.event_name == 'schedule'
         env:
           CHECKPOINT_TAG: changelog-notify/last-successful
         run: |
