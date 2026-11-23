@@ -2,8 +2,9 @@
 """Save as: .github/scripts/notify_changelog.py
 
 For each primary chart in .github/changelog-notify.json whose own or included
-CHANGELOG.md changed in this push, email the newly added lines to that chart's
-subscribers. Included dependency release notes are added to the same email.
+CHANGELOG.md changed in the selected commit range, email the newly added lines
+to that chart's subscribers. Included dependency release notes are added to
+the same digest email.
 
 Subscriber addresses come from GitHub secrets (one per chart) and are never
 printed, because Actions logs on a public repo are public.
@@ -142,7 +143,7 @@ def main():
 
         match = re.search(r"\bv?(\d+\.\d+\.\d+)\b", text)
         version = f" v{match.group(1)}" if match else ""
-        subject = f"{chart}{version}: what's new"
+        subject = f"{chart}{version}: weekly release digest"
         link = f"{server}/{repo}/blob/{after}/{path}"
 
         print(f"--- {chart}: {len(recipients)} recipient(s) from {secret_name}")

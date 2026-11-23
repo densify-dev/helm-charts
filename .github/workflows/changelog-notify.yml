@@ -1,9 +1,10 @@
-# Save as: .github/workflows/changelog-notify.yml
 name: Email chart changelog updates
 
 on:
-  # Production notifications run from the successful Release Charts workflow,
-  # after the chart has been published. Keep this workflow for manual tests.
+  # Send one digest each Monday. The script only sends when the chart's
+  # changelog contains additions in the preceding seven days.
+  schedule:
+    - cron: '0 9 * * 1'
   workflow_dispatch:
     inputs:
       before:
@@ -35,12 +36,29 @@ jobs:
 
       - run: pip install --disable-pip-version-check markdown==3.7
 
+      - name: Determine digest range
+        id: range
+        env:
+          MANUAL_BEFORE: ${{ inputs.before }}
+        run: |
+          if [ -n "$MANUAL_BEFORE" ]; then
+            before="$MANUAL_BEFORE"
+          else
+            # Use the last commit at or before the start of the seven-day
+            # window. This makes the diff include every commit in the window.
+            before=$(git rev-list -1 --before="7 days ago" HEAD || true)
+          fi
+          if [ -z "$before" ]; then
+            before=4b825dc642cb6eb9a060e54bf8d69288fbee4904
+          fi
+          echo "before=$before" >> "$GITHUB_OUTPUT"
+
       - name: Send changelog emails
         env:
           SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
           SUBSCRIBERS_KUBEX_AUTOMATION_STACK: ${{ secrets.SUBSCRIBERS_KUBEX_AUTOMATION_STACK }}
           SUBSCRIBERS_TEST: ${{ secrets.SUBSCRIBERS_TEST }}
-          BEFORE_SHA: ${{ inputs.before }}
+          BEFORE_SHA: ${{ steps.range.outputs.before }}
           AFTER_SHA: ${{ github.sha }}
           DRY_RUN: ${{ inputs.dry_run }}
           TEST_MODE: ${{ inputs.test_mode }}
