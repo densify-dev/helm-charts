@@ -47,6 +47,8 @@ def changed(before, after, path):
         ["git", "diff", "--quiet", before, after, "--", path],
         check=False,
     )
+    if result.returncode not in (0, 1):
+        raise subprocess.CalledProcessError(result.returncode, result.args)
     return result.returncode == 1
 
 
