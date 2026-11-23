@@ -1,0 +1,18 @@
+{
+  "from": { "email": "noreply@kubex.ai", "name": "Kubex Helm Charts" },
+  "reply_to": null,
+  "postal_address": "200 – 120 East Beaver Creek Rd Richmond Hill, ON L4B 4V1 Canada.",
+  "charts": {
+    "kubex-automation-stack": {
+      "changelog": "charts/kubex-automation-stack/CHANGELOG.md",
+      "unsubscribe_group_id": 44703,
+      "subscribers_secret": "SUBSCRIBERS_KUBEX_AUTOMATION_STACK"
+    },
+    "kubex-automation-engine": {
+      "changelog": "charts/kubex-automation-engine/CHANGELOG.md",
+      "unsubscribe_group_id": 44704,
+      "subscribers_secret": "SUBSCRIBERS_KUBEX_AUTOMATION_ENGINE"
+    }
+  }
+}
+
