@@ -20,7 +20,11 @@ on:
         default: true
 
 permissions:
-  contents: read
+  contents: write
+
+concurrency:
+  group: changelog-notify
+  cancel-in-progress: false
 
 jobs:
   notify:
@@ -28,7 +32,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0              # full history so we can diff the whole push
+          fetch-depth: 0
+          fetch-tags: true
 
       - uses: actions/setup-python@v5
         with:
@@ -44,9 +49,12 @@ jobs:
           if [ -n "$MANUAL_BEFORE" ]; then
             before="$MANUAL_BEFORE"
           else
-            # Use the last commit at or before the start of the seven-day
-            # window. This makes the diff include every commit in the window.
-            before=$(git rev-list -1 --before="7 days ago" HEAD || true)
+            # Continue from the last successful production delivery. The
+            # time-based fallback is only used to initialize the checkpoint.
+            before=$(git rev-parse -q --verify refs/tags/changelog-notify/last-successful || true)
+            if [ -z "$before" ]; then
+              before=$(git rev-list -1 --before="7 days ago" HEAD || true)
+            fi
           fi
           if [ -z "$before" ]; then
             before=4b825dc642cb6eb9a060e54bf8d69288fbee4904
@@ -63,3 +71,14 @@ jobs:
           DRY_RUN: ${{ inputs.dry_run }}
           TEST_MODE: ${{ inputs.test_mode }}
         run: python3 .github/scripts/notify_changelog.py
+
+      - name: Save successful delivery checkpoint
+        if: github.event_name == 'schedule' || (inputs.dry_run == false && inputs.test_mode == false)
+        env:
+          CHECKPOINT_TAG: changelog-notify/last-successful
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -f "$CHECKPOINT_TAG" "$GITHUB_SHA"
+          git push origin "refs/tags/$CHECKPOINT_TAG" --force

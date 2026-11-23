@@ -41,6 +41,15 @@ def added_lines(before, after, path):
     return "\n".join(lines).strip()
 
 
+def changed(before, after, path):
+    """Return whether a path changed in the selected commit range."""
+    result = subprocess.run(
+        ["git", "diff", "--quiet", before, after, "--", path],
+        check=False,
+    )
+    return result.returncode == 1
+
+
 def file_at(ref, path):
     """Return a repository file at ref, or an empty string if it is absent."""
     if ref == EMPTY_TREE:
@@ -56,6 +65,17 @@ def dependency_version(ref, chart_path, dependency):
     pattern = (rf"(?ms)^\s*-\s+name:\s*['\"]?{re.escape(dependency)}['\"]?\s*$"
                rf".*?^\s+version:\s*['\"]?([^'\"\s]+)")
     match = re.search(pattern, chart)
+    return match.group(1) if match else None
+
+
+def primary_chart_path(changelog_path):
+    return f"{changelog_path.rsplit('/', 1)[0]}/Chart.yaml"
+
+
+def release_version(changelog_text):
+    """Return the first release version in a primary changelog addition."""
+    match = re.search(r"^## \[(\d+\.\d+\.\d+)\]", changelog_text,
+                      re.MULTILINE)
     return match.group(1) if match else None
 
 
@@ -102,12 +122,13 @@ def combined_changelog_text(before, after, primary_path, text, config,
     if text:
         sections.append(resolve_links(text, primary_path, server, repo, after))
 
+    chart_path = primary_chart_path(primary_path)
     for included in config.get("includes", []):
         dependency = included.get("dependency")
         included_text = ""
         if dependency:
-            old_version = dependency_version(before, primary_path, dependency)
-            new_version = dependency_version(after, primary_path, dependency)
+            old_version = dependency_version(before, chart_path, dependency)
+            new_version = dependency_version(after, chart_path, dependency)
             included_text = release_notes_between(
                 file_at(after, included["changelog"]), old_version, new_version)
         else:
@@ -194,6 +215,7 @@ def main():
     repo = os.environ.get("GITHUB_REPOSITORY", "")
     server = os.environ.get("GITHUB_SERVER_URL", "https://github.com")
     sent = 0
+    delivery_complete = True
 
     for chart, cfg in config["charts"].items():
         # Embedded charts are delivered through their primary chart's release
@@ -202,7 +224,16 @@ def main():
             continue
 
         path = cfg["changelog"]
+        # Included dependency notes belong to a primary notification only after
+        # the primary chart itself is released. A dependency's own release can
+        # otherwise notify stack subscribers before the stack adopts it.
+        if not changed(before, after, primary_chart_path(path)):
+            continue
         text = added_lines(before, after, path)
+        if not text:
+            continue
+        primary_version = release_version(text)
+        primary_text = resolve_links(text, path, server, repo, after)
         text = combined_changelog_text(
             before, after, path, text, cfg, server, repo)
         if not text:
@@ -211,15 +242,15 @@ def main():
         secret_name = "SUBSCRIBERS_TEST" if test_mode else cfg["subscribers_secret"]
         recipients = parse_emails(os.environ.get(secret_name))
 
-        match = re.search(r"\bv?(\d+\.\d+\.\d+)\b", text)
-        version = f" v{match.group(1)}" if match else ""
+        version = f" v{primary_version}" if primary_version else ""
         subject = f"{chart}{version}: weekly release digest"
         link = f"{server}/{repo}/blob/{after}/{path}"
 
         print(f"--- {chart}: notification prepared")
-        print(f"Subject: {subject}\n{text}\n")
+        print(f"Subject: {subject}\n{primary_text}\n")
         if not recipients:
-            print(f"::warning::No valid subscribers configured for {chart}; skipping.")
+            print(f"::error::No valid subscribers configured for {chart}.")
+            delivery_complete = False
             continue
         if dry_run:
             continue
@@ -248,6 +279,8 @@ def main():
         sent += 1
 
     mode = " (dry run)" if dry_run else (" (test mode)" if test_mode else "")
+    if not delivery_complete:
+        sys.exit("No subscribers were configured for one or more notifications.")
     print(f"Done. Emails sent for {sent} chart(s){mode}.")
 
 
