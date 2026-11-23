@@ -214,11 +214,11 @@ policy:
 #  images:
 #    controller:
 #      repository: registry.example.com/kubex/automation-director
-#      tag: "1.4"
+#      tag: "1.5"
 #      pullPolicy: IfNotPresent
 #    gateway:
 #      repository: registry.example.com/kubex/automation-gateway
-#      tag: "1.2"
+#      tag: "1.11"
 #      pullPolicy: IfNotPresent
 #    webhook:
 #      repository: registry.example.com/kubex/container-automation

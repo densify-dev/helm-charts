@@ -130,6 +130,7 @@ valkey:
 ## Controller And Webhook Images
 
 The chart supports both legacy full-image fields and new split repository/tag fields.
+Chart 1.0.22 defaults to `densify/automation-director:1.5` and `densify/automation-gateway:1.11` for both gateway sidecars.
 
 - Legacy fields remain supported: `deployment.controllerImage`, `deployment.gatewayImage`, `deployment.webhookImage`, `deployment.waitForValkeyImage`.
 - New fields: `deployment.images.<component>.repository`, `deployment.images.<component>.tag`, and `deployment.images.<component>.pullPolicy`.
@@ -161,11 +162,11 @@ deployment:
   images:
     controller:
       repository: registry.example.com/kubex/automation-director
-      tag: "1.4"
+      tag: "1.5"
       pullPolicy: IfNotPresent
     gateway:
       repository: registry.example.com/kubex/automation-gateway
-      tag: "1.2"
+      tag: "1.11"
       pullPolicy: IfNotPresent
     webhook:
       repository: registry.example.com/kubex/container-automation

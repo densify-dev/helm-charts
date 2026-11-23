@@ -54,11 +54,11 @@ deployment:
       pullPolicy: IfNotPresent
     gateway:
       repository: densify/automation-gateway
-      tag: "1.2"
+      tag: "1.11"
       pullPolicy: IfNotPresent
     controller:
       repository: densify/automation-director
-      tag: "1.4"
+      tag: "1.5"
       pullPolicy: IfNotPresent
     waitForValkey:
       repository: busybox
