@@ -11,6 +11,7 @@
       "includes": [
         {
           "chart": "kubex-automation-engine",
+          "dependency": "kubex-automation-engine",
           "changelog": "charts/kubex-automation-engine/CHANGELOG.md"
         }
       ]

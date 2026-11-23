@@ -17,6 +17,7 @@ import sys
 import time
 import urllib.error
 import urllib.request
+from urllib.parse import urljoin
 
 import markdown
 
@@ -40,12 +41,80 @@ def added_lines(before, after, path):
     return "\n".join(lines).strip()
 
 
-def combined_changelog_text(before, after, text, config):
-    """Combine primary notes with notes from included charts changed together."""
-    sections = [text] if text else []
+def file_at(ref, path):
+    """Return a repository file at ref, or an empty string if it is absent."""
+    if ref == EMPTY_TREE:
+        return ""
+    result = subprocess.run(["git", "show", f"{ref}:{path}"], check=False,
+                            capture_output=True, text=True)
+    return result.stdout if result.returncode == 0 else ""
+
+
+def dependency_version(ref, chart_path, dependency):
+    """Read a dependency version from a Chart.yaml without requiring PyYAML."""
+    chart = file_at(ref, chart_path)
+    pattern = (rf"(?ms)^\s*-\s+name:\s*['\"]?{re.escape(dependency)}['\"]?\s*$"
+               rf".*?^\s+version:\s*['\"]?([^'\"\s]+)")
+    match = re.search(pattern, chart)
+    return match.group(1) if match else None
+
+
+def version_tuple(version):
+    match = re.fullmatch(r"(\d+)\.(\d+)\.(\d+)", version or "")
+    return tuple(map(int, match.groups())) if match else None
+
+
+def release_notes_between(changelog, old_version, new_version):
+    """Return complete release sections in (old_version, new_version]."""
+    old = version_tuple(old_version)
+    new = version_tuple(new_version)
+    if not old or not new or old >= new:
+        return ""
+
+    sections = re.findall(
+        r"(?ms)^## \[(?:\d+\.\d+\.\d+)\].*?(?=^## \[|\Z)", changelog)
+    selected = []
+    for section in sections:
+        version = re.search(r"^## \[(\d+\.\d+\.\d+)\]", section, re.MULTILINE)
+        if version and old < version_tuple(version.group(1)) <= new:
+            selected.append(section.strip())
+    return "\n\n".join(selected)
+
+
+def resolve_links(text, source_path, server, repo, ref):
+    """Make relative Markdown links point to files beside source_path on GitHub."""
+    base = f"{server}/{repo}/blob/{ref}/{source_path.rsplit('/', 1)[0]}/"
+
+    def replace(match):
+        target = match.group(1)
+        if (target.startswith(("#", "/", "//")) or
+                re.match(r"^[a-z][a-z0-9+.-]*:", target, re.IGNORECASE)):
+            return match.group(0)
+        return match.group(0).replace(target, urljoin(base, target), 1)
+
+    return re.sub(r"\]\(([^)\s]+)", replace, text)
+
+
+def combined_changelog_text(before, after, primary_path, text, config,
+                            server, repo):
+    """Combine primary notes with included releases adopted by the primary chart."""
+    sections = []
+    if text:
+        sections.append(resolve_links(text, primary_path, server, repo, after))
+
     for included in config.get("includes", []):
-        included_text = added_lines(before, after, included["changelog"])
+        dependency = included.get("dependency")
+        included_text = ""
+        if dependency:
+            old_version = dependency_version(before, primary_path, dependency)
+            new_version = dependency_version(after, primary_path, dependency)
+            included_text = release_notes_between(
+                file_at(after, included["changelog"]), old_version, new_version)
+        else:
+            included_text = added_lines(before, after, included["changelog"])
         if included_text:
+            included_text = resolve_links(
+                included_text, included["changelog"], server, repo, after)
             sections.append(
                 f"## {included['chart']} release notes\n\n{included_text}"
             )
@@ -134,7 +203,8 @@ def main():
 
         path = cfg["changelog"]
         text = added_lines(before, after, path)
-        text = combined_changelog_text(before, after, text, cfg)
+        text = combined_changelog_text(
+            before, after, path, text, cfg, server, repo)
         if not text:
             continue
 
@@ -146,10 +216,10 @@ def main():
         subject = f"{chart}{version}: weekly release digest"
         link = f"{server}/{repo}/blob/{after}/{path}"
 
-        print(f"--- {chart}: {len(recipients)} recipient(s) from {secret_name}")
+        print(f"--- {chart}: notification prepared")
         print(f"Subject: {subject}\n{text}\n")
         if not recipients:
-            print(f"::warning::{secret_name} is empty or missing; skipping {chart}.")
+            print(f"::warning::No valid subscribers configured for {chart}; skipping.")
             continue
         if dry_run:
             continue
@@ -174,7 +244,7 @@ def main():
             if config.get("reply_to"):
                 payload["reply_to"] = config["reply_to"]
             status = send(api_key, payload)
-            print(f"Batch of {len(batch)} accepted by SendGrid (HTTP {status}).")
+            print(f"SendGrid accepted a notification batch (HTTP {status}).")
         sent += 1
 
     mode = " (dry run)" if dry_run else (" (test mode)" if test_mode else "")
