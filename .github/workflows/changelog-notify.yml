@@ -2,11 +2,9 @@
 name: Email chart changelog updates
 
 on:
-  push:
-    branches: [main, master]          # keep whichever is your default branch
-    paths:
-      - '**/CHANGELOG.md'
-  workflow_dispatch:                  # lets you run it by hand to test
+  # Production notifications run from the successful Release Charts workflow,
+  # after the chart has been published. Keep this workflow for manual tests.
+  workflow_dispatch:
     inputs:
       before:
         description: 'Compare from this commit (default: previous commit)'
@@ -35,13 +33,15 @@ jobs:
         with:
           python-version: '3.12'
 
-      - run: pip install markdown==3.7
+      - run: pip install --disable-pip-version-check markdown==3.7
 
       - name: Send changelog emails
         env:
-          ALL_SECRETS: ${{ toJSON(secrets) }}   # script picks SENDGRID_API_KEY + SUBSCRIBERS_* from here
-          BEFORE_SHA: ${{ github.event.before || inputs.before }}
+          SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
+          SUBSCRIBERS_KUBEX_AUTOMATION_STACK: ${{ secrets.SUBSCRIBERS_KUBEX_AUTOMATION_STACK }}
+          SUBSCRIBERS_TEST: ${{ secrets.SUBSCRIBERS_TEST }}
+          BEFORE_SHA: ${{ inputs.before }}
           AFTER_SHA: ${{ github.sha }}
-          DRY_RUN: ${{ inputs.dry_run || 'false' }}
-          TEST_MODE: ${{ inputs.test_mode || 'false' }}
-        run: python .github/scripts/notify_changelog.py
+          DRY_RUN: ${{ inputs.dry_run }}
+          TEST_MODE: ${{ inputs.test_mode }}
+        run: python3 .github/scripts/notify_changelog.py

@@ -6,12 +6,14 @@
     "kubex-automation-stack": {
       "changelog": "charts/kubex-automation-stack/CHANGELOG.md",
       "unsubscribe_group_id": 44703,
-      "subscribers_secret": "SUBSCRIBERS_KUBEX_AUTOMATION_STACK"
-    },
-    "kubex-automation-engine": {
-      "changelog": "charts/kubex-automation-engine/CHANGELOG.md",
-      "unsubscribe_group_id": 44704,
-      "subscribers_secret": "SUBSCRIBERS_KUBEX_AUTOMATION_ENGINE"
+      "subscribers_secret": "SUBSCRIBERS_KUBEX_AUTOMATION_STACK",
+      "notification": "primary",
+      "includes": [
+        {
+          "chart": "kubex-automation-engine",
+          "changelog": "charts/kubex-automation-engine/CHANGELOG.md"
+        }
+      ]
     }
   }
 }

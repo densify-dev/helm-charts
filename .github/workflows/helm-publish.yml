@@ -318,3 +318,35 @@ jobs:
               --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
               "${ref}"
           done < /tmp/kubex-chart-refs.txt
+
+  notify-changelog:
+    runs-on: ubuntu-latest
+    needs: sign-ghcr
+    if: needs.sign-ghcr.result == 'success'
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: *checkout-action
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install notification dependency
+        run: pip install --disable-pip-version-check markdown==3.7
+
+      - name: Send changelog emails
+        env:
+          SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
+          SUBSCRIBERS_KUBEX_AUTOMATION_STACK: ${{ secrets.SUBSCRIBERS_KUBEX_AUTOMATION_STACK }}
+          SUBSCRIBERS_TEST: ${{ secrets.SUBSCRIBERS_TEST }}
+          BEFORE_SHA: ${{ github.event.before }}
+          AFTER_SHA: ${{ github.sha }}
+          DRY_RUN: 'false'
+          TEST_MODE: 'false'
+        run: python3 .github/scripts/notify_changelog.py
