@@ -204,10 +204,14 @@ gateway:
   enabled: true
   image:
     repository: "densify/automation-gateway"
-    tag: "1.9"
+    tag: "1.11"
     pullPolicy: "IfNotPresent"
   # Name of the secret containing gateway config (mounted at /densify/config/api)
   configSecretName: "kubex-gateway-config"
+  # -- Port for the gateway's Prometheus metrics endpoint (`/metrics`), which serves `kubex_automation_gateway_build_info`.
+  # Sets the gateway's `METRICS_ADDR`, the `gateway-metrics` container port, and the matching port on the metrics Service.
+  # Must not collide with another listener in the pod (8181, the controller metrics, health probe and webhook ports); the chart rejects collisions.
+  metricsPort: 8182
   # -- Security context for the gateway sidecar
   securityContext:
     readOnlyRootFilesystem: true
