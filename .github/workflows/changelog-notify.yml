@@ -80,7 +80,10 @@ jobs:
             before=4b825dc642cb6eb9a060e54bf8d69288fbee4904
           fi
           if [ "${MANUAL_PRODUCTION:-false}" = "true" ] || [ "$GITHUB_EVENT_NAME" = "schedule" ]; then
-            if ! git merge-base --is-ancestor "$before" "$GITHUB_SHA"; then
+            # The empty tree is a valid first-run baseline, but it is not a
+            # commit and therefore cannot be checked with merge-base.
+            if [ "$before" != "4b825dc642cb6eb9a060e54bf8d69288fbee4904" ] && \
+              ! git merge-base --is-ancestor "$before" "$GITHUB_SHA"; then
               echo "Checkpoint is ahead of this run's commit; nothing to send."
               echo "skip=true" >> "$GITHUB_OUTPUT"
             else
