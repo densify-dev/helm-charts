@@ -2,7 +2,9 @@
 
 Kubex can collect application-specific metrics for supported runtimes such as JVM and vLLM, allowing these metrics to be used for application-aware analysis/optimization.
 
-When the bundled Prometheus is enabled, the chart can discover supported application metric exporters from Kubernetes Service or Pod labels. Configure selectors under `prometheus.appScrapeConfigs` in your custom values file. On OpenShift, where the bundled Prometheus is disabled, these values have no effect; configure user workload monitoring with a `ServiceMonitor` (or `PodMonitor`) instead.
+When the bundled Prometheus is enabled, the chart can discover supported application metric exporters from Kubernetes Service or Pod labels. Configure selectors under `prometheus.appScrapeConfigs` in your custom values file.
+
+On OpenShift, where the bundled Prometheus is disabled, these values have no effect. Instead, configure user workload monitoring with a `ServiceMonitor` (or `PodMonitor`) and make sure they carry the labels `namespace`, `pod`, `container`.
 
 ## Supported Applications / Metric Sources
 
@@ -10,7 +12,7 @@ The current supported app-specific exporters are:
 
 | App | Exporters |
 | --- | --- |
-| `jvm` | [OpenTelemetry Java Agent](https://opentelemetry.io/docs/zero-code/java/agent/) configured to expose a Prometheus exporter endpoint, and [JMX Exporter](https://github.com/prometheus/jmx_exporter) v1.x |
+| `jvm` | [OpenTelemetry Java Agent](https://opentelemetry.io/docs/zero-code/java/agent/) v2.x configured to expose a Prometheus exporter endpoint, and [JMX Exporter](https://github.com/prometheus/jmx_exporter) v1.x |
 | `vllm` | [vLLM Prometheus metrics exporters](https://docs.vllm.ai/en/stable/design/metrics/) |
 
 For JVM applications, configure the OpenTelemetry Java Agent so Prometheus pulls metrics from its exporter endpoint (e.g. by using the environment variables `OTEL_METRICS_EXPORTER=prometheus`, `OTEL_EXPORTER_PROMETHEUS_HOST=0.0.0.0`, `OTEL_EXPORTER_PROMETHEUS_PORT=...`). This configuration supports Prometheus pull-based scraping only. OTLP metric export to a collector or backend is not consumed by this scrape configuration.
