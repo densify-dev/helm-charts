@@ -4,7 +4,7 @@ Kubex can collect application-specific metrics for supported runtimes such as JV
 
 When the bundled Prometheus is enabled, the chart can discover supported application metric exporters from Kubernetes Service or Pod labels. Configure selectors under `prometheus.appScrapeConfigs` in your custom values file.
 
-On OpenShift, where the bundled Prometheus is disabled, these values have no effect. Instead, configure user workload monitoring with a `ServiceMonitor` (or `PodMonitor`) and make sure they carry the labels `namespace`, `pod`, `container`.
+On OpenShift, where the bundled Prometheus is disabled, these values have no effect. Instead, configure user workload monitoring with a `ServiceMonitor` (or `PodMonitor`) and ensure the scraped metric series have non-empty `namespace`, `pod`, and `container` labels identifying the workload. These must be metric/target labels, not labels on the monitor resource's metadata; configure endpoint relabeling where necessary.
 
 ## Supported Applications / Metric Sources
 
