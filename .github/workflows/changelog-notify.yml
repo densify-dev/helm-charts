@@ -1,14 +1,14 @@
 name: Email chart changelog updates
 
 on:
-  # Send one digest each Monday. The script only sends when the chart's
-  # changelog contains additions in the preceding seven days.
+  # Send one digest each Monday. Production runs process changes since the
+  # last successful delivery; a seven-day range is used only initially.
   schedule:
     - cron: '0 9 * * 1'
   workflow_dispatch:
     inputs:
       before:
-        description: 'Compare from this commit (default: previous commit)'
+        description: 'Compare from this commit for dry runs/tests (production uses the checkpoint)'
         default: 'HEAD~1'
       dry_run:
         description: 'Only print what would be sent (no emails)'
@@ -30,16 +30,20 @@ jobs:
   notify:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6.0.2
         with:
           fetch-depth: 0
           fetch-tags: true
+          persist-credentials: false
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
 
-      - run: pip install --disable-pip-version-check markdown==3.7
+      - run: pip install --disable-pip-version-check -r .github/scripts/requirements.txt
+
+      - name: Test changelog notification logic
+        run: python3 .github/scripts/test_notify_changelog.py
 
       - name: Determine digest range
         id: range
@@ -47,7 +51,11 @@ jobs:
           MANUAL_BEFORE: ${{ inputs.before }}
           MANUAL_PRODUCTION: ${{ github.event_name == 'workflow_dispatch' && !inputs.dry_run && !inputs.test_mode }}
           DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          set -euo pipefail
+          checkpoint_ref=refs/changelog-notify/last-successful
+          auth_header=$(printf 'x-access-token:%s' "$GITHUB_TOKEN" | base64 -w0)
           if [ "$MANUAL_PRODUCTION" = "true" ] && [ "$GITHUB_REF" != "refs/heads/$DEFAULT_BRANCH" ]; then
             echo "Manual production runs must target the default branch." >&2
             exit 1
@@ -55,20 +63,34 @@ jobs:
           if [ "$MANUAL_PRODUCTION" = "true" ] || [ "$GITHUB_EVENT_NAME" = "schedule" ]; then
             # Continue from the last successful production delivery. The
             # time-based fallback is only used to initialize the checkpoint.
-            before=$(git rev-parse -q --verify refs/tags/changelog-notify/last-successful || true)
+            remote_checkpoint=$(git -c "http.extraheader=AUTHORIZATION: basic $auth_header" \
+              ls-remote --refs origin "$checkpoint_ref")
+            if [ -n "$remote_checkpoint" ]; then
+              git -c "http.extraheader=AUTHORIZATION: basic $auth_header" \
+                fetch origin "+$checkpoint_ref:$checkpoint_ref"
+            fi
+            before=$(git rev-parse -q --verify "$checkpoint_ref" || true)
             if [ -z "$before" ]; then
               before=$(git rev-list -1 --before="7 days ago" HEAD || true)
             fi
-            echo "update_checkpoint=true" >> "$GITHUB_OUTPUT"
           elif [ -n "$MANUAL_BEFORE" ]; then
             before="$MANUAL_BEFORE"
           fi
           if [ -z "$before" ]; then
             before=4b825dc642cb6eb9a060e54bf8d69288fbee4904
           fi
+          if [ "${MANUAL_PRODUCTION:-false}" = "true" ] || [ "$GITHUB_EVENT_NAME" = "schedule" ]; then
+            if ! git merge-base --is-ancestor "$before" "$GITHUB_SHA"; then
+              echo "Checkpoint is ahead of this run's commit; nothing to send."
+              echo "skip=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "update_checkpoint=true" >> "$GITHUB_OUTPUT"
+            fi
+          fi
           echo "before=$before" >> "$GITHUB_OUTPUT"
 
       - name: Send changelog emails
+        if: steps.range.outputs.skip != 'true'
         env:
           SENDGRID_API_KEY: ${{ secrets.SENDGRID_API_KEY }}
           SUBSCRIBERS_KUBEX_AUTOMATION_STACK: ${{ secrets.SUBSCRIBERS_KUBEX_AUTOMATION_STACK }}
@@ -80,12 +102,13 @@ jobs:
         run: python3 .github/scripts/notify_changelog.py
 
       - name: Save successful delivery checkpoint
-        if: steps.range.outputs.update_checkpoint == 'true'
+        if: steps.range.outputs.update_checkpoint == 'true' && steps.range.outputs.skip != 'true'
         env:
-          CHECKPOINT_TAG: changelog-notify/last-successful
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
+          auth_header=$(printf 'x-access-token:%s' "$GITHUB_TOKEN" | base64 -w0)
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git tag -f "$CHECKPOINT_TAG" "$GITHUB_SHA"
-          git push origin "refs/tags/$CHECKPOINT_TAG" --force
+          git -c "http.extraheader=AUTHORIZATION: basic $auth_header" push \
+            origin "$GITHUB_SHA:refs/changelog-notify/last-successful" --force
