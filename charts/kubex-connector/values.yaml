@@ -2,7 +2,7 @@ enabled: false
 
 image:
   repository: densify/kubex-connector
-  tag: 1.16.0
+  tag: 1.18.0
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
@@ -19,6 +19,10 @@ extraAnnotations: {}
 
 heartbeatSeconds: 10
 requestTimeoutSeconds: 30
+
+# Port for the connector's Prometheus metrics endpoint (`/metrics`), which serves
+# `kubex_connector_build_info`. Sets CONNECTOR_METRICS_ADDR and the `metrics` container port.
+metricsPort: 9090
 
 connectorServices:
   - service_id: kubex-ai-cdi
@@ -46,9 +50,12 @@ relay:
   enabled: true
   image:
     repository: densify/automation-gateway
-    tag: "1.9"
+    tag: "1.11"
     pullPolicy: IfNotPresent
   listenAddr: ":18181"
+  # Port for the relay's Prometheus metrics endpoint (`/metrics`), which serves
+  # `kubex_automation_gateway_build_info`. Sets the relay's METRICS_ADDR and the `relay-metrics` container port.
+  metricsPort: 8182
   connectPath: "/tunnel/connect"
   tlsCaSecretName: ""
   tlsCaKey: ca.crt

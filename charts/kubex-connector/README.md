@@ -17,6 +17,17 @@ The connector is a customer-cluster tunnel agent. It does not expose public ingr
 - Forwards each request to the matching local upstream URL in the customer cluster
 - Returns status, headers, and body back through the same tunnel
 
+## Metrics
+
+Both containers serve Prometheus metrics at `/metrics`:
+
+| Container | Metric | Port name | Port value |
+| --- | --- | --- | --- |
+| connector | `kubex_connector_build_info` | `metrics` | `metricsPort` (default `9090`) |
+| `relay` | `kubex_automation_gateway_build_info` | `relay-metrics` | `relay.metricsPort` (default `8182`) |
+
+Each value sets both the container port and the matching listen address (`CONNECTOR_METRICS_ADDR` or `METRICS_ADDR`), so set the port through these values rather than `env` or `extraEnv`; the chart rejects those overrides. Both containers share the pod's network namespace, so the chart also rejects a `metricsPort` or `relay.metricsPort` that collides with the other or with `relay.listenAddr`. A container exits at startup if it cannot bind its metrics port.
+
 ## Deploy
 
 ```bash
