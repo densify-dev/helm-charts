@@ -23,6 +23,8 @@ spec:
       {{- include "kubex-automation-engine.selectorLabels" . | nindent 6 }}
   endpoints:
     - port: metrics
+      # Preserve the workload namespace and pod labels on kubex_pod_owner.
+      honorLabels: true
       path: {{ .Values.metrics.serviceMonitor.path }}
       scheme: {{ .Values.metrics.serviceMonitor.scheme }}
       # tlsConfig:
@@ -35,4 +37,16 @@ spec:
       {{- with .Values.metrics.serviceMonitor.scrapeTimeout }}
       scrapeTimeout: {{ . }}
       {{- end }}
+    {{- if .Values.gateway.enabled }}
+    # The gateway sidecar serves plain HTTP on its own port.
+    - port: gateway-metrics
+      path: {{ .Values.metrics.serviceMonitor.path }}
+      scheme: http
+      {{- with .Values.metrics.serviceMonitor.interval }}
+      interval: {{ . }}
+      {{- end }}
+      {{- with .Values.metrics.serviceMonitor.scrapeTimeout }}
+      scrapeTimeout: {{ . }}
+      {{- end }}
+    {{- end }}
 {{- end }}
