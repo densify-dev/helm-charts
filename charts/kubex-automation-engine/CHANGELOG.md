@@ -2,6 +2,21 @@
 
 All notable changes to the Kubex Automation Engine Helm chart will be documented in this file.
 
+## [1.19.0] - 2026-11-26
+
+### Added
+- The controller exposes `kubex_automation_controller_build_info`, and the gateway sidecar exposes `kubex_automation_gateway_build_info` on a new `gateway-metrics` port set by `gateway.metricsPort` (default `8182`). Both report the component's version and Git commit. The metrics Service and the optional ServiceMonitor include the gateway port. See [Build Information Metrics](./docs/Configuration-Reference.md#build-information-metrics).
+
+### Changed
+- The gateway sidecar image is now `densify/automation-gateway:1.11`, which serves the gateway build information metric.
+
+### Fixed
+- Setting `spec.automationEnabled` to `false` in the global configuration now also stops rightsizing at pod admission, not only new automation by the controller. No restart is needed, and changes already applied are not reverted.
+- Automation reasons reported to Kubex are now cleared when a workload is deleted or its recommendations are removed, so stale reasons no longer remain.
+- `webhook.port` now sets the port the controller's webhook server binds to. Before, the server always listened on `9443`, so any other value left the `webhook` container port and Service pointing at a port nothing served.
+
+---
+
 ## [1.18.0] - 2026-11-06
 
 ### Breaking
