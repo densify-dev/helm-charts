@@ -17,6 +17,12 @@ spec:
     port: {{ .Values.metrics.port }}
     protocol: TCP
     targetPort: metrics
+  {{- if .Values.gateway.enabled }}
+  - name: gateway-metrics
+    port: {{ .Values.gateway.metricsPort }}
+    protocol: TCP
+    targetPort: gateway-metrics
+  {{- end }}
   selector:
     {{- include "kubex-automation-engine.selectorLabels" . | nindent 4 }}
 {{- end }}

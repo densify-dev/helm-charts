@@ -19,7 +19,7 @@ Use it to control recommendation refresh timing, proactive rescans, heartbeat re
 | `spec.proposalSyncEnabled` | `false` | Controls proposal sync. When omitted or set to `false`, the controller stops syncing proposals and deletes proposal-managed resources. |
 | `spec.kubexAPIRequestTimeout` | `60s` | Timeout for Kubex API requests. |
 | `spec.webhookOwnerResolutionRetryTimeout` | `1s` | How long the pod admission webhook retries owner recommendation resolution before continuing without owner annotations. |
-| `spec.automationEnabled` | `true` | Global on or off switch for automation behavior. |
+| `spec.automationEnabled` | `true` | Set to `false` to stop new automation, including rightsizing at pod admission, once the controller observes the configuration change. No restart is needed. Changes already applied are not reverted. |
 | `spec.multiPolicyContainerRightsizingEnabled` | `false` | When true, same-kind resource policies use separate keys and can contribute to different container/resource targets. See [Multi-Policy Container Rightsizing](./Multi-Policy-Container-Rightsizing.md). |
 | `spec.suppressFetchRecommendations` | `false` | Testing-oriented switch to suppress recommendation fetches. |
 | `spec.respectKubexAutomation` | `true` | Ignores recommendations marked with `KubexAutomation=false`. |

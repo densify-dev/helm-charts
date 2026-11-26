@@ -61,6 +61,13 @@ rules:
   - patch
 - apiGroups:
   - ""
+  resources:
+  - replicationcontrollers
+  verbs:
+  - list
+  - watch
+- apiGroups:
+  - ""
   - events.k8s.io
   resources:
   - events

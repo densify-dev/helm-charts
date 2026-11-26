@@ -127,8 +127,12 @@ Controller manager container args
 - --leader-election-retry-period={{ .Values.controllerManager.leaderElection.retryPeriod }}
 {{- end }}
 - --health-probe-bind-address={{ .Values.controllerManager.healthProbeBindAddress }}
+- --webhook-port={{ .Values.webhook.port }}
 {{- if .Values.metrics.enabled }}
 - --metrics-bind-address={{ .Values.controllerManager.metricsBindAddress }}
+{{- if not .Values.metrics.podOwnerEnabled }}
+- --metrics-pod-owner=false
+{{- end }}
 {{- include "kubex-automation-engine.metricsSecureArg" . }}
 {{- end }}
 - --pod-admission-webhook-kube-api-qps={{ .Values.controllerManager.podAdmissionWebhookKubeAPIQPS }}
