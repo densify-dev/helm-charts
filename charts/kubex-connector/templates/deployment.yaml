@@ -39,10 +39,39 @@ spec:
       {{- $kubexClusterName := include "kubex-connector.kubexClusterName" . }}
       {{- $localKubex := .Values.kubex | default dict }}
       {{- $env := .Values.env | default dict }}
+      {{- /* The metrics listen addresses must match the declared metrics container ports, so they come only from metricsPort values. */}}
+      {{- if hasKey $env "CONNECTOR_METRICS_ADDR" }}
+      {{- fail "env.CONNECTOR_METRICS_ADDR is not supported; set metricsPort instead" }}
+      {{- end }}
+      {{- range .Values.extraEnv }}
+      {{- if eq .name "CONNECTOR_METRICS_ADDR" }}
+      {{- fail "extraEnv CONNECTOR_METRICS_ADDR is not supported; set metricsPort instead" }}
+      {{- end }}
+      {{- end }}
+      {{- range .Values.relay.extraEnv }}
+      {{- if eq .name "METRICS_ADDR" }}
+      {{- fail "relay.extraEnv METRICS_ADDR is not supported; set relay.metricsPort instead" }}
+      {{- end }}
+      {{- end }}
       {{- $proxyWsURL := trim (toString (default "" (index $env "CONNECTOR_PROXY_WS_URL"))) }}
       {{- $tenantID := trim (toString (default "" (index $env "CONNECTOR_TENANT_ID"))) }}
       {{- $clusterID := trim (toString (default "" (index $env "CONNECTOR_CLUSTER_ID"))) }}
       {{- $relayEnabled := and .Values.relay.enabled (eq $proxyWsURL "") }}
+      {{- /* The connector and relay share the pod network namespace, so their listeners must use distinct ports. */}}
+      {{- $connectorMetricsPort := toString (int .Values.metricsPort) }}
+      {{- if $relayEnabled }}
+      {{- $relayMetricsPort := toString (int .Values.relay.metricsPort) }}
+      {{- $relayListenPort := regexReplaceAll "^.*:" (toString .Values.relay.listenAddr) "" }}
+      {{- if eq $connectorMetricsPort $relayMetricsPort }}
+      {{- fail (printf "metricsPort and relay.metricsPort are both %s; they must differ" $connectorMetricsPort) }}
+      {{- end }}
+      {{- if eq $connectorMetricsPort $relayListenPort }}
+      {{- fail (printf "metricsPort %s collides with relay.listenAddr; choose a different port" $connectorMetricsPort) }}
+      {{- end }}
+      {{- if eq $relayMetricsPort $relayListenPort }}
+      {{- fail (printf "relay.metricsPort %s collides with relay.listenAddr; choose a different port" $relayMetricsPort) }}
+      {{- end }}
+      {{- end }}
       {{- $forwarderConfigMapName := trim (default "kubex-connector-runtime" .Values.forwarderConfigMap.name) }}
       {{- $forwarderSecretName := trim (default "" .Values.forwarderCredentialsSecretRef.name) }}
       {{- $useForwarderConfigMap := and (eq $kubexHost "") (eq $kubexClusterName "") (ne $forwarderConfigMapName "") }}
@@ -141,7 +170,9 @@ spec:
           value: {{ required "requestTimeoutSeconds is required" (default .Values.requestTimeoutSeconds (index $env "CONNECTOR_REQUEST_TIMEOUT_SECONDS")) | quote }}
         - name: CONNECTOR_SERVICES_JSON
           value: {{ required "connectorServices is required and must contain at least one service" .Values.connectorServices | toJson | quote }}
-        {{- $managedEnv := list "CONNECTOR_PROXY_WS_URL" "CONNECTOR_TENANT_ID" "CONNECTOR_CLUSTER_ID" "CONNECTOR_HEARTBEAT_SECONDS" "CONNECTOR_REQUEST_TIMEOUT_SECONDS" "CONNECTOR_SERVICES_JSON" }}
+        - name: CONNECTOR_METRICS_ADDR
+          value: {{ printf ":%v" .Values.metricsPort | quote }}
+        {{- $managedEnv := list "CONNECTOR_PROXY_WS_URL" "CONNECTOR_TENANT_ID" "CONNECTOR_CLUSTER_ID" "CONNECTOR_HEARTBEAT_SECONDS" "CONNECTOR_REQUEST_TIMEOUT_SECONDS" "CONNECTOR_SERVICES_JSON" "CONNECTOR_METRICS_ADDR" }}
         {{- range $name, $value := $env }}
         {{- if not (has $name $managedEnv) }}
         - name: {{ $name }}
@@ -152,6 +183,9 @@ spec:
         - name: {{ .name }}
           value: {{ .value | quote }}
         {{- end }}
+        ports:
+        - containerPort: {{ .Values.metricsPort }}
+          name: metrics
         {{- if .Values.resources }}
         resources:
           {{- toYaml .Values.resources | nindent 10 }}
@@ -179,6 +213,8 @@ spec:
           value: {{ .Values.relay.listenAddr | quote }}
         - name: RELAY_CONNECT_PATH
           value: {{ .Values.relay.connectPath | quote }}
+        - name: METRICS_ADDR
+          value: {{ printf ":%v" .Values.relay.metricsPort | quote }}
         {{- if $useForwarderConfigMap }}
         - name: KUBEX_HOST
           valueFrom:
@@ -239,6 +275,8 @@ spec:
         ports:
         - containerPort: 18181
           name: relay
+        - containerPort: {{ .Values.relay.metricsPort }}
+          name: relay-metrics
         {{- if .Values.relay.resources }}
         resources:
           {{- toYaml .Values.relay.resources | nindent 10 }}
