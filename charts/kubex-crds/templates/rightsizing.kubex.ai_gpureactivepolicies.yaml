@@ -50,22 +50,6 @@ spec:
                 required:
                 - name
                 type: object
-              experimental:
-                description: |-
-                  experimental must be set to acknowledge unstable GPU/KAI behavior.
-                  EXPERIMENTAL: this API is subject to breaking changes or removal without notice.
-                properties:
-                  gpuKaiContract:
-                    description: |-
-                      gpuKaiContract explicitly acknowledges that GPU/KAI fields are experimental and may change.
-                      EXPERIMENTAL: this acknowledgement value is required for unstable GPU/KAI behavior.
-                    enum:
-                    - none
-                    - v1alpha1-2026-07
-                    type: string
-                required:
-                - gpuKaiContract
-                type: object
               metrics:
                 description: metrics configures compute and memory utilization signals
                   used for GPU reactive scaling.
@@ -421,7 +405,6 @@ spec:
                 type: integer
             required:
             - automationStrategyRef
-            - experimental
             - metrics
             type: object
           status:

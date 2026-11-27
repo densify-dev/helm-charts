@@ -1,7 +1,5 @@
 # Automation Strategies
 
-> Experimental: GPU/KAI-related fields in this resource are subject to breaking changes. When using them, set `spec.experimental.gpuKaiContract: v1alpha1-2026-07`.
-
 `AutomationStrategy` defines how resizing is allowed to happen within a namespace.
 
 Use it when a team owns its own namespace and should manage resize behavior locally.
@@ -29,7 +27,7 @@ Usage-level `floor` and `ceiling` values apply to all containers by default. Add
 | Field | Default | Description |
 | --- | --- | --- |
 | `spec.enablement` | `{}` | Parent object for enablement rules. |
-| `spec.enablement.overrideScheduler` | `none` | EXPERIMENTAL. Selects GPU mutation mode for GPU actions. Valid values: `none`, `kai`. |
+| `spec.enablement.overrideScheduler` | `none` | Selects GPU mutation mode for GPU actions. Valid values: `none`, `kai`. |
 | `spec.enablement.cpu.requests.downsize` | `true` | Allows reducing CPU requests. |
 | `spec.enablement.cpu.requests.upsize` | `true` | Allows increasing CPU requests. |
 | `spec.enablement.cpu.requests.setFromUnspecified` | `true` | Allows setting CPU requests when currently unset. |
@@ -73,17 +71,26 @@ Usage-level `floor` and `ceiling` values apply to all containers by default. Add
 | `spec.enablement.ephemeralStorage.limits.ceiling` | none | Maximum ephemeral-storage limit target. |
 | `spec.enablement.ephemeralStorage.limits.containers.<name>.floor` | none | Container-specific ephemeral-storage limit minimum that overrides the usage-level floor for that container only. |
 | `spec.enablement.ephemeralStorage.limits.containers.<name>.ceiling` | none | Container-specific ephemeral-storage limit maximum that overrides the usage-level ceiling for that container only. |
-| `spec.enablement.gpu.requests.downsize` | `false` | EXPERIMENTAL. Allows reducing GPU requests. |
-| `spec.enablement.gpu.requests.upsize` | `false` | EXPERIMENTAL. Allows increasing GPU requests. |
-| `spec.enablement.gpu.requests.setFromUnspecified` | `false` | EXPERIMENTAL. Allows setting GPU requests when currently unset. |
-| `spec.enablement.gpu.requests.floor` | none | EXPERIMENTAL. Minimum GPU request target. |
-| `spec.enablement.gpu.requests.ceiling` | none | EXPERIMENTAL. Maximum GPU request target. |
-| `spec.enablement.gpu.requests.containers.<name>.floor` | none | EXPERIMENTAL. Container-specific GPU request minimum that overrides the usage-level floor for that container only. |
-| `spec.enablement.gpu.requests.containers.<name>.ceiling` | none | EXPERIMENTAL. Container-specific GPU request maximum that overrides the usage-level ceiling for that container only. |
-| `spec.kai.queue` | `kubex-unlimited-gpu-queue` | EXPERIMENTAL. Default KAI queue label applied for KAI GPU admission mutation. |
-| `spec.kai.setQueueWhenSpecified` | `false` | EXPERIMENTAL. Allows strategy queue value to overwrite an existing `kai.scheduler/queue` label. |
-| `spec.kai.vllm` | none | EXPERIMENTAL. Enables admission-time vLLM tuning for KAI GPU-sharing workloads. Requires `spec.experimental.gpuKaiContract`. |
-| `spec.kai.vllm.gpuMemoryUtilizationBufferPercent` | `0` | EXPERIMENTAL. Sets the percentage of available GPU memory that vLLM should leave unused as a safety buffer. |
+| `spec.enablement.gpu.requests.downsize` | `false` | Allows reducing GPU requests. |
+| `spec.enablement.gpu.requests.upsize` | `false` | Allows increasing GPU requests. |
+| `spec.enablement.gpu.requests.setFromUnspecified` | `false` | Allows setting GPU requests when currently unset. |
+| `spec.enablement.gpu.requests.floor` | none | Minimum GPU request target. |
+| `spec.enablement.gpu.requests.ceiling` | none | Maximum GPU request target. |
+| `spec.enablement.gpu.requests.containers.<name>.floor` | none | Container-specific GPU request minimum that overrides the usage-level floor for that container only. |
+| `spec.enablement.gpu.requests.containers.<name>.ceiling` | none | Container-specific GPU request maximum that overrides the usage-level ceiling for that container only. |
+| `spec.enablement.gpu.limits.downsize` | `false` | Allows reducing GPU limits. |
+| `spec.enablement.gpu.limits.upsize` | `false` | Allows increasing GPU limits. |
+| `spec.enablement.gpu.limits.setFromUnspecified` | `false` | Allows setting GPU limits when currently unset. |
+| `spec.enablement.gpu.limits.floor` | none | Minimum GPU limit target. |
+| `spec.enablement.gpu.limits.ceiling` | none | Maximum GPU limit target. With NvFractions, use a value below `1`. |
+| `spec.enablement.gpu.limits.containers.<name>.floor` | none | Container-specific GPU limit minimum. |
+| `spec.enablement.gpu.limits.containers.<name>.ceiling` | none | Container-specific GPU limit maximum. |
+| `spec.kai.gpuComputeMode` | none | `time-slicing` or `sm-sharing`, only with NvFractions and `overrideScheduler: kai`. Overrides the container compute-mode annotation on admission; omission preserves it or leaves upstream defaults in effect. |
+| `spec.kai.gpuSharingMode` | `HamiCore` | `HamiCore` or `NvFractions`. Must match the installed cluster mode; does not install or switch the backend. |
+| `spec.kai.queue` | `kubex-unlimited-gpu-queue` | Default KAI queue label applied for KAI GPU admission mutation. |
+| `spec.kai.setQueueWhenSpecified` | `false` | Allows strategy queue value to overwrite an existing `kai.scheduler/queue` label. |
+| `spec.kai.vllm` | none | Enables admission-time vLLM tuning for KAI GPU-sharing workloads. |
+| `spec.kai.vllm.gpuMemoryUtilizationBufferPercent` | `0` | Fixed safety buffer percentage. With NvFractions, budgets against guaranteed request memory, not burst capacity. |
 | `spec.inPlaceResize.enabled` | `true` | Enables the in-place resize execution path. |
 | `spec.inPlaceResize.containerRestart` | `false` | Allows in-place resize operations that require container restart. |
 | `spec.podEviction.enabled` | `true` | Enables eviction-based fallback. |
@@ -180,28 +187,50 @@ Validation notes:
 
 When a proactive resize is blocked by scheduling, the controller keeps the recommendation pending and retries when a future allowed window opens.
 
-## KAI vLLM tuning
+## KAI GPU sharing and vLLM tuning
 
-When `spec.kai.vllm` is set, Kubex configures vLLM's `--gpu-memory-utilization` setting for KAI-managed workloads.
+`spec.kai.gpuSharingMode` defaults to `HamiCore`. Opt into `NvFractions` explicitly only when the installed KAI backend matches. NvFractions examples are illustrative and non-executable pending release validation. KAI `vX.Y.Z` is an unresolved placeholder; compatibility with GPU Fractioning `0.1.9` has not been validated. See [installation prerequisites](./GPU-Sharing-with-KAI.md).
 
-Set `gpuMemoryUtilizationBufferPercent` to leave a safety buffer below the workload's GPU allocation. For example, a value of `10` leaves 10% unused by vLLM. The setting works whether or not HAMi-core is enabled.
+GPU automation requires explicit `requests.gpu` and `limits.gpu` targets for each container after policy selection. A missing target is not copied from the other target, the live Pod, or the workload template. Static policy admission remains backend-neutral, but each static container entry with `requests.gpu` must include `limits.gpu` in the same entry. Request-only static entries are rejected. Limit-only static entries are allowed and can contribute a limit alongside a reactive pair after policy selection.
 
-Kubex updates the setting for vLLM containers when it applies a KAI GPU allocation. It updates an existing setting or adds it when needed.
+GPU enablement is disabled by default. Bounds apply to each member, then Kubex validates and enables the pair atomically. Every changing member must allow its `upsize`, `downsize`, or `setFromUnspecified` direction under `enablement.gpu.requests` or `.limits`. An unchanged member needs no direction enabled but must still be explicit. An invalid or incomplete selected GPU pair fails the entire resize plan, including unrelated CPU and memory changes. If the pair is valid but either changing member is blocked by enablement, neither GPU member changes; unrelated CPU and memory changes can still proceed.
 
-Example:
+- Native NVIDIA requires equal logical request and limit targets before rounding up to whole GPUs and writing equal `nvidia.com/gpu` values. Unequal targets are rejected, not collapsed to the limit.
+- KAI HAMi-core requires equal request and limit targets and writes equal `gpu-fraction` and `gpu-fraction.limit` annotations.
+- KAI NvFractions allows separate values satisfying `0 < request <= limit < 1`. Keep fractional ceilings below `1`, such as `"0.99999"`. The request reserves memory; a higher limit allows opportunistic memory use without a compute guarantee.
+
+NvFractions enforcement is injected at container creation. Set `inPlaceResize.enabled: false` and `podEviction.enabled: true` to use eviction and replacement rather than treating a live annotation patch as enforcement.
+
+When `spec.kai.vllm` is set, Kubex updates or adds vLLM's `--gpu-memory-utilization`. NvFractions uses `request / limit * (1 - bufferPercent / 100)` with the explicit selected pair. The measured vLLM memory denominator is the limit. Request `0.5`, limit `0.8`, and buffer `10` therefore produce `0.5625`; a fixed allocation produces `0.9`. This leaves a fixed buffer below guaranteed memory, not burst capacity. There is no adaptive buffer. HAMi-core tuning is unchanged.
 
 ```yaml
 spec:
-  experimental:
-    gpuKaiContract: v1alpha1-2026-07
+  enablement:
+    overrideScheduler: kai
+    gpu:
+      requests:
+        upsize: true
+        downsize: true
+        ceiling: "0.99999"
+      limits:
+        upsize: true
+        downsize: true
+        setFromUnspecified: true
+        ceiling: "0.99999"
   kai:
+    gpuSharingMode: NvFractions
+    gpuComputeMode: sm-sharing
     vllm:
       gpuMemoryUtilizationBufferPercent: 10
+  inPlaceResize:
+    enabled: false
+  podEviction:
+    enabled: true
 ```
 
 ## Helm Mapping
 
-Scheduling is part of the `AutomationStrategy` and `ClusterAutomationStrategy` CRD surface, but the current chart does not map `policy.policies.<name>.scheduling` into generated `ClusterAutomationStrategy` resources.
+New GPU sharing settings and scheduling windows must be configured on `AutomationStrategy` or `ClusterAutomationStrategy` resources directly. The legacy `policy.policies` strategy template is retained only for backwards compatibility and does not expose these settings.
 
 For Helm-based installs, that means:
 

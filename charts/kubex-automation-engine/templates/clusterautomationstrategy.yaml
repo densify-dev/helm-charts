@@ -8,10 +8,6 @@ metadata:
   labels:
     {{- include "kubex-automation-engine.labels" $ | nindent 4 }}
 spec:
-  {{- if and $policyConfig.enablement (or $policyConfig.enablement.gpu $policyConfig.enablement.overrideScheduler) }}
-  experimental:
-    gpuKaiContract: {{ $.Values.experimental.gpuKaiContract | quote }}
-  {{- end }}
   {{- if $policyConfig.enablement }}
   enablement:
     {{- if $policyConfig.enablement.overrideScheduler }}
@@ -149,6 +145,7 @@ spec:
     {{- end }}
     {{- if $policyConfig.enablement.gpu }}
     {{- $gpuReq := default $policyConfig.enablement.gpu.request $policyConfig.enablement.gpu.requests }}
+    {{- $gpuLim := default $policyConfig.enablement.gpu.limit $policyConfig.enablement.gpu.limits }}
     gpu:
       {{- if $gpuReq }}
       requests:
@@ -170,6 +167,36 @@ spec:
         {{- if $gpuReq.containers }}
         containers:
           {{- range $containerName, $bounds := $gpuReq.containers }}
+          {{ $containerName }}:
+            {{- if $bounds.floor }}
+            floor: {{ $bounds.floor | quote }}
+            {{- end }}
+            {{- if $bounds.ceiling }}
+            ceiling: {{ $bounds.ceiling | quote }}
+            {{- end }}
+          {{- end }}
+        {{- end }}
+      {{- end }}
+      {{- if $gpuLim }}
+      limits:
+        {{- if hasKey $gpuLim "downsize" }}
+        downsize: {{ $gpuLim.downsize }}
+        {{- end }}
+        {{- if hasKey $gpuLim "upsize" }}
+        upsize: {{ $gpuLim.upsize }}
+        {{- end }}
+        {{- if hasKey $gpuLim "setFromUnspecified" }}
+        setFromUnspecified: {{ $gpuLim.setFromUnspecified }}
+        {{- end }}
+        {{- if $gpuLim.floor }}
+        floor: {{ $gpuLim.floor | quote }}
+        {{- end }}
+        {{- if $gpuLim.ceiling }}
+        ceiling: {{ $gpuLim.ceiling | quote }}
+        {{- end }}
+        {{- if $gpuLim.containers }}
+        containers:
+          {{- range $containerName, $bounds := $gpuLim.containers }}
           {{ $containerName }}:
             {{- if $bounds.floor }}
             floor: {{ $bounds.floor | quote }}

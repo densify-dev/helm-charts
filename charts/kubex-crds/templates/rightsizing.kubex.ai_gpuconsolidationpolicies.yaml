@@ -40,22 +40,6 @@ spec:
           spec:
             description: spec defines the desired state of GpuConsolidationPolicy
             properties:
-              experimental:
-                description: |-
-                  experimental must be set to acknowledge unstable GPU/KAI behavior.
-                  EXPERIMENTAL: this API is subject to breaking changes or removal without notice.
-                properties:
-                  gpuKaiContract:
-                    description: |-
-                      gpuKaiContract explicitly acknowledges that GPU/KAI fields are experimental and may change.
-                      EXPERIMENTAL: this acknowledgement value is required for unstable GPU/KAI behavior.
-                    enum:
-                    - none
-                    - v1alpha1-2026-07
-                    type: string
-                required:
-                - gpuKaiContract
-                type: object
               nodeSelector:
                 description: |-
                   nodeSelector selects the single compatibility pool this policy may evaluate.
@@ -124,7 +108,6 @@ spec:
                 minimum: 1
                 type: integer
             required:
-            - experimental
             - nodeSelector
             type: object
           status:
