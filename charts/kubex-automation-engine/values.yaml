@@ -354,11 +354,6 @@ rbac:
 # CRD installation
 crds: {}
 
-# Experimental feature acknowledgements for unstable APIs.
-experimental:
-  # -- Required acknowledgement token for GPU/KAI experimental fields.
-  gpuKaiContract: "v1alpha1-2026-07"
-
 # Global configuration defaults
 # These will be used to create the default GlobalConfiguration CR
 globalConfiguration:
@@ -641,14 +636,21 @@ policy:
     #         # floor: "32Mi"       # Optional minimum memory limit
     #         # ceiling: "32Gi"     # Optional maximum memory limit
     #     gpu:
-    #       # GPU requests config. Scheduler override now lives at enablement.overrideScheduler.
-    #       # GPU is requests-only; limits are not supported.
+    #       # Scheduler override lives at enablement.overrideScheduler.
+    #       # Both changing GPU members need explicit permission, including native NVIDIA and HAMi-core.
+    #       # requests/limits are preferred; request/limit are supported aliases.
     #       request:
     #         downsize: true
     #         upsize: true
     #         setFromUnspecified: true
     #         # floor: "1"          # Optional minimum GPU request
     #         # ceiling: "8"        # Optional maximum GPU request
+    #       limit:
+    #         downsize: true
+    #         upsize: true
+    #         setFromUnspecified: true
+    #         # floor: "1"          # Optional minimum GPU limit
+    #         # ceiling: "8"        # Optional maximum GPU limit
     #
     #   # In-place resize configuration
     #   inPlaceResize:

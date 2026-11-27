@@ -68,6 +68,6 @@ spec:
 - Helm-managed policies accept the same list through `scope[].containers`.
 - Start with narrow namespace and label selectors, then widen scope after verifying the selected-policy behavior in events and controller logs.
 - `Model` is included in default workload types. Use `spec.scope.workloadTypes: [Model]` when you want to restrict scope to KubeAI `Model` objects only. Recommendations and rollback state are stored on the `Model` owner, then inherited by model-owned pods.
-- GPU scheduler behavior still comes from the referenced `ClusterAutomationStrategy`; proactive recommendations only supply the desired GPU request value.
+- GPU scheduler behavior still comes from the referenced `ClusterAutomationStrategy`; proactive recommendations supply equal desired GPU request and limit values, subject to strategy enablement and bounds.
 - If you need per-namespace ownership instead, use namespaced `ProactivePolicy`.
-- EXPERIMENTAL: Recommendations can now include `gpu.gpuOverallOptimal`, which is applied as a proactive `requests.gpu` target. See the [GPU Sharing with KAI](./GPU-Sharing-with-KAI.md) guide for more information.
+- Recommendations can include `gpu.gpuOverallOptimal`, which supplies equal proactive `requests.gpu` and `limits.gpu` targets. See the [GPU Sharing with KAI](./GPU-Sharing-with-KAI.md) guide for more information.

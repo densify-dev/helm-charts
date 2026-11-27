@@ -1,12 +1,10 @@
 # Cluster Automation Strategies
 
-> Experimental: GPU/KAI-related fields in this resource are subject to breaking changes. When using them, set `spec.experimental.gpuKaiContract: v1alpha1-2026-07`.
-
 `ClusterAutomationStrategy` defines how resizing is allowed to happen for cluster-scoped policy flows.
 
 Use it when a platform team wants one reusable resize behavior that can be referenced by `ClusterProactivePolicy` and `ClusterStaticPolicy` across multiple namespaces.
 
-For the namespaced variant, see [Automation Strategies](./Automation-Strategies.md).
+For the namespaced variant and shared GPU request/limit semantics, see [Automation Strategies](./Automation-Strategies.md#kai-gpu-sharing-and-vllm-tuning). GPU automation requires an explicit selected request/limit pair per container. Native NVIDIA and HAMi-core require equal targets; NvFractions allows `0 < request <= limit < 1`. Each changing member must be enabled or the entire GPU pair is blocked. An unchanged member must remain explicit but needs no direction enabled. Missing targets never fall back to live or template values. Configure new GPU settings directly on strategy resources, not through legacy Helm `policy.policies`.
 
 ## Reference Rules
 
@@ -23,7 +21,7 @@ Usage-level `floor` and `ceiling` values apply to all containers by default. Add
 | Field | Default | Description |
 | --- | --- | --- |
 | `spec.enablement` | `{}` | Parent object for enablement rules. |
-| `spec.enablement.overrideScheduler` | `none` | EXPERIMENTAL. Selects GPU mutation mode for GPU actions. Valid values: `none`, `kai`. |
+| `spec.enablement.overrideScheduler` | `none` | Selects GPU mutation mode for GPU actions. Valid values: `none`, `kai`. |
 | `spec.enablement.cpu.requests.downsize` | `true` | Allows reducing CPU requests. |
 | `spec.enablement.cpu.requests.upsize` | `true` | Allows increasing CPU requests. |
 | `spec.enablement.cpu.requests.setFromUnspecified` | `true` | Allows setting CPU requests when currently unset. |
@@ -67,13 +65,21 @@ Usage-level `floor` and `ceiling` values apply to all containers by default. Add
 | `spec.enablement.ephemeralStorage.limits.ceiling` | none | Maximum ephemeral-storage limit target. |
 | `spec.enablement.ephemeralStorage.limits.containers.<name>.floor` | none | Container-specific ephemeral-storage limit minimum that overrides the usage-level floor for that container only. |
 | `spec.enablement.ephemeralStorage.limits.containers.<name>.ceiling` | none | Container-specific ephemeral-storage limit maximum that overrides the usage-level ceiling for that container only. |
-| `spec.enablement.gpu.requests.downsize` | `false` | EXPERIMENTAL. Allows reducing GPU requests. |
-| `spec.enablement.gpu.requests.upsize` | `false` | EXPERIMENTAL. Allows increasing GPU requests. |
-| `spec.enablement.gpu.requests.setFromUnspecified` | `false` | EXPERIMENTAL. Allows setting GPU requests when currently unset. |
-| `spec.enablement.gpu.requests.floor` | none | EXPERIMENTAL. Minimum GPU request target. |
-| `spec.enablement.gpu.requests.ceiling` | none | EXPERIMENTAL. Maximum GPU request target. |
-| `spec.enablement.gpu.requests.containers.<name>.floor` | none | EXPERIMENTAL. Container-specific GPU request minimum that overrides the usage-level floor for that container only. |
-| `spec.enablement.gpu.requests.containers.<name>.ceiling` | none | EXPERIMENTAL. Container-specific GPU request maximum that overrides the usage-level ceiling for that container only. |
+| `spec.enablement.gpu.requests.downsize` | `false` | Allows reducing GPU requests. |
+| `spec.enablement.gpu.requests.upsize` | `false` | Allows increasing GPU requests. |
+| `spec.enablement.gpu.requests.setFromUnspecified` | `false` | Allows setting GPU requests when currently unset. |
+| `spec.enablement.gpu.requests.floor` | none | Minimum GPU request target. |
+| `spec.enablement.gpu.requests.ceiling` | none | Maximum GPU request target. |
+| `spec.enablement.gpu.requests.containers.<name>.floor` | none | Container-specific GPU request minimum that overrides the usage-level floor for that container only. |
+| `spec.enablement.gpu.requests.containers.<name>.ceiling` | none | Container-specific GPU request maximum that overrides the usage-level ceiling for that container only. |
+| `spec.enablement.gpu.limits.downsize` | `false` | Allows reducing GPU limits. |
+| `spec.enablement.gpu.limits.upsize` | `false` | Allows increasing GPU limits. |
+| `spec.enablement.gpu.limits.setFromUnspecified` | `false` | Allows setting GPU limits when currently unset. |
+| `spec.enablement.gpu.limits.floor` | none | Minimum GPU limit target. |
+| `spec.enablement.gpu.limits.ceiling` | none | Maximum GPU limit target. With NvFractions, use a value below `1`. |
+| `spec.enablement.gpu.limits.containers.<name>.floor` | none | Container-specific GPU limit minimum. |
+| `spec.enablement.gpu.limits.containers.<name>.ceiling` | none | Container-specific GPU limit maximum. |
+| `spec.kai.gpuComputeMode` | none | `time-slicing` or `sm-sharing`, only with NvFractions and `overrideScheduler: kai`. Overrides the container compute-mode annotation on admission; omission preserves it or leaves upstream defaults in effect. |
 | `spec.inPlaceResize.enabled` | `true` | Enables the in-place resize execution path. |
 | `spec.inPlaceResize.containerRestart` | `false` | Allows in-place resize operations that require container restart. |
 | `spec.podEviction.enabled` | `true` | Enables eviction-based fallback. |

@@ -16,6 +16,10 @@ The controller first uses the Kubernetes Eviction API. PodDisruptionBudgets are 
 
 This behavior is intentionally disruptive: a PDB rejection no longer blocks restoration indefinitely. Review PDBs and termination grace periods before upgrading if rollback-triggered restarts are not acceptable for a workload.
 
+## KAI snapshot upgrade note
+
+Pre-upgrade rollback snapshots for KAI pods may lack logical GPU resource entries. Snapshot comparisons now include those entries, so affected owners with completed monitoring will not reopen monitoring for replacement pods until a fresh successful snapshot is captured.
+
 ## Scope Mapping
 
 - `RollbackPolicy` is namespaced and applies to workloads within a single namespace.

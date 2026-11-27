@@ -263,15 +263,61 @@ spec:
                     type: object
                   gpu:
                     default: {}
-                    description: |-
-                      gpu controls enablement rules for GPU request resources.
-                      EXPERIMENTAL: this field is subject to breaking changes or removal without notice.
+                    description: gpu controls enablement rules for GPU request and
+                      limit resources.
                     properties:
+                      limits:
+                        default: {}
+                        description: limits controls enablement for GPU limits across
+                          all backends. Off unless enabled.
+                        properties:
+                          ceiling:
+                            description: ceiling is the maximum allowed resource quantity
+                              for this usage.
+                            type: string
+                          containers:
+                            additionalProperties:
+                              properties:
+                                ceiling:
+                                  description: ceiling is the maximum allowed resource
+                                    quantity for this usage.
+                                  type: string
+                                floor:
+                                  description: floor is the minimum allowed resource
+                                    quantity for this usage.
+                                  type: string
+                              type: object
+                            description: |-
+                              containers maps exact container names to floor/ceiling overrides for this usage.
+                              Any bound omitted for a specific container falls back to the usage-level floor/ceiling.
+                            type: object
+                          downsize:
+                            default: false
+                            description: downsize controls whether resource downsizing
+                              actions are permitted.
+                            type: boolean
+                          floor:
+                            description: floor is the minimum allowed resource quantity
+                              for this usage.
+                            type: string
+                          setFromUnspecified:
+                            default: false
+                            description: setFromUnspecified controls whether an unspecified
+                              resource value may be set.
+                            type: boolean
+                          upsize:
+                            default: false
+                            description: upsize controls whether resource upsizing
+                              actions are permitted.
+                            type: boolean
+                        type: object
+                        x-kubernetes-validations:
+                        - message: floor must be less than or equal to ceiling
+                          rule: '!has(self.floor) || !has(self.ceiling) || quantity(self.floor).compareTo(quantity(self.ceiling))
+                            <= 0'
                       requests:
                         default: {}
-                        description: |-
-                          requests controls enablement for GPU requests.
-                          EXPERIMENTAL: this field is subject to breaking changes or removal without notice.
+                        description: requests controls enablement for GPU requests.
                         properties:
                           ceiling:
                             description: ceiling is the maximum allowed resource quantity
@@ -428,26 +474,8 @@ spec:
                       - none
                       - kai
                     default: none
-                    description: |-
-                      overrideScheduler selects the GPU mutation mode.
-                      EXPERIMENTAL: this field is subject to breaking changes or removal without notice.
+                    description: overrideScheduler selects the GPU mutation mode.
                     type: string
-                type: object
-              experimental:
-                description: |-
-                  experimental must be set when using GPU/KAI fields.
-                  EXPERIMENTAL: GPU/KAI strategy behavior is subject to breaking changes or removal without notice.
-                properties:
-                  gpuKaiContract:
-                    description: |-
-                      gpuKaiContract explicitly acknowledges that GPU/KAI fields are experimental and may change.
-                      EXPERIMENTAL: this acknowledgement value is required for unstable GPU/KAI behavior.
-                    enum:
-                    - none
-                    - v1alpha1-2026-07
-                    type: string
-                required:
-                - gpuKaiContract
                 type: object
               inPlaceResize:
                 default: {}
@@ -465,16 +493,41 @@ spec:
                 type: object
               kai:
                 default: {}
-                description: |-
-                  kai configures Kai scheduler-specific admission behavior for GPU actions.
-                  EXPERIMENTAL: this field is subject to breaking changes or removal without notice.
+                description: kai configures Kai scheduler-specific admission behavior
+                  for GPU actions.
                 properties:
+                  gpuComputeMode:
+                    allOf:
+                    - enum:
+                      - time-slicing
+                      - sm-sharing
+                    - enum:
+                      - time-slicing
+                      - sm-sharing
+                    description: |-
+                      gpuComputeMode selects the experimental NvFractions compute sharing mechanism.
+                      Overrides the selected container annotation when set; omission preserves it.
+                      Compute-mode-only changes do not reconcile existing Pods and take effect on admission or replacement.
+                      EXPERIMENTAL: this field is subject to breaking changes or removal without notice.
+                    type: string
+                  gpuSharingMode:
+                    allOf:
+                    - enum:
+                      - HamiCore
+                      - NvFractions
+                    - enum:
+                      - HamiCore
+                      - NvFractions
+                    default: HamiCore
+                    description: |-
+                      gpuSharingMode describes the installed KAI cluster mode, not a per-Pod backend choice.
+                      The strategy and KAI installation must use the same mode.
+                    type: string
                   queue:
                     default: kubex-unlimited-gpu-queue
                     description: |-
                       queue sets the Kai scheduler queue label value for GPU admission mutation when
                       the pod does not already define kai.scheduler/queue.
-                      EXPERIMENTAL: this field is subject to breaking changes or removal without notice.
                       Keep this default aligned with DefaultKaiQueueName; kubebuilder markers cannot reference Go constants.
                     type: string
                   setQueueWhenSpecified:
@@ -482,18 +535,15 @@ spec:
                     description: |-
                       setQueueWhenSpecified controls whether Kai GPU admission mutation overwrites
                       an existing kai.scheduler/queue label when queue is specified.
-                      EXPERIMENTAL: this field is subject to breaking changes or removal without notice.
                     type: boolean
                   vllm:
-                    description: |-
-                      vllm configures admission-time tuning for vLLM workloads using KAI GPU sharing.
-                      EXPERIMENTAL: this field is subject to breaking changes or removal without notice.
+                    description: vllm configures admission-time tuning for vLLM workloads
+                      using KAI GPU sharing.
                     properties:
                       gpuMemoryUtilizationBufferPercent:
                         description: |-
                           gpuMemoryUtilizationBufferPercent sets the percentage of available GPU memory
                           that vLLM should leave unused as a safety buffer.
-                          EXPERIMENTAL: this field is subject to breaking changes or removal without notice.
                         format: int32
                         maximum: 100
                         minimum: 0

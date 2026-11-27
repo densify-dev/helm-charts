@@ -2,6 +2,20 @@
 
 All notable changes to the Kubex Automation Engine Helm chart will be documented in this file.
 
+## [Unreleased]
+
+### Breaking
+- GPU requests and limits now require independent opt-in and a complete effective selected pair per container. Migrate request-only static targets and strategy permissions, including legacy Helm `gpu.request` / `gpu.requests` settings, using the [next-release migration guide](./BREAKING.md#next-release-explicit-gpu-requestlimit-pairs-and-permissions).
+
+### Added
+- KAI NvFractions mode selection through `kai.gpuSharingMode`, with separate static GPU request and limit targets and fixed-buffer vLLM tuning against guaranteed memory. GPU limit automation defaults to disabled; HAMi-core remains the API default. Requires eviction-based resize. NvFractions examples are illustrative and non-executable pending release validation: KAI `vX.Y.Z` is an unresolved placeholder, and compatibility with GPU Fractioning `0.1.9` has not been validated. See [GPU Sharing with KAI](./docs/GPU-Sharing-with-KAI.md).
+
+### Changed
+- GPU/KAI configuration no longer requires an experimental acknowledgement. Remove `spec.experimental` from resources and `experimental.gpuKaiContract` from Helm values; explicit GPU action enablement is still required.
+- GPU automation now requires explicit selected request and limit targets per container, with no omitted-target fallback to the other member, live Pod, or workload template. Native NVIDIA and KAI HAMi-core require equal logical targets; NvFractions allows separate values satisfying `0 < request <= limit < 1`. After bounds, each changing member must be enabled or the entire GPU pair is blocked. Unchanged members must remain explicit but need no direction enabled; unrelated CPU and memory changes can still proceed. Static policy admission remains backend-neutral, but each container entry with `requests.gpu` must specify `limits.gpu` in the same entry; another entry or policy cannot supply the required limit. Proactive and GPU reactive recommendations emit equal explicit pairs. GPU request and limit actions are independently disabled by default. Legacy Helm `policy.policies` now renders explicit GPU limit permissions and bounds through `gpu.limits` or its `gpu.limit` alias, alongside `gpu.requests` / `gpu.request`. Omitted limits remain disabled.
+
+---
+
 ## [1.19.0] - 2026-11-26
 
 ### Added

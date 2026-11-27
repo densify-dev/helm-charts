@@ -1,7 +1,5 @@
 # GPU Consolidation Policy
 
-> Experimental: GPU/KAI fields and related custom resources are subject to breaking changes. Set `spec.experimental.gpuKaiContract: v1alpha1-2026-07`.
-
 `GpuConsolidationPolicy` is a cluster-scoped controller that looks at scheduled pods carrying the `gpu-fraction` annotation and tries to consolidate them off an underutilized node.
 
 ## Behavior
@@ -29,8 +27,6 @@ kind: GpuConsolidationPolicy
 metadata:
   name: gpu-consolidation-pool-a
 spec:
-  experimental:
-    gpuKaiContract: v1alpha1-2026-07
   nodeSelector:
     matchLabels:
       kubex.ai/gpu-pool: pool-a
@@ -46,8 +42,6 @@ kind: GpuConsolidationPolicy
 metadata:
   name: gpu-consolidation-l40s
 spec:
-  experimental:
-    gpuKaiContract: v1alpha1-2026-07
   nodeSelector:
     matchExpressions:
     - key: kubex.ai/gpu-pool
@@ -66,8 +60,6 @@ kind: GpuConsolidationPolicy
 metadata:
   name: gpu-consolidation-h100
 spec:
-  experimental:
-    gpuKaiContract: v1alpha1-2026-07
   nodeSelector:
     matchLabels:
       kubex.ai/gpu-pool: training-h100
