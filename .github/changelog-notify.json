@@ -1,0 +1,17 @@
+{
+  "from": { "email": "noreply@kubex.ai", "name": "Kubex Helm Charts" },
+  "reply_to": null,
+  "charts": {
+    "kubex-automation-stack": {
+      "changelog": "charts/kubex-automation-stack/CHANGELOG.md",
+      "unsubscribe_group_id": 44703,
+      "subscribers_secret": "SUBSCRIBERS_KUBEX_AUTOMATION_STACK",
+      "notification": "primary",
+      "include_subcharts": true,
+      "subchart_changelog_template": "charts/{dependency}/CHANGELOG.md",
+      "subchart_changelog_paths": {},
+      "includes": []
+    }
+  }
+}
+
